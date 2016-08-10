@@ -1,0 +1,112 @@
+
+.avaUploadWrapper .uploadifive-queue
+{
+	margin: 0px auto;
+	width: 60%;
+	min-height: 20px;
+}
+.avaUploadWrapper .uploadify-button,
+.avaUploadWrapper .uploadifive-button
+{
+	line-height: 24px !important;
+	cursor: pointer;
+}
+.avaUploadWrapper object
+{
+	background: transparent;
+	/*position: absolute;
+	left: 0;
+	top: 0;*/
+}
+.avaUploadWrapper .uploadify
+{
+	margin: 0 auto;
+}
+.avaUploadWrapper input[type=file]
+{
+	cursor: pointer;
+}
+
+.image-crop-container
+{
+	background-color: #f7f7f7;
+	width: 100%;
+	text-align: center;
+	margin-bottom: 20px;
+	border: 1px dashed;
+}
+.image-crop-container > img
+{
+	max-width: 100%;
+}
+
+.img-preview
+{
+	float: left;
+	margin-right: 10px;
+	margin-bottom: 10px;
+	overflow: hidden;
+	border: 1px dashed;
+}
+
+.preview-lg
+{
+	width: 263px;
+	height: 148px;
+}
+.preview-md {
+	width: 139px;
+	height: 78px;
+}
+.preview-sm {
+	width: 69px;
+	height: 39px;
+}
+
+.preview-xs {
+	width: 35px;
+	height: 20px;
+	margin-right: 0;
+}
+
+.ava-preview-lg
+{
+	width: 180px;
+	height: 180px;
+}
+.ava-preview-md {
+	width: 100px;
+	height: 100px;
+}
+.ava-preview-sm {
+	width: 50px;
+	height: 50px;
+}
+
+.ava-preview-xs {
+	width: 25px;
+	height: 25px;
+	margin-right: 0;
+}
+
+/******************************** uploader  */
+.uploadify-queue,
+.uploadifive-queue
+{
+	max-width: 70%;
+	margin: 0 auto;
+	padding: 10px;
+}
+.uploadifive-queue-item
+{
+	border: 1px dotted;
+	padding: 5px;
+	border-radius: 5px;
+}
+
+.uploadifive-queue-item .progress
+{
+	margin: 0;
+}
+/******************************** END uploader  */
+

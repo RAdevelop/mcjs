@@ -1,0 +1,243 @@
+body {
+    /*min-height: 2000px;*/
+    padding-top: 80px;
+	font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+/******************************** SITE MENU */
+.navbar.navbar-default.navbar-fixed-top
+{
+	background-color: #333333;
+	margin-bottom: 0;
+	border: 0;
+}
+
+.navbar.navbar-default.navbar-fixed-top,
+.navbar-default .navbar-nav>li>a,
+.navbar-default .navbar-brand
+{
+	color: #fff;
+}
+
+.navbar .navbar-nav>li>a:hover,
+.navbar .navbar-nav>li.active>a:hover,
+.navbar .navbar-nav>li.active>a
+{
+	background-color: #cc0000;
+	color: #fff;
+}
+
+.navbar-social
+{
+	background-color: #fff;
+	color: #000;
+	min-height: 30px;
+	line-height: 30px;
+}
+/******************************** SITE MENU */
+
+.form-signin {
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+}
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+    margin-bottom: 10px;
+}
+.form-signin .checkbox {
+    font-weight: normal;
+}
+.form-signin .form-control {
+    position: relative;
+    height: auto;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 16px;
+}
+.form-signin .form-control:focus {
+    z-index: 2;
+}
+.form-signin input[type="email"] {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.form-signin input[type="password"] {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.cursor-pointer
+{
+	cursor: pointer;
+}
+
+/********************************  */
+.left-col
+{
+	padding: 0;
+}
+
+.middle-col
+{
+	height: 100%;
+}
+
+.right-col
+{
+}
+
+/*@media screen and (min-width: 768px)
+{
+	.left-col
+	{
+		width: 100%;
+	}
+	.middle-col
+	{
+		width: 100%;
+	}
+	.right-col
+	{
+		width: 100%;
+	}
+}
+
+@media screen and (min-width: 980px)
+{
+	.left-col
+	{
+		width: 27%;
+	}
+	.middle-col
+	{
+		width: 73%;
+	}
+	.right-col
+	{
+		width: 100%;
+	}
+}
+
+@media screen and (min-width: 1280px)
+{
+	.left-col
+	{
+		width: 16.6667%;
+	}
+	.middle-col
+	{
+		width: 66%;
+	}
+	.right-col
+	{
+		width: 16.6667%;
+	}
+}
+@media screen and (min-width: 1920px)
+{
+	.left-col
+	{
+		width: 16.6667%;
+	}
+	.middle-col
+	{
+		width: 66%;
+	}
+	.right-col
+	{
+		width: 16.6667%;
+	}
+}*/
+/********************************  */
+
+/******************************** CHAT */
+#chat
+{
+    border: 1px solid red;
+    height: 300px;
+	margin-top: 50px;
+}
+
+#chat #messages_wrapper
+{
+    border: 1px solid green;
+    height: 200px;
+    overflow: hidden;
+    overflow-y: scroll;
+}
+
+#chat form textarea
+{
+    min-width: 200px;
+    max-width: 400px;
+    width: 400px;
+    height: 70px;
+}
+/******************************** END CHAT */
+
+/******************************** PROFILE */
+
+.logo
+{
+	background: url("/img/logo.jpg") center top no-repeat;
+	height: 149px;
+	background-size: cover;
+}
+				/******************************** PROFILE AVA */
+#profile-ava
+{
+	margin: -100px 0px 0px 0px;
+	text-align: center;
+}
+
+#profile-ava a
+{
+	display: inline-block;
+}
+
+#profile-ava a img
+{
+	border: 2px solid #fff;
+	width: 100% \9;
+}
+
+#profile-ava .fa-user
+{
+	font-size: 229px;
+}
+
+				/******************************** END PROFILE AVA */
+/******************************** END PROFILE */
+
+/******************************** autocomplete */
+.ui-autocomplete {
+	max-height: 130px;
+	overflow-y: auto;
+	/* prevent horizontal scrollbar */
+	overflow-x: hidden;
+}
+/******************************** END autocomplete */
+
+/*
+http://fontawesome.io/examples/
+*/
+
+.fa
+{
+	/*min-width: 18px;
+	text-align: center;*/
+}
+
+a.social
+{
+	text-decoration: none;
+}
+a.social:hover
+{
+	color: #FFA500;
+}

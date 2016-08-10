@@ -1,0 +1,95 @@
+<%  if(!isXHR){%><%- layout('layout/index') %><% } -%>
+<div class="page-header">
+    <h1><%= h1 %></h1>
+</div>
+<div id="chat">
+	<div id="messages_wrapper">
+		<ul id="messages"></ul>
+	</div>
+	<form method="post" action="/chat" id="formSendMessage">
+		<textarea id="msg"></textarea>
+		<input type="submit" name="btnSendMessage" id="btnSendMessage" value="отправить" />
+	</form>
+</div>
+<script type="text/javascript">
+$(function(){
+	var $chatArea = $('#chat');
+	var $messagesWrapper = $('#messages_wrapper');
+	var $messages = $('#messages');
+	var $formSendMessage = $('#formSendMessage');
+	var $msg = $('#msg');
+	var $btnSendMessage = $('#btnSendMessage');
+
+	//TODO добавить ip или домен сайта
+	//var chat = io('//192.168.0.91:5003/rooms');
+	var chat = io('//'+window.location.host+'/rooms');
+
+	chat.on('connect', function(){
+		console.log('on connection event');
+		chat.emit('chat:user:connected', {"userName": navigator.userAgent}, function(data){});
+	}).on('connecting', function () {
+		console.log('connecting');
+	}).on('reconnect', function () {
+		console.log('reconnected ');
+	}).on('reconnecting', function () {
+		console.log('reconnecting');
+	})
+	.on('reconnect_error', function(err){
+		console.log('on reconnect_error event');
+		console.log(err);
+	}).on('reconnect_failed', function(err){
+		console.log('on reconnect_failed event');
+		console.log(err);
+	}).on('error', function(err){
+		console.log('on error event');
+		console.log(err);
+
+
+		if(err == 'error:authentication')
+		{
+			chat.emit('chat:error:auth', {}, function(data){
+				console.log('chat:error:auth');
+			});
+
+			/*var s = 5;
+			$chatArea.html('<div>Вы не авторизованы. Через <span id="timer">'+s+'</span> секунд перенаправим Вас на страницу авторизации.</div>');
+
+			var $timer = $chatArea.find('#timer');
+
+			var t = setInterval(function(){
+				s--;
+				if(s == 1)
+				{
+					clearInterval(t);
+					window.location.href = '/login';
+				}
+				$timer.text(s);
+
+			}, 1000);*/
+		}
+	});
+
+	$formSendMessage.submit(function(event){
+		event.preventDefault();
+
+		var msg = $.trim($msg.val());
+
+		if(msg != '')
+		{
+			$msg.val('');
+
+			chat.emit('chat:msg:send', msg, function(data){
+				//if(data) console.log('сообщение получено серверкром');
+			});
+		}
+		return false;
+	});
+
+	chat.on('chat:msg:get', function(msg){
+		console.log(msg);
+		$messages.append('<li>'+nl2br(msg)+'</li>');
+		$messagesWrapper.scrollTop($messagesWrapper.height());
+	});
+
+});
+</script>

@@ -1,0 +1,100 @@
+<%  if(!isXHR){%><%- layout('layout/index') %><% } -%>
+<div class="page-header">
+    <h1><%= h1 %></h1>
+</div>
+<p>TODO</p>
+<p>Есть роли первого уровня: гость, юзер, админ, модератор, root</p>
+<p>все остальные роли являются их потомками</p>
+<p>добаить флаг для роли, означающий, что ее надо привязывать к пользователю, когда он создает свою учетку</p>
+
+<h2><% if(i_rl_id) {%>Изменить<%} else {%>Добавить<%}%> роль: <%= s_rl_name %></h2>
+<% if(formError.error) {%>
+<div class="alert alert-danger">
+<p><%= formError.message %></p>
+<ul>
+    <% for (var f in  formError.fields){
+        if(!formError.fields[f]) continue;
+    %><li><%=formError.fields[f] %></li><%
+    } %>
+</ul>
+</div>
+<% }%>
+
+<div class="col-sm-9" style="border: 1px solid red;">
+<form id="roleEditForm" class="form-horizontal" action="" method="post">
+    <input type="hidden" id="i_rl_id" name="i_rl_id" value="<%= i_rl_id %>"/>
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="i_rl_pid">Родительская роль</label>
+        <div class="col-sm-9">
+                <select id="i_rl_pid" name="i_rl_pid" class="form-control">
+                <option value="0">нет родителя</option>
+                    <% roleList.length && roleList.forEach(function(rItem, i){ %>
+                    <option value="<%= rItem["rl_id"] %>" <% if (rItem["rl_id"] == i_rl_pid) { %>selected="selected"<%}%>  <% if (rItem["rl_id"] == i_rl_id) { %>disabled="disableds"<%}%>>
+                        <%- rItem["nbsp"] %><%= rItem["rl_name"] %>
+                    </option>
+                    <% }) %>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="i_rl_after_id">После какой роли</label>
+        <div class="col-sm-9">
+            <select id="i_rl_after_id" name="i_rl_after_id" class="form-control">
+                <option value="0">в начале</option>
+            </select>
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="s_rl_path">Альяс роли</label>
+        <div class="col-sm-9">
+            <div class="input-group">
+            <input type="text" id="s_rl_path" name="s_rl_path" value="<%= s_rl_path %>" maxlength="255" class="form-control" placeholder="Альяс роли" required autofocus aria-describedby="s_rl_pathHelpBlock"/>
+            </div>
+            <span id="s_rl_pathHelpBlock" class="help-block">пример: moderator/news - роль модератора для страниц новостей (у которых роутер /news)</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="s_rl_name">Название меню</label>
+        <div class="col-sm-9">
+        <input type="text" id="s_rl_name" name="s_rl_name" value="<%= s_rl_name %>" maxlength="100" class="form-control" placeholder="Название меню" required autofocus aria-describedby="s_rl_nameHelpBlock"/>
+            <span id="s_rl_nameHelpBlock" class="help-block">от 3 до 100 символов</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="t_rl_desc">Описание роли</label>
+        <div class="col-sm-9">
+            <textarea rows="5" maxlength="255" id="t_rl_desc" name="t_rl_desc" class="form-control" placeholder="Описание роутера"><%= t_rl_desc %></textarea>
+            <span id="t_rl_descHelpBlock" class="help-block">до 255 символов</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-6 col-sm-offset-6">
+            <% if(i_rl_id){%>
+            <button class="btn btn-default" type="submit" name="btn_roleForm" value="upd">Изменить</button>
+            <%} else {%>
+            <button class="btn btn-default" type="submit" name="btn_roleForm" value="add">Добавить</button>
+            <%} %>
+        </div>
+    </div>
+</form>
+</div>
+<script type="text/javascript">
+//<!--
+<%-(exported_to_js ? exported_to_js : "") %>
+var MCJS = window["<%= settings["state namespace"] %>"];
+console.log(MCJS);
+$(function()
+{
+    var $roleEditForm = $('#roleEditForm');
+    if(MCJS.formError && MCJS.formError.error == true)
+    {
+        $.each(MCJS.formError.fields,  function(fId, fV)
+        {
+            if(fV) $roleEditForm.find('#'+fId).closest('.form-group').addClass("has-error");
+            else $roleEditForm.find('#'+fId).closest('.form-group').removeClass("has-error");
+        });
+    }
+});
+//-->
+</script>

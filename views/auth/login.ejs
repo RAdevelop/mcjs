@@ -1,0 +1,107 @@
+<%  if(!isXHR){%><%- layout('layout/default') %><% } -%>
+<form id="formLogin" class="form-signin" action="<%=menuItem.m_path%>" method="post">
+    <input type="hidden" name="back" value="<%= back %>" />
+    <h2 class="form-signin-heading text-center">Авторизация</h2>
+    <div class="form-group m_email">
+        <label for="m_email" class="sr-only">Введите e-mail</label>
+        <input type="text" id="m_email" name="m_email" value="<%=m_mail%>" class="form-control" placeholder="Введите e-mail" required autofocus />
+    </div>
+    <div class="form-group s_password">
+        <label for="s_password" class="sr-only">Введите пароль</label>
+        <input type="password" id="s_password" name="s_password" value="<%=s_password%>" class="form-control" placeholder="Введите пароль" required />
+    </div>
+    <div class="form-group">
+        <div class="checkbox text-center"><label><input type="checkbox"  name="b_remember" <% if (b_remember){ %>checked="checked"<%}%> >запомнить меня</label></div>
+    </div>
+    <div class="form-group">
+        <input type="hidden" name="btn_action" value="login"/>
+        <button class="btn btn-lg btn-primary btn-block" type="submit" id="btn_login" name="btn_login" value="1">войти</button>
+    </div>
+    <div class="form-group">
+        <div class="text-center"><button type="button" class="btn btn-default btn-xs btn_forgot_pass">забыли пароль?</button></div>
+    </div>
+</form>
+<form id="formResetPass" class="form-signin" action="<%=menuItem.m_path%>" method="post" style="display: none;">
+    <input type="hidden" name="back" value="<%= back %>" />
+    <h2 class="form-signin-heading text-center">Сбросить пароль</h2>
+    <div class="form-group m_email">
+        <label for="m_email" class="sr-only">Введите e-mail</label>
+        <input type="text" id="m_email" name="m_email" value="<%=m_mail%>" class="form-control" placeholder="Введите e-mail" required autofocus />
+    </div>
+    <div class="form-group">
+        <input type="hidden" name="btn_action" value="reset"/>
+        <button class="btn btn-lg btn-primary btn-block" type="submit" id="btn_reset_pass" name="btn_reset_pass" value="1">сбросить</button>
+    </div>
+    <div class="form-group">
+        <div class="text-center"><button type="button" class="btn btn-default btn-xs btn_forgot_pass">вспомнили пароль?</button></div>
+    </div>
+</form>
+<script type="text/javascript" src="/js/jquery/postRes.js"></script>
+<script type="text/javascript">
+//<!--
+$(function()
+{
+    var redirectTo = '<%=back%>';
+    var $formLogin = $('#formLogin');
+    var $formReset = $('#formResetPass');
+    
+    $formLogin.postRes({btnId: 'btn_login',prefix:'auth_login', 
+        onSuccess: function($dialog)
+        {
+            $dialog.modal('hide');
+            $formLogin.find("#s_password").val('');
+            window.location.href = redirectTo;
+            
+            //не показывать диалог
+            return false;
+        },
+        onFail: function($dialog)
+        {
+            $formLogin.find("#s_password").val('');
+            
+            //показывать диалог
+            return true;
+        }
+    });
+
+    $formReset.postRes({btnId: 'btn_reset_pass',prefix:'auth_login',
+        onSuccess: function($dialog)
+        {
+            $dialog.modal('hide');
+            $formReset.find("#s_password").val('');
+            //window.location.href = redirectTo;
+
+            setTimeout(function ()
+            {
+                window.location.href = '/login';
+            }, 1000);
+
+            //показывать диалог
+            return true;
+        },
+        onFail: function($dialog)
+        {
+            $formReset.find("#s_password").val('');
+
+            //показывать диалог
+            return true;
+        }
+    });
+    
+    $('button.btn_forgot_pass').click(function(event){
+        event.preventDefault();
+        if ($formReset.css('display') == 'none')
+        {
+            $formLogin.hide();
+            $formReset.show();
+        }
+        else 
+        {
+            $formLogin.show();
+            $formReset.hide();
+        }
+        return false;
+    });
+});
+//-->
+</script>

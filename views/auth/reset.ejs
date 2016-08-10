@@ -1,0 +1,58 @@
+<%  if(!isXHR){%><%- layout('layout/default') %><% } -%>
+<% if( !s_key) {%>
+<div class="text-center">
+<p>Возможно, Вы перешли по устаревшей или неправильной ссылке.</p>
+<p>Запросите смену пароля еще раз.</p>
+</div>
+<% } else { %>
+<form id="formResetPass" class="form-signin" action="<%=menuItem.m_path%>/reset" method="post">
+    <input type="hidden" name="back" value="<%= back %>" />
+    <input type="hidden" name="s_key" id="s_key" value="<%=s_key%>" />
+    <h2 class="form-signin-heading text-center">Смена пароля</h2>
+    <div class="form-group s_password">
+        <label for="s_password" class="sr-only">Введите пароль</label>
+        <input type="password" id="s_password" name="s_password" value="<%=s_password%>" class="form-control" placeholder="Введите пароль" required />
+    </div>
+    <div class="form-group s_password">
+        <label for="s_password" class="sr-only">Повторите пароль</label>
+        <input type="password" id="s_password2" name="s_password2" value="<%=s_password2%>" class="form-control" placeholder="Повторите пароль" required />
+        <span class="text-center help-block">не менее 6 символов</span>
+    </div>
+    <div class="form-group">
+        <input type="hidden" name="btn_action" value="update"/>
+        <button class="btn btn-lg btn-primary btn-block" type="submit" id="btn_reset" name="btn_reset" value="1">сменить</button>
+    </div>
+</form>
+<script type="text/javascript" src="/js/jquery/postRes.js"></script>
+<script type="text/javascript">
+//<!--
+$(function()
+{
+    var redirectTo = '<%=back%>';
+    var $formReset = $('#formResetPass');
+
+    $formReset.postRes({btnId: 'btn_reset',prefix:'auth_reset',
+        onSuccess: function($dialog)
+        {
+            //$dialog.modal('hide');
+            $formReset.find("#s_password").val('');
+            $formReset.find("#s_password2").val('');
+            $formReset.find("#s_key").val('');
+            //window.location.href = redirectTo;
+
+            //показывать диалог
+            return true;
+        },
+        onFail: function($dialog)
+        {
+            //$formReset.find("#s_password").val('');
+            //$formReset.find("#s_password2").val('');
+            
+            //показывать диалог
+            return true;
+        }
+    });
+});
+//-->
+</script>
+<% } %>

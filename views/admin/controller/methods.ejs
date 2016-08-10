@@ -1,0 +1,53 @@
+<div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="controllerMethodsForm">
+        <h4 class="panel-title">
+            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordionRouter" href="#controllerMethodsFormBody" aria-expanded="false" aria-controls="controllerMethodsFormBody">Методы роутера</a>
+        </h4>
+    </div>
+    <div id="controllerMethodsFormBody" class="panel-collapse collapse" role="tabpanel" aria-labelledby="controllerMethodsForm">
+        <div class="panel-body">
+            <div class="col-sm-12">
+            <form id="rmAddForm" class="form-inline" action="<%= _reqOriginalUrl %>/method/add" method="post">
+                <input type="hidden" id="i_controller_id" name="i_controller_id" value="<%= controllerId %>"/>
+                <div class="form-group <%=(formError.fields['s_rm_method'] ? ' has-error ' : '')%>>">
+                    <label for="s_rm_method">Имя метода</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="s_rm_method" name="s_rm_method" value="<%= s_rm_method %>" maxlength="33" required placeholder="Имя метода"/>
+                        <div class="input-group-addon">примеры: add | edit | view</div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" type="button" name="btn_add_rm_method" id="btn_add_rm_method" value="add">Добавить</button>
+                <% if(formError.error) {%>
+                <div class="formError form-group has-error">
+                    <div class="form-control"><%= formError.message %> <% for (var f in  formError.fields){ if(!formError.fields[f]) continue; %><%=formError.fields[f] %>;<% } %></div>
+                </div>
+                <% } %>
+            </form>
+            </div>
+            
+            <hr />
+            <div class="alert alert-danger" role="alert"> <strong>Oh snap!</strong> Change a few things up and try submitting again. </div>
+
+            <div class="alert alert-danger alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <strong>Warning!</strong> Better check yourself, you're not looking too good.
+            </div>
+            
+            <h5>Список методов:</h5>
+            <div class="row methodsList">
+                <% methodsList.forEach(function(method, i){%>
+                <div class="col-md-3 " style="border: 1px solid red;">
+                    <form id="rmDelForm<%= method["rm_id"] %>" class="form-inline" action="<%= _reqOriginalUrl %>/method/del" method="post">
+                        <input type="hidden" id="i_controller_id" name="i_controller_id" value="<%= controllerId %>"/>
+                        <input type="hidden" id="i_method_id" name="i_method_id" value="<%= method["rm_id"] %>"/>
+                        <div class="form-group col-sm-12">
+                            <%= method["rm_method"] %> <button class="btn btn-primary btn-xs" type="button" name="btn_del_rm_method" id="btn_del_rm_method<%= method["rm_id"] %>" value="del" style="float: right;">удалить</button>
+                        </div>
+                    </form>
+                </div>
+                <% }) %>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
