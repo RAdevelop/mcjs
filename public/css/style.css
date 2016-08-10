@@ -91,6 +91,21 @@ body {
 {
 }
 
+.textCenter
+{
+	text-align: center;
+}
+
+.textLeft
+{
+	text-align: left;
+}
+
+.textRight
+{
+	text-align: right;
+}
+
 /*@media screen and (min-width: 768px)
 {
 	.left-col
@@ -241,3 +256,58 @@ a.social:hover
 {
 	color: #FFA500;
 }
+
+/********** список фотоальбомов **************/
+
+.album-list-toolbar
+{
+	margin: 10px 0 10px 0;
+}
+
+/********** END список фотоальбомов **************/
+
+/*
+
+@media (min-width: 320px)
+{
+
+}
+
+@media (min-width: 360px)
+{
+
+}
+
+@media (min-width: 375px)
+{
+
+}
+
+@media (min-width: 412px)
+{
+
+}
+@media (min-width: 414px)
+{
+
+}
+@media (min-width: 768px)
+{
+
+}
+@media (min-width: px)
+{
+
+}
+@media (min-width: px)
+{
+
+}
+@media (min-width: px)
+{
+
+}
+@media (min-width: px)
+{
+
+}*/

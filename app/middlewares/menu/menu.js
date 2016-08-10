@@ -59,6 +59,17 @@ let menu = {
 		
 		m_id: null,m_pid: null,m_level: null,m_lk: null,m_rk: null,c_id: null
 	},
+	"/profile/photo":{
+		c_path: '/profile/photo',
+		m_path: '/profile/photo',
+		m_name: 'Фотографии',
+		m_title: 'Фотографии',
+		m_h1: 'Фотографии',
+		m_desc: 'Фотографии',
+		m_nbsp: '',
+
+		m_id: null,m_pid: null,m_level: null,m_lk: null,m_rk: null,c_id: null
+	},
 	"/admin/menu":{
 		c_path: '/admin/menu',
 		m_path: '/admin/menu',

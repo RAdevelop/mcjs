@@ -23,12 +23,16 @@ function _htmlDialog(data)
 		htmlDialog += options.body;
 		htmlDialog += '</div>';
 	}
-	htmlDialog += '<div class="modal-footer">';
+	htmlDialog += '<div class="textCenter modal-footer">';
 
 	for (var i in options.buttons)
 	{
 		if (options.buttons[i].hasOwnProperty('cssClass') && options.buttons[i].hasOwnProperty('name') && options.buttons[i].hasOwnProperty('title'))
-		htmlDialog += '<button type="button" class="btn '+options.buttons[i].cssClass+' mcDialogBtn'+options.buttons[i].name+'">'+options.buttons[i].title+'</button>';
+		{
+			options.buttons[i].name = options.buttons[i].name.replace('#', '_').replace(/\s+/, '_').replace(/\./, '_');
+
+			htmlDialog += '<button type="button" class="btn '+options.buttons[i].cssClass+' '+options.buttons[i].name+'" id="'+options.buttons[i].name+'" >'+options.buttons[i].title+'</button>';
+		}
 	}
 	/*htmlDialog += '<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>';
 	htmlDialog += '<button type="button" class="btn btn-primary">Save changes</button>';*/
@@ -47,19 +51,19 @@ function _htmlDialog(data)
 	{
 		/* значение по умолчанию */
 		var defaults = {
-			id: 'mcDialog'+this.selector.replace('#', '')
+			id: 'mcDialog'+this.selector.replace('#', '_').replace(/\s+/, '_').replace(/\./, '_')
 			,title: ''
 			,body: ''
 			,buttons: [
 				{
 					title: 'Ok',
-					name: 'close',
+					name: 'btn_close',
 					cssClass: 'btn-primary',
 					func:
 					{
-						"click": function($dialog, event)
+						"click": function(event)
 						{
-							$(this).modal('hide');
+							$(event.data[0]).modal('hide');
 						}
 					}
 				}
@@ -77,11 +81,25 @@ function _htmlDialog(data)
 		{
 			options.buttons = defaults.buttons;
 		}
-		
+
 		if ($('#'+options.id).size()) $('#'+options.id).remove();
 		
-		var $mcDialog = $(_htmlDialog(options)).appendTo('body').modal({});;
-		
+		$(_htmlDialog(options)).appendTo('body')
+			.modal('hide')
+			.on('shown.bs.modal', function (event)
+			{
+				options.onOpen($(this));
+				console.log("$mcDialog.on('shown.bs.modal', function (event)");
+			})
+			.on('hidden.bs.modal', function (event)
+			{
+				options.onClose($(this));
+				$(this).remove();
+				console.log("$mcDialog.on('hidden.bs.modal', function (event)");
+			}).modal('show');
+
+		var $mcDialog = $('#'+options.id);
+
 		if (options.postRes)
 			$mcDialog.find('.modal-header').removeClass('text-danger').addClass('text-success');
 		else
@@ -97,15 +115,18 @@ function _htmlDialog(data)
 			{
 				if (!funcList.hasOwnProperty(fName)) continue;
 
+				options.buttons[i]["name"] = options.buttons[i]["name"].replace('#', '_').replace(/\s+/, '_').replace(/\./, '_');
+
+				//var btn = '#'+options.buttons[i]["name"]+"_mcDialogBtn";
+				var btn = '#'+options.buttons[i]["name"];
+
 				$mcDialog
-					.find('.mcDialogBtn'+options.buttons[i]["name"])
-					.on(fName, function(event)
-					{
-						(funcList[fName]).apply($mcDialog, [$mcDialog, event, options.postRes]);
-					});
+					.find(btn)
+					.on(fName, [$mcDialog, options.postRes], funcList[fName]);
 			}
 		}
-		//onOpen
+
+		/*//onOpen
 		$mcDialog.on('shown.bs.modal', function (event)
 		{
 			options.onOpen($(this));
@@ -117,7 +138,7 @@ function _htmlDialog(data)
 			options.onClose($(this));
 			$(this).remove();
 			console.log("$mcDialog.on('hidden.bs.modal', function (event)");
-		});
+		});*/
 		return $mcDialog;
 	}
 })(jQuery);

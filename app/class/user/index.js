@@ -78,7 +78,7 @@ class User extends Base
 			user: this.getById(u_id),
 			userData: this.getUserData(u_id),
 			userLocation: this.getUserLocation(u_id),
-			userAva: this.getClass('user/profile').getUserAva(u_id)
+			userAva: this.getClass('user/photo/profile').getUserAva(u_id)
 		})
 			.then(function(props)
 			{

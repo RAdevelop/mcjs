@@ -1,5 +1,4 @@
 "use strict";
-/*комментарий*/
 
 const Logger = require('app/lib/logger')();
 const Moment = require('moment');
@@ -303,7 +302,7 @@ class Profile extends Base
 			})
 			.then(function (tplData)
 			{
-				return this.getClass('user/profile').getUserAva(this.getUserId())
+				return this.getClass('user/photo/profile').getUserAva(this.getUserId())
 					.then(function (ava)
 					{
 						console.log(ava);
@@ -724,7 +723,7 @@ class Profile extends Base
 		let tplFile = 'user/profile/edit.ejs';
 		let tplData = self.getParsedBody();
 
-		self.getClass('user/photo')
+		self.getClass('user/photo/profile')
 			.uploadProfile(this.getUserId(), this.getReq(), this.getRes())
 			.then(function (file)
 			{

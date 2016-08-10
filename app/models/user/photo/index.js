@@ -77,12 +77,22 @@ class Photo extends User
 
 	createAlbumUploaded(u_id)
 	{
-		this.constructor.albumNamed;
+		this.constructor.albumUploaded;
 	}
 
-	createAlbumNamed(u_id, name)
+	createAlbumNamed(u_id, a_name, a_text)
 	{
-		this.constructor.albumNamed;
+		let a_type_id;
+		let sql = 'SELECT a_type_id FROM album_type WHERE a_type_alias = ?';
+
+		return this.constructor.conn().psRow(sql, [this.constructor.albumNamed])
+			.bind(this)
+			.then(function (res)
+			{
+				a_type_id = res["a_type_id"];
+
+				return this._insAlbum(u_id, a_type_id, a_name, a_name, a_text);
+			})
 	}
 
 	addProfilePhoto(u_id, fileData)
@@ -134,38 +144,6 @@ class Photo extends User
 				let is_del = (res[1] && res[1]["is_del"] ? res[1]["is_del"] : 0);
 
 				return Promise.resolve(is_del);
-			});
-	}
-
-	/**
-	 * получаем фотографию профиля пользователя
-	 *
-	 * @param u_id
-	 * @returns {*}
-	 */
-	getUserAva(u_id)
-	{
-		let ava = {
-			a_id: null,
-			u_id: u_id,
-			ai_id: null,
-			ai_dir: null
-		};
-		let sql = "SELECT a.a_id, a.u_id, ai.ai_id, ai.ai_dir" +
-			" FROM (SELECT NULL) AS z" +
-			" JOIN album_type AS t ON (t.a_type_alias = ?)" +
-			" JOIN album AS a ON (t.a_type_id = a.a_type_id)" +
-			" JOIN album_image AS ai ON (ai.a_id = a.a_id AND ai.u_id = ? AND ai.ai_pos = ?)" +
-			" LIMIT 1;";
-		let sqlData = [this.constructor.albumProfile, u_id, 0];
-
-		return this.constructor.conn().psRow(sql, sqlData)
-			.then(function (res)
-			{
-				if (res)
-				ava = Object.assign(ava, res);
-
-				return Promise.resolve(ava);
 			});
 	}
 }

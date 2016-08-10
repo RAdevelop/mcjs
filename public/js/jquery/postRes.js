@@ -5,27 +5,44 @@
 	{
 		var defaults = {
 			formId: '',
-			btnId: '',
+			btnId: null,
 			prefix:'',
 			buttons: [],
-			onFail: function($dialog){return true},
-			onSuccess: function($dialog){return true},
+			onFail: function($dialog, respData){return true},
+			onSuccess: function($dialog, respData){return true},
+			onOpen: function onOpen($self){},
+			onClose: function onClose($self){}
 		};
 		var self = this;
 		var options = $.extend({}, defaults, params);
 		var $formBase = $(self.selector);
-		var $btnSaveBase = $formBase.find('#'+options.btnId);
-		
-		$btnSaveBase.on('click', function (event)
-		{
-			if (this.type == 'submit') return;
 
-			$formBase.submit();
-		});
+		var $btnSaveBase = null;
+
+		if (options.btnId.hasOwnProperty("selector"))
+			$btnSaveBase = options.btnId;
+		else if (typeof options.btnId == 'string' && options.btnId != '')
+			$btnSaveBase = $formBase.find('#'+options.btnId);
+
+		console.log($btnSaveBase);
+
+		if ($btnSaveBase)
+		{
+			$btnSaveBase.on('click', function (event)
+			{
+				console.log("$btnSaveBase.on('click', function (event)");
+
+				if (this.type == 'submit') return;
+
+				$formBase.submit();
+			});
+		}
 		$formBase.on('submit', function (event)
 		{
 			event.preventDefault();
-			
+			event.stopPropagation();
+
+			if ($btnSaveBase)
 			$btnSaveBase.button('loading');
 			
 			var _formData = $formBase.serialize();
@@ -76,17 +93,21 @@
 					
 					if (text != '') text = '<ul>'+text+'</ul>';
 				}
-				
+
+				if ($btnSaveBase)
 				$btnSaveBase.button('reset');
+
 				var showDialog = true;
-				
+
+				var sel = '#mcDialog_'+self.selector.replace('#', '').replace(/\s+\./, '_');
+
 				if(formError && formError.error == true)
-					showDialog = options.onFail($('#mcDialog_'+self.selector.replace('#', '')));
+					showDialog = options.onFail($(sel), data);
 				else
-					showDialog = options.onSuccess($('#mcDialog_'+self.selector.replace('#', '')));
+					showDialog = options.onSuccess($(sel), data);
 				
 				if (showDialog)
-					_postResDialogBase(self.selector, title, text, options.buttons, !formError.error);
+					_postResDialogBase(self.selector, title, text, options, !formError.error);
 				
 				//console.log('mcDialog_'+self.selector.replace('#', ''));
 			})
@@ -108,8 +129,9 @@
 						text = 'Доступ запрещен для выполнения этой операции';
 						break;
 				}
-				_postResDialogBase(self.selector, 'Ошибка', text, options.buttons, false);
-				
+				_postResDialogBase(self.selector, 'Ошибка', text, options, false);
+
+				if ($btnSaveBase)
 				$btnSaveBase.button('reset');
 			});
 			
@@ -120,13 +142,15 @@
 	}
 })(jQuery);
 
-function _postResDialogBase(dName, title, text, buttons, postRes)
+function _postResDialogBase(dName, title, text, options, postRes)
 {
 	//buttons = buttons || ;
 	$('_'+dName).mcDialog({
 		title: title,
 		body: text,
-		buttons: buttons,
-		postRes: postRes
+		buttons: options.buttons,
+		postRes: postRes,
+		onClose: options.onClose,
+		onOpen: options.onOpen
 	});
 }

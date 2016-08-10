@@ -27,26 +27,14 @@
                     </form>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" id="ava_crop_container">
-                    <div class="row">
-                        <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
-                            <form class="form text-center" action="<%=menuItem.m_path%>/edit"  enctype="multipart/form-data" method="post" target="null_frame" id="formAvaCrop">
-                                <% let cropImage = (previews["1024_768"] ? previews["1024_768"] : '_0.gif');%>
-                                <div class="form-group image-crop-container">
-                                    <img src="<%=cropImage%>" class="img-thumbnail" id="ava_crop_base" />
-                                </div>
-                                <div class="form-group">
-                                    <input type="hidden" name="i_u_id" id="i_u_id" value="<%= _user.u_id%>" />
-                                    <input type="hidden" name="i_file_id" id="i_file_id" value="<%= ai_id%>" />
-                                    <input type="hidden" name="i_crop_x" id="i_crop_x" value="" />
-                                    <input type="hidden" name="i_crop_y" id="i_crop_y" value="" />
-                                    <input type="hidden" name="i_crop_width" id="i_crop_width" value="" />
-                                    <input type="hidden" name="i_crop_height" id="i_crop_height" value="" />
-                                    <input type="hidden" name="btn_save_profile" value="crop_ava"/>
-                                    <button type="button" id="btn_crop_ava" class="btn btn-primary" data-loading-text="сохраняю...">сохранить</button>
-                                </div>
-                            </form>
+                    <form class="form text-center" action="<%=menuItem.m_path%>/edit"  enctype="multipart/form-data" method="post" target="null_frame" id="formAvaCrop">
+                        <% let cropImage = (previews["1024_768"] ? previews["1024_768"] : '_0.gif');%>
+                        <div class="form-group col-xs-12 col-sm-12 col-md-8 col-lg-8">
+                            <div class="image-crop-container">
+                                <img src="<%=cropImage%>" class="img-thumbnail" id="ava_crop_base" />
+                            </div>
                         </div>
-                        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                        <div class="form-group col-xs-12 col-sm-12 col-md-4 col-lg-4">
                             <div class="img-preview ava-preview-lg">
                                 <img src="<%=cropImage%>" />
                             </div>
@@ -57,7 +45,18 @@
                                 <img src="<%=cropImage%>" />
                             </div>
                         </div>
-                    </div>
+
+                        <div class="form-group col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <input type="hidden" name="i_u_id" id="i_u_id" value="<%= _user.u_id%>" />
+                            <input type="hidden" name="i_file_id" id="i_file_id" value="<%= ai_id%>" />
+                            <input type="hidden" name="i_crop_x" id="i_crop_x" value="" />
+                            <input type="hidden" name="i_crop_y" id="i_crop_y" value="" />
+                            <input type="hidden" name="i_crop_width" id="i_crop_width" value="" />
+                            <input type="hidden" name="i_crop_height" id="i_crop_height" value="" />
+                            <input type="hidden" name="btn_save_profile" value="crop_ava"/>
+                            <button type="button" id="btn_crop_ava" class="btn btn-primary" data-loading-text="сохраняю...">сохранить</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -65,7 +64,7 @@
             <form class="form-horizontal" action="<%=menuItem.m_path%>/edit" method="post" id="formLogin">
                 <input type="hidden" name="i_u_id" value="<%=(_user && _user.u_id ? _user.u_id :'')%>"/>
                 <div class="form-group s_login">
-                    <label for="s_nick" class="col-sm-2 control-label">Логин *</label>
+                    <label for="s_login" class="col-sm-2 control-label">Логин *</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="s_login" name="s_login" value="<%=(_user && _user.u_login ? _user.u_login : '')%>" placeholder="Логин" maxlength="20" required />
                         <span class="help-block">от 5 до 20 символов. допустмы латинские буквы и цифры, знаки "_", "-".</span>
@@ -81,13 +80,13 @@
             <form class="form-horizontal" action="<%=menuItem.m_path%>/edit" method="post" id="formPassword">
                 <input type="hidden" name="i_u_id" value="<%=(_user && _user.u_id ? _user.u_id :'')%>"/>
                 <div class="form-group s_password">
-                    <label for="s_nick" class="col-sm-2 control-label">пароль *</label>
+                    <label for="s_password" class="col-sm-2 control-label">пароль *</label>
                     <div class="col-sm-10">
                         <input type="password" class="form-control" id="s_password" name="s_password" value="" placeholder="пароль" required />
                     </div>
                 </div>
                 <div class="form-group s_password">
-                    <label for="s_nick" class="col-sm-2 control-label">повторите пароль *</label>
+                    <label for="s_password2" class="col-sm-2 control-label">повторите пароль *</label>
                     <div class="col-sm-10">
                         <input type="password" class="form-control" id="s_password2" name="s_password2" value="" placeholder="повторите пароль" required />
                         <span class="text-center help-block">не менее 6 символов</span>
@@ -141,7 +140,7 @@
             <form class="form-horizontal" action="<%=menuItem.m_path%>/edit" method="post" id="formChangeEmail">
                 <input type="hidden" name="i_u_id" value="<%=(_user && _user.u_id ? _user.u_id :'')%>"/>
                 <div class="form-group m_mail">
-                    <label for="s_nick" class="col-sm-2 control-label">E-mail</label>
+                    <label for="m_mail" class="col-sm-2 control-label">E-mail</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="m_mail" name="m_mail" value="<%=(_user && _user.u_mail ? _user.u_mail : '')%>" placeholder="E-mail" maxlength="100" required />
                         <span class="help-block">Для смены e-mail необходимо перейти по ссылке, отправленной на новый e-mail.</span>
@@ -157,7 +156,7 @@
             <form class="form-horizontal" action="<%=menuItem.m_path%>/edit" method="post" id="formLocation">
                 <input type="hidden" name="i_u_id" value="<%=(_user && _user.u_id ? _user.u_id :'')%>"/>
                 <div class="form-group u_location">
-                    <label for="s_nick" class="col-sm-2 control-label">Расположение</label>
+                    <label for="s_location" class="col-sm-2 control-label">Расположение</label>
                     <div class="col-sm-10">
                         <div class="row">
                             <div class="col-sm-12">
