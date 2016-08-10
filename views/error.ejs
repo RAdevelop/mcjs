@@ -1,0 +1,5 @@
+<%  if(!isXHR){%><%- layout('layout/error/index') %><% } -%>
+<h1><%= error.message %> <%= error.status %></h1>
+<% if(error.stack) {%>
+<pre><%= error.stack -%></pre>
+<% } %>

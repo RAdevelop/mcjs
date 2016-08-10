@@ -1,0 +1,161 @@
+<%  if(!isXHR){%><%- layout('layout/index') %><% } -%>
+<div class="page-header">
+    <h1><%= h1 %></h1>
+</div>
+<p>admin/controller/index</p>
+<p>TODO</p>
+<p>добавить возможность выбора "роутера" после которого расположить редактируемый (в ветке выбранного родителя).</p>
+<p>иначе, сейчас при каждом редактировании, обновляемый роутер перемещаетя на "первое" место в своей ветке</p>
+<p>не давать возможность выбрать в качестве родителя кого-то из своих потомков!!!!!</p>
+<h2><% if(controllerId) {%>Изменить<%} else {%>Добавить<%}%> роутер: <%= controllerName %></h2>
+
+<div class="panel-group" id="accordionRouter" role="tablist" aria-multiselectable="true">
+    <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="controllerForm">
+            <h4 class="panel-title">
+                <a role="button" data-toggle="collapse" data-parent="#accordionRouter" href="#controllerFormBody" aria-expanded="true" aria-controls="controllerFormBody">
+                   Редактировать роутер
+                </a>
+            </h4>
+        </div>
+        <div id="controllerFormBody" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="controllerForm">
+            <div class="panel-body">
+                <% if(formError.error) {%>
+                <p><%= formError.message %></p>
+                <ul>
+                    <% for (var f in  formError.fields){
+                        if(!formError.fields[f]) continue;
+                    %><li><%=formError.fields[f] %></li><%
+                    } %>
+                </ul>
+                <% }%>
+                <form id="controllerEditForm" class="form-horizontal" action="<%= _reqOriginalUrl %>" method="post">
+                    <input type="hidden" id="controllerId" name="controllerId" value="<%= controllerId %>"/>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label" for="controllerPid">Укажите родительский роутер</label>
+                        <div class="col-sm-9">
+                            <select id="controllerPid" name="controllerPid" class="form-control">
+                                <option value="0">нет родителя</option>
+                                <% controllerList.forEach(function(controller, i){%>
+                                <option value="<%= controller["c_id"] %>" <% if(controllerPid == controller["c_id"]){%>selected="selected"<%}%> <% if(controllerId == controller["c_id"]){%>disabled="disabled"<%}%> >
+                                    <%- controller["c_nbsp"] %><%= controller["c_name"] %>
+                                </option>
+                                <% }) %>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label" for="cAfterId">После какого роутера</label>
+                        <div class="col-sm-9">
+                            <select id="cAfterId" name="cAfterId" class="form-control">
+                                <option value="0">в начале</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label" for="controllerPath">"Путь" роутера</label>
+                        <div class="col-sm-9">
+                            <input type="text" id="controllerPath" name="controllerPath" value="<%= controllerPath %>" maxlength="255" class="form-control" placeholder="&quot;Путь&quot; роутера" required autofocus aria-describedby="controllerPathHelpBlock"/>
+                            <span id="controllerPathHelpBlock" class="help-block">пример: /path/to/controller</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label" for="controllerName">Название роутера</label>
+                        <div class="col-sm-9">
+                            <input type="text" id="controllerName" name="controllerName" value="<%= controllerName %>" maxlength="100" class="form-control" placeholder="Название роутера" required autofocus aria-describedby="controllerNameHelpBlock"/>
+                            <span id="controllerNameHelpBlock" class="help-block">от 3 до 100 символов</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label" for="controllerDesc">Описание роутера</label>
+                        <div class="col-sm-9">
+                            <textarea rows="5" id="controllerDesc" name="controllerDesc" class="form-control" placeholder="Описание роутера"><%= controllerDesc %></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-6 col-sm-offset-6">
+                            <% if(controllerId){%>
+                            <button class="btn btn-default" type="submit" name="controllerFormBtn" value="upd">Изменить</button>
+                            <%} else {%>
+                            <button class="btn btn-default" type="submit" name="controllerFormBtn" value="add">Добавить</button>
+                            <%} %>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <%- include methods.ejs %>
+</div>
+
+<script type="text/javascript">
+//<!--
+<%-(exported_to_js ? exported_to_js : "") %>
+
+var MCJS = window["<%= settings["state namespace"] %>"];
+var controllerId = "<%= controllerId %>";
+var controllerPid = "<%= controllerPid %>";
+
+$(function()
+{
+    var $controllerEditForm = $('#controllerEditForm');
+    var $controllerPid = $controllerEditForm.find('#controllerPid');
+    var $cAfterId = $controllerEditForm.find('#cAfterId');
+    var inBegin = '<option value="0">в начале</option>';
+    
+    function subControllerItem(pid, rId)
+    {
+        $cAfterId.empty().append(inBegin);
+
+        if(this.value == "0") return;
+        var rOption = '';
+        var j = 0;
+        for(var i in MCJS.controllerList)
+        {
+            j = parseInt(i, 10)+1;
+            var rItem = MCJS.controllerList[i];
+
+            if(rId == rItem["c_id"]) continue;
+
+            var selected = '';//selected="selected"
+            if(MCJS.controllerList[j] && MCJS.controllerList[j]["c_id"] == rId)
+                selected = 'selected="selected"';
+
+            if(rItem["c_pid"] == pid)
+            {
+                rOption += '<option value="'+rItem["c_id"]+'" '+selected+' >после '+rItem["c_name"]+'</option>';
+            }
+        }
+        $cAfterId.append(rOption);
+    }
+
+    subControllerItem(controllerPid, controllerId);
+    
+    $controllerPid.change(function(){
+        subControllerItem(this.value, controllerId);
+    });
+/*
+	$('form#loginForm').submit(function(event){
+		event.preventDefault();
+
+		var formData = $(this).serialize();
+
+		$.ajax({
+			url: "/login",
+			method: "POST",
+			data: formData,
+			dataType: "json"
+		})
+		.done(function(data) {
+			console.log( data );
+			//alert(data.title);
+		})
+		.fail(function(data) {
+			console.log( data );
+		});
+		return false;
+	});*/
+});
+//-->
+</script>
+<script type="text/javascript" src="/js/jquery/admin/controller.js"></script>

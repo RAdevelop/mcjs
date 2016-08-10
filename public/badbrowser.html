@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="robots" content="noindex">
+		<title>Устаревшая вресия браузера</title>
+		
+		<style type="text/css">
+		.body
+		{
+		    font: 80% Arial, Tahoma, Verdana, sans-serif;
+			background: #FFFFFF;
+		}
+
+		p.noscript
+		,.browser
+		{
+			text-align: center;
+		}
+		a {
+			color: #378bcd;
+		}
+		a:hover {
+			text-decoration: none;
+		}
+		.browser a img {
+			border: 1px solid #FFF;
+		}
+		.browser a img:hover {
+			border: 1px solid #CCC;
+		}
+		</style>
+		<script type="text/javascript">
+		//<!--
+		//window.checkbrowser = true;
+		window.checkbrowser = false;
+		if (window.checkbrowser)
+		{
+		  try
+		  {
+		    if (new XMLHttpRequest())
+			{
+		      location.replace('/');
+		    }
+		  }
+		  catch(e)
+		  {
+		    try
+			{
+		      if (new ActiveXObject('Msxml2.XMLHTTP'))
+			  {
+		        location.replace('/');
+		      }
+		    }
+			catch(e) {}
+
+			  try
+			{
+		      if (new ActiveXObject('Microsoft.XMLHTTP')) {
+		        location.replace('/');
+		      }
+		    }
+			  catch(e) {}
+		  }
+		}
+		//-->
+		</script>
+</head>
+<body>
+<p align="center"><a href="http://www.motocommunity.ru"><img src="/file/design/community-logo.png" align="center" vspace="10" hspace="10"/></a></p>
+<p class="noscript">Используемый Вами браузер устарел, либо не поддерживает сценарии JavaScript, либо JavaScript отключен</p>
+<p class="noscript">Для корректной работы с сайтом обновите Ващ браузер до более новой версии, или включите JavaScript.</p>
+<p class="noscript"><a href="http://www.enable-javascript.com/ru/" target="_blank">Инструкции, как включить JavaScript в вашем браузере</a>.</p>
+
+<div class="browser">
+    <a href="http://www.enable-javascript.com/ru/#ie"  target="_blank"><img width="100" height="100" alt="Internet Explorer" src="http://www.enable-javascript.com/images/ie9.gif"></a>
+    <a href="http://www.enable-javascript.com/ru/#firefox" target="_blank"><img width="100" height="100" alt="Mozilla Firefox" src="http://www.enable-javascript.com/images/firefox.gif"></a>
+    <a href="http://www.enable-javascript.com/ru/#chrome"  target="_blank"><img width="100" height="100" alt="Google Chrome" src="http://www.enable-javascript.com/images/chrome.gif"></a>
+    <a href="http://www.enable-javascript.com/ru/#safari"  target="_blank"><img width="100" height="100" alt="Apple Safari" src="http://www.enable-javascript.com/images/safari.gif"></a>
+    <a href="http://www.enable-javascript.com/ru/#opera"  target="_blank"><img width="100" height="100" alt="Opera" src="http://www.enable-javascript.com/images/opera.gif"></a>
+</div>
+
+</body>
+</html>
