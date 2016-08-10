@@ -2,7 +2,7 @@
 
 	function formAddAlbum(options)
 	{
-		var add_album_form = '<form class="form-horizontal" action="'+options.uri+'" method="post" id="formAddAlbum">' +
+		var html = '<form class="form-horizontal" action="'+options.uri+'" method="post" id="formAddAlbum">' +
 			'<input type="hidden" name="btn_save_album" value="add_album"/>' +
 			'<div class="form-group s_album_name">' +
 			'<div class="col-sm-12">' +
@@ -16,7 +16,22 @@
 			'</div>' +
 			'</form>';
 
-		return add_album_form;
+		return html;
+	}
+	
+	function formAlbumUpload(options)
+	{
+		var html = '<form class="form-horizontal text-center" action="'+options.uri+'/upload"  enctype="multipart/form-data" method="post" target="null_frame" id="formAlbumUpload">' +
+			'<input type="hidden" name="btn_save_album" value="album_image_upload"/>' +
+			'<input type="hidden" name="s_token" value="'+options.s_token+'"/>' +
+			'<input type="hidden" name="i_time" value="'+options.i_time+'"/>' +
+			'<input type="hidden" name="a_id" value="'+options.a_id+'"/>' +
+			'<div class="form-group uploadWrapper">' +
+			'<input type="file" name="album_image_upload" id="album_image_upload" style="display: none;"/>' +
+			'</div>' +
+			'</form>';
+
+		return html;
 	}
 
 	//return ;
@@ -26,6 +41,9 @@
 		var defaults = {
 			uri: null
 			, albumToolbar: null
+			, s_token: null
+			, i_time: null
+			, a_id: null
 		};
 		
 		/*при многократном вызове функции настройки будут сохранятся, и замещаться при необходимости*/
@@ -34,13 +52,14 @@
 		
 		var $albumToolbar = $(options.albumToolbar);
 		var	$btnAddAlbum = $albumToolbar.find('#btn_add_album_modal');
+		var	$btnAlbumUpload = $albumToolbar.find('#btn_album_upload');
 
 		$btnAddAlbum.click(function (event)
 		{
 			event.preventDefault();
 			event.stopPropagation();
 
-			$('.__add_album_dialog__').mcDialog({
+			$('__add_album_dialog__').mcDialog({
 				title: 'Создание нового альбома'
 				, body: formAddAlbum(options)
 				, onOpen: function ($dialog)
@@ -97,6 +116,34 @@
 			});
 		});
 
-		//$('form#formAva #ava_upload').fileUpload('#btn_ava_upload', avaUploadOpts);
+		$btnAlbumUpload.click(function (event)
+		{
+			event.preventDefault();
+			event.stopPropagation();
+
+			$('__upload_album_dialog__').mcDialog({
+				title: 'Загрузить новый фотографии в альбом'
+				, body: formAlbumUpload(options)
+				, onOpen: function ($dialog)
+				{
+					$dialog.find('#album_image_upload').fileUpload(MCJS["albumUploadOpts"]);
+				}
+				, buttons: [
+					{
+						title: 'закрыть'
+						,name: 'btn_upload_album_close'
+						,cssClass: 'btn-danger'
+						,func:
+						{
+							"click": function(event)
+							{
+								$(event.data[0]).modal('hide');
+							}
+						}
+					}
+				]
+			});
+		});
+		return $(this);
 	}
 })(jQuery);

@@ -7,10 +7,16 @@
 		<div class="btn-group btn-group-xs" role="group" aria-label="Second group">
 			<button type="button" class="btn btn-primary" id="btn_add_album_modal">создать новый альбом</button>
 		</div>
+		<% if(album){ %>
 		<div class="btn-group btn-group-xs" role="group" aria-label="Third group">
-			<button type="button" class="btn btn-default">8</button>
+			<button type="button" class="btn btn-primary" id="btn_album_upload">загрузить новые фотографии</button>
 		</div>
+		<% } %>
 	</div>
+</div>
+<div class="col-xs-12 col-sm-12 col-md-12 albums">
+<% if(albums){ %><%- include album_list.ejs %><% } %>
+<% if(album){ %><%- include image_list.ejs %><% } %>
 </div>
 <script type="text/javascript" src="/js/jquery/postRes.js"></script>
 <script type="text/javascript" src="/js/jquery/mcAlbum.js"></script>
@@ -21,6 +27,9 @@ $(function()
 	$('mcAlbum').mcAlbum({
 		uri: '<%=menuItem.m_path%>'
 		, albumToolbar: '.album-list-toolbar'
+		, s_token: '<%=s_token%>'
+		, i_time: '<%=i_time%>'
+		, a_id: '<%=a_id%>'
 	});
 });
 //-->

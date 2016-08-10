@@ -1,5 +1,5 @@
 (function($) {
-	$.fn.fileUpload = function(uploadBtn, params)
+	$.fn.fileUpload = function(params, uploadBtn)
 	{
 		/* значение по умолчанию */
 		var defaults = {

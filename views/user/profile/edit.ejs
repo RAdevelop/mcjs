@@ -16,7 +16,7 @@
                         <input type="hidden" name="btn_save_profile" value="ava_upload"/>
                         <input type="hidden" name="s_token" value="<%=s_token%>"/>
                         <input type="hidden" name="i_time" value="<%=i_time%>"/>
-                        <div class="form-group avaUploadWrapper">
+                        <div class="form-group uploadWrapper">
                             <input type="file" name="ava_upload" id="ava_upload" style="display: none;"/>
                         </div>
                         <!-- div class="form-group">
@@ -234,7 +234,7 @@ $(function()
         $avaCropContainer.show();
     };
     
-	$('form#formAva #ava_upload').fileUpload('#btn_ava_upload', avaUploadOpts);
+	$('form#formAva #ava_upload').fileUpload(avaUploadOpts, '#btn_ava_upload');
 
     $("#bd_birthday").datepicker({ dateFormat: 'dd-mm-yy' });
 

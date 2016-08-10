@@ -101,7 +101,7 @@ class Photo extends User
 			.bind(this)
 			.then(function (a_id)
 			{
-				return this._insImage(a_id, u_id)
+				return this.insImage(a_id, u_id)
 					.then(function (res)
 					{
 						fileData["a_id"] = a_id;
@@ -112,7 +112,7 @@ class Photo extends User
 			});
 	}
 
-	_insImage(a_id, u_id)
+	insImage(a_id, u_id)
 	{
 		let now_ts = Moment().unix();
 		let sql = 'INSERT INTO album_image (a_id, u_id, ai_create_ts, ai_update_ts)' +
@@ -145,6 +145,41 @@ class Photo extends User
 
 				return Promise.resolve(is_del);
 			});
+	}
+
+	/**
+	 * список фотоальбомов пользователя
+	 * @param u_id
+	 * @returns {*}
+	 */
+	getAlbumList(u_id)
+	{
+		let sql = "SELECT a.a_id, a.u_id, a.a_type_id, a.a_name, a.a_alias, a.a_text, a.a_img_cnt, a.a_create_ts, a.a_update_ts," +
+			"t.a_type_alias, ai.ai_id, ai.ai_latitude, ai.ai_longitude, ai.ai_dir" +
+			" FROM (SELECT NULL) AS z" +
+			" JOIN album AS a ON (a.u_id = ?)" +
+			" JOIN album_type AS t ON (t.a_type_id = a.a_type_id)" +
+			" LEFT JOIN album_image AS ai ON (ai.a_id = a.a_id AND ai.u_id = ? AND ai_pos = ?)" +
+			" ORDER BY a.a_create_ts DESC;";
+
+		return this.constructor.conn().s(sql, [u_id, u_id, 0]);
+	}
+
+	/**
+	 * выбранный альбом пользователя
+	 * @param u_id
+	 * @param a_id
+	 * @returns {*}
+	 */
+	getAlbum(u_id, a_id)
+	{
+		let sql = "SELECT a.a_id, a.u_id, a.a_type_id, a.a_name, a.a_alias, a.a_text, a.a_img_cnt, a.a_create_ts, a.a_update_ts," +
+			"t.a_type_alias" +
+			" FROM (SELECT NULL) AS z" +
+			" JOIN album AS a ON (a.a_id = ? AND a.u_id = ?)" +
+			" JOIN album_type AS t ON (t.a_type_id = a.a_type_id);";
+
+		return this.constructor.conn().sRow(sql, [a_id, u_id]);
 	}
 }
 

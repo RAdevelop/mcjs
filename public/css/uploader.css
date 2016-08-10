@@ -1,28 +1,28 @@
 
-.avaUploadWrapper .uploadifive-queue
+.uploadWrapper .uploadifive-queue
 {
 	margin: 0px auto;
 	width: 100%;
 	min-height: 20px;
 }
-.avaUploadWrapper .uploadify-button,
-.avaUploadWrapper .uploadifive-button
+.uploadWrapper .uploadify-button,
+.uploadWrapper .uploadifive-button
 {
 	line-height: 24px !important;
 	cursor: pointer;
 }
-.avaUploadWrapper object
+.uploadWrapper object
 {
 	background: transparent;
 	/*position: absolute;
 	left: 0;
 	top: 0;*/
 }
-.avaUploadWrapper .uploadify
+.uploadWrapper .uploadify
 {
 	margin: 0 auto;
 }
-.avaUploadWrapper input[type=file]
+.uploadWrapper input[type=file]
 {
 	cursor: pointer;
 }

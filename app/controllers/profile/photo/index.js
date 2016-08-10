@@ -36,6 +36,8 @@ class ProfilePhoto extends Base {
 			.then(function (userData)
 			{
 				tplData = Object.assign(tplData, {user: userData});
+				tplData["albums"] = null;
+				tplData["album"] = null;
 
 				if (args.length)
 					return this.album(cb, tplData, args.shift());
@@ -47,13 +49,27 @@ class ProfilePhoto extends Base {
 				return cb(err);
 			});
 	}
-
+	
+	/**
+	 * список фотоальбомов пользователя
+	 * @param u_id
+	 * @returns {*}
+	 */
 	albumList(cb, tplData)
 	{
 		let tplFile = 'user/profile/photo/albums.ejs';
 
 		return Promise.resolve(tplData)
 			.bind(this)
+			.then(function (tplData)
+			{
+				return this.getClass('user/photo').getAlbumList(this.getUserId())
+					.then(function (albums)
+					{
+						tplData["albums"] = albums;
+						return Promise.resolve(tplData);
+					});
+			})
 			.then(function (tplData)
 			{
 				this.view.setTplData(tplFile, tplData);
@@ -65,16 +81,31 @@ class ProfilePhoto extends Base {
 
 	album(cb, tplData, a_id)
 	{
-		console.log('album(cb, tplData, a_id)');
-
 		let tplFile = 'user/profile/photo/albums.ejs';
 
 		return Promise.resolve(tplData)
 			.bind(this)
 			.then(function (tplData)
 			{
+				return this.getClass('user/photo').getAlbum(this.getUserId(), a_id)
+					.then(function (album)
+					{
+						if (!album)
+							return Promise.reject(new Errors.HttpStatusError(404, "Not found"));
+
+						tplData["a_id"] = a_id;
+						tplData["album"] = album;
+						return Promise.resolve(tplData);
+					});
+			})
+			.then(function (tplData)
+			{
+				tplData = Object.assign(tplData, FileUpload.createToken('user_photo', tplData) );
+
 				this.view.setTplData(tplFile, tplData);
 				this.view.addPartialData('user/left', {user: tplData["user"]});
+
+				this.getRes().expose(FileUpload.getUploadConfig('user_photo'), 'albumUploadOpts');
 
 				return cb(null);
 			})
@@ -181,6 +212,48 @@ class ProfilePhoto extends Base {
 						tplData["a_id"] = a_id;
 						return Promise.resolve(tplData);
 					});
+			});
+	}
+
+	/**
+	 * загружаем новую фотографю в альбом
+	 *
+	 * @param cb
+	 * @returns {*}
+	 */
+	uploadActionPost(cb)
+	{
+		let self = this;
+		let tplFile = 'user/profile/photo/albums.ejs';
+		let tplData = self.getParsedBody();
+
+		self.getClass('user/photo')
+			.uploadImage(this.getUserId(), this.getReq(), this.getRes())
+			.then(function (file)
+			{
+				//console.log(file);
+				tplData = {
+					a_id: file.a_id,
+					ai_id: file.ai_id,
+					name: file.name,
+					size: file.size,
+					previews: file.previews
+				};
+				self.view.setTplData(tplFile, tplData);
+
+				return cb(null, true);
+			})
+			.catch(function (err)
+			{
+				console.log(err);
+
+				tplData.formError.text = err.message;
+				tplData.formError.error = true;
+				tplData.formError.errorName = err.name;
+
+				self.view.setTplData(tplFile, tplData);
+
+				return cb(null, true);
 			});
 	}
 }
