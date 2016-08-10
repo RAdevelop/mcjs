@@ -1,5 +1,5 @@
 "use strict";
-
+/*комментарий*/
 const Logger = require('app/lib/logger')();
 const Moment = require('moment');
 const Promise = require("bluebird");
