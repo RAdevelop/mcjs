@@ -355,37 +355,123 @@ a.social:hover
 {
 	bottom: 0;
 }
+
+@media (max-device-width: 320px) and (min-width: 320px)
+{
+	.albums .album
+	{
+		width: 273px;
+		height: 182px;
+	}
+
+	.albums .album a.albumImg img
+	{
+		width: 273px;
+	}
+}
+
+@media (max-device-width: 360px) and (min-width: 360px)
+{
+	.albums .album
+	{
+		width: 313px;
+		height: 208px;
+	}
+
+	.albums .album a.albumImg img
+	{
+		width: 313px;
+	}
+}
+
+@media (max-device-width: 375px) and (min-width: 375px)
+{
+	.albums .album
+	{
+		width: 328px;
+		height: 218px;
+	}
+
+	.albums .album a.albumImg img
+	{
+		width: 328px;
+	}
+}
+
+@media (max-device-width: 412px) and (min-width: 412px)
+{
+	.albums .album
+	{
+		width: 365px;
+		height: 244px;
+	}
+
+	.albums .album a.albumImg img
+	{
+		width: 365px;
+	}
+}
+@media (max-device-width: 414px) and (min-width: 412px)
+{
+	.albums .album
+	{
+		width: 365px;
+		height: 244px;
+	}
+
+	.albums .album a.albumImg img
+	{
+		width: 365px;
+	}
+}
+
+@media (max-device-width: 768px) and (min-width: 768px)
+{
+	.albums .album
+	{
+		width: 279px;
+		height: 186px;
+	}
+
+	.albums .album a.albumImg img
+	{
+		width: 279px;
+	}
+}
+
 /********** END список фотоальбомов **************/
 
 /*
 
-@media (min-width: 320px)
+@media (max-device-width: 320px) and (min-width: 320px)
 {
 
 }
 
-@media (min-width: 360px)
+@media (max-device-width: 360px) and (min-width: 360px)
 {
 
 }
 
-@media (min-width: 375px)
+@media (max-device-width: 375px) and (min-width: 375px)
 {
 
 }
 
-@media (min-width: 412px)
+@media (max-device-width: 412px) and (min-width: 412px)
 {
 
 }
-@media (min-width: 414px)
+@media (max-device-width: 414px) and (min-width: 412px)
 {
 
 }
-@media (min-width: 768px)
+
+@media (max-device-width: 768px) and (min-width: 768px)
 {
 
 }
+
 @media (min-width: px)
 {
 
