@@ -163,7 +163,7 @@ class UploadFile extends File
 				console.log("END file upload on aborted");
 			}).on('fileBegin', function(name, file)
 			{
-				console.log('fileBegin');
+				//console.log('fileBegin');
 
 				//this.emit('aborted');
 				//this.emit('error',  new Error("AD"));
@@ -185,7 +185,7 @@ class UploadFile extends File
 					//return uploadCb(new FileErrors.FileType(fileType, self.fileTypes.join(', ')));
 				}
 */
-				console.log('END fileBegin');
+				//console.log('END fileBegin');
 			})
 			.on('field', function(fieldName, value)
 			{
@@ -210,7 +210,7 @@ class UploadFile extends File
 			})
 			.on('end', function()
 			{
-				//console.log(fields);
+				console.log(fields);
 
 				if (!UploadFile.checkToken(fields))
 				{
@@ -265,6 +265,13 @@ class UploadFile extends File
 				}
 				else
 				{
+					for(let f in self.tokenFields)
+					{
+						if (fields[self.tokenFields[f]])
+						{
+							file[self.tokenFields[f]] = fields[self.tokenFields[f]];
+						}
+					}
 					return uploadCb(null, file);
 				}
 			});
@@ -319,9 +326,15 @@ class UploadFile extends File
 	 */
 	moveUploadedFile(file, moveToDir, moveCb)
 	{
+		if (!file)
+			return moveCb(new FileErrors.FileNotUploaded("Нет файла для загрузки"));
+
+		if (!moveToDir)
+			return moveCb(new FileErrors.FileNotUploaded("Директория для загрузки не указана: [" + moveToDir+"]"));
+
+		
 		const self = this;
 		this.setUploadDir(moveToDir);
-
 		file["latitude"] = null;
 		file["longitude"] = null;
 

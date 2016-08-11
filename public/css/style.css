@@ -272,14 +272,17 @@ a.social:hover
 .albums .album
 {
 	border: 1px solid red;
+	position: relative;
+	display: inline-block;
+	overflow: hidden;
 	height: 213px;
 	width: 320px;
 	float: left;
 }
-.albums .album > a
+.albums .album a.albumBody
 {
-	height: 213px;
-	width: 320px;
+	/*height: 213px;
+	width: 320px;*/
 	position: relative;
 	display: block;
 	overflow: hidden;
@@ -287,8 +290,18 @@ a.social:hover
 	background: #F1F1F1;
 }
 
-.albums .album > a .albumTools a,
-.albums .album > a .albumTools span
+.albums .album .albumTools
+{
+	position: absolute;
+	top:0;
+	left:0;
+	right:0;
+	height: 30px;
+	display: block;
+}
+
+.albums .album .albumTools a,
+.albums .album .albumTools span
 {
 	text-decoration: none;
 }

@@ -116,34 +116,64 @@
 			});
 		});
 
-		$btnAlbumUpload.click(function (event)
-		{
-			event.preventDefault();
-			event.stopPropagation();
+		var albumUploadOpts = (MCJS["albumUploadOpts"] ? MCJS["albumUploadOpts"] : null);
 
-			$('__upload_album_dialog__').mcDialog({
-				title: 'Загрузить новый фотографии в альбом'
-				, body: formAlbumUpload(options)
-				, onOpen: function ($dialog)
-				{
-					$dialog.find('#album_image_upload').fileUpload(MCJS["albumUploadOpts"]);
-				}
-				, buttons: [
+		if (albumUploadOpts)
+		{
+			albumUploadOpts.onEnd = function()
+			{
+				var filesUploaded = $(this).data('uploadFileData');
+				console.log('filesUploaded');
+				console.log(filesUploaded);
+
+			};
+
+			$btnAlbumUpload.click(function (event)
+			{
+				event.preventDefault();
+				event.stopPropagation();
+
+				$('__upload_album_dialog__').mcDialog({
+					title: 'Загрузить новый фотографии в альбом'
+					, body: formAlbumUpload(options)
+					, onOpen: function ($dialog)
 					{
-						title: 'закрыть'
-						,name: 'btn_upload_album_close'
-						,cssClass: 'btn-danger'
-						,func:
+						$dialog.find('#album_image_upload').fileUpload(albumUploadOpts);
+					}
+					, buttons: [
+						{
+							title: 'закрыть'
+							,name: 'btn_upload_album_close'
+							,cssClass: 'btn-danger'
+							,func:
 						{
 							"click": function(event)
 							{
 								$(event.data[0]).modal('hide');
 							}
 						}
-					}
-				]
+						}
+					]
+				});
 			});
-		});
+		}
 		return $(this);
 	}
 })(jQuery);
+
+/*
+
+<a class="albumBody" href="<%#=album["a_id"]%>/">
+<img src="<%#=imgSrc%>" alt="<%#=album["a_name"]%>"/>
+<div class="albumTools">
+	<span class="badge"><%#=album["a_img_cnt"]%></span>
+	<a href="javascript:void(0)"><span class="fa fa-edit"></span></a>
+	<a href="javascript:void(0)"><span class="fa fa-trash-o"></span></a>
+	</div>
+	<div class="albumTitle">
+	<div class="albumName"><%#=album["a_name"]%></div>
+	<%# if (album["a_text"]){%><div class="albumText"><%#=album["a_text"]%></div><%}%>
+</div>
+</a>
+
+*/

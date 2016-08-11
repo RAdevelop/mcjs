@@ -1,6 +1,6 @@
 <script type="text/javascript">
 	//<!--
 	<%-(typeof exported_to_js === 'undefined' ? "" : exported_to_js) %>
-	var MCJS = window["<%= settings["state namespace"] %>"];
+	var MCJS = window["<%= settings["state namespace"] %>"] || {};
 	//-->
 </script>

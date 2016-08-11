@@ -112,6 +112,17 @@ class Photo extends User
 			});
 	}
 
+	addPhoto(u_id, fileData)
+	{
+		return this.insImage(fileData["a_id"], u_id)
+		.then(function (res)
+		{
+			fileData["u_id"] = u_id;
+			fileData["ai_id"] = res['insertId'];
+			return Promise.resolve(fileData);
+		});
+	}
+
 	insImage(a_id, u_id)
 	{
 		let now_ts = Moment().unix();

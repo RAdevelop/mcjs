@@ -5,9 +5,9 @@ const errors = require('common-errors');
 errors.FileNotUploaded = errors.helpers.generateClass("FileNotUploaded", {
 	extends: errors.Error,
 	globalize: true,
-	args: ['inner_error'],
+	args: ['message','inner_error'],
 	generateMessage: function(){
-		return "Не удалось загрузить файл";
+		return "Не удалось загрузить файл." + (this.message ? ' '+this.message : '');
 	}
 });
 

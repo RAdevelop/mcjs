@@ -88,10 +88,14 @@ class UserPhotoProfile extends UserPhoto
 					})
 					.catch(function (delErr)
 					{
-						if (delErr.name == 'DirectoryNotFoundError')
-							throw err;
+						return self.model('user/photo').delImage(u_id, a_id, ai_id)
+							.then(function ()
+							{
+								if (delErr.name == 'DirectoryNotFoundError')
+									throw err;
 
-						throw delErr;
+								throw delErr;
+							});
 					});
 
 				/*switch (err.name)

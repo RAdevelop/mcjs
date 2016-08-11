@@ -19,6 +19,9 @@
 <% if(album){ %><%- include image_list.ejs %><% } %>
 </div>
 <script type="text/javascript" src="/js/jquery/postRes.js"></script>
+<script src="/js/uploadify/jquery.uploadify.min.js" type="text/javascript" ></script>
+<script src="/js/uploadify/jquery.uploadifive.min.js" type="text/javascript" ></script>
+<script src="/js/uploadify/jquery.fileUpload.js" type="text/javascript"></script>
 <script type="text/javascript" src="/js/jquery/mcAlbum.js"></script>
 <script type="text/javascript">
 //<!--
@@ -27,9 +30,9 @@ $(function()
 	$('mcAlbum').mcAlbum({
 		uri: '<%=menuItem.m_path%>'
 		, albumToolbar: '.album-list-toolbar'
-		, s_token: '<%=s_token%>'
-		, i_time: '<%=i_time%>'
-		, a_id: '<%=a_id%>'
+		, s_token: '<%=(typeof s_token == 'undefined' ? '' : s_token)%>'
+		, i_time: '<%=(typeof i_time == 'undefined' ? '' : i_time)%>'
+		, a_id: '<%=(typeof a_id  == 'undefined'? '' : a_id)%>'
 	});
 });
 //-->

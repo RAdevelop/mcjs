@@ -111,7 +111,7 @@ class UserPhoto extends User
 			{
 				a_id = file.a_id;
 				return self.model('user/photo')
-					.insImage(a_id, u_id)
+					.addPhoto(u_id, file)
 					.then(function (file)
 					{
 						ai_id = file.ai_id;
@@ -155,7 +155,7 @@ class UserPhoto extends User
 			{
 				let dir = Path.dirname(UploadFile.getUploadDir());
 
-				//console.log('dir for del = ', dir);
+				console.log('dir for del = ', dir);
 
 				return FileUpload.deleteDir(dir, true)
 					.then(function ()
@@ -168,10 +168,14 @@ class UserPhoto extends User
 					})
 					.catch(function (delErr)
 					{
-						if (delErr.name == 'DirectoryNotFoundError')
-							throw err;
+						return self.model('user/photo').delImage(u_id, a_id, ai_id)
+							.then(function ()
+							{
+								if (delErr.name == 'DirectoryNotFoundError')
+									throw err;
 
-						throw delErr;
+								throw delErr;
+							});
 					});
 
 				/*switch (err.name)
