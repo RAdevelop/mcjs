@@ -11,8 +11,7 @@
 <div class="col-xs-12 col-sm-12 col-md-12 profile-info">
     <% if(_user && user && (_user.u_id == user.u_id)){%>
     <div class="col-xs-12 col-sm-12 col-md-12"><a href="/profile/edit/"><span class="fa fa-edit fa-fw"></span> редактировать</a></div>
-    <% }%>
-    <% if(user && (user.u_login || user.u_name || user.u_surname)){%>
+    <% } if(user && (user.u_login || user.u_name || user.u_surname)){%>
     <div class="col-xs-12 col-sm-12 col-md-12">
         <span class="fa fa-user fa-fw" aria-hidden="true"></span>
         <%= (user.u_login ? user.u_login : (user.u_name || user.u_surname ? [user.u_name, user.u_surname].join(' ') : ''))%>

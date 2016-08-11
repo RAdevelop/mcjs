@@ -6,7 +6,7 @@
 const Config = require('app/config');
 const Session = require('app/lib/session')();
 //var Async = require('async');
-const logger = require('app/lib/logger')();
+const Logger = require('app/lib/logger');
 //var Errors = require('app/lib/errors');
 
 //TODO проверить работу StringDecoder https://nodejs.org/dist/latest-v4.x/docs/api/string_decoder.html
@@ -17,18 +17,19 @@ const IORedis = require('app/lib/ioredis');
 //var readerRedis = new Redis(Config.redis.port, Config.redis.host, { return_buffers: true, prefix: "chat" });
 const readerRedis = new IORedis({ keyPrefix: "chat" });
 readerRedis.on('error', function(err){
-	logger.error('readerRedis Client', err);
+	Logger().error('readerRedis Client', err);
 });
 
 //var writerRedis = new Redis(Config.redis.port, Config.redis.host, {prefix:"chat"});
 const writerRedis = new IORedis({keyPrefix:"chat"});
 writerRedis.on('error', function(err){
-	logger.error('writerRedis Client', err);
+	Logger().error('writerRedis Client', err);
 });
 //TODO
 var chanel = 'rooms';
 
-module.exports = function(http, app){
+module.exports = function(http, app)
+{
 	var io = require('socket.io')(http);
 
 	//TODO io.origins('192.168.0.91:*')
@@ -40,7 +41,7 @@ module.exports = function(http, app){
 		//next(new Error('not authorized')
 
 		//console.log('socket.handshake.session:');
-		logger.debug(socket.handshake.session);
+		Logger().debug(socket.handshake.session);
 
 		/*if(!socket.handshake.session.rtid)
 		{
@@ -52,13 +53,13 @@ module.exports = function(http, app){
 	});
 
 	io.on('error', function(err){
-				logger.error(err);
+				Logger().error(err);
 	})
 	.on('disconnect', function(socket) {
 
 		//show disconnect from session
-		logger.debug(socket);
-		logger.info('Socket  disconnected from "/"');
+		Logger().debug(socket);
+		Logger().info('Socket  disconnected from "/"');
 
 	});
 
@@ -73,24 +74,24 @@ module.exports = function(http, app){
 	nsp.on('connection', function(socket){
 		
 		socket.on('error', function(err){
-			logger.error(err);
+			Logger().error(err);
 		});
 		
 		socket.on('chat:error:auth', function(data, cb){
-			logger.debug('chat:error:auth');
-			logger.debug(data);
+			Logger().debug('chat:error:auth');
+			Logger().debug(data);
 			cb && cb();
 		});
 		
 		socket.on('disconnect', function(){
-			logger.info('Socket  disconnected from "/'+chanel+'"');//это срабатывает... может быть тут надо будет вызывать событие leave()...?
+			Logger().info('Socket  disconnected from "/'+chanel+'"');//это срабатывает... может быть тут надо будет вызывать событие leave()...?
 		});
 		
 		console.log('someone connected to "/'+chanel+'"');
 		
 		socket.on('chat:user:connected', function (data) {
 			console.log( '');
-			logger.info('chat:user:connected');
+			Logger().info('chat:user:connected');
 			console.log( '');
 			
 			readerRedis.subscribe(chanel, function(err){
@@ -113,8 +114,8 @@ module.exports = function(http, app){
 		readerRedis.on('messageBuffer', function (channel, message) {
 			var msg = msgpack.decode(message);
 			console.log('');
-			logger.debug('channel: %s', channel);
-			logger.info(msg);
+			Logger().debug('channel: %s', channel);
+			Logger().info(msg);
 			socket.emit('chat:msg:get', msg);
 		});
 	});

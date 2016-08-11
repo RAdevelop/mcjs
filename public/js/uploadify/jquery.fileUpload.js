@@ -329,6 +329,10 @@
 				}
 
 				settings.onStart.apply($fileUpload);
+
+				if (file == 0)
+					settings.onEnd.apply($fileUpload);
+
 				console.log("uploadifive onUpload");
 				console.log("----------");
 			};

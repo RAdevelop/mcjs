@@ -271,15 +271,16 @@ a.social:hover
 
 .albums .album
 {
-	border: 1px solid red;
 	position: relative;
-	display: inline-block;
+	display: block;
 	overflow: hidden;
-	height: 213px;
-	width: 320px;
+	height: 158px;
+	width: 237px;
+	margin: 0 10px 10px 0;
 	float: left;
+	background-color: #fff;
 }
-.albums .album a.albumBody
+.albums .album a.albumImg
 {
 	/*height: 213px;
 	width: 320px;*/
@@ -289,6 +290,10 @@ a.social:hover
 	text-align: center;
 	background: #F1F1F1;
 }
+.albums .album a.albumImg img
+{
+	width: 237px;
+}
 
 .albums .album .albumTools
 {
@@ -296,14 +301,59 @@ a.social:hover
 	top:0;
 	left:0;
 	right:0;
-	height: 30px;
-	display: block;
+	display: inline-block;
+	height: 28px;
+	padding: 5px 0 0 5px;
+	background-color: rgba(102, 102, 102, 0.6);
+	z-index: 1;
+}
+
+.albums .album .albumTools:hover
+{
+	background-color: rgba(255, 255, 255, 0.6);
 }
 
 .albums .album .albumTools a,
 .albums .album .albumTools span
 {
+	color: rgba(0, 0, 0, 0.6);
+	display: inline-block;
 	text-decoration: none;
+}
+.albums .album .albumTools a
+{
+	line-height: 18px;
+	font-size: 21px;
+	background-color: transparent;
+}
+.albums .album .albumTools .badge
+{
+	font-size: 12px;
+	vertical-align: top;
+	color: #fff;
+	background-color: rgba(0, 0, 0, 0.6);
+}
+
+.albums .album .albumTitle
+{
+	position: absolute;
+	padding: 5px 0 0 5px;
+	left: 0;
+	right: 0;
+	bottom: -16px;
+	font-size: 12px;
+	color: #fff;
+	background-color: rgba(0, 0, 0, 0.7);
+
+	-webkit-transition: bottom 0.5s ease-out 0.1s;
+	-moz-transition: bottom 0.5s ease-out 0.1s;
+	-o-transition: bottom 0.5s ease-out 0.1s;
+	transition: bottom 0.5s ease-out 0.1s;
+}
+
+.albums .album .albumTitle:hover
+{
+	bottom: 0;
 }
 /********** END список фотоальбомов **************/
 

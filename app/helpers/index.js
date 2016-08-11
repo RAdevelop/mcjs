@@ -4,7 +4,7 @@
 "use strict";
 const path = require('path');
 const fs = require('fs');
-const logger = require('app/lib/logger')();
+const Logger = require('app/lib/logger');
 
 function loadRouters(app, dir, maxDepth, mountPath)
 {
@@ -21,7 +21,7 @@ function loadRouters(app, dir, maxDepth, mountPath)
 		console.log(routers);*/
 		
 		if(!routers || !routers.length)
-		return logger.error('Empty routers (call from helpers.loadRouters) in dir %j', {"dir":dir});
+		return Logger().error('Empty routers (call from helpers.loadRouters) in dir %j', {"dir":dir});
 		
 		routers.forEach(function(item, i)
 		{
@@ -43,8 +43,8 @@ function loadRouters(app, dir, maxDepth, mountPath)
 	}
 	catch (err)
 	{
-		logger.error('Empty routers (call from helpers.loadRouters) in dir %j', {"dir":dir});
-		logger.error(err);
+		Logger().error('Empty routers (call from helpers.loadRouters) in dir %j', {"dir":dir});
+		Logger().error(err);
 		err.message = 'Empty routers (call from helpers.loadRouters) in dir:\n RA:  ' + dir;
 		err.status = 500;
 		//console.log(err);

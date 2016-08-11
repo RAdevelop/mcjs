@@ -24,7 +24,7 @@
 		else if (typeof options.btnId == 'string' && options.btnId != '')
 			$btnSaveBase = $formBase.find('#'+options.btnId);
 
-		console.log($btnSaveBase);
+		//console.log($btnSaveBase);
 
 		if ($btnSaveBase)
 		{

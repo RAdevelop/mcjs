@@ -10,8 +10,7 @@ const Errors = require('app/lib/errors');
 const bcrypt = require('bcrypt');
 //const Async = require('async');
 //const Promise = require("bluebird");
-//const IORedis = require('ioredis'); TODO может быть придется использовать для кеширования 
-const logger = require('app/lib/logger')();
+//const IORedis = require('ioredis'); TODO может быть придется использовать для кеширования
 
 const BaseModel = require('app/lib/db');
 

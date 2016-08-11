@@ -3,13 +3,17 @@
 let imgSrc = (album["previews"]["320_213"] ? album["previews"]["320_213"] : '/_0.gif');
 %>
 <div class="album">
-	<a class="albumBody" href="<%=album["a_id"]%>/">
-
-		<div class="albumTools">
-			<a href="javascript:void(0)" class="badge"><%=album["a_img_cnt"]%></a>
-			<a href="javascript:void(0)"><span class="fa fa-edit"></span></a>
-		</div>
+	<a class="albumImg" href="<%=album["a_id"]%>/">
+		<img src="<%=imgSrc%>" alt="<%=album["a_name"]%>"/>
 	</a>
+	<div class="albumTools">
+		<span class="badge"><%=album["a_img_cnt"]%></span>
+		<a href="javascript:void(0)" data-toggle="tooltip" data-placement="right" title="редактировать"><span class="fa fa-fw fa-edit"></span></a>
+	</div>
+	<div class="albumTitle">
+		<div class="albumName"><%=album["a_name"]%></div>
+		<% if (album["a_text"]){%><div class="albumText"><%=album["a_text"]%></div><%}%>
+	</div>
 </div>
 <%})%>
 

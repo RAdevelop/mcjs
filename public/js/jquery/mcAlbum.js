@@ -122,7 +122,7 @@
 		{
 			albumUploadOpts.onEnd = function()
 			{
-				var filesUploaded = $(this).data('uploadFileData');
+				var filesUploaded = ($(this).data('uploadFileData') ? $(this).data('uploadFileData') : null);
 				console.log('filesUploaded');
 				console.log(filesUploaded);
 

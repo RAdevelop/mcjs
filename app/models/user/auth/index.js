@@ -7,8 +7,7 @@ const Crypto = require('crypto');
 const Moment = require('moment');
 //const Async = require('async');
 //const Promise = require("bluebird");
-//const IORedis = require('app/lib/ioredis'); //TODO 
-const logger = require('app/lib/logger')();
+//const IORedis = require('app/lib/ioredis'); //TODO
 
 //***** module.exports
 const User = require('app/models/user');

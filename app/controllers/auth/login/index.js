@@ -5,7 +5,7 @@ const Promise = require("bluebird");
 const Cookie = require('app/lib/cookie');
 const bcrypt = require('bcrypt');
 const Mail = require('app/lib/mail');
-const Logger = require('app/lib/logger')();
+const Logger = require('app/lib/logger');
 
 //const _ = require('lodash');
 
@@ -290,7 +290,7 @@ class Login extends Base
 					if(err)
 					{
 						error = new Errors.AppMailError('Ошибка при отправке письма', err);
-						Logger.error('%s, %s, %j',  error.message, error.status, error.stack);
+						Logger().error(error);
 					}
 					
 					return cb(error);
@@ -462,7 +462,7 @@ class Login extends Base
 					if(err)
 					{
 						error = new Errors.AppMailError('Ошибка при отправке письма', err);
-						Logger.error('%s, %s, %j',  error.message, error.status, error.stack);
+						Logger().error(error);
 					}
 					
 					return cb(error);

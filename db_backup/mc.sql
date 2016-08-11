@@ -34,7 +34,7 @@ CREATE TABLE `album` (
   `a_text` varchar(255) NOT NULL,
   PRIMARY KEY (`a_id`),
   KEY `uid` (`u_id`,`a_type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -43,7 +43,7 @@ CREATE TABLE `album` (
 
 LOCK TABLES `album` WRITE;
 /*!40000 ALTER TABLE `album` DISABLE KEYS */;
-INSERT INTO `album` VALUES (1,1,2,'Фотографии профиля','Фотографии профиля',9,1470783071,1470798110,'Фотографии профиля');
+INSERT INTO `album` VALUES (1,1,2,'Фотографии профиля','Фотографии профиля',12,1470783071,1470935916,'Фотографии профиля'),(2,1,3,'новый альбом','новый альбом',1,1470844788,1470872134,'описание альбома'),(3,1,3,'новый альбом2','новый альбом2',1,1470844926,1470872150,'описание альбома2'),(4,1,3,'sdfsdf','sdfsdf',1,1470845133,1470872175,'sdfsdf'),(5,1,3,'sdfsdf','sdfsdf',1,1470845194,1470872201,'sdfsdf'),(6,1,3,'xcvcv','xcvcv',2,1470845260,1470935104,'cxvxcv');
 /*!40000 ALTER TABLE `album` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -68,7 +68,7 @@ CREATE TABLE `album_image` (
   `ai_name` varchar(255) NOT NULL,
   PRIMARY KEY (`ai_id`),
   KEY `aid_uid_pos` (`a_id`,`u_id`,`ai_pos`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -77,7 +77,7 @@ CREATE TABLE `album_image` (
 
 LOCK TABLES `album_image` WRITE;
 /*!40000 ALTER TABLE `album_image` DISABLE KEYS */;
-INSERT INTO `album_image` VALUES (1,1,1,1470783072,1470783073,NULL,NULL,'','/user/photo/0/1/1/6512bd43d9caa6e02c990b0a82652dca',8,'25-maverick-vinales-esp_gp_3613.gallery_full_top_fullscreen.jpg'),(2,1,1,1470783114,1470783119,55.97101972,37.25511169,'','/user/photo/0/1/2/c20ad4d76fe97759aa27a0c99bff6710',7,'IMG_20160613_194702.jpg'),(3,1,1,1470783859,1470783860,NULL,NULL,'','/user/photo/0/1/3/c51ce410c124a10e0db5e4b97fc2af39',6,'26-dani-pedrosa-esp_gp_3449.gallery_full_top_fullscreen.jpg'),(4,1,1,1470784448,1470784450,NULL,NULL,'','/user/photo/0/1/4/aab3238922bcc25a6f606eb525ffdc56',5,'26-dani-pedrosa-esp_gp_3449.gallery_full_top_fullscreen.jpg'),(5,1,1,1470784634,1470784636,NULL,NULL,'','/user/photo/0/1/5/9bf31c7ff062936a96d3c8bd1f8f2ff3',4,'45-scott-redding-eng_gp_0163.gallery_full_top_fullscreen.jpg'),(6,1,1,1470784827,1470784828,NULL,NULL,'','/user/photo/0/1/6/c74d97b01eae257e44aa9d5bade97baf',3,'93-marc-marquez-esp_gp_4858.gallery_full_top_fullscreen.jpg'),(7,1,1,1470785088,1470785090,NULL,NULL,'','/user/photo/0/1/7/70efdf2ec9b086079795c442636b55fb',2,'25-maverick-vinales-esp_gp_3613.gallery_full_top_fullscreen.jpg'),(8,1,1,1470785172,1470785174,NULL,NULL,'','/user/photo/0/1/8/6f4922f45568161a8cdf4ad2299f6d23',1,'45-scott-redding-eng_gp_0163.gallery_full_top_fullscreen.jpg'),(9,1,1,1470798109,1470798110,NULL,NULL,'','/user/photo/0/1/9/1f0e3dad99908345f7439f8ffabdffc4',0,'99-jorge-lorenzo-esp_5n27532.gallery_full_top_fullscreen.jpg');
+INSERT INTO `album_image` VALUES (1,1,1,1470783072,1470783073,NULL,NULL,'','/user/photo/0/1/1/6512bd43d9caa6e02c990b0a82652dca',11,'25-maverick-vinales-esp_gp_3613.gallery_full_top_fullscreen.jpg'),(2,1,1,1470783114,1470783119,55.97101972,37.25511169,'','/user/photo/0/1/2/c20ad4d76fe97759aa27a0c99bff6710',10,'IMG_20160613_194702.jpg'),(3,1,1,1470783859,1470783860,NULL,NULL,'','/user/photo/0/1/3/c51ce410c124a10e0db5e4b97fc2af39',9,'26-dani-pedrosa-esp_gp_3449.gallery_full_top_fullscreen.jpg'),(4,1,1,1470784448,1470784450,NULL,NULL,'','/user/photo/0/1/4/aab3238922bcc25a6f606eb525ffdc56',8,'26-dani-pedrosa-esp_gp_3449.gallery_full_top_fullscreen.jpg'),(5,1,1,1470784634,1470784636,NULL,NULL,'','/user/photo/0/1/5/9bf31c7ff062936a96d3c8bd1f8f2ff3',7,'45-scott-redding-eng_gp_0163.gallery_full_top_fullscreen.jpg'),(6,1,1,1470784827,1470784828,NULL,NULL,'','/user/photo/0/1/6/c74d97b01eae257e44aa9d5bade97baf',6,'93-marc-marquez-esp_gp_4858.gallery_full_top_fullscreen.jpg'),(7,1,1,1470785088,1470785090,NULL,NULL,'','/user/photo/0/1/7/70efdf2ec9b086079795c442636b55fb',5,'25-maverick-vinales-esp_gp_3613.gallery_full_top_fullscreen.jpg'),(8,1,1,1470785172,1470785174,NULL,NULL,'','/user/photo/0/1/8/6f4922f45568161a8cdf4ad2299f6d23',4,'45-scott-redding-eng_gp_0163.gallery_full_top_fullscreen.jpg'),(9,1,1,1470798109,1470798110,NULL,NULL,'','/user/photo/0/1/9/1f0e3dad99908345f7439f8ffabdffc4',3,'99-jorge-lorenzo-esp_5n27532.gallery_full_top_fullscreen.jpg'),(10,1,1,1470832731,1470832733,NULL,NULL,'','/user/photo/0/1/10/5f93f983524def3dca464469d2cf9f3e',2,'93-marc-marquez-esp_gp_4858.gallery_full_top_fullscreen.jpg'),(16,2,1,1470872132,1470872134,NULL,NULL,'','/user/photo/0/2/16/45fbc6d3e05ebd93369ce542e8f2322d',0,'26-dani-pedrosa-esp_gp_3449.gallery_full_top_fullscreen.jpg'),(17,3,1,1470872149,1470872150,NULL,NULL,'','/user/photo/0/3/17/5b8add2a5d98b1a652ea7fd72d942dac',0,'99-jorge-lorenzo-esp_5n27532.gallery_full_top_fullscreen.jpg'),(18,4,1,1470872174,1470872175,NULL,NULL,'','/user/photo/0/4/18/d1f255a373a3cef72e03aa9d980c7eca',0,'45-scott-redding-eng_gp_0163.gallery_full_top_fullscreen.jpg'),(19,5,1,1470872199,1470872201,NULL,NULL,'','/user/photo/0/5/19/63538fe6ef330c13a05a3ed7e599d5f7',0,'93-marc-marquez-esp_gp_4858.gallery_full_top_fullscreen.jpg'),(48,1,1,1470925982,1470925984,NULL,NULL,'','/user/photo/0/1/48/47d1e990583c9c67424d369f3414728e',1,'25-maverick-vinales-esp_gp_3613.gallery_full_top_fullscreen.jpg'),(49,1,1,1470926001,1470926002,NULL,NULL,'','/user/photo/0/1/49/f2217062e9a397a1dca429e7d70bc6ca',0,'25-maverick-vinales-esp_gp_3613.gallery_full_top_fullscreen.jpg'),(58,6,1,1470934399,1470934401,NULL,NULL,'','/user/photo/0/6/58/2f37d10131f2a483a8dd005b3d14b0d9',0,'_gp_2126.gallery_full_top_fullscreen.jpg'),(59,6,1,1470934399,1470934401,NULL,NULL,'','/user/photo/0/6/59/0ff8033cf9437c213ee13937b1c4c455',1,'_gp_5790_e.gallery_full_top_fullscreen.jpg');
 /*!40000 ALTER TABLE `album_image` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -453,7 +453,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$1j3UmZw2cUprx2Q9dtIYBO','$2a$12$1j3UmZw2cUprx2Q9dtIYBOQ6eag0IecAmYEqu19gxXZl.H8lkTbNy',1447968485,1470799505,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1470703755,'RoLex',1);
+INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$1j3UmZw2cUprx2Q9dtIYBO','$2a$12$1j3UmZw2cUprx2Q9dtIYBOQ6eag0IecAmYEqu19gxXZl.H8lkTbNy',1447968485,1470935914,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1470874052,'RoLex',1);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -531,7 +531,7 @@ DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `album_image_delete`(IN inUid INT(11), IN inAid INT, IN inAiId INT, OUT res INT)
 BEGIN
 	
-    DECLARE done,aipos INT DEFAULT 0;
+    DECLARE done,aipos, ai_last INT DEFAULT 0;
 	DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
     DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done=1;
     
@@ -549,17 +549,34 @@ BEGIN
 		#SELECT done, aipos;
 		
 		UPDATE `album_image`
-		SET ai_pos = IF(ai_pos-1 = 0, 0, ai_pos-1)
+		SET ai_pos = IF(ai_pos-1 <= 0, 0, ai_pos-1)
 		WHERE a_id = inAid AND u_id = inUid
 		AND ai_pos > aipos;
 		
+        #SELECT done AS done2;
+        
 		UPDATE `album` 
 		SET a_img_cnt = IF(a_img_cnt = 0, 0, a_img_cnt-1)
 		WHERE a_id = inAid AND u_id = inUid;
 		
+        #SELECT done AS done3;
+        
 		DELETE FROM `album_image`
 		WHERE ai_id = inAiId AND a_id = inAid AND u_id = inUid;
-    
+
+		/*
+		SELECT ai_id INTO ai_last
+		FROM `album_image` 
+		WHERE 
+		a_id = inAid AND u_id = inUid
+		ORDER BY ai_pos, ai_update_ts DESC
+		LIMIT 1;
+        
+        UPDATE `album_image`
+		SET ai_pos = 0
+		WHERE ai_id = ai_last;
+        */
+        
 		SET res=1;
     
 		COMMIT;
@@ -585,7 +602,7 @@ DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `album_image_update`(IN inUid INT(11), IN inAid INT, IN inAiId INT, IN inAiLatitude DECIMAL(10,8), IN inAiLongitude DECIMAL(11,8), IN inAiText VARCHAR(255), IN inAiDir  VARCHAR(255), IN inAiName VARCHAR(255), IN inPosUpd TINYINT(1))
 BEGIN
 	
-	DECLARE res, ts INT DEFAULT 0;
+	DECLARE res, ts, ai_last INT DEFAULT 0;
 	DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
     #SET res=0;
     
@@ -593,16 +610,15 @@ BEGIN
     
 		SET ts = UNIX_TIMESTAMP();
         
-        
 		UPDATE `album_image` SET
-		ai_pos = IF(inPosUpd = 1, 0, ai_pos),
+			ai_pos = IF(inPosUpd = 1, 0, ai_pos),
 			ai_update_ts = ts,
 			ai_latitude = inAiLatitude,
 			ai_longitude = inAiLongitude,
 			ai_text = inAiText,
 			ai_dir = IF(inAiDir != "", inAiDir, ai_dir),
 			ai_name = inAiName
-		WHERE ai_id = inAiId AND u_id = inUid;
+		WHERE ai_id = inAiId AND a_id = inAid AND u_id = inUid;
         
         IF inPosUpd = 1 THEN
 			UPDATE `album` SET a_img_cnt = a_img_cnt+1, a_update_ts = ts
@@ -610,6 +626,18 @@ BEGIN
             
             UPDATE `album_image` SET ai_pos = ai_pos+1
 			WHERE ai_id != inAiId AND a_id = inAid AND u_id = inUid;
+            
+            SELECT ai_id INTO ai_last
+			FROM `album_image` 
+			WHERE 
+			a_id = inAid AND u_id = inUid
+			ORDER BY ai_pos, ai_update_ts DESC
+			LIMIT 1;
+			
+			UPDATE `album_image`
+			SET ai_pos = 0
+			WHERE ai_id = ai_last;
+            
         END IF;
         
     COMMIT;
@@ -2966,4 +2994,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-08-10  7:21:35
+-- Dump completed on 2016-08-11 20:19:43

@@ -23,6 +23,7 @@ class UserPhotoProfile extends UserPhoto
 		const self = this;
 		let uploadConf = 'user_ava';
 		let ai_id, a_id;
+		let file = {};
 
 		const UploadFile = new FileUpload(uploadConf, req, res);
 
@@ -73,54 +74,22 @@ class UserPhotoProfile extends UserPhoto
 			})
 			.catch(function (err)
 			{
-				let dir = Path.dirname(UploadFile.getUploadDir());
-
-				//console.log('dir for del = ', dir);
-
-				return FileUpload.deleteDir(dir, true)
-					.then(function ()
-					{
-						self.model('user/photo').delImage(u_id, a_id, ai_id)
-							.then(function ()
-							{
-								throw err;
-							});
-					})
+				return self.getClass('user/photo').delImage(u_id, a_id, ai_id, file)
 					.catch(function (delErr)
 					{
-						return self.model('user/photo').delImage(u_id, a_id, ai_id)
-							.then(function ()
-							{
-								if (delErr.name == 'DirectoryNotFoundError')
-									throw err;
+						switch (err.name)
+						{
+							case 'FileTooBig':
+							case 'FileType':
+							case 'FileTokenError':
+								throw err;
+								break;
 
+							default:
 								throw delErr;
-							});
+								break;
+						}
 					});
-
-				/*switch (err.name)
-				 {
-				 case 'FileTooBig':
-				 case 'FileType':
-				 case 'FileTokenError':
-				 throw err;
-				 break;
-
-				 default:
-				 return UploadFile.deleteDir(UploadFile.getUploadDir(), true)
-				 .then(function ()
-				 {
-				 throw err;
-				 })
-				 .catch(function (delErr)
-				 {
-				 console.log('in router');
-				 console.log(err);//TODO логировать ошибку в файл
-
-				 throw delErr;
-				 });
-				 break;
-				 }*/
 			});
 	}
 
@@ -145,8 +114,6 @@ class UserPhotoProfile extends UserPhoto
 				{
 					ava["previews"][item.w+'_'+item.h] = ava["ai_dir"]+'/'+item.w+'_'+item.h+'.jpg';
 				});
-
-				//console.log(ava);
 
 				return Promise.resolve(ava);
 			});

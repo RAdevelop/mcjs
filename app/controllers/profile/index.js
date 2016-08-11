@@ -1,6 +1,6 @@
 "use strict";
 
-const Logger = require('app/lib/logger')();
+const Logger = require('app/lib/logger');
 const Moment = require('moment');
 const Promise = require("bluebird");
 const Errors = require('app/lib/errors');
@@ -690,7 +690,7 @@ class Profile extends Base
 					{
 						tplData.mailError = true;
 						let error = new Errors.AppMailError('Ошибка при отправке письма', err);
-						Logger.error('%s, %s, %j',  error.message, error.status, error.stack);
+						Logger().error(error);
 						
 						return reject(error);
 					}
@@ -723,11 +723,16 @@ class Profile extends Base
 		let tplFile = 'user/profile/edit.ejs';
 		let tplData = self.getParsedBody();
 
+		this.getRes().on('cancelUploadedFile', function(file)
+		{
+			if (file["u_id"] && file["a_id"] && file["ai_id"])
+				return self.getClass('user/photo').delImage(file["u_id"], file["a_id"], file["ai_id"], file);
+		});
+
 		self.getClass('user/photo/profile')
 			.uploadProfile(this.getUserId(), this.getReq(), this.getRes())
 			.then(function (file)
 			{
-				//console.log(file);
 				tplData = {
 					a_id: file.a_id,
 					ai_id: file.ai_id,
@@ -741,7 +746,7 @@ class Profile extends Base
 			})
 			.catch(function (err)
 			{
-				console.log(err);
+				Logger.error(err);
 
 				tplData.formError.text = err.message;
 				tplData.formError.error = true;

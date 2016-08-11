@@ -29,7 +29,7 @@
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" id="ava_crop_container">
                     <form class="form text-center" action="<%=menuItem.m_path%>/edit"  enctype="multipart/form-data" method="post" target="null_frame" id="formAvaCrop">
                         <% let cropImage = (previews["1024_768"] ? previews["1024_768"] : '_0.gif');%>
-                        <div class="form-group col-xs-12 col-sm-12 col-md-8 col-lg-8">
+                        <div class="form-group col-xs-12 col-sm-12 col-md-6">
                             <div class="image-crop-container">
                                 <img src="<%=cropImage%>" class="img-thumbnail" id="ava_crop_base" />
                             </div>
@@ -220,7 +220,7 @@ $(function()
 
     avaUploadOpts.onEnd = function()
     {
-        var uploadFileData = $(this).data('uploadFileData')[0];
+        var uploadFileData = ($(this).data('uploadFileData') && $(this).data('uploadFileData')[0] ? $(this).data('uploadFileData')[0] : null);
         console.log('uploadFileData');
         console.log(uploadFileData);
 

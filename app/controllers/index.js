@@ -4,7 +4,7 @@
 "use strict";
 const Path = require('path');
 const fs = require('fs');
-const logger = require('app/lib/logger')();
+//const Logger = require('app/lib/logger');
 ///////////////////////////////
 
 const Control = (function()
@@ -53,7 +53,7 @@ const Control = (function()
 			if(!routers || !routers.length)
 			{
 				return;
-				//return logger.error('Empty routers (call from helpers.loadRouters) in dir %j', {"dir": dir});
+				//return Logger().error('Empty routers (call from helpers.loadRouters) in dir %j', {"dir": dir});
 			}
 
 			routers.forEach(function(item)
@@ -89,8 +89,8 @@ const Control = (function()
 		}
 		catch (err)
 		{
-			//logger.error('Empty routers (call from helpers.loadRouters) in dir %j', {"dir":dir});
-			//logger.error(err);
+			//Logger().error('Empty routers (call from helpers.loadRouters) in dir %j', {"dir":dir});
+			//Logger().error(err);
 			err.message = 'Empty routers (call from helpers.loadRouters) in dir:\n:  ' + dir;
 			err.status = 500;
 			//console.log(err);

@@ -1,6 +1,5 @@
 "use strict";
 
-//const logger = require('app/lib/logger')();
 const Errors = require('app/lib/errors');
 const Template = require('app/lib/template');
 //const Async = require('async');

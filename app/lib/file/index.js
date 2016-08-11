@@ -247,16 +247,7 @@ class File
 				.size(function (err, size)
 				{
 					if (err)
-					{
-						/*if (!File.isForbiddenDir(file.fullFilePath))
-						{
-							FS.unlink(file.fullFilePath, function(err){
-								//console.log(err);
-							});
-						}*/
 						return reject(new FileErrors.FileGetImageSize(err));
-					}
-					
 
 					this.crop(crop_width, crop_height, crop_x, crop_y)
 						.resize(w, h, '^')
@@ -266,16 +257,7 @@ class File
 						.write(filePathTo, function (err)
 						{
 							if (err)
-							{
-								/*if (!File.isForbiddenDir(filePathTo))
-								{
-									FS.unlink(filePathTo, function(err){
-										//console.log(err);
-									});
-								}*/
-
 								return reject(new FileErrors.FileImageReSize(err));
-							}
 
 							return resolve({[filePrefix]: fileUrl});
 						});
@@ -290,7 +272,6 @@ class File
 
 		let images = sizeParams.map(function(size)
 		{
-			//console.log(size);
 			return File._cropImg(file, size.w, size.h, crop_x, crop_y, crop_width, crop_height);
 		});
 
@@ -527,7 +508,7 @@ class File
 		})
 		.then(function (done)
 		{
-			console.log('all done');
+			//console.log('all done');
 			return Promise.resolve(done);
 		})
 		.catch(function (err)

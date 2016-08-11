@@ -4,8 +4,7 @@
 const Errors = require('app/lib/errors');
 const Moment = require('moment');
 const Promise = require("bluebird");
-//const IORedis = require('app/lib/ioredis'); //TODO 
-//const Logger = require('app/lib/logger')();
+//const IORedis = require('app/lib/ioredis'); //TODO
 
 //***** module.exports
 const User = require('app/models/user');
@@ -101,7 +100,7 @@ class Photo extends User
 			.bind(this)
 			.then(function (a_id)
 			{
-				return this.insImage(a_id, u_id)
+				return this._insImage(a_id, u_id)
 					.then(function (res)
 					{
 						fileData["a_id"] = a_id;
@@ -112,9 +111,16 @@ class Photo extends User
 			});
 	}
 
+	/**
+	 * добавление фото в БД
+	 *
+	 * @param u_id
+	 * @param fileData
+	 * @returns {Promise.<TResult>|*}
+	 */
 	addPhoto(u_id, fileData)
 	{
-		return this.insImage(fileData["a_id"], u_id)
+		return this._insImage(fileData["a_id"], u_id)
 		.then(function (res)
 		{
 			fileData["u_id"] = u_id;
@@ -123,7 +129,17 @@ class Photo extends User
 		});
 	}
 
-	insImage(a_id, u_id)
+	/**
+	 * вставка записи о фто в БД
+	 *
+	 * @private
+	 *
+	 * @param a_id
+	 * @param u_id
+	 * @returns {Promise.<TResult>}
+	 * @private
+	 */
+	_insImage(a_id, u_id)
 	{
 		let now_ts = Moment().unix();
 		let sql = 'INSERT INTO album_image (a_id, u_id, ai_create_ts, ai_update_ts)' +
@@ -132,6 +148,20 @@ class Photo extends User
 		return this.constructor.conn().ins(sql, [a_id, u_id, now_ts, now_ts]);
 	}
 
+	/**
+	 * обновление данных о фото после его загрузки на сервер
+	 *
+	 * @param u_id
+	 * @param a_id
+	 * @param ai_id
+	 * @param ai_latitude
+	 * @param ai_longitude
+	 * @param ai_text
+	 * @param ai_dir
+	 * @param ai_name
+	 * @param posUpd
+	 * @returns {Promise.<TResult>|*}
+	 */
 	updImage(u_id, a_id, ai_id, ai_latitude, ai_longitude, ai_text, ai_dir, ai_name, posUpd = true)
 	{
 		posUpd = (posUpd ? 1 : 0);
@@ -145,6 +175,14 @@ class Photo extends User
 			});
 	}
 
+	/**
+	 * удаление фото из БД
+	 *
+	 * @param u_id
+	 * @param a_id
+	 * @param ai_id
+	 * @returns {Promise.<TResult>}
+	 */
 	delImage(u_id, a_id, ai_id)
 	{
 		let sql = "CALL album_image_delete(?, ?, ?, @is_del); SELECT @is_del AS is_del FROM DUAL;";
@@ -156,6 +194,23 @@ class Photo extends User
 
 				return Promise.resolve(is_del);
 			});
+	}
+
+	/***
+	 * получаем данные для указанной фотографии пользователя
+	 *
+	 * @param u_id
+	 * @param ai_id
+	 */
+	getImage(u_id, ai_id)
+	{
+		let sql = "SELECT * " +
+			" FROM album_image AS ai" +
+			" JOIN album AS a ON (a.a_id = ai.a_id AND a.u_id = ?)" +
+			" JOIN album_type AS t ON (t.a_type_id = a.a_type_id)" +
+			" WHERE ai.ai_id = ? AND ai.u_id = ?";
+
+		return this.constructor.conn().sRow(sql, [u_id, ai_id, u_id]);
 	}
 
 	/**

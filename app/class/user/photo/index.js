@@ -2,7 +2,7 @@
 
 //const Errors = require('app/lib/errors');
 const Promise = require("bluebird");
-//const FileErrors = require('app/lib/file/errors');
+const FileErrors = require('app/lib/file/errors');
 const FileUpload = require('app/lib/file/upload');
 const Crypto = require('crypto');
 const Path = require('path');
@@ -103,7 +103,8 @@ class UserPhoto extends User
 		const self = this;
 		let uploadConf = 'user_photo';
 		let ai_id, a_id;
-
+		let file = {};
+		
 		const UploadFile = new FileUpload(uploadConf, req, res);
 
 		return UploadFile.upload()
@@ -153,54 +154,79 @@ class UserPhoto extends User
 			})
 			.catch(function (err)
 			{
-				let dir = Path.dirname(UploadFile.getUploadDir());
-
-				console.log('dir for del = ', dir);
-
-				return FileUpload.deleteDir(dir, true)
-					.then(function ()
-					{
-						self.model('user/photo').delImage(u_id, a_id, ai_id)
-							.then(function ()
-							{
-								throw err;
-							});
-					})
+				return self.getClass('user/photo').delImage(u_id, a_id, ai_id, file)
 					.catch(function (delErr)
 					{
-						return self.model('user/photo').delImage(u_id, a_id, ai_id)
+						switch (err.name)
+						{
+							case 'FileTooBig':
+							case 'FileType':
+							case 'FileTokenError':
+								throw err;
+								break;
+
+							default:
+								throw delErr;
+								break;
+						}
+					});
+			});
+	}
+
+	/**
+	 * удаление фотографии
+	 *
+	 * @param u_id
+	 * @param a_id
+	 * @param ai_id
+	 * @param file
+	 * @returns {*}
+	 */
+	delImage(u_id, a_id, ai_id, file = {})
+	{
+		return this.model('user/photo').getImage(u_id, ai_id)
+			.bind(this)
+			.then(function (image)
+			{
+				if (!image)
+					throw new FileErrors.io.FileNotFoundError();
+
+				return Promise.resolve(image);
+			})
+			.then(function (image)
+			{
+				let dir = (image["ai_dir"] ? image["ai_dir"] : (file["webDirPath"] ? file["webDirPath"] : null));
+
+				if (!dir)
+					return Promise.reject(new FileErrors.io.DirectoryNotFoundError());
+
+				dir = Path.dirname(Path.join(FileUpload.getDocumentRoot, dir));
+
+				if (FileUpload.isForbiddenDir(dir))
+					return Promise.reject(new FileErrors.io.DirectoryNotFoundError());
+
+				return FileUpload.deleteDir(dir, true)
+					.bind(this)
+					.then(function ()
+					{
+						this.model('user/photo').delImage(u_id, a_id, ai_id)
 							.then(function ()
 							{
-								if (delErr.name == 'DirectoryNotFoundError')
-									throw err;
-
-								throw delErr;
+								return Promise.resolve(image);
 							});
 					});
+			})
+			.catch(function (err)
+			{
+				console.log('class UserPhoto delImage');
+				console.log(err);
+				console.log('\n');
 
-				/*switch (err.name)
-				 {
-				 case 'FileTooBig':
-				 case 'FileType':
-				 case 'FileTokenError':
-				 throw err;
-				 break;
-
-				 default:
-				 return UploadFile.deleteDir(UploadFile.getUploadDir(), true)
-				 .then(function ()
-				 {
-				 throw err;
-				 })
-				 .catch(function (delErr)
-				 {
-				 console.log('in router');
-				 console.log(err);//TODO логировать ошибку в файл
-
-				 throw delErr;
-				 });
-				 break;
-				 }*/
+				return this.model('user/photo').delImage(u_id, a_id, ai_id)
+					.then(function ()
+					{
+						throw err;
+					});
 			});
 	}
 }

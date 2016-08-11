@@ -4,7 +4,7 @@
 var Config = require('app/config');
 var Session = require('app/lib/session')();
 //var Async = require('async');
-var logger = require('app/lib/logger')();
+//var logger = require('app/lib/logger');
 //var Errors = require('app/lib/errors');
 var msgpack = require('msgpack-js');
 

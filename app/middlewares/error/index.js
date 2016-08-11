@@ -2,7 +2,7 @@
  * Created by RA on 16.02.2016.
  */
 "use strict";
-const logger = require('app/lib/logger')();
+const Logger = require('app/lib/logger');
 const Errors = require('app/lib/errors');
 const Mail = require('app/lib/mail');
 const Template = require('app/lib/template');
@@ -15,16 +15,16 @@ module.exports = function(app, Classes)
 		//Classes.modelEnd();
 		/*if(app.get('env') === 'dev')
 		{
-			logger.debug(err);
+			Logger().debug(err);
 			if((err.status >= 500) == false)
-				logger.error('%s, %s, %j', err.message, err.status, err.stack);
+				Logger().error(err);
 		}*/
 
 		err.status = err.status || 500;
 
 		if (err.status >= 500)
 		{
-			logger.error('%s, %s, %j', err.message, err.status, err.stack);
+			Logger().error(err);
 
 			const Mailer = new Mail('gmail');
 			let sendParams = {
@@ -39,7 +39,7 @@ module.exports = function(app, Classes)
 				if (err)
 				{
 					let error = new Errors.AppMailError('Ошибка при отправке письма', err);
-					logger.error('%s, %s, %j', error.message, error.status, error.stack);
+					Logger().error(error);
 				}
 			});
 		}

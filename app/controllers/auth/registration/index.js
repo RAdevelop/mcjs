@@ -3,7 +3,7 @@
 const Errors = require('app/lib/errors');
 const Promise = require("bluebird");
 const Mail = require('app/lib/mail');
-const Logger = require('app/lib/logger')();
+const Logger = require('app/lib/logger');
 const Base = require('app/lib/controller');
 
 class Registration extends Base {
@@ -163,7 +163,7 @@ class Registration extends Base {
 					if(err)
 					{
 						let error = new Errors.AppMailError('Ошибка при отправке письма', err);
-						Logger.error('%s, %s, %j',  error.message, error.status, error.stack);
+						Logger().error(error);
 						
 						return reject(error);
 					}

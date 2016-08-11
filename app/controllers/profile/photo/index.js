@@ -1,11 +1,11 @@
 "use strict";
 
-const Logger = require('app/lib/logger')();
-const Moment = require('moment');
+const Logger = require('app/lib/logger');
+//const Moment = require('moment');
 const Promise = require("bluebird");
 const Errors = require('app/lib/errors');
-const Mail = require('app/lib/mail');
-const MultiGeocoder = require('multi-geocoder');
+//const Mail = require('app/lib/mail');
+//const MultiGeocoder = require('multi-geocoder');
 const FileUpload = require('app/lib/file/upload');
 
 //const FileErrors = require('app/lib/file/errors');
@@ -227,6 +227,12 @@ class ProfilePhoto extends Base {
 		let tplFile = 'user/profile/photo/albums.ejs';
 		let tplData = self.getParsedBody();
 
+		this.getRes().on('cancelUploadedFile', function(file)
+		{
+			if (file["u_id"] && file["a_id"] && file["ai_id"])
+			return self.getClass('user/photo').delImage(file["u_id"], file["a_id"], file["ai_id"], file);
+		});
+
 		self.getClass('user/photo')
 			.uploadImage(this.getUserId(), this.getReq(), this.getRes())
 			.then(function (file)
@@ -245,8 +251,7 @@ class ProfilePhoto extends Base {
 			})
 			.catch(function (err)
 			{
-				console.log(err);
-
+				Logger().error(err);
 				tplData.formError.text = err.message;
 				tplData.formError.error = true;
 				tplData.formError.errorName = err.name;

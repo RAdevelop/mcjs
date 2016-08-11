@@ -120,7 +120,8 @@ class UploadFile extends File
 		form
 			.on('error', function(err)
 			{
-				console.log('on error');
+				//console.log('Formidable on error');
+				//console.log(err);
 
 				if (file)
 				{
@@ -143,24 +144,27 @@ class UploadFile extends File
 			})
 			.on('aborted', function()
 			{
-				console.log("file upload on aborted");
+				//console.log("file upload on aborted");
 				if (file)
 				{
 					if (file.path && !File.isForbiddenDir(file.path))
 					{
 						FS.unlink(file.path, function(err){
-							console.log(err);
+							//console.log(err);
 						});
 					}
 
 					if (file.fullFilePath && !File.isForbiddenDir(file.fullFilePath))
 					{
 						FS.unlink(file.fullFilePath, function(err){
-							console.log(err);
+							//console.log(err);
 						});
 					}
 				}
-				console.log("END file upload on aborted");
+				//console.log("END file upload on aborted");
+				//form.emit('error', new FileErrors.FileNotUploaded());
+				return uploadCb(new FileErrors.FileNotUploaded());
+
 			}).on('fileBegin', function(name, file)
 			{
 				//console.log('fileBegin');
@@ -210,7 +214,7 @@ class UploadFile extends File
 			})
 			.on('end', function()
 			{
-				console.log(fields);
+				//console.log(fields);
 
 				if (!UploadFile.checkToken(fields))
 				{
@@ -257,8 +261,6 @@ class UploadFile extends File
 						{
 							if (err)
 								return uploadCb(err);
-
-							//return uploadCb(new FileErrors.FileTooBig(self.maxFileSize+"Mb"));
 						});
 					}
 					return uploadCb(new FileErrors.FileTooBig(self.maxFileSize+"Mb"));
@@ -345,15 +347,24 @@ class UploadFile extends File
 		file["webDirPath"]     = (Path.join("/", this.webUploadDir)).split(Path.sep).join('/');
 
 
+		/*this.res.on('close', function()
+		{
+			this.emit("cancelUploadedFile", file);
+		});*/
+
+
 		FS.stat(file["fullPathUploadDir"], function(err, Stats)
 		{
 			let errCode = (err ? err.code : null);
 
 			if (err && errCode != 'ENOENT')
 			{
-				FS.unlink(file.path, function(err){
-					//console.log(err);
-				});
+				if (!File.isForbiddenDir(file.path))
+				{
+					FS.unlink(file.path, function(err){
+						//console.log(err);
+					});
+				}
 
 				return moveCb(err);
 			}
@@ -363,9 +374,12 @@ class UploadFile extends File
 				FS.mkdir(file["fullPathUploadDir"], 0o711, true, function(err){ //0o755
 					if (err)
 					{
-						FS.unlink(file.path, function(err){
-							//console.log(err);
-						});
+						if (!File.isForbiddenDir(file.path))
+						{
+							FS.unlink(file.path, function(err){
+								//console.log(err);
+							});
+						}
 
 						return moveCb(err);
 					}
@@ -394,12 +408,17 @@ class UploadFile extends File
 
 	moveFile(file, cb)
 	{
+		let error = false;
+
 		let rStream = FS.createReadStream(file.path);
 		let wStream = FS.createWriteStream(file["fullFilePath"]);
 
-		this.res.on('close', function(){
+		this.res.on('close', function()
+		{
 			rStream.destroy();
 			wStream.destroy();
+
+			this.emit("cancelUploadedFile", file);
 		});
 
 		rStream.on('error', function(rStreamErr)
@@ -409,15 +428,21 @@ class UploadFile extends File
 
 			wStream.destroy();
 
-			FS.unlink(file["fullFilePath"], function(err)
+			if (!File.isForbiddenDir(file["fullFilePath"]))
 			{
+				FS.unlink(file["fullFilePath"], function(err)
+				{
 
-			});
+				});
+			}
 
-			FS.unlink(file.path, function(err)
+			if (!File.isForbiddenDir(file["path"]))
 			{
+				FS.unlink(file.path, function(err)
+				{
 
-			});
+				});
+			}
 
 			cb(rStreamErr);
 		});
@@ -436,15 +461,24 @@ class UploadFile extends File
 		wStream.on('open', function(){
 			//console.log('wStream.on open');
 		});
-		wStream.on('finish', function(){
+
+		wStream.on('finish', function()
+		{
 			//console.log('wStream.on finish');
 
-			FS.unlink(file.path, function(err)
+			if (!File.isForbiddenDir(file["path"]))
 			{
-				//if (err) return cb(err);
+				FS.unlink(file.path, function(err)
+				{
+					//if (err) return cb(err);
 
-				cb(null, file);
-			});
+					return cb(null, file);
+				});
+			}
+			else
+			{
+				return cb(null, file);
+			}
 
 		});
 
@@ -455,14 +489,20 @@ class UploadFile extends File
 
 			rStream.destroy();
 
-			FS.unlink(file["fullFilePath"], function(err)
+			if (!File.isForbiddenDir(file["fullFilePath"]))
 			{
+				FS.unlink(file["fullFilePath"], function(err)
+				{
 
-			});
+				});
+			}
 
-			FS.unlink(file.path, function(err){
+			if (!File.isForbiddenDir(file["path"]))
+			{
+				FS.unlink(file.path, function(err){
 
-			});
+				});
+			}
 
 			cb(wStreamErr);
 		});
