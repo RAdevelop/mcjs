@@ -1,26 +1,30 @@
 <div class="logo">&nbsp;</div>
 <div id="profile-ava" class="col-xs-12 col-sm-12 col-md-12">
-    <a href="/profile/">
-        <% if (user && user.previews["180_180"]) {%>
+    <a href="<%=(_user && _user.u_id == user.u_id ? '/profile/' : '#')%>">
+        <% if (user.previews["180_180"]) {%>
         <img class="img-circle img-responsive" src="<%=user.previews["180_180"]%>" />
         <% } else {%>
         <span class="fa fa-user"></span>
         <% } %>
     </a>
 </div>
-<div class="col-xs-12 col-sm-12 col-md-12 profile-info">
-    <% if(_user && user && (_user.u_id == user.u_id)){%>
-    <div class="col-xs-12 col-sm-12 col-md-12"><a href="/profile/edit/"><span class="fa fa-edit fa-fw"></span> редактировать</a></div>
-    <% } if(user && (user.u_login || user.u_name || user.u_surname)){%>
-    <div class="col-xs-12 col-sm-12 col-md-12">
-        <span class="fa fa-user fa-fw" aria-hidden="true"></span>
-        <%= (user.u_login ? user.u_login : (user.u_name || user.u_surname ? [user.u_name, user.u_surname].join(' ') : ''))%>
+<div class="col-xs-12 col-sm-12 col-md-12 ">
+    <div class="row profile-info">
+        <% if(_user && (_user.u_id == user.u_id)){%>
+        <div class="col-xs-6 col-sm-12 col-md-12"><a href="/profile/edit/"><span class="fa fa-edit fa-fw"></span> редактировать</a></div>
+        <% } if(user.u_login || user.u_name || user.u_surname){%>
+        <div class="col-xs-6 col-sm-12 col-md-12">
+            <span class="fa fa-user fa-fw" aria-hidden="true"></span>
+            <%= (user.u_login ? user.u_login : (user.u_name || user.u_surname ? [user.u_name, user.u_surname].join(' ') : ''))%>
+        </div>
+        <% } if (user.l_name) {%>
+        <div class="col-xs-6 col-sm-12 col-md-12 cursor-pointer">
+            <span data-toggle="tooltip" title="<%= user.l_full_name%>"><span class="fa fa-map-marker fa-fw" aria-hidden="true"></span> <%= user.l_name%></span>
+        </div>
+        <% }%>
+        <div class="col-xs-6 col-sm-12 col-md-12"><span class="fa fa-motorcycle fa-fw"></span> CBR1000RA</div>
+        <% if(user.u_id){%>
+        <div class="col-xs-6 col-sm-12 col-md-12"><a href="/profile/photo/"><span class="fa fa-image fa-fw"></span> фотографии</a></div>
+        <%}%>
     </div>
-    <% } if (user.l_name) {%>
-    <div class="col-xs-12 col-sm-12 col-md-12 cursor-pointer">
-        <span data-toggle="tooltip" title="<%= user.l_full_name%>"><span class="fa fa-map-marker fa-fw" aria-hidden="true"></span> <%= user.l_name%></span>
-    </div>
-    <% }%>
-    <div class="col-xs-12 col-sm-12 col-md-12"><span class="fa fa-motorcycle fa-fw"></span> CBR1000RA</div>
-    <div class="col-xs-12 col-sm-12 col-md-12"><a href="/profile/photo/"><span class="fa fa-image fa-fw"></span> фотографии</a></div>
 </div>

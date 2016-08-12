@@ -27,6 +27,19 @@ body {
 	color: #fff;
 }
 
+/*@media (min-width: 768px)
+{
+	.navbar-collapse.collapse
+	{
+		display: none!important;
+	}
+	.navbar-toggle
+	{
+		display: block;
+	}
+}*/
+
+
 .navbar-social
 {
 	background-color: #fff;
@@ -226,6 +239,12 @@ body {
 	font-size: 229px;
 }
 
+.profile-info > div
+{
+	overflow: hidden;
+	white-space: nowrap;
+}
+
 				/******************************** END PROFILE AVA */
 /******************************** END PROFILE */
 
@@ -266,7 +285,7 @@ a.social:hover
 
 .albums
 {
-	border: 1px solid;
+	/*border: 1px solid;*/
 }
 
 .albums .album
@@ -274,8 +293,8 @@ a.social:hover
 	position: relative;
 	display: block;
 	overflow: hidden;
-	height: 158px;
-	width: 237px;
+	height: 163px;
+	width: 245px;
 	margin: 0 10px 10px 0;
 	float: left;
 	background-color: #fff;
@@ -292,7 +311,8 @@ a.social:hover
 }
 .albums .album a.albumImg img
 {
-	width: 237px;
+	/*width: 245px;*/
+	width: 100%;
 }
 
 .albums .album .albumTools
@@ -337,10 +357,10 @@ a.social:hover
 .albums .album .albumTitle
 {
 	position: absolute;
-	padding: 5px 0 0 5px;
+	padding: 0;
 	left: 0;
 	right: 0;
-	bottom: -16px;
+	bottom: -30px;
 	font-size: 12px;
 	color: #fff;
 	background-color: rgba(0, 0, 0, 0.7);
@@ -356,45 +376,48 @@ a.social:hover
 	bottom: 0;
 }
 
-@media (max-device-width: 320px) and (min-width: 320px)
+.albums .album .albumTitle .albumName,
+.albums .album .albumTitle .albumText
+{
+	padding: 5px;
+}
+.albums .album .albumTitle .albumText
+{
+	border-top: 1px dotted #fff;
+}
+@media (max-device-width: 768px) and (min-width: 768px)
 {
 	.albums .album
 	{
-		width: 273px;
-		height: 182px;
+		width: 231px;
+		height: 154px;
 	}
-
-	.albums .album a.albumImg img
+}
+@media (max-device-width: 1024px) and (min-width: 1024px)
+{
+	.albums .album
 	{
-		width: 273px;
+		width: 264px;
+		height: 176px;
 	}
 }
 
-@media (max-device-width: 360px) and (min-width: 360px)
+
+@media (max-device-width: 414px) and (min-width: 414px)
 {
 	.albums .album
 	{
-		width: 313px;
-		height: 208px;
-	}
-
-	.albums .album a.albumImg img
-	{
-		width: 313px;
+		width: 100%;
+		height: 257px;
+		margin-right: 0;
 	}
 }
-
-@media (max-device-width: 375px) and (min-width: 375px)
+@media (max-device-width: 736px) and (min-width: 736px)
 {
 	.albums .album
 	{
-		width: 328px;
-		height: 218px;
-	}
-
-	.albums .album a.albumImg img
-	{
-		width: 328px;
+		width: 343px;
+		height: 228px;
 	}
 }
 
@@ -402,58 +425,100 @@ a.social:hover
 {
 	.albums .album
 	{
-		width: 365px;
-		height: 244px;
-	}
-
-	.albums .album a.albumImg img
-	{
-		width: 365px;
+		width: 100%;
+		height: 255px;
+		margin-right: 0;
 	}
 }
-@media (max-device-width: 414px) and (min-width: 412px)
+@media (max-device-width: 732px) and (min-width: 732px)
 {
 	.albums .album
 	{
-		width: 365px;
-		height: 244px;
-	}
-
-	.albums .album a.albumImg img
-	{
-		width: 365px;
+		width: 341px;
+		height: 228px;
 	}
 }
 
-@media (max-device-width: 768px) and (min-width: 768px)
+@media (max-device-width: 375px) and (min-width: 375px)
 {
 	.albums .album
 	{
-		width: 279px;
-		height: 186px;
-	}
-
-	.albums .album a.albumImg img
-	{
-		width: 279px;
+		width: 100%;
+		height: 230px;
+		margin-right: 0;
 	}
 }
+@media (max-device-width: 667px) and (min-width: 667px)
+{
+	.albums .album
+	{
+		width: 308px;
+		height: 205px;
+	}
+}
+
+@media (max-device-width: 360px) and (min-width: 360px)
+{
+	.albums .album
+	{
+		width: 100%;
+		height: 220px;
+		margin-right: 0;
+	}
+}
+@media (max-device-width: 640px) and (min-width: 640px)
+{
+	.albums .album
+	{
+		width: 295px;
+		height: 196px;
+	}
+}
+
+@media (max-device-width: 320px) and (min-width: 320px)
+{
+	.albums .album
+	{
+		width: 100%;
+		height: 193px;
+		margin-right: 0;
+	}
+}
+
+@media (max-device-width: 568px) and (min-width: 568px)
+{
+	.albums .album
+	{
+		width: 259px;
+		height: 172px;
+	}
+}
+
+
+
+
+
+
 
 /********** END список фотоальбомов **************/
 
 /*
 
-@media (max-device-width: 320px) and (min-width: 320px)
+@media (max-device-width: 768px) and (min-width: 768px)
+{
+
+}
+@media (max-device-width: 1024px) and (min-width: 1024px)
 {
 
 }
 
-@media (max-device-width: 360px) and (min-width: 360px)
+
+@media (max-device-width: 414px) and (min-width: 414px)
 {
 
 }
-
-@media (max-device-width: 375px) and (min-width: 375px)
+@media (max-device-width: 736px) and (min-width: 736px)
 {
 
 }
@@ -462,15 +527,58 @@ a.social:hover
 {
 
 }
-@media (max-device-width: 414px) and (min-width: 412px)
+@media (max-device-width: 732px) and (min-width: 732px)
 {
 
 }
 
-@media (max-device-width: 768px) and (min-width: 768px)
+@media (max-device-width: 375px) and (min-width: 375px)
 {
 
 }
+@media (max-device-width: 667px) and (min-width: 667px)
+{
+
+}
+
+@media (max-device-width: 360px) and (min-width: 360px)
+{
+
+}
+@media (max-device-width: 640px) and (min-width: 640px)
+{
+
+}
+
+@media (max-device-width: 320px) and (min-width: 320px)
+{
+	.albums .album
+	{
+		width: 100%;
+		height: 193px;
+		margin-right: 0;
+	}
+}
+@media (max-device-width: 568px) and (min-width: 568px)
+{
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @media (min-width: px)
 {
