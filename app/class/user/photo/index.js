@@ -209,11 +209,11 @@ class UserPhoto extends User
 					.bind(this)
 					.then(function ()
 					{
-						this.model('user/photo').delImage(u_id, a_id, ai_id)
-							.then(function ()
-							{
-								return Promise.resolve(image);
-							});
+						return this.model('user/photo').delImage(u_id, a_id, ai_id);
+					})
+					.then(function ()
+					{
+						return Promise.resolve(image);
 					});
 			})
 			.catch(function (err)

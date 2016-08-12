@@ -126,6 +126,13 @@
 				console.log('filesUploaded');
 				console.log(filesUploaded);
 
+				$(this).parents('.modal').find('.modal-footer').show();
+
+			};
+
+			albumUploadOpts.onStart = function()
+			{
+				$(this).parents('.modal').find('.modal-footer').hide();
 			};
 
 			$btnAlbumUpload.click(function (event)

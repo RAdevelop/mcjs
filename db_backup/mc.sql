@@ -43,7 +43,7 @@ CREATE TABLE `album` (
 
 LOCK TABLES `album` WRITE;
 /*!40000 ALTER TABLE `album` DISABLE KEYS */;
-INSERT INTO `album` VALUES (1,1,2,'Фотографии профиля','Фотографии профиля',12,1470783071,1470935916,'Фотографии профиля'),(2,1,3,'новый альбом','новый альбом',1,1470844788,1470872134,'описание альбома'),(3,1,3,'новый альбом2','новый альбом2',1,1470844926,1470872150,'описание альбома2'),(4,1,3,'sdfsdf','sdfsdf',1,1470845133,1470872175,'sdfsdf'),(5,1,3,'sdfsdf','sdfsdf',1,1470845194,1470872201,'sdfsdf'),(6,1,3,'xcvcv','xcvcv',2,1470845260,1470935104,'cxvxcv');
+INSERT INTO `album` VALUES (1,1,2,'Фотографии профиля','Фотографии профиля',12,1470783071,1470935916,'Фотографии профиля'),(2,1,3,'новый альбом','новый альбом',1,1470844788,1470872134,'описание альбома'),(3,1,3,'новый альбом2','новый альбом2',1,1470844926,1470872150,'описание альбома2'),(4,1,3,'sdfsdf','sdfsdf',1,1470845133,1470872175,'sdfsdf'),(5,1,3,'sdfsdf','sdfsdf',1,1470845194,1470872201,'sdfsdf'),(6,1,3,'xcvcv','xcvcv',31,1470845260,1470964401,'cxvxcv');
 /*!40000 ALTER TABLE `album` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -67,8 +67,8 @@ CREATE TABLE `album_image` (
   `ai_pos` smallint(5) unsigned NOT NULL DEFAULT '0',
   `ai_name` varchar(255) NOT NULL,
   PRIMARY KEY (`ai_id`),
-  KEY `aid_uid_pos` (`a_id`,`u_id`,`ai_pos`)
-) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8;
+  KEY `aid_uid_pos` (`a_id`,`u_id`,`ai_pos`,`ai_update_ts`)
+) ENGINE=InnoDB AUTO_INCREMENT=118 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -77,7 +77,7 @@ CREATE TABLE `album_image` (
 
 LOCK TABLES `album_image` WRITE;
 /*!40000 ALTER TABLE `album_image` DISABLE KEYS */;
-INSERT INTO `album_image` VALUES (1,1,1,1470783072,1470783073,NULL,NULL,'','/user/photo/0/1/1/6512bd43d9caa6e02c990b0a82652dca',11,'25-maverick-vinales-esp_gp_3613.gallery_full_top_fullscreen.jpg'),(2,1,1,1470783114,1470783119,55.97101972,37.25511169,'','/user/photo/0/1/2/c20ad4d76fe97759aa27a0c99bff6710',10,'IMG_20160613_194702.jpg'),(3,1,1,1470783859,1470783860,NULL,NULL,'','/user/photo/0/1/3/c51ce410c124a10e0db5e4b97fc2af39',9,'26-dani-pedrosa-esp_gp_3449.gallery_full_top_fullscreen.jpg'),(4,1,1,1470784448,1470784450,NULL,NULL,'','/user/photo/0/1/4/aab3238922bcc25a6f606eb525ffdc56',8,'26-dani-pedrosa-esp_gp_3449.gallery_full_top_fullscreen.jpg'),(5,1,1,1470784634,1470784636,NULL,NULL,'','/user/photo/0/1/5/9bf31c7ff062936a96d3c8bd1f8f2ff3',7,'45-scott-redding-eng_gp_0163.gallery_full_top_fullscreen.jpg'),(6,1,1,1470784827,1470784828,NULL,NULL,'','/user/photo/0/1/6/c74d97b01eae257e44aa9d5bade97baf',6,'93-marc-marquez-esp_gp_4858.gallery_full_top_fullscreen.jpg'),(7,1,1,1470785088,1470785090,NULL,NULL,'','/user/photo/0/1/7/70efdf2ec9b086079795c442636b55fb',5,'25-maverick-vinales-esp_gp_3613.gallery_full_top_fullscreen.jpg'),(8,1,1,1470785172,1470785174,NULL,NULL,'','/user/photo/0/1/8/6f4922f45568161a8cdf4ad2299f6d23',4,'45-scott-redding-eng_gp_0163.gallery_full_top_fullscreen.jpg'),(9,1,1,1470798109,1470798110,NULL,NULL,'','/user/photo/0/1/9/1f0e3dad99908345f7439f8ffabdffc4',3,'99-jorge-lorenzo-esp_5n27532.gallery_full_top_fullscreen.jpg'),(10,1,1,1470832731,1470832733,NULL,NULL,'','/user/photo/0/1/10/5f93f983524def3dca464469d2cf9f3e',2,'93-marc-marquez-esp_gp_4858.gallery_full_top_fullscreen.jpg'),(16,2,1,1470872132,1470872134,NULL,NULL,'','/user/photo/0/2/16/45fbc6d3e05ebd93369ce542e8f2322d',0,'26-dani-pedrosa-esp_gp_3449.gallery_full_top_fullscreen.jpg'),(17,3,1,1470872149,1470872150,NULL,NULL,'','/user/photo/0/3/17/5b8add2a5d98b1a652ea7fd72d942dac',0,'99-jorge-lorenzo-esp_5n27532.gallery_full_top_fullscreen.jpg'),(18,4,1,1470872174,1470872175,NULL,NULL,'','/user/photo/0/4/18/d1f255a373a3cef72e03aa9d980c7eca',0,'45-scott-redding-eng_gp_0163.gallery_full_top_fullscreen.jpg'),(19,5,1,1470872199,1470872201,NULL,NULL,'','/user/photo/0/5/19/63538fe6ef330c13a05a3ed7e599d5f7',0,'93-marc-marquez-esp_gp_4858.gallery_full_top_fullscreen.jpg'),(48,1,1,1470925982,1470925984,NULL,NULL,'','/user/photo/0/1/48/47d1e990583c9c67424d369f3414728e',1,'25-maverick-vinales-esp_gp_3613.gallery_full_top_fullscreen.jpg'),(49,1,1,1470926001,1470926002,NULL,NULL,'','/user/photo/0/1/49/f2217062e9a397a1dca429e7d70bc6ca',0,'25-maverick-vinales-esp_gp_3613.gallery_full_top_fullscreen.jpg'),(58,6,1,1470934399,1470934401,NULL,NULL,'','/user/photo/0/6/58/2f37d10131f2a483a8dd005b3d14b0d9',0,'_gp_2126.gallery_full_top_fullscreen.jpg'),(59,6,1,1470934399,1470934401,NULL,NULL,'','/user/photo/0/6/59/0ff8033cf9437c213ee13937b1c4c455',1,'_gp_5790_e.gallery_full_top_fullscreen.jpg');
+INSERT INTO `album_image` VALUES (1,1,1,1470783072,1470783073,NULL,NULL,'','/user/photo/0/1/1/6512bd43d9caa6e02c990b0a82652dca',11,'25-maverick-vinales-esp_gp_3613.gallery_full_top_fullscreen.jpg'),(2,1,1,1470783114,1470783119,55.97101972,37.25511169,'','/user/photo/0/1/2/c20ad4d76fe97759aa27a0c99bff6710',10,'IMG_20160613_194702.jpg'),(3,1,1,1470783859,1470783860,NULL,NULL,'','/user/photo/0/1/3/c51ce410c124a10e0db5e4b97fc2af39',9,'26-dani-pedrosa-esp_gp_3449.gallery_full_top_fullscreen.jpg'),(4,1,1,1470784448,1470784450,NULL,NULL,'','/user/photo/0/1/4/aab3238922bcc25a6f606eb525ffdc56',8,'26-dani-pedrosa-esp_gp_3449.gallery_full_top_fullscreen.jpg'),(5,1,1,1470784634,1470784636,NULL,NULL,'','/user/photo/0/1/5/9bf31c7ff062936a96d3c8bd1f8f2ff3',7,'45-scott-redding-eng_gp_0163.gallery_full_top_fullscreen.jpg'),(6,1,1,1470784827,1470784828,NULL,NULL,'','/user/photo/0/1/6/c74d97b01eae257e44aa9d5bade97baf',6,'93-marc-marquez-esp_gp_4858.gallery_full_top_fullscreen.jpg'),(7,1,1,1470785088,1470785090,NULL,NULL,'','/user/photo/0/1/7/70efdf2ec9b086079795c442636b55fb',5,'25-maverick-vinales-esp_gp_3613.gallery_full_top_fullscreen.jpg'),(8,1,1,1470785172,1470785174,NULL,NULL,'','/user/photo/0/1/8/6f4922f45568161a8cdf4ad2299f6d23',4,'45-scott-redding-eng_gp_0163.gallery_full_top_fullscreen.jpg'),(9,1,1,1470798109,1470798110,NULL,NULL,'','/user/photo/0/1/9/1f0e3dad99908345f7439f8ffabdffc4',3,'99-jorge-lorenzo-esp_5n27532.gallery_full_top_fullscreen.jpg'),(10,1,1,1470832731,1470832733,NULL,NULL,'','/user/photo/0/1/10/5f93f983524def3dca464469d2cf9f3e',2,'93-marc-marquez-esp_gp_4858.gallery_full_top_fullscreen.jpg'),(16,2,1,1470872132,1470872134,NULL,NULL,'','/user/photo/0/2/16/45fbc6d3e05ebd93369ce542e8f2322d',0,'26-dani-pedrosa-esp_gp_3449.gallery_full_top_fullscreen.jpg'),(17,3,1,1470872149,1470872150,NULL,NULL,'','/user/photo/0/3/17/5b8add2a5d98b1a652ea7fd72d942dac',0,'99-jorge-lorenzo-esp_5n27532.gallery_full_top_fullscreen.jpg'),(18,4,1,1470872174,1470872175,NULL,NULL,'','/user/photo/0/4/18/d1f255a373a3cef72e03aa9d980c7eca',0,'45-scott-redding-eng_gp_0163.gallery_full_top_fullscreen.jpg'),(19,5,1,1470872199,1470872201,NULL,NULL,'','/user/photo/0/5/19/63538fe6ef330c13a05a3ed7e599d5f7',0,'93-marc-marquez-esp_gp_4858.gallery_full_top_fullscreen.jpg'),(48,1,1,1470925982,1470925984,NULL,NULL,'','/user/photo/0/1/48/47d1e990583c9c67424d369f3414728e',1,'25-maverick-vinales-esp_gp_3613.gallery_full_top_fullscreen.jpg'),(49,1,1,1470926001,1470926002,NULL,NULL,'','/user/photo/0/1/49/f2217062e9a397a1dca429e7d70bc6ca',0,'25-maverick-vinales-esp_gp_3613.gallery_full_top_fullscreen.jpg'),(58,6,1,1470934399,1470934401,NULL,NULL,'','/user/photo/0/6/58/2f37d10131f2a483a8dd005b3d14b0d9',29,'_gp_2126.gallery_full_top_fullscreen.jpg'),(59,6,1,1470934399,1470934401,NULL,NULL,'','/user/photo/0/6/59/0ff8033cf9437c213ee13937b1c4c455',30,'_gp_5790_e.gallery_full_top_fullscreen.jpg'),(71,6,1,1470936084,1470936087,NULL,NULL,'','/user/photo/0/6/71/5dd9db5e033da9c6fb5ba83c7a7ebea9',28,'motogp.jpg'),(73,6,1,1470937866,1470937870,NULL,NULL,'','/user/photo/0/6/73/9f396fe44e7c05c16873b05ec425cbad',27,'26-dani-pedrosa-esp_gp_3449.gallery_full_top_fullscreen.jpg'),(74,6,1,1470937866,1470937870,NULL,NULL,'','/user/photo/0/6/74/0d7de1aca9299fe63f3e0041f02638a3',26,'46-valentino-rossi-ita_5n27825.gallery_full_top_fullscreen.jpg'),(75,6,1,1470937866,1470937871,NULL,NULL,'','/user/photo/0/6/75/8fecb20817b3847419bb3de39a609afe',25,'29-andrea-iannone-ita-46-valentino-rossi-ita_gp_3090.gallery_full_top_fullscreen.jpg'),(76,6,1,1470937866,1470937871,NULL,NULL,'','/user/photo/0/6/76/dc6a70712a252123c40d2adba6a11d84',23,'25-maverick-vinales-esp_gp_3613.gallery_full_top_fullscreen.jpg'),(77,6,1,1470937866,1470937871,NULL,NULL,'','/user/photo/0/6/77/71a3cb155f8dc89bf3d0365288219936',24,'45-scott-redding-eng_gp_0163.gallery_full_top_fullscreen.jpg'),(78,6,1,1470937974,1470937977,NULL,NULL,'','/user/photo/0/6/78/9fe8593a8a330607d76796b35c64c600',22,'93-marc-marquez-esp_gp_4858.gallery_full_top_fullscreen.jpg'),(79,6,1,1470937974,1470937977,NULL,NULL,'','/user/photo/0/6/79/ca9c267dad0305d1a6308d2a0cf1c39c',20,'99-jorge-lorenzo-esp_5n27532.gallery_full_top_fullscreen.jpg'),(80,6,1,1470937974,1470937977,NULL,NULL,'','/user/photo/0/6/80/fccb3cdc9acc14a6e70a12f74560c026',21,'99-jorge-lorenzo-esp_gp_3592_0.gallery_full_top_fullscreen.jpg'),(81,6,1,1470938041,1470938044,NULL,NULL,'','/user/photo/0/6/81/1595af6435015c77a7149e92a551338e',19,'93-marc-marquez-esp_gp_4858.gallery_full_top_fullscreen.jpg'),(82,6,1,1470938041,1470938044,NULL,NULL,'','/user/photo/0/6/82/08d98638c6fcd194a4b1e6992063e944',17,'46-valentino-rossi-ita_5n27825.gallery_full_top_fullscreen.jpg'),(83,6,1,1470938041,1470938044,NULL,NULL,'','/user/photo/0/6/83/24681928425f5a9133504de568f5f6df',18,'45-scott-redding-eng_gp_0163.gallery_full_top_fullscreen.jpg'),(84,6,1,1470938041,1470938044,NULL,NULL,'','/user/photo/0/6/84/556f391937dfd4398cbac35e050a2177',16,'99-jorge-lorenzo-esp_5n27532.gallery_full_top_fullscreen.jpg'),(85,6,1,1470955893,1470955895,NULL,NULL,'','/user/photo/0/6/85/3328bdf9a4b9504b9398284244fe97c2',15,'29-andrea-iannone-ita-46-valentino-rossi-ita_gp_3090.gallery_full_top_fullscreen.jpg'),(86,6,1,1470956238,1470956240,NULL,NULL,'','/user/photo/0/6/86/109a0ca3bc27f3e96597370d5c8cf03d',13,'46-valentino-rossi-ita_5n27825.gallery_full_top_fullscreen.jpg'),(87,6,1,1470956238,1470956240,NULL,NULL,'','/user/photo/0/6/87/7f5d04d189dfb634e6a85bb9d9adf21e',14,'45-scott-redding-eng_gp_0163.gallery_full_top_fullscreen.jpg'),(88,6,1,1470956346,1470956348,NULL,NULL,'','/user/photo/0/6/88/f79921bbae40a577928b76d2fc3edc2a',12,'93-marc-marquez-esp_gp_4858.gallery_full_top_fullscreen.jpg'),(89,6,1,1470956346,1470956348,NULL,NULL,'','/user/photo/0/6/89/07a96b1f61097ccb54be14d6a47439b0',11,'99-jorge-lorenzo-esp_5n27532.gallery_full_top_fullscreen.jpg'),(90,6,1,1470956639,1470956641,NULL,NULL,'','/user/photo/0/6/90/c06d06da9666a219db15cf575aff2824',10,'46-valentino-rossi-ita_5n27825.gallery_full_top_fullscreen.jpg'),(96,6,1,1470958166,1470958168,NULL,NULL,'','/user/photo/0/6/96/0cb929eae7a499e50248a3a78f7acfc7',9,'25-maverick-vinales-esp_gp_3613.gallery_full_top_fullscreen.jpg'),(97,6,1,1470958166,1470958168,NULL,NULL,'','/user/photo/0/6/97/8a0e1141fd37fa5b98d5bb769ba1a7cc',8,'26-dani-pedrosa-esp_gp_3449.gallery_full_top_fullscreen.jpg'),(98,6,1,1470958382,1470958384,NULL,NULL,'','/user/photo/0/6/98/99bcfcd754a98ce89cb86f73acc04645',7,'_gp_5790_e.gallery_full_top_fullscreen.jpg'),(99,6,1,1470958382,1470958384,NULL,NULL,'','/user/photo/0/6/99/afd4836712c5e77550897e25711e1d96',6,'_gp_2126.gallery_full_top_fullscreen.jpg'),(109,6,1,1470963733,1470963734,NULL,NULL,'','/user/photo/0/6/109/27b09e189a405b6cca6ddd7ec869c143',5,'45-scott-redding-eng_gp_0163.gallery_full_top_fullscreen.jpg'),(112,6,1,1470964171,1470964173,NULL,NULL,'','/user/photo/0/6/112/0b6a27e2bfcb010e762109f0d2e042dc',4,'26-dani-pedrosa-esp_gp_3449.gallery_full_top_fullscreen.jpg'),(113,6,1,1470964256,1470964258,NULL,NULL,'','/user/photo/0/6/113/0af854284f4ab0cfea8fcfd889cbb41a',3,'motogp.jpg'),(114,6,1,1470964256,1470964262,55.97101972,37.25511169,'','/user/photo/0/6/114/75c58d36157505a600e0695ed0b3a22d',2,'IMG_20160613_194702.jpg'),(115,6,1,1470964398,1470964400,NULL,NULL,'','/user/photo/0/6/115/c77cfd5563c8ec4bfcde94c09098ba84',0,'motogp.jpg'),(116,6,1,1470964398,1470964399,NULL,NULL,'','/user/photo/0/6/116/082a8bbf2c357c09f26675f9cf5bcba3',1,'N8AbgYhfPGI.jpg');
 /*!40000 ALTER TABLE `album_image` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -453,7 +453,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$1j3UmZw2cUprx2Q9dtIYBO','$2a$12$1j3UmZw2cUprx2Q9dtIYBOQ6eag0IecAmYEqu19gxXZl.H8lkTbNy',1447968485,1470935914,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1470874052,'RoLex',1);
+INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$1j3UmZw2cUprx2Q9dtIYBO','$2a$12$1j3UmZw2cUprx2Q9dtIYBOQ6eag0IecAmYEqu19gxXZl.H8lkTbNy',1447968485,1470964398,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1470874052,'RoLex',1);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -528,10 +528,10 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `album_image_delete`(IN inUid INT(11), IN inAid INT, IN inAiId INT, OUT res INT)
+CREATE DEFINER=`mc`@`%` PROCEDURE `album_image_delete`(IN inUid INT(11), IN inAid INT, IN inAiId INT, OUT res INT)
 BEGIN
 	
-    DECLARE done,aipos, ai_last INT DEFAULT 0;
+    DECLARE done,aipos, ai_last, ts INT DEFAULT 0;
 	DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
     DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done=1;
     
@@ -544,45 +544,101 @@ BEGIN
     FROM `album_image`
     WHERE ai_id = inAiId;
     
-    IF done = 0 THEN
+    #SELECT done, aipos;
     
-		#SELECT done, aipos;
+    IF done = 0 THEN
 		
+        SET ts = UNIX_TIMESTAMP();
+        
+		DELETE FROM `album_image`
+		WHERE ai_id = inAiId AND a_id = inAid AND u_id = inUid;
+        
+        CALL album_image_reorder(inUid, inAid);
+        
+        /*
 		UPDATE `album_image`
 		SET ai_pos = IF(ai_pos-1 <= 0, 0, ai_pos-1)
 		WHERE a_id = inAid AND u_id = inUid
 		AND ai_pos > aipos;
-		
-        #SELECT done AS done2;
-        
-		UPDATE `album` 
-		SET a_img_cnt = IF(a_img_cnt = 0, 0, a_img_cnt-1)
-		WHERE a_id = inAid AND u_id = inUid;
-		
-        #SELECT done AS done3;
-        
-		DELETE FROM `album_image`
-		WHERE ai_id = inAiId AND a_id = inAid AND u_id = inUid;
-
-		/*
-		SELECT ai_id INTO ai_last
-		FROM `album_image` 
-		WHERE 
-		a_id = inAid AND u_id = inUid
-		ORDER BY ai_pos, ai_update_ts DESC
-		LIMIT 1;
-        
-        UPDATE `album_image`
-		SET ai_pos = 0
-		WHERE ai_id = ai_last;
         */
+		
+		UPDATE `album` SET 
+        a_img_cnt = IF(a_img_cnt-1 <= 0, 0, a_img_cnt-1), 
+        a_update_ts = ts
+		WHERE a_id = inAid AND u_id = inUid;
         
 		SET res=1;
     
 		COMMIT;
-    ELSE 
-		ROLLBACK;
     END IF;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `album_image_reorder` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`mc`@`%` PROCEDURE `album_image_reorder`(IN inUid INT(11), IN inAid INT)
+BEGIN
+	
+	DECLARE done, res, pos, aiId INT DEFAULT 0;
+    
+    /*Объявление курсора*/
+	DECLARE getImageIds CURSOR FOR 
+    SELECT ai_id
+    FROM `album_image` 
+    WHERE a_id = inAid AND u_id = inUid
+    ORDER BY ai_pos, ai_update_ts DESC, ai_id DESC;
+    
+	DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
+    DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done=1;
+    
+    SET done=0;
+    SET pos=0;
+    
+    START TRANSACTION;
+		/* открытие курсора */
+		OPEN getImageIds;
+		/*извлекаем данные */
+		REPEAT
+        FETCH getImageIds INTO aiId;
+			#делаем нужные нам действия 
+			IF NOT done THEN     
+			  UPDATE `album_image` SET 
+			  ai_pos = pos
+			  WHERE ai_id = aiId;
+			  
+			  SET pos = pos + 1;
+			END IF;
+		UNTIL done END REPEAT;
+		
+		/*закрытие курсора */
+		CLOSE getImageIds;
+        
+        SET done = 0;
+        
+        SELECT ai_pos INTO pos
+        FROM `album_image`
+        WHERE a_id = inAid AND u_id = inUid
+		ORDER BY ai_pos, ai_update_ts DESC, ai_id DESC
+        LIMIT 1;
+        
+        IF NOT done AND pos = 1 THEN
+			UPDATE `album_image` SET 
+			ai_pos = ai_pos-1
+			WHERE a_id = inAid AND u_id = inUid;
+        END IF;
+        
+    COMMIT;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -599,12 +655,13 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `album_image_update`(IN inUid INT(11), IN inAid INT, IN inAiId INT, IN inAiLatitude DECIMAL(10,8), IN inAiLongitude DECIMAL(11,8), IN inAiText VARCHAR(255), IN inAiDir  VARCHAR(255), IN inAiName VARCHAR(255), IN inPosUpd TINYINT(1))
+CREATE DEFINER=`mc`@`%` PROCEDURE `album_image_update`(IN inUid INT(11), IN inAid INT, IN inAiId INT, IN inAiLatitude DECIMAL(10,8), IN inAiLongitude DECIMAL(11,8), IN inAiText VARCHAR(255), IN inAiDir  VARCHAR(255), IN inAiName VARCHAR(255), IN inPosUpd TINYINT(1))
 BEGIN
 	
-	DECLARE res, ts, ai_last INT DEFAULT 0;
+	DECLARE done, res, ts INT DEFAULT 0;
 	DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
-    #SET res=0;
+    DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done=1;
+    SET done=0;
     
     START TRANSACTION;
     
@@ -620,23 +677,20 @@ BEGIN
 			ai_name = inAiName
 		WHERE ai_id = inAiId AND a_id = inAid AND u_id = inUid;
         
-        IF inPosUpd = 1 THEN
-			UPDATE `album` SET a_img_cnt = a_img_cnt+1, a_update_ts = ts
+        IF inPosUpd = 1 AND done = 0 THEN
+			
+            UPDATE `album`  SET 
+            a_img_cnt = a_img_cnt+1, 
+            a_update_ts = ts
 			WHERE a_id = inAid AND u_id = inUid;
             
-            UPDATE `album_image` SET ai_pos = ai_pos+1
-			WHERE ai_id != inAiId AND a_id = inAid AND u_id = inUid;
+            CALL album_image_reorder(inUid, inAid);
             
-            SELECT ai_id INTO ai_last
-			FROM `album_image` 
-			WHERE 
-			a_id = inAid AND u_id = inUid
-			ORDER BY ai_pos, ai_update_ts DESC
-			LIMIT 1;
-			
-			UPDATE `album_image`
-			SET ai_pos = 0
-			WHERE ai_id = ai_last;
+            /*
+            UPDATE `album_image` SET 
+            ai_pos = ai_pos+1
+            WHERE ai_id != inAiId AND a_id = inAid AND u_id = inUid;
+            */
             
         END IF;
         
@@ -2994,4 +3048,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-08-11 20:19:43
+-- Dump completed on 2016-08-12  4:15:25

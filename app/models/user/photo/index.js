@@ -247,6 +247,19 @@ class Photo extends User
 
 		return this.constructor.conn().sRow(sql, [a_id, u_id]);
 	}
+
+	albumImageReorder(u_id, a_id)
+	{
+		//return Promise.resolve(true);
+
+		let sql = "CALL album_image_reorder(?, ?);";
+
+		return this.constructor.conn().call(sql, [u_id, a_id])
+			.then(function ()
+			{
+				return Promise.resolve(true);
+			});
+	}
 }
 
 module.exports = Photo;

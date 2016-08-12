@@ -408,6 +408,7 @@
 				console.log(data);
 				console.log(file);
 
+				file.queueItem.hide();
 				data = $.parseJSON(data);
 
 				if (data.hasOwnProperty("formError") && data["formError"]["error"])//ошибка при загрузке
