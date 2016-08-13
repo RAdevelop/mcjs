@@ -1,10 +1,14 @@
-(function ()
+(function ($)
 {
 	if (window["mcMap"]) return;
 
 	var mcMap = {
 		init: function (id, params, cb)
 		{
+			var mapIsInit = $('#'+id).attr('data-map-init');
+
+			if (mapIsInit == 'true' || mapIsInit == '1') return;
+
 			params.state = params.state || {};
 			params.options = params.options || {};
 
@@ -18,17 +22,15 @@
 			var state = $.extend({}, defaultsState, params.state);
 			var options = $.extend({}, defaultsOptions, params.options);
 
-			var map;
 			function init()
 			{
-				map = new ymaps.Map(id, state, options);
-				
-				cb(map);
+				$('#'+id).attr('data-map-init', 'true');
+				cb(new ymaps.Map(id, state, options));
 			}
 
 			ymaps.ready(init);
 		},
-		locationByLatLng: function (coords, kind, results)
+		locationByLatLng: function (latitude, longitude, kind, results)
 		{
 			kind = kind || 'locality';
 			results = results || 1;
@@ -41,9 +43,9 @@
 					//console.log( info );
 
 					var location = {
-						coords: coords,
-						lat: coords[0],
-						lng: coords[1],
+						coords: [latitude, longitude],
+						lat: latitude,
+						lng: longitude,
 						text: info["text"],
 						names: info["text"].split(',').map(function(str){ return str.trim();})
 					};
@@ -57,4 +59,4 @@
 
 	window.mcMap = mcMap;
 
-})();
+})(jQuery);

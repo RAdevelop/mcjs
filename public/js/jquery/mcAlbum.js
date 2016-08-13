@@ -72,8 +72,8 @@
 			htmlDialog += '</div>';
 
 			htmlDialog += '<div class="textCenter modal-body">';
-				htmlDialog += '<div id="imgMap" style="display: none;"></div>';
-				htmlDialog += '<img src="'+imgSrc+'" alt=""/>';
+				htmlDialog += '<div id="imgMap" data-map-init="false" style="display: none;"></div>';
+				htmlDialog += '<img src="'+imgSrc+'" class="imageInModal" alt=""/>';
 			htmlDialog += '<textarea placeholder="описание фотографии">'+img["ai_text"]+'</textarea>';
 			htmlDialog += '</div>';
 
@@ -112,29 +112,23 @@
 
 	function onImgMap(img, $modal)
 	{
-		//TODO если его нет создать <div id="imgMap" style="display: none;"/>
-		// установить высоту и ширину равную $modalBody.width()  $modalBody.height()
-		//загрузить яндекс карты
-		//отобразить фото на карте
-		// скрыть фото в $modalBody
-		// показать div
-
 		if(!window["mcMap"]) return;
 
-		var $img = $modal.find('.modal-body > img');
+		var $img = $modal.find('.modal-body img.imageInModal');
 		var $imgMap = $modal.find('#imgMap');
 
-		if ($imgMap.css('display') != 'none')
+		$imgMap.css({
+			width: $modal.find('.modal-body').width(),
+			height: $modal.find('.modal-body').height()
+		});
+
+		if (($imgMap.attr('data-map-init') == 'true'))
 		{
-			$imgMap.hide();
-			$img.show();
+			$imgMap.toggle();
+			$img.toggle();
+
 			return;
 		}
-
-		$imgMap.css({
-			width: $modal.find('.modal-body').width()
-			,height: $modal.find('.modal-body').height()
-		});
 
 		var mapState = {
 			center: [img["ai_latitude"], img["ai_longitude"]]
@@ -146,29 +140,25 @@
 
 		mcMap.init('imgMap', {state: mapState, options: mapOptions}, function (imgMap)
 		{
+			$imgMap.toggle();
+			$img.toggle();
+
 			imgMap.behaviors.disable('multiTouch');
 			imgMap.behaviors.disable('scrollZoom');
 
-			var imgPlacemark = new ymaps.Placemark(imgMap.getCenter(), {
-				balloonContent: 'RA'
-
-			}, {
-				balloonCloseButton: true
-				,balloonOpen: true
-			} );
+			var imgPlacemark = new ymaps.Placemark(imgMap.getCenter(),
+				{
+					//balloonContentHeader: 'Заголовок балуна',
+					balloonContentBody: '<div><img src="'+img["previews"]["320_213"]+'"/></div>'
+				},
+				{
+					balloonCloseButton: false,
+					balloonPanelMaxMapArea: 0
+				}
+			);
 
 			imgMap.geoObjects.add(imgPlacemark);
-			imgPlacemark.balloon.open(imgMap.getCenter());
-
-
-			/*imgMap.balloon.open(mapState.center, "Содержимое балуна", {
-				// Опция: не показываем кнопку закрытия.
-				closeButton: true
-			});*/
-
-
-			$img.hide();
-			$imgMap.show();
+			imgPlacemark.balloon.open();
 		});
 	}
 
@@ -201,7 +191,8 @@
 		if (img["ai_latitude"] && img["ai_longitude"])
 		{
 			$modal.find('#btn_img_map').attr('disabled',  false);
-			$modal.on('click', '#btn_img_map', function (event){
+			$modal.on('click', '#btn_img_map', function (event)
+			{
 				event.preventDefault();
 				event.stopPropagation();
 				onImgMap(img, $modal);
