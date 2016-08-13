@@ -80,21 +80,40 @@ class UserPhoto extends User
 				if (!album)
 					return Promise.resolve(null);
 
-				/*let sizeParams = FileUpload.getUploadConfig('user_photo').sizeParams;
+				return Promise.resolve(album);
+			});
+	}
 
-				album.forEach(function (album)
+	getAlbumImages(u_id, a_id)
+	{
+		return this.model('user/photo').getAlbumImages(u_id, a_id)
+			.then(function (images)
+			{
+				if (!images)
+					return Promise.resolve([]);
+
+				let sizeParams = FileUpload.getUploadConfig('user_photo').sizeParams;
+
+				let imgSuffix;
+				let imgPath;
+				images["previews"] = [];
+				images.forEach(function (image, indx)
 				{
-					if (!album["previews"]) album["previews"] = [];
-					if (album["ai_dir"])
+					images[indx]["previews"] = {};
+					if (image["ai_dir"])
 					{
 						sizeParams.forEach(function (size)
 						{
-							album["previews"][size.w+'_'+size.h] = album["ai_dir"] + '/' + size.w+'_'+size.h +'.jpg';
+							imgSuffix   = size.w+'_'+size.h;
+							imgPath     = image["ai_dir"] + '/' + imgSuffix +'.jpg';
+
+							images[indx]["previews"][imgSuffix] = imgPath;
+							images["previews"].push(imgPath);
 						});
 					}
-				});*/
-				console.log(album);
-				return Promise.resolve(album);
+				});
+
+				return Promise.resolve(images);
 			});
 	}
 
@@ -228,6 +247,19 @@ class UserPhoto extends User
 						throw err;
 					});
 			});
+	}
+
+	/**
+	 * обновляем описание фотографии
+	 *
+	 * @param u_id
+	 * @param a_id
+	 * @param ai_id
+	 * @param ai_text
+	 */
+	updImgText(u_id, a_id, ai_id, ai_text)
+	{
+		return this.model('user/photo').updImgText(u_id, a_id, ai_id, ai_text);
 	}
 }
 //************************************************************************* module.exports

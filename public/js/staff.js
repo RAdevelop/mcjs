@@ -3,12 +3,12 @@
  * разные функции помошники
  */
 
-function preloadImages($, imgs)
+function preloadImages(imgs)
 {
-	for (var i in imgs)
-	{
-		$("<img />").attr("src", imgs[i]);
-	}
+	jQuery(window).load(function () {
+		for (var i in imgs)
+		jQuery("<img />").attr("src", imgs[i]);
+	});
 }
 
 function getRandomMinMax(min, max)

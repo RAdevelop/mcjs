@@ -34,8 +34,6 @@ function _htmlDialog(data)
 			htmlDialog += '<button type="button" class="btn '+options.buttons[i].cssClass+' '+options.buttons[i].name+'" id="'+options.buttons[i].name+'" >'+options.buttons[i].title+'</button>';
 		}
 	}
-	/*htmlDialog += '<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>';
-	htmlDialog += '<button type="button" class="btn btn-primary">Save changes</button>';*/
 	
 	htmlDialog += '</div>';
 	htmlDialog += '</div>';

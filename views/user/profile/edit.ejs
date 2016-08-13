@@ -229,7 +229,7 @@ $(function()
             $formAvaCrop.find('input#i_file_id').val(uploadFileData["ai_id"]);
             var previews = uploadFileData["previews"];
 
-            preloadImages($, previews);
+            preloadImages(previews);
             updAvaProfileSrc($('#profile-ava img'), previews["180_180"]);
 
             $avaProfileCrop.replaceSrc(previews["1024_768"]);

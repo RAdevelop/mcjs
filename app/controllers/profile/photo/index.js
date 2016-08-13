@@ -100,11 +100,24 @@ class ProfilePhoto extends Base {
 			})
 			.then(function (tplData)
 			{
+				return this.getClass('user/photo').getAlbumImages(this.getUserId(), a_id)
+					.then(function (images)
+					{
+						tplData["album"]["images"] = images;
+
+						//console.log(tplData["album"]["images"]);
+						return Promise.resolve(tplData);
+					});
+			})
+			.then(function (tplData)
+			{
 				tplData = Object.assign(tplData, FileUpload.createToken('user_photo', tplData) );
 
 				this.view.setTplData(tplFile, tplData);
 				this.view.addPartialData('user/left', {user: tplData["user"]});
 
+				this.getRes().expose(tplData["album"]["images"], 'albumImages');
+				this.getRes().expose(tplData["album"]["images"]["previews"], 'albumPreviews');
 				this.getRes().expose(FileUpload.getUploadConfig('user_photo'), 'albumUploadOpts');
 
 				return cb(null);
@@ -173,6 +186,10 @@ class ProfilePhoto extends Base {
 			case 'add_album':
 				return this.addNamedAlbum(tplData);
 				break;
+
+			case 'upd_img_text':
+				return this.updImgText(tplData);
+				break;
 		}
 	}
 
@@ -212,6 +229,24 @@ class ProfilePhoto extends Base {
 						tplData["a_id"] = a_id;
 						return Promise.resolve(tplData);
 					});
+			});
+	}
+
+	updImgText(tplData)
+	{
+		let errors = {};
+
+		if (!tplData["i_a_id"] || !tplData["i_ai_id"] || !tplData.hasOwnProperty("s_ai_text"))
+			return Promise.reject(new Errors.HttpStatusError(400, 'Bad request'));
+
+		tplData["s_ai_text"] = (tplData["s_ai_text"] || '').trim();
+
+		//return Promise.resolve(tplData);
+
+		return this.getClass('user/photo').updImgText(this.getUserId(), tplData["i_a_id"], tplData["i_ai_id"], tplData["s_ai_text"])
+			.then(function ()
+			{
+				return Promise.resolve(tplData);
 			});
 	}
 

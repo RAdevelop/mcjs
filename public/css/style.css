@@ -86,6 +86,16 @@ body {
 		overflow: hidden!important;
 	}
 }
+/* END ipad */
+
+@media (max-device-width: 768px) and (orientation : landscape)
+{
+	.navbar-fixed-bottom .navbar-collapse,
+	.navbar-fixed-top .navbar-collapse
+	{
+		max-height: 211px;
+	}
+}
 
 /******************************** SITE MENU */
 
@@ -157,6 +167,24 @@ body {
 .textRight
 {
 	text-align: right;
+}
+
+.displayInlineBlock
+{
+	display: inline-block;
+}
+
+.displayBlock
+{
+	display: block;
+}
+.displayInline
+{
+	display: inline;
+}
+.displayNone
+{
+	display: none;
 }
 
 /*@media screen and (min-width: 768px)
@@ -552,67 +580,167 @@ a.social:hover
 
 /********** END список фотоальбомов **************/
 
-/*
-
-@media (max-device-width: 768px) and (min-width: 768px)
+/********** список фоток в альбоме **************/
+.albums .image
 {
-
+	width: 237px;
+	height: 158px;
+	overflow: hidden;
+	float: left;
+	margin: 0 10px 10px 0;
 }
-@media (max-device-width: 1024px) and (min-width: 1024px)
+.albums .image img
 {
-
+	width: 100%;
 }
 
-
-@media (max-device-width: 414px) and (min-width: 414px)
-{
-
-}
-@media (max-device-width: 736px) and (min-width: 736px)
+.albumImageDialog.modal-dialog
 {
 
 }
 
-@media (max-device-width: 412px) and (min-width: 412px)
+.albumImageDialog .modal-body
 {
-
-}
-@media (max-device-width: 732px) and (min-width: 732px)
-{
-
+	padding: 0;
+	position: relative;
 }
 
-@media (max-device-width: 375px) and (min-width: 375px)
+.albumImageDialog .modal-body textarea
 {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0px;
+	width: 100%;
+	height: 70px;
+	overflow: hidden;
+	border: 0;
+	margin: 0;
+	padding: 5px;
+	background-color: rgba(51, 51, 51, 0.5);
+	color: #fff;
+}
+.albumImageDialog .modal-body img.vertical
+{
+/*использовать для мобильников height: xxxpx !important;
+*/
 
 }
-@media (max-device-width: 667px) and (min-width: 667px)
-{
 
+.albumImageDialog .modal-body img.horizontal
+{
+/*использовать для мобильников width: xxxpx !important;*/
 }
 
-@media (max-device-width: 360px) and (min-width: 360px)
+/* 375 / 667 */
+@media (min-device-width: 375px) and (max-device-width: 667px) and (orientation : portrait)
 {
-
-}
-@media (max-device-width: 640px) and (min-width: 640px)
-{
-
-}
-
-@media (max-device-width: 320px) and (min-width: 320px)
-{
-	.albums .album
+	.albumImageDialog.modal-dialog
 	{
-		width: 100%;
-		height: 193px;
-		margin-right: 0;
+		width: auto !important;
+		height: auto !important;
+	}
+	.albumImageDialog .modal-body img.vertical
+	{
+		height: 472px !important;
+	}
+	.albumImageDialog .modal-body img.horizontal
+	{
+		width: 353px !important;
 	}
 }
-@media (max-device-width: 568px) and (min-width: 568px)
+@media (min-device-width: 375px) and (max-device-width: 667px) and (orientation : landscape)
+{
+	.albumImageDialog.modal-dialog {
+		width: auto !important;
+		height: auto !important;
+	}
+
+	.albumImageDialog .modal-body img.vertical {
+		height: 270px !important;
+	}
+
+	.albumImageDialog .modal-body img.horizontal {
+		width: 360px !important;
+	}
+}
+/* END 375 / 667 */
+/********** END список фоток в альбоме **************/
+
+
+
+
+
+/* 768 / 1024 */
+@media (min-device-width: 768px) and (max-device-width: 1024px) and (orientation : portrait)
 {
 
 }
+@media (min-device-width: 768px) and (max-device-width: 1024px) and (orientation : landscape)
+{
+
+}
+/* END 768 / 1024 */
+
+
+/* 414 / 736 */
+@media (min-device-width: 414px) and (max-device-width: 736px) and (orientation : portrait)
+{
+
+}
+@media (min-device-width: 414px) and (max-device-width: 736px) and (orientation : landscape)
+{
+
+}
+/* END 414 / 736 */
+
+
+/* 412 / 732 */
+@media (min-device-width: 412px) and (max-device-width: 732px) and (orientation : portrait)
+{
+
+}
+@media (min-device-width: 412px) and (max-device-width: 732px) and (orientation : landscape)
+{
+
+}
+/* END 412 / 732 */
+
+
+/* 375 / 667 */
+@media (min-device-width: 375px) and (max-device-width: 667px) and (orientation : portrait)
+{
+
+}
+@media (min-device-width: 375px) and (max-device-width: 667px) and (orientation : landscape)
+{
+
+}
+/* END 375 / 667 */
+
+
+/* 360 / 640 */
+@media (min-device-width: 360px) and (max-device-width: 640px) and (orientation : portrait)
+{
+
+}
+@media (min-device-width: 360px) and (max-device-width: 640px) and (orientation : landscape)
+{
+
+}
+/* END 360 / 640 */
+
+
+/* 320 / 568 */
+@media (min-device-width: 320px) and (max-device-width: 568px) and (orientation : portrait)
+{
+
+}
+@media (min-device-width: 320px) and (max-device-width: 568px) and (orientation : landscape)
+{
+
+}
+/* END 320 / 568 */
 
 
 
@@ -627,8 +755,7 @@ a.social:hover
 
 
 
-
-
+/*
 
 @media (min-width: px)
 {

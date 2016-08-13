@@ -1,2 +1,10 @@
 <h4><%=album["a_name"]%></h4>
 <% if (album["a_text"]){%><p><%=album["a_text"]%></p><%}%>
+<% album["images"].forEach(function (image)
+{
+	let imgSrc = (image["previews"] && image["previews"]["320_213"] ? image["previews"]["320_213"] : '/_0.gif');
+%>
+<div class="image">
+	<img src="<%=imgSrc%>" alt="<%=image["ai_text"]%>" data-img-id="<%=image["ai_id"]%>"/>
+</div>
+<%})%>

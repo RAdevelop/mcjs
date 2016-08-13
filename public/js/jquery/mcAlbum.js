@@ -34,13 +34,231 @@
 		return html;
 	}
 
-	//return ;
+	function imageDialog(img, params)
+	{
+		var defaults = {
+			id: ''
+		};
+
+		var options = $.extend({}, defaults, params);
+		var imgSrc = (img["previews"] && img["previews"]["1024_768"] ? img["previews"]["1024_768"] : '/_0.gif');
+
+
+		var htmlDialog = '';
+		htmlDialog += '<div class="modal fade" id="'+options.id+'" tabindex="-1" role="dialog" aria-labelledby="'+options.id+'">';
+		htmlDialog += '<div class="albumImageDialog modal-dialog" role="document">';
+		htmlDialog += '<div class="modal-content">';
+			htmlDialog += '<div class="modal-header">';
+
+			htmlDialog += ''+
+				'<div class="btn-toolbar displayInlineBlock" role="toolbar" aria-label="Опции фотографии">' +
+				'<div class="btn-group btn-group-xs" role="group" aria-label="опции фотографии">' +
+					'<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">опции <span class="caret"></span></button>' +
+					'<ul class="dropdown-menu dropdown-menu-left">' +
+						'<li><a href="javascript:void(0)">удалить</a></li>' +
+						'<li><a href="javascript:void(0)">Another action</a></li>' +
+						'<li><a href="javascript:void(0)">Something else here</a></li>' +
+						'<li role="separator" class="divider"></li>' +
+						'<li><a href="javascript:void(0)">Separated link</a></li>' +
+					'</ul>'+
+				'</div>' +
+				'<div class="btn-group btn-group-xs" role="group" aria-label="посмотреть на карте">' +
+					'<button type="button" class="btn btn-default" id="btn_img_map"><span class="fa fa-fw fa-map-marker"></span></button>' +
+				'</div>'+
+				'</div>';
+
+		
+			htmlDialog += '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+			htmlDialog += '</div>';
+
+			htmlDialog += '<div class="textCenter modal-body">';
+				htmlDialog += '<div id="imgMap" style="display: none;"></div>';
+				htmlDialog += '<img src="'+imgSrc+'" alt=""/>';
+			htmlDialog += '<textarea placeholder="описание фотографии">'+img["ai_text"]+'</textarea>';
+			htmlDialog += '</div>';
+
+			htmlDialog += '<div class="textCenter modal-footer">';
+			htmlDialog += '</div>';
+		htmlDialog += '</div>';
+		htmlDialog += '</div>';
+		htmlDialog += '</div>';
+
+		return htmlDialog;
+	}
+	function onChangeImgText(imgData, options, text)
+	{
+		var postData = {
+			"btn_save_album": "upd_img_text"
+			,"s_ai_text": text
+			,"i_ai_id": imgData["ai_id"]
+			,"i_a_id": imgData["a_id"]
+		};
+
+		$.ajax({
+			url: options.uri,
+			method: "POST",
+			data: postData,
+			dataType: "json"
+		})
+			.done(function(resData)
+			{
+				console.log(resData);
+			})
+			.fail(function(resData)
+			{
+				console.log(resData);
+			});
+	}
+
+	function onImgMap(img, $modal)
+	{
+		//TODO если его нет создать <div id="imgMap" style="display: none;"/>
+		// установить высоту и ширину равную $modalBody.width()  $modalBody.height()
+		//загрузить яндекс карты
+		//отобразить фото на карте
+		// скрыть фото в $modalBody
+		// показать div
+
+		if(!window["mcMap"]) return;
+
+		var $img = $modal.find('.modal-body > img');
+		var $imgMap = $modal.find('#imgMap');
+
+		if ($imgMap.css('display') != 'none')
+		{
+			$imgMap.hide();
+			$img.show();
+			return;
+		}
+
+		$imgMap.css({
+			width: $modal.find('.modal-body').width()
+			,height: $modal.find('.modal-body').height()
+		});
+
+		var mapState = {
+			center: [img["ai_latitude"], img["ai_longitude"]]
+			, controls: ["zoomControl"]
+			, zoom: 16
+		};
+
+		var mapOptions = {};
+
+		mcMap.init('imgMap', {state: mapState, options: mapOptions}, function (imgMap)
+		{
+			imgMap.behaviors.disable('multiTouch');
+			imgMap.behaviors.disable('scrollZoom');
+
+			var imgPlacemark = new ymaps.Placemark(imgMap.getCenter(), {
+				balloonContent: 'RA'
+
+			}, {
+				balloonCloseButton: true
+				,balloonOpen: true
+			} );
+
+			imgMap.geoObjects.add(imgPlacemark);
+			imgPlacemark.balloon.open(imgMap.getCenter());
+
+
+			/*imgMap.balloon.open(mapState.center, "Содержимое балуна", {
+				// Опция: не показываем кнопку закрытия.
+				closeButton: true
+			});*/
+
+
+			$img.hide();
+			$imgMap.show();
+		});
+	}
+
+	function onShowBsModal($modal, img, options)
+	{
+		var w = Math.floor($(window).width() - ($(window).width() * 0.43));
+		var h = Math.floor($(window).height() - ($(window).height() * 0.2));
+
+		var $modalBody = $modal.find('.albumImageDialog .modal-body');
+
+		$modalBody.find('> img').one('load', function ()
+		{
+			if (this.width >= this.height)
+			{
+				$modal.find('.albumImageDialog').css('width', w);
+				$(this).css('width', w-2).removeClass('vertical').addClass('horizontal');
+			}
+			else
+			{
+				$modal.find('.albumImageDialog').css('height', h);
+				$(this).css('height', h-2).removeClass('horizontal').addClass('vertical');
+			}
+		});
+		$modalBody.on('change', 'textarea', function ()
+		{
+			onChangeImgText(img, options, $(this).val());
+		});
+
+		$modal.find('#btn_img_map').attr('disabled',  true);
+		if (img["ai_latitude"] && img["ai_longitude"])
+		{
+			$modal.find('#btn_img_map').attr('disabled',  false);
+			$modal.on('click', '#btn_img_map', function (event){
+				event.preventDefault();
+				event.stopPropagation();
+				onImgMap(img, $modal);
+			});
+		}
+
+		//$modalBody.on('click', 'btn_img_map', function (){});
+	}
+
+	function openImageDialog($img, params, albumImages)
+	{
+		var defaults = {};
+		var options = $.extend({}, defaults, params);
+
+		var img = null;
+		var i;
+		for(i in albumImages)
+		{
+			if (albumImages[i].hasOwnProperty("ai_id") && albumImages[i]["ai_id"] == $img.attr("data-img-id"))
+			{
+				img = albumImages[i];
+				break;
+			}
+		}
+
+		if (!img) return;
+
+		options.id = '_album_img_dialog_'+img["ai_id"];
+
+		var $imageDialog = $(imageDialog(img, options))
+			.appendTo('body')
+			.modal('hide')
+			.on('show.bs.modal', function (event)
+			{
+				onShowBsModal($(this), img, options);
+
+				console.log("$mcDialog.on('show.bs.modal', function (event)");
+			})
+			.on('shown.bs.modal', function (event)
+			{
+				console.log("$mcDialog.on('shown.bs.modal', function (event)");
+			})
+			.on('hidden.bs.modal', function (event)
+			{
+				$(this).remove();
+				console.log("$mcDialog.on('hidden.bs.modal', function (event)");
+			}).modal('show');
+	}
+
 	$.fn.mcAlbum = function(params)
 	{
 		/* значение по умолчанию */
 		var defaults = {
 			uri: null
 			, albumToolbar: null
+			, albumWrapper: null //список фоток в альбоме
+			, albumImages: null //список фоток в альбоме
 			, s_token: null
 			, i_time: null
 			, a_id: null
@@ -51,6 +269,9 @@
 		/**/
 		
 		var $albumToolbar = $(options.albumToolbar);
+		var $albumWrapper = $(options.albumWrapper);
+		var $albumImages = $(options.albumWrapper+' '+options.albumImages);
+
 		var	$btnAddAlbum = $albumToolbar.find('#btn_add_album_modal');
 		var	$btnAlbumUpload = $albumToolbar.find('#btn_album_upload');
 
@@ -164,23 +385,22 @@
 				});
 			});
 		}
+
+		var albumImages = (MCJS["albumImages"] ? MCJS["albumImages"] : null);
+		var albumPreviews = (MCJS["albumPreviews"] ? MCJS["albumPreviews"] : null);
+
+		if(albumPreviews)
+		preloadImages(albumPreviews);
+
+		if ($albumImages)
+		{
+			$albumWrapper.on('click', options.albumImages +' img', function (event)
+			{
+				//console.log();
+				openImageDialog($(this), options, albumImages);
+			});
+		}
+		
 		return $(this);
 	}
 })(jQuery);
-
-/*
-
-<a class="albumBody" href="<%#=album["a_id"]%>/">
-<img src="<%#=imgSrc%>" alt="<%#=album["a_name"]%>"/>
-<div class="albumTools">
-	<span class="badge"><%#=album["a_img_cnt"]%></span>
-	<a href="javascript:void(0)"><span class="fa fa-edit"></span></a>
-	<a href="javascript:void(0)"><span class="fa fa-trash-o"></span></a>
-	</div>
-	<div class="albumTitle">
-	<div class="albumName"><%#=album["a_name"]%></div>
-	<%# if (album["a_text"]){%><div class="albumText"><%#=album["a_text"]%></div><%}%>
-</div>
-</a>
-
-*/

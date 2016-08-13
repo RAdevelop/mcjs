@@ -248,6 +248,27 @@ class Photo extends User
 		return this.constructor.conn().sRow(sql, [a_id, u_id]);
 	}
 
+	/**
+	 * список фото в альбоме
+	 *
+	 * @param u_id
+	 * @param a_id
+	 * @param start
+	 * @param limit
+	 */
+	getAlbumImages(u_id, a_id, start = 0, limit = 10)
+	{
+		let sql = "SELECT a.a_id, a.u_id, ai.ai_id, ai.ai_create_ts, ai.ai_update_ts, ai.ai_name, ai.ai_text, ai.ai_pos," +
+			"ai.ai_latitude, ai.ai_longitude, ai.ai_dir" +
+			" FROM (SELECT NULL) AS z" +
+			" JOIN album AS a ON (a.a_id = ? AND a.u_id = ?)" +
+			" JOIN album_type AS t ON (t.a_type_id = a.a_type_id)" +
+			" JOIN album_image AS ai ON (ai.a_id = a.a_id)" +
+			" ORDER BY ai.ai_update_ts DESC;";
+
+		return this.constructor.conn().s(sql, [a_id, u_id]);
+	}
+
 	albumImageReorder(u_id, a_id)
 	{
 		//return Promise.resolve(true);
@@ -259,6 +280,22 @@ class Photo extends User
 			{
 				return Promise.resolve(true);
 			});
+	}
+
+	/**
+	 * обновляем описание фотографии
+	 *
+	 * @param u_id
+	 * @param a_id
+	 * @param ai_id
+	 * @param ai_text
+	 */
+	updImgText(u_id, a_id, ai_id, ai_text)
+	{
+		let sql = "UPDATE album_image SET ai_text = ?" +
+			"WHERE ai_id = ? AND a_id = ? AND u_id = ?";
+		
+		return this.constructor.conn().upd(sql, [ai_text, ai_id, a_id, u_id]);
 	}
 }
 
