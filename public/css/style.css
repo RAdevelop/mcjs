@@ -351,6 +351,10 @@ a.social:hover
 	margin: 10px 0 10px 0;
 }
 
+.album-list-toolbar .dropdown-menu>li>a
+{
+	padding: 3px 5px;
+}
 .albums
 {
 	/*border: 1px solid;*/

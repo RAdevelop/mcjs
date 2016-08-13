@@ -187,6 +187,10 @@ class ProfilePhoto extends Base {
 				return this.addNamedAlbum(tplData);
 				break;
 
+			case 'edit_album':
+				return this.editAlbum(tplData);
+				break;
+
 			case 'upd_img_text':
 				return this.updImgText(tplData);
 				break;
@@ -224,6 +228,48 @@ class ProfilePhoto extends Base {
 			.then(function (tplData)
 			{
 				return this.getClass('user/photo').addNamedAlbum(this.getUserId(), tplData["s_album_name"], tplData["s_album_text"])
+					.then(function (a_id)
+					{
+						tplData["a_id"] = a_id;
+						return Promise.resolve(tplData);
+					});
+			});
+	}
+
+	editAlbum(tplData)
+	{
+		let errors = {};
+
+		tplData["s_album_name"] = (tplData["s_album_name"] || '').trim();
+
+		if (!tplData["i_a_id"] || !tplData.hasOwnProperty("s_album_name") || !tplData.hasOwnProperty("s_album_text"))
+			return Promise.reject(new Errors.HttpStatusError(400, 'Bad request'));
+
+		if (tplData["s_album_name"] == '')
+			errors["s_album_name"] = 'Укажите название альбома';
+
+		return Promise.resolve(errors)
+			.bind(this)
+			.then(function(errors)
+			{
+				let errKeys = Object.keys(errors);
+
+				if (errKeys.length)
+				{
+					errKeys.forEach(function(f)
+					{
+						tplData.formError.fields[f] = errors[f];
+					});
+
+					tplData.formError.message = 'Ошибка при редактировании фотоальбома';
+					return Promise.reject(new Errors.ValidationError(tplData.formError.message));
+				}
+
+				return Promise.resolve(tplData);
+			})
+			.then(function (tplData)
+			{
+				return this.getClass('user/photo').editAlbumNamed(this.getUserId(), tplData["i_a_id"], tplData["s_album_name"], tplData["s_album_text"])
 					.then(function (a_id)
 					{
 						tplData["a_id"] = a_id;

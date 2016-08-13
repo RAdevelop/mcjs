@@ -74,6 +74,24 @@ class Photo extends User
 			});
 	}
 
+	_updAlbum(u_id, a_type_id, a_id, a_name, a_alias, a_text)
+	{
+		let sql = "UPDATE album SET" +
+			" a_name = ?" +
+			" , a_alias = ?" +
+			" , a_text = ?" +
+			" , a_update_ts = ?" +
+			" WHERE a_id = ? AND u_id = ? AND a_type_id = ?;";
+
+		let now_ts = Moment().unix();
+
+		return this.constructor.conn().upd(sql, [a_name, a_alias, a_text, now_ts, a_id, u_id, a_type_id])
+			.then(function (res)
+			{
+				return Promise.resolve(a_id)
+			});
+	}
+
 	createAlbumUploaded(u_id)
 	{
 		this.constructor.albumUploaded;
@@ -89,9 +107,32 @@ class Photo extends User
 			.then(function (res)
 			{
 				a_type_id = res["a_type_id"];
-
 				return this._insAlbum(u_id, a_type_id, a_name, a_name, a_text);
-			})
+			});
+	}
+
+	/**
+	 * редактируем название и описание фотоальбома пользователя
+	 *
+	 * @param u_id
+	 * @param a_id
+	 * @param a_name
+	 * @param a_text
+	 * @returns {*}
+	 */
+	editAlbumNamed(u_id, a_id, a_name, a_text)
+	{
+		let a_type_id;
+		let sql = 'SELECT a_type_id FROM album_type WHERE a_type_alias = ?';
+		
+		return this.constructor.conn().psRow(sql, [this.constructor.albumNamed])
+			.bind(this)
+			.then(function (res)
+			{
+				a_type_id = res["a_type_id"];
+				
+				return this._updAlbum(u_id, a_type_id, a_id, a_name, a_name, a_text);
+			});
 	}
 
 	addProfilePhoto(u_id, fileData)

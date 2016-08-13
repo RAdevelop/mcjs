@@ -1,17 +1,21 @@
 <%  if(!isXHR){%><%- layout('layout/user/index') %><% }%>
 <div class="row album-list-toolbar">
-	<div class="btn-toolbar btn-toolbar" role="toolbar" aria-label="Опции для фотоальбомов">
-		<div class="btn-group btn-group-xs" role="group" aria-label="список альбомов">
-			<a href="/profile/photo/" class="btn btn-primary">все альбомы</a>
+	<div class="btn-toolbar" role="toolbar" aria-label="Опции для фотоальбомов">
+		<div class="btn-group btn-group-sm" role="group" aria-label="список альбомов">
+			<a href="/profile/photo/" class="btn btn-default"><span class="fa fa-fw fa-list"></span> все альбомы</a>
 		</div>
-		<div class="btn-group btn-group-xs" role="group" aria-label="создать новый альбом">
-			<button type="button" class="btn btn-primary" id="btn_add_album_modal">создать новый альбом</button>
+		<div class="btn-group btn-group-sm" role="group" aria-label="Опции для фотоальбомов">
+			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fa fa-fw fa-cog"></span> опции <span class="caret"></span></button>
+			<ul class="dropdown-menu ">
+				<% if(album){ %>
+				<li><a href="javascript:void(0)" id="btn_album_upload"><span class="fa fa-fw fa-cloud-upload"></span> загрузить фотографии</a></li>
+				<li><a href="javascript:void(0)" id="btn_edit_album_modal"><span class="fa fa-fw fa-edit"></span> изменить описание</a></li>
+				<li><a href="javascript:void(0)"><span class="fa fa-fw fa-trash-o"></span> удалить альбом</a></li>
+				<li role="separator" class="divider"></li>
+				<% } %>
+				<li><a href="javascript:void(0)" id="btn_add_album_modal"><span class="fa fa-fw fa-plus-square-o"></span> создать новый альбом</a></li>
+			</ul>
 		</div>
-		<% if(album){ %>
-		<div class="btn-group btn-group-xs" role="group" aria-label="загрузить новые фотографии">
-			<button type="button" class="btn btn-primary" id="btn_album_upload">загрузить новые фотографии</button>
-		</div>
-		<% } %>
 	</div>
 </div>
 <div class="row albums">
@@ -35,6 +39,8 @@ $(function()
 		, albumToolbar: '.album-list-toolbar'
 		, albumWrapper: '.albums .imageList'
 		, albumImages: '.image'
+		, albumName: '#a_name'
+		, albumText: '#a_text'
 		, s_token: '<%=(typeof s_token == 'undefined' ? '' : s_token)%>'
 		, i_time: '<%=(typeof i_time == 'undefined' ? '' : i_time)%>'
 		, a_id: '<%=(typeof a_id  == 'undefined'? '' : a_id)%>'

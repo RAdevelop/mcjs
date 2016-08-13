@@ -36,6 +36,20 @@ class UserPhoto extends User
 	}
 
 	/**
+	 * редактируем название и описание фотоальбома пользователя
+	 *
+	 * @param u_id
+	 * @param a_id
+	 * @param a_name
+	 * @param a_text
+	 * @returns {*}
+	 */
+	editAlbumNamed(u_id, a_id, a_name, a_text)
+	{
+		return this.model('user/photo').editAlbumNamed(u_id, a_id, a_name, a_text);
+	}
+
+	/**
 	 * список фотоальбомов пользователя
 	 * @param u_id
 	 * @returns {*}

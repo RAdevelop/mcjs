@@ -1,5 +1,5 @@
-<h4><%=album["a_name"]%></h4>
-<% if (album["a_text"]){%><p><%=album["a_text"]%></p><%}%>
+<h4 id="a_name"><%=album["a_name"]%></h4>
+<% if (album["a_text"]){%><p id="a_text"><%=album["a_text"]%></p><%}%>
 <div class="imageList">
 <% album["images"].forEach(function (image)
 {

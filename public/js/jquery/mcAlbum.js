@@ -1,20 +1,24 @@
 (function($) {
 
-	var albumImages = (MCJS["albumImages"] ? MCJS["albumImages"] : null);
-	var albumPreviews = (MCJS["albumPreviews"] ? MCJS["albumPreviews"] : null);
+	var albumImages = (MCJS["albumImages"] ? MCJS["albumImages"] : []);
+	var albumPreviews = (MCJS["albumPreviews"] ? MCJS["albumPreviews"] : []);
 
 	function formAddAlbum(options)
 	{
+		options.aName = options.aName || '';
+		options.aText = options.aText || '';
+		options.a_id = options.a_id || null;
 		var html = '<form class="form-horizontal" action="'+options.uri+'" method="post" id="formAddAlbum">' +
-			'<input type="hidden" name="btn_save_album" value="add_album"/>' +
+			'<input type="hidden" name="btn_save_album" value="'+options.btnSaveAlbumVal+'"/>' +
+			'<input type="hidden" name="i_a_id" value="'+options.a_id+'"/>' +
 			'<div class="form-group s_album_name">' +
 			'<div class="col-sm-12">' +
-			'<input type="text" class="form-control" id="s_album_name" name="s_album_name" value="" placeholder="название альбома *" required />' +
+			'<input type="text" class="form-control" id="s_album_name" name="s_album_name" value="'+options.aName+'" placeholder="название альбома *" required maxlength="100"/>' +
 			'</div>' +
 			'</div>' +
 			'<div class="form-group s_album_text">' +
 			'<div class="col-sm-12">' +
-			'<textarea class="form-control" id="s_album_text" name="s_album_text" placeholder="описание альбома"></textarea>' +
+			'<textarea class="form-control" id="s_album_text" name="s_album_text" placeholder="описание альбома" maxlength="255">'+options.aText+'</textarea>' +
 			'</div>' +
 			'</div>' +
 			'</form>';
@@ -319,6 +323,8 @@
 			, albumToolbar: null
 			, albumWrapper: null //родитель списка фоток в альбоме
 			, albumImages: null //список фоток в альбоме
+			, albumName: null
+			, albumText: null
 			, s_token: null
 			, i_time: null
 			, a_id: null
@@ -331,15 +337,18 @@
 		var $albumToolbar = $(options.albumToolbar);
 		var $albumWrapper = $(options.albumWrapper);
 		var $albumImages = $(options.albumWrapper+' '+options.albumImages);
+		var $albumName = $(options.albumName);
+		var $albumText = $(options.albumText);
 
 		var	$btnAddAlbum = $albumToolbar.find('#btn_add_album_modal');
+		var	$btnEditAlbum = $albumToolbar.find('#btn_edit_album_modal');
 		var	$btnAlbumUpload = $albumToolbar.find('#btn_album_upload');
 
 		$btnAddAlbum.click(function (event)
 		{
 			event.preventDefault();
 			event.stopPropagation();
-
+			options.btnSaveAlbumVal = 'add_album';
 			$('__add_album_dialog__').mcDialog({
 				title: 'Создание нового альбома'
 				, body: formAddAlbum(options)
@@ -371,19 +380,65 @@
 						title: 'сохранить'
 						, name: 'btn_add_album'
 						, cssClass: 'btn-success'
-						/*, func:
-						{
-							"click": function(event)
-							{
-								var $dialog = $(event.data[0]);
-								//$dialog.find('#formAddAlbum').submit();
-								//$(event.data[0]).modal('hide');
-							}
-						}*/
 					},
 					{
 						title: 'отменить'
 						,name: 'btn_add_album_cancel'
+						,cssClass: 'btn-danger'
+						,func:
+						{
+							"click": function(event)
+							{
+								$(event.data[0]).modal('hide');
+							}
+						}
+					}
+				]
+			});
+		});
+
+		$btnEditAlbum.click(function (event)
+		{
+			event.preventDefault();
+			event.stopPropagation();
+			options.btnSaveAlbumVal = 'edit_album';
+			options.aName = $albumName.text();
+			options.aText = $albumText.text();
+			$('__add_album_dialog__').mcDialog({
+				title: 'Редактирование альбома'
+				, body: formAddAlbum(options)
+				, onOpen: function ($dialog)
+				{
+					$dialog.find('#formAddAlbum').postRes({
+						btnId: $dialog.find('#btn_edit_album'),
+						onSuccess: function($respDialog, resp)
+						{
+							$albumName.text(resp["s_album_name"]);
+							$albumText.text(resp["s_album_text"]);
+							//не показать диалог
+							$dialog.modal('hide');
+							return false;
+						},
+						onFail: function ($respDialog, resp)
+						{
+							$dialog.hide();
+							return true;
+						},
+						onClose: function ($respDialog)
+						{
+							$dialog.show();
+						}
+					});
+				}
+				, buttons: [
+					{
+						title: 'сохранить'
+						, name: 'btn_edit_album'
+						, cssClass: 'btn-success'
+					},
+					{
+						title: 'отменить'
+						,name: 'btn_edit_album_cancel'
 						,cssClass: 'btn-danger'
 						,func:
 						{
@@ -448,7 +503,7 @@
 			});
 		}
 
-		if(albumPreviews)
+		if(albumPreviews.length)
 		preloadImages(albumPreviews);
 
 		if ($albumImages)

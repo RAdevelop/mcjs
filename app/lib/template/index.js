@@ -29,7 +29,7 @@ function Template(req, res, next)
 		title: (res.locals.menuItem && res.locals.menuItem.m_title ? res.locals.menuItem.m_title : ''),
 		h1: (res.locals.menuItem && res.locals.menuItem.m_h1 ? res.locals.menuItem.m_h1 : ''),
 		description:(res.locals.menuItem && res.locals.menuItem.m_desc ? res.locals.menuItem.m_desc : ''),
-		back: back //ссылка "назад" для редиректов "Обрабтно"
+		back: back //ссылка "назад" для редиректов "Обрабтно",
 	};
 
 	this.ajaxData = {};
