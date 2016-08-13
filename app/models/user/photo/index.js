@@ -103,9 +103,11 @@ class Photo extends User
 				return this._insImage(a_id, u_id)
 					.then(function (res)
 					{
-						fileData["a_id"] = a_id;
 						fileData["u_id"] = u_id;
 						fileData["ai_id"] = res['insertId'];
+						fileData["a_id"] = a_id;
+						fileData["ai_pos"] = "0";
+
 						return Promise.resolve(fileData);
 					});
 			});
@@ -124,6 +126,7 @@ class Photo extends User
 		.then(function (res)
 		{
 			fileData["u_id"] = u_id;
+			fileData["ai_pos"] = "0";
 			fileData["ai_id"] = res['insertId'];
 			return Promise.resolve(fileData);
 		});
@@ -264,7 +267,7 @@ class Photo extends User
 			" JOIN album AS a ON (a.a_id = ? AND a.u_id = ?)" +
 			" JOIN album_type AS t ON (t.a_type_id = a.a_type_id)" +
 			" JOIN album_image AS ai ON (ai.a_id = a.a_id)" +
-			" ORDER BY ai.ai_update_ts DESC;";
+			" ORDER BY ai.ai_pos;";
 
 		return this.constructor.conn().s(sql, [a_id, u_id]);
 	}
@@ -294,7 +297,7 @@ class Photo extends User
 	{
 		let sql = "UPDATE album_image SET ai_text = ?" +
 			"WHERE ai_id = ? AND a_id = ? AND u_id = ?";
-		
+
 		return this.constructor.conn().upd(sql, [ai_text, ai_id, a_id, u_id]);
 	}
 }

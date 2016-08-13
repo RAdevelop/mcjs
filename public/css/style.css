@@ -581,7 +581,11 @@ a.social:hover
 /********** END список фотоальбомов **************/
 
 /********** список фоток в альбоме **************/
-.albums .image
+.albums .imageList
+{
+	min-height: 158px;
+}
+.albums .imageList .image
 {
 	width: 237px;
 	height: 158px;
@@ -620,6 +624,17 @@ a.social:hover
 	background-color: rgba(51, 51, 51, 0.5);
 	color: #fff;
 }
+
+.mcMap .albumImageInMapBalloon
+{
+	width: 158px;
+	overflow: hidden;
+}
+.mcMap .albumImageInMapBalloon img
+{
+	width: 100%;
+}
+
 .albumImageDialog .modal-body img.vertical
 {
 /*использовать для мобильников height: xxxpx !important;

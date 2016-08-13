@@ -168,6 +168,8 @@ class UserPhoto extends User
 					.updImage(u_id, file.a_id, file.ai_id, file.latitude, file.longitude, '', file.webDirPath, file.name, true)
 					.then(function ()
 					{
+						file["ai_name"] = file.name;
+						file["ai_text"] = '';
 						return Promise.resolve(file);
 					});
 			})

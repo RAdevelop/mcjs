@@ -1,5 +1,8 @@
 (function($) {
 
+	var albumImages = (MCJS["albumImages"] ? MCJS["albumImages"] : null);
+	var albumPreviews = (MCJS["albumPreviews"] ? MCJS["albumPreviews"] : null);
+
 	function formAddAlbum(options)
 	{
 		var html = '<form class="form-horizontal" action="'+options.uri+'" method="post" id="formAddAlbum">' +
@@ -72,7 +75,7 @@
 			htmlDialog += '</div>';
 
 			htmlDialog += '<div class="textCenter modal-body">';
-				htmlDialog += '<div id="imgMap" data-map-init="false" style="display: none;"></div>';
+				htmlDialog += '<div id="imgMap" data-map-init="false" class="mcMap" style="display: none;"></div>';
 				htmlDialog += '<img src="'+imgSrc+'" class="imageInModal" alt=""/>';
 			htmlDialog += '<textarea placeholder="описание фотографии">'+img["ai_text"]+'</textarea>';
 			htmlDialog += '</div>';
@@ -85,6 +88,7 @@
 
 		return htmlDialog;
 	}
+
 	function onChangeImgText(imgData, options, text)
 	{
 		var postData = {
@@ -103,6 +107,8 @@
 			.done(function(resData)
 			{
 				console.log(resData);
+				if (!resData["formError"] || !resData["formError"]["error"])
+					updImg(imgData["ai_id"], {"ai_text": text});
 			})
 			.fail(function(resData)
 			{
@@ -110,56 +116,64 @@
 			});
 	}
 
-	function onImgMap(img, $modal)
+	function onImgMap(img, $modal, ImgMcMap)
 	{
-		if(!window["mcMap"]) return;
-
 		var $img = $modal.find('.modal-body img.imageInModal');
-		var $imgMap = $modal.find('#imgMap');
+		var $imgMap = $modal.find('#'+ImgMcMap.getMapId());
 
 		$imgMap.css({
 			width: $modal.find('.modal-body').width(),
 			height: $modal.find('.modal-body').height()
 		});
 
-		if (($imgMap.attr('data-map-init') == 'true'))
+		if (ImgMcMap.isInit())
 		{
 			$imgMap.toggle();
 			$img.toggle();
-
 			return;
 		}
 
-		var mapState = {
-			center: [img["ai_latitude"], img["ai_longitude"]]
-			, controls: ["zoomControl"]
-			, zoom: 16
-		};
+		ImgMcMap.init()
+			.then(function (imgMcMap)
+			{
+				$imgMap.toggle();
+				$img.toggle();
 
-		var mapOptions = {};
+				imgMcMap.behaviors.disable('multiTouch');
+				imgMcMap.behaviors.disable('scrollZoom');
 
-		mcMap.init('imgMap', {state: mapState, options: mapOptions}, function (imgMap)
-		{
-			$imgMap.toggle();
-			$img.toggle();
+				var imgPlacemark = new ymaps.Placemark(imgMcMap.getCenter(),
+					{
+						//balloonContentHeader: 'Заголовок балуна',
+						balloonContentBody: '<div class="albumImageInMapBalloon"><img src="'+img["previews"]["320_213"]+'"/></div>'
+					},
+					{
+						balloonCloseButton: false,
+						balloonPanelMaxMapArea: 0
+					}
+				);
 
-			imgMap.behaviors.disable('multiTouch');
-			imgMap.behaviors.disable('scrollZoom');
+				imgMcMap.geoObjects.add(imgPlacemark);
+				imgPlacemark.balloon.open();
 
-			var imgPlacemark = new ymaps.Placemark(imgMap.getCenter(),
-				{
-					//balloonContentHeader: 'Заголовок балуна',
-					balloonContentBody: '<div><img src="'+img["previews"]["320_213"]+'"/></div>'
-				},
-				{
-					balloonCloseButton: false,
-					balloonPanelMaxMapArea: 0
-				}
-			);
+				return ymaps.vow.resolve(imgMcMap);
+			})
+			.then(function (imgMcMap)
+			{
+				return McMap.locationByLatLng(imgMcMap.getCenter()[0], imgMcMap.getCenter()[1], 'house', 1)
+					.then(function (location)
+					{
+						imgMcMap.hint.open(imgMcMap.getCenter(),
+							location["text"]
+						);
 
-			imgMap.geoObjects.add(imgPlacemark);
-			imgPlacemark.balloon.open();
-		});
+						return ymaps.vow.resolve(location);
+					});
+			})
+			.fail(function (err)
+			{
+				console.log(err);
+			});
 	}
 
 	function onShowBsModal($modal, img, options)
@@ -188,35 +202,75 @@
 		});
 
 		$modal.find('#btn_img_map').attr('disabled',  true);
-		if (img["ai_latitude"] && img["ai_longitude"])
+		if (img["ai_latitude"] && img["ai_longitude"] && window["McMap"])
 		{
 			$modal.find('#btn_img_map').attr('disabled',  false);
+
+			var mapState = {
+				center: [img["ai_latitude"], img["ai_longitude"]]
+				, controls: ["zoomControl"]
+				, zoom: 16
+			};
+			var mapOptions = {};
+			var ImgMcMap = new McMap('imgMap', {state: mapState, options: mapOptions});
+
 			$modal.on('click', '#btn_img_map', function (event)
 			{
 				event.preventDefault();
 				event.stopPropagation();
-				onImgMap(img, $modal);
+				onImgMap(img, $modal, ImgMcMap);
 			});
 		}
 
 		//$modalBody.on('click', 'btn_img_map', function (){});
 	}
 
-	function openImageDialog($img, params, albumImages)
+	function getImg(ai_id)
 	{
-		var defaults = {};
-		var options = $.extend({}, defaults, params);
-
+		console.log('getImg(ai_id)');
 		var img = null;
 		var i;
 		for(i in albumImages)
 		{
-			if (albumImages[i].hasOwnProperty("ai_id") && albumImages[i]["ai_id"] == $img.attr("data-img-id"))
+			if (albumImages[i].hasOwnProperty("ai_id") && albumImages[i]["ai_id"] == ai_id)
 			{
 				img = albumImages[i];
 				break;
 			}
 		}
+		console.log(img);
+		console.log('END getImg(ai_id)');
+		return img;
+	}
+
+	/**
+	 * обновялем данные указанной фотки в массиве фоток albumImages
+	 *
+	 * @param ai_id
+	 * @param data
+	 * @returns {boolean}
+	 */
+	function updImg(ai_id, data)
+	{
+		data = data || {};
+		var i;
+		for(i in albumImages)
+		{
+			if (albumImages[i].hasOwnProperty("ai_id") && albumImages[i]["ai_id"] == ai_id)
+			{
+				albumImages[i] = $.extend({}, albumImages[i], data);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	function openImageDialog($img, params)
+	{
+		var defaults = {};
+		var options = $.extend({}, defaults, params);
+
+		var img = getImg($img.attr("data-img-id"));
 
 		if (!img) return;
 
@@ -242,13 +296,28 @@
 			}).modal('show');
 	}
 
+	function prependImgToAlbum(filesUploaded, $albumWrapper)
+	{
+		var i, image, html, imgSrc;
+
+		for(i = 0; i < filesUploaded.length; i++)
+		{
+			image = filesUploaded[i];
+			imgSrc = (image["previews"] && image["previews"]["320_213"] ? image["previews"]["320_213"] : '/_0.gif');
+			html = '<div class="image"><img src="'+imgSrc+'" alt="'+image["ai_text"]+'" data-img-id="'+image["ai_id"]+'"/></div>';
+			$albumWrapper.prepend(html);
+
+			albumImages.unshift(image);
+		}
+	}
+
 	$.fn.mcAlbum = function(params)
 	{
 		/* значение по умолчанию */
 		var defaults = {
 			uri: null
 			, albumToolbar: null
-			, albumWrapper: null //список фоток в альбоме
+			, albumWrapper: null //родитель списка фоток в альбоме
 			, albumImages: null //список фоток в альбоме
 			, s_token: null
 			, i_time: null
@@ -340,6 +409,8 @@
 
 				$(this).parents('.modal').find('.modal-footer').show();
 
+				prependImgToAlbum(filesUploaded, $albumWrapper);
+
 			};
 
 			albumUploadOpts.onStart = function()
@@ -377,9 +448,6 @@
 			});
 		}
 
-		var albumImages = (MCJS["albumImages"] ? MCJS["albumImages"] : null);
-		var albumPreviews = (MCJS["albumPreviews"] ? MCJS["albumPreviews"] : null);
-
 		if(albumPreviews)
 		preloadImages(albumPreviews);
 
@@ -388,7 +456,7 @@
 			$albumWrapper.on('click', options.albumImages +' img', function (event)
 			{
 				//console.log();
-				openImageDialog($(this), options, albumImages);
+				openImageDialog($(this), options);
 			});
 		}
 		

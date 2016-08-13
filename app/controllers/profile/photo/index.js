@@ -276,6 +276,12 @@ class ProfilePhoto extends Base {
 				tplData = {
 					a_id: file.a_id,
 					ai_id: file.ai_id,
+					ai_text: file.ai_text,
+					ai_pos: file.ai_pos,
+					ai_name: file.ai_name,
+					ai_latitude: file.latitude,
+					ai_longitude: file.longitude,
+					u_id: file.u_id,
 					name: file.name,
 					size: file.size,
 					previews: file.previews
