@@ -6,7 +6,7 @@
 const Errors = require('app/lib/errors');
 const DbError = {};
 
-DbError.Sql = Errors.helpers.generateClass("Sql", {
+DbError.SqlError = Errors.helpers.generateClass("SqlError", {
 	extends: Errors.data.SQLError,
 	globalize: true,
 	args: ['message', 'sqlCode', 'inner_error'],
@@ -27,16 +27,16 @@ DbError.DbErrDuplicateEntry = Errors.helpers.generateClass("DbErrDuplicateEntry"
 
 function sqlErrors(code, err)
 {
-	if (!code) return new DbError.Sql(err.message, code, err);
+	if (!code) return new DbError.SqlError(err.message, code, err);
 
 	let e = {
 		1062: function code1062(){return new DbError.DbErrDuplicateEntry(1062, err);}
 	};
 	
-	if (e[code]) return e[code]();
+	if (e[code]) return (e[code])();
 	
-	return new DbError.Sql(err.message, code, err);
-};
+	return new DbError.SqlError(err.message, code, err);
+}
 
 module.exports = function(err)
 {

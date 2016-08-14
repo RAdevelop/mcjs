@@ -1,9 +1,6 @@
 <%  if(!isXHR){%><%- layout('layout/user/index') %><% }%>
 <div class="row album-list-toolbar">
 	<div class="btn-toolbar" role="toolbar" aria-label="Опции для фотоальбомов">
-		<div class="btn-group btn-group-sm" role="group" aria-label="список альбомов">
-			<a href="/profile/photo/" class="btn btn-default"><span class="fa fa-fw fa-list"></span> все альбомы</a>
-		</div>
 		<div class="btn-group btn-group-sm" role="group" aria-label="Опции для фотоальбомов">
 			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fa fa-fw fa-cog"></span> опции <span class="caret"></span></button>
 			<ul class="dropdown-menu ">
@@ -16,6 +13,11 @@
 				<li><a href="javascript:void(0)" id="btn_add_album_modal"><span class="fa fa-fw fa-plus-square-o"></span> создать новый альбом</a></li>
 			</ul>
 		</div>
+		<% if(album){ %>
+		<div class="btn-group btn-group-sm" role="group" aria-label="список альбомов">
+			<a href="/profile/photo/" class="btn btn-default"><span class="fa fa-fw fa-list"></span> все альбомы</a>
+		</div>
+		<% } %>
 	</div>
 </div>
 <div class="row albums">

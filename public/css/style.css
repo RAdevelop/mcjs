@@ -381,6 +381,14 @@ a.social:hover
 	text-align: center;
 	background: #F1F1F1;
 }
+
+.albums .album a.albumImg .fa-camera
+{
+	font-size: 115px;
+	line-height: 174px;
+	color: #ccc;
+	text-decoration: none;
+}
 .albums .album a.albumImg img
 {
 	/*width: 245px;*/
@@ -591,6 +599,7 @@ a.social:hover
 }
 .albums .imageList .image
 {
+	cursor: move;
 	width: 237px;
 	height: 158px;
 	overflow: hidden;
@@ -641,49 +650,13 @@ a.social:hover
 
 .albumImageDialog .modal-body img.vertical
 {
-/*использовать для мобильников height: xxxpx !important;
-*/
-
+	height: 100%;
 }
-
 .albumImageDialog .modal-body img.horizontal
 {
-/*использовать для мобильников width: xxxpx !important;*/
+	width: 100%;
 }
 
-/* 375 / 667 */
-@media (min-device-width: 375px) and (max-device-width: 667px) and (orientation : portrait)
-{
-	.albumImageDialog.modal-dialog
-	{
-		width: auto !important;
-		height: auto !important;
-	}
-	.albumImageDialog .modal-body img.vertical
-	{
-		height: 472px !important;
-	}
-	.albumImageDialog .modal-body img.horizontal
-	{
-		width: 353px !important;
-	}
-}
-@media (min-device-width: 375px) and (max-device-width: 667px) and (orientation : landscape)
-{
-	.albumImageDialog.modal-dialog {
-		width: auto !important;
-		height: auto !important;
-	}
-
-	.albumImageDialog .modal-body img.vertical {
-		height: 270px !important;
-	}
-
-	.albumImageDialog .modal-body img.horizontal {
-		width: 360px !important;
-	}
-}
-/* END 375 / 667 */
 /********** END список фоток в альбоме **************/
 
 

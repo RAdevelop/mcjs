@@ -92,9 +92,9 @@ class MariaSQL
 			})
 			.catch(function (err)
 			{
-				if (cb) return cb(err);
+				if (cb) return cb(DbErrors(err));
 
-				throw err;
+				throw DbErrors(err);
 			});
 	}
 
@@ -119,9 +119,9 @@ class MariaSQL
 			})
 			.catch(function (err)
 			{
-				if (cb) return cb(err);
+				if (cb) return cb(DbErrors(err));
 
-				throw err;
+				throw DbErrors(err);
 			});
 	}
 
@@ -156,9 +156,9 @@ class MariaSQL
 			})
 			.catch(function (err)
 			{
-				if (cb) return cb(err);
+				if (cb) return cb(DbErrors(err));
 
-				throw err;
+				throw DbErrors(err);
 			});
 	}
 
@@ -185,9 +185,9 @@ class MariaSQL
 			})
 			.catch(function (err)
 			{
-				if (cb) return cb(err);
+				if (cb) return cb(DbErrors(err));
 
-				throw err;
+				throw DbErrors(err);
 			});
 	}
 
@@ -224,9 +224,9 @@ class MariaSQL
 			})
 			.catch(function (err)
 			{
-				if (cb) return cb(err);
+				if (cb) return cb(DbErrors(err));
 
-				throw err;
+				throw DbErrors(err);
 			});
 	}
 
@@ -263,9 +263,9 @@ class MariaSQL
 			})
 			.catch(function (err)
 			{
-				if (cb) return cb(err);
+				if (cb) return cb(DbErrors(err));
 
-				throw err;
+				throw DbErrors(err);
 			});
 	}
 
@@ -315,9 +315,9 @@ class MariaSQL
 			})
 			.catch(function (err)
 			{
-				if (cb) return cb(err);
+				if (cb) return cb(DbErrors(err));
 
-				throw err;
+				throw DbErrors(err);
 			});
 	}
 
@@ -350,9 +350,9 @@ class MariaSQL
 			})
 			.catch(function (err)
 			{
-				if (cb) return cb(err);
+				if (cb) return cb(DbErrors(err));
 
-				throw err;
+				throw DbErrors(err);
 			});
 	}
 
@@ -385,9 +385,9 @@ class MariaSQL
 			})
 			.catch(function (err)
 			{
-				if (cb) return cb(err);
+				if (cb) return cb(DbErrors(err));
 
-				throw err;
+				throw DbErrors(err);
 			});
 	}
 }

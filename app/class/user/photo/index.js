@@ -223,7 +223,7 @@ class UserPhoto extends User
 			.bind(this)
 			.then(function (image)
 			{
-				if (!image)
+				if (!image || image["a_id"] != a_id)
 					throw new FileErrors.io.FileNotFoundError();
 
 				return Promise.resolve(image);
@@ -236,9 +236,6 @@ class UserPhoto extends User
 					return Promise.reject(new FileErrors.io.DirectoryNotFoundError());
 
 				dir = Path.dirname(Path.join(FileUpload.getDocumentRoot, dir));
-
-				if (FileUpload.isForbiddenDir(dir))
-					return Promise.reject(new FileErrors.io.DirectoryNotFoundError());
 
 				return FileUpload.deleteDir(dir, true)
 					.bind(this)
@@ -253,7 +250,7 @@ class UserPhoto extends User
 			})
 			.catch(function (err)
 			{
-				console.log('class UserPhoto delImage');
+				console.log('class UserPhoto delImage catch');
 				console.log(err);
 				console.log('\n');
 
@@ -265,6 +262,19 @@ class UserPhoto extends User
 			});
 	}
 
+	/**
+	 * обновляем описание фотографии
+	 *
+	 * @param u_id
+	 * @param a_id
+	 * @param ai_id
+	 * @param ai_text
+	 */
+	updImgText(u_id, a_id, ai_id, ai_text)
+	{
+		return this.model('user/photo').updImgText(u_id, a_id, ai_id, ai_text);
+	}
+	
 	/**
 	 * обновляем описание фотографии
 	 *

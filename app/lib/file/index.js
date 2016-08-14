@@ -151,12 +151,12 @@ class File
 			{
 				if (err)
 				{
-					if (!File.isForbiddenDir(file.fullFilePath))
+					/*if (!File.isForbiddenDir(file.fullFilePath))
 					{
 						FS.unlink(file.fullFilePath, function(err){
 							//console.log(err);
 						});
-					}
+					}*/
 					return reject(new FileErrors.FileGetImageSize(err));
 				}
 
@@ -174,12 +174,12 @@ class File
 				{
 					if (err)
 					{
-						if (!File.isForbiddenDir(filePathTo))
+						/*if (!File.isForbiddenDir(filePathTo))
 						{
 							FS.unlink(filePathTo, function(err){
 								//console.log(err);
 							});
-						}
+						}*/
 
 						return reject(new FileErrors.FileImageReSize(err));
 					}
@@ -232,7 +232,7 @@ class File
 			});
 	}
 
-	static _cropImg(file, w, h, crop_x, crop_y, crop_width, crop_height)
+	static cropImg(file, w, h, crop_x, crop_y, crop_width, crop_height)
 	{
 		return new Promise(function(resolve, reject)
 		{
@@ -246,6 +246,17 @@ class File
 			GM(filePathFrom)
 				.size(function (err, size)
 				{
+					crop_x = parseInt((crop_x > 0 ? crop_x : 0), 10);
+					crop_y = parseInt((crop_y > 0 ? crop_y : 0), 10);
+
+					crop_width = parseInt(crop_width, 10) || 50;
+					crop_width = ((crop_width + crop_x) < size.width ? crop_width : (size.width - crop_x));
+					crop_width = (crop_width > 50 ? crop_width : 50);
+
+					crop_height = parseInt(crop_height, 10) || 50;
+					crop_height = ((crop_height + crop_y) < size.height ? crop_height : (size.height - crop_y));
+					crop_height = (crop_height > 50 ? crop_height : 50);
+
 					if (err)
 						return reject(new FileErrors.FileGetImageSize(err));
 
@@ -268,11 +279,11 @@ class File
 	static cropImage(file, uploadConfType, crop_x, crop_y, crop_width, crop_height)
 	{
 		let sizeParams = File.getUploadConfig(uploadConfType).cropSize;
-		const self = this;
-
+		//const self = this;
+		
 		let images = sizeParams.map(function(size)
 		{
-			return File._cropImg(file, size.w, size.h, crop_x, crop_y, crop_width, crop_height);
+			return File.cropImg(file, size.w, size.h, crop_x, crop_y, crop_width, crop_height);
 		});
 
 		//return Promise.all(images)
@@ -391,7 +402,7 @@ class File
 	static deleteDir(dir, delNotEmptyDir = true)
 	{
 		if (File.isForbiddenDir(dir))
-			return Promise.reject(new FileErrors.io.DirectoryNotFoundError(dir));
+			return Promise.reject(new FileErrors.ForbiddenDirectory(dir));
 
 		return new Promise(function (resolve, reject)
 		{
@@ -403,7 +414,7 @@ class File
 				{
 					return reject(new FileErrors.DirEmpty(dir));
 				}
-				else if (!delNotEmptyDir)
+				else if (!delNotEmptyDir)//не удалять не пустую папку
 				{
 					return reject(new FileErrors.DirNotEmpty(dir));
 				}
@@ -439,16 +450,18 @@ class File
 		{
 			//console.log(dirData);
 
-			dirData.files = dirData.files.map(function(fPath){
-
+			dirData.files = dirData.files.map(function(fPath)
+			{
 				return new Promise(function (resolve, reject)
 				{
 					if (File.isForbiddenDir(fPath))
-						return reject(new FileErrors.io.DirectoryNotFoundError(dir));
+						return reject(new FileErrors.ForbiddenDirectory(fPath));
 
 					FS.unlink(fPath, function (err) 
 					{
-						if (err) return reject(err);
+						//если ошибка не связана с директории или файла, которых хотим удалить
+						if (err && err.code != 'ENOENT')
+							return reject(err);
 
 						return resolve(true);
 					});
@@ -461,11 +474,15 @@ class File
 					return Promise.mapSeries(dirData.dirs, function (dPath)
 					{
 						if (File.isForbiddenDir(dPath))
-							return Promise.reject(new FileErrors.io.DirectoryNotFoundError(dir));
+							return Promise.reject(new FileErrors.ForbiddenDirectory(dPath));
 
 						FS.rmdir(dPath, function (err)
 						{
-							if (err) return Promise.reject(err);
+							//if (err) return Promise.reject(err);
+
+							//если ошибка не связана с директории или файла, которых хотим удалить
+							if (err && err.code != 'ENOENT')
+								return Promise.reject(err);
 
 							return Promise.resolve(true);
 						});
@@ -476,11 +493,14 @@ class File
 					return new Promise(function (resolve, reject)
 					{
 						if (File.isForbiddenDir(dir))
-							return reject(new FileErrors.io.DirectoryNotFoundError(dir));
+							return reject(new FileErrors.ForbiddenDirectory(dir));
 
 						FS.rmdir(dir, function (err)
 						{
-							if (err) return reject(err);
+							//if (err) return reject(err);
+							//если ошибка не связана с директории или файла, которых хотим удалить
+							if (err && err.code != 'ENOENT')
+								return reject(err);
 
 							return resolve(true);
 						});
@@ -492,11 +512,13 @@ class File
 			return new Promise(function (resolve, reject)
 			{
 				if (File.isForbiddenDir(dir))
-					return reject(new FileErrors.io.DirectoryNotFoundError(dir));
+					return reject(new FileErrors.ForbiddenDirectory(dir));
 
 				FS.rmdir(dir, function (err)
 				{
-					if (err) return reject(err);
+					//если ошибка не связана с директории или файла, которых хотим удалить
+					if (err && err.code != 'ENOENT')
+						return reject(err);
 
 					return resolve(true);
 				});
@@ -517,7 +539,7 @@ class File
 			{
 				return Promise.resolve(true);
 			}
-			return Promise.reject(err);
+			throw err;
 		});
 	}
 }

@@ -265,20 +265,19 @@ class Profile extends Base
 
 	_cropAva(tplData)
 	{
+		tplData["i_file_id"] = tplData["i_file_id"] || null;
+		tplData["i_crop_x"] = tplData["i_crop_x"] || null;
+		tplData["i_crop_y"] = tplData["i_crop_y"] || null;
+		tplData["i_crop_width"] = tplData["i_crop_width"] || null;
+		tplData["i_crop_height"] = tplData["i_crop_height"] || null;
+
 		let errors = {};
-		let ai_id = tplData["i_file_id"];
-		let crop_x = parseInt((tplData["i_crop_x"] > 0 ? tplData["i_crop_x"] : 0), 10);
-		let crop_y = parseInt((tplData["i_crop_y"] > 0 ? tplData["i_crop_y"] : 0), 10);
 
-		let crop_width = parseInt(tplData["i_crop_width"], 10) || 50;
-			crop_width = ((crop_width + crop_x) < 1024 ? crop_width : (1024 - crop_x));
-			crop_width = (crop_width > 50 ? crop_width : 50);
-
-		let crop_height = parseInt(tplData["i_crop_height"], 10) || 50;
-			crop_height = ((crop_height + crop_y) < 768 ? crop_height : (768 - crop_y));
-			crop_height = (crop_height > 50 ? crop_height : 50);
-
-		if (!ai_id)
+		if (tplData["i_file_id"] == null ||
+			tplData["i_crop_x"]  == null ||
+			tplData["i_crop_y"]  == null ||
+			tplData["i_crop_width"]  == null ||
+			tplData["i_crop_height"] == null)
 			errors["i_file_id"] = "Фотография не выбрана";
 
 		return Promise.resolve(errors)
@@ -309,7 +308,7 @@ class Profile extends Base
 						ava["cropSrc"] = ava["previews"]["1024_768"];
 						ava["dir"] = ava["ai_dir"];
 
-						return FileUpload.cropImage(ava, 'user_ava', crop_x, crop_y, crop_width, crop_height)
+						return FileUpload.cropImage(ava, 'user_ava', tplData["i_crop_x"], tplData["i_crop_y"], tplData["i_crop_width"], tplData["i_crop_height"])
 							.then(function (ava)
 							{
 								return Promise.resolve(ava);

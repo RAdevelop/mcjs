@@ -74,4 +74,13 @@ errors.DirNotEmpty = errors.helpers.generateClass("DirNotEmpty", {
 	}
 });
 
+errors.ForbiddenDirectory = errors.helpers.generateClass("ForbiddenDirectory", {
+	extends: errors.Error,
+	globalize: true,
+	args: ['dirPath', 'inner_error'],
+	generateMessage: function(){
+		return "Запрещенная директория " + this.dirPath;
+	}
+});
+
 module.exports = errors;

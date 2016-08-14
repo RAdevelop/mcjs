@@ -194,6 +194,10 @@ class ProfilePhoto extends Base {
 			case 'upd_img_text':
 				return this.updImgText(tplData);
 				break;
+
+			case 'del_img':
+				return this.delImg(tplData);
+				break;
 		}
 	}
 
@@ -290,6 +294,22 @@ class ProfilePhoto extends Base {
 		//return Promise.resolve(tplData);
 
 		return this.getClass('user/photo').updImgText(this.getUserId(), tplData["i_a_id"], tplData["i_ai_id"], tplData["s_ai_text"])
+			.then(function ()
+			{
+				return Promise.resolve(tplData);
+			});
+	}
+
+	delImg(tplData)
+	{
+		let errors = {};
+
+		if (!tplData["i_a_id"] || !tplData["i_ai_id"])
+			return Promise.reject(new Errors.HttpStatusError(400, 'Bad request'));
+
+		//return Promise.resolve(tplData);
+
+		return this.getClass('user/photo').delImage(this.getUserId(), tplData["i_a_id"], tplData["i_ai_id"])
 			.then(function ()
 			{
 				return Promise.resolve(tplData);

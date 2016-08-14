@@ -1,14 +1,15 @@
 <% albums.forEach(function (album)
 {
-let imgSrc = (album["previews"]["320_213"] ? album["previews"]["320_213"] : '/_0.gif');
+//let imgSrc = (album["previews"]["320_213"] ? album["previews"]["320_213"] : '/_0.gif');
+let imgSrc = (album["previews"]["320_213"] ? album["previews"]["320_213"] : null);
 %>
 <div class="album">
 	<a class="albumImg" href="<%=album["a_id"]%>/">
-		<img src="<%=imgSrc%>" alt="<%=album["a_name"]%>"/>
+		<%if(imgSrc){%><img src="<%=imgSrc%>" alt="<%=album["a_name"]%>"/><%} else{%><i class="fa fa-fw fa-camera"></i><%}%>
 	</a>
 	<div class="albumTools">
-		<span class="badge"><%=album["a_img_cnt"]%></span>
-		<a href="javascript:void(0)" data-toggle="tooltip" data-placement="right" title="редактировать"><span class="fa fa-fw fa-edit"></span></a>
+		<span class="badge"><i class="fa fa-fw fa-camera"></i> <%=album["a_img_cnt"]%></span>
+
 	</div>
 	<div class="albumTitle">
 		<div class="albumName"><%=album["a_name"]%></div>

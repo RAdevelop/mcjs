@@ -1,12 +1,12 @@
-const Crypto = require('crypto');
+const FS = require('fs');
 
-let secret = "do shash'owania ыва кer";
 
-let tokenStr = "do shash'owania ыва кer1470779541665";
+let file = __dirname +'/public/ra';
+console.log(file);
 
-let token   = Crypto.createHash('md5').update(tokenStr).digest("hex");
-let c       = Crypto.createHash('md5').update(tokenStr).digest("hex");
-console.log(c == token);
+FS.unlink(file, function (err)
+{
+	if (err) return console.log(err);
 
-//32ce8933296b46c1f1c59fb4d82ebf5e
-
+	return console.log(true);
+});
