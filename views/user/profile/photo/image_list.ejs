@@ -1,4 +1,4 @@
-<h4 id="a_name"><%=album["a_name"]%></h4>
+<h4 id="a_name"><span class="badge"><i class="fa fa-fw fa-camera"></i> <%=album["a_img_cnt"]%></span>&nbsp;<%=album["a_name"]%></h4>
 <% if (album["a_text"]){%><p id="a_text"><%=album["a_text"]%></p><%}%>
 <div class="imageList">
 <% album["images"].forEach(function (image)

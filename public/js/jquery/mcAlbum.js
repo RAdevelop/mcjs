@@ -240,32 +240,45 @@
 	{
 		var winW = Math.floor($(window).width());
 		var winH = Math.floor($(window).height());
-		var portrait = (winW < winH);
-		var landscape = (winW >= winH);
+		/*var portrait = (winW < winH);
+		var landscape = (winW >= winH);*/
 
-		alert('доработать установку размеров для winW <= 1024\nпроверить на вертикальных фотках');
+		var smallWin = (winW <= 1024);
+		var deltaW, deltaH, w, h;
 
-		var delta = (winW <= 1024 ? 0.05 : 0.43);
+		//deltaW = (smallWin ? (portrait ? 0.2 : 0.27) : 0.43);
+		deltaW = 0.43;
+		//deltaH = (smallWin ? (portrait ? 0.2 : 0.3) : 0.2);
+		deltaH = 0.2;
 
-		var w = Math.floor(winW - (winW * delta));
-		var h = Math.floor(winH - (winH * 0.2));
+		w = Math.ceil(winW - (winW * deltaW));
+		h = Math.ceil(winH - (winH * deltaH));
 
 		var $modalBody = $modal.find('.albumImageDialog .modal-body');
 
 		$modalBody.find('> img').one('load', function ()
 		{
-			if (this.width >= this.height)
+			var imgHorizontal = (this.width >= this.height);
+
+			if (imgHorizontal)//horizontal
 			{
-				$modal.find('.albumImageDialog').css('width', w);
-				//$(this).css('width', w-2).removeClass('vertical').addClass('horizontal');
+				if (!smallWin)
+				{
+					$modal.find('.albumImageDialog').css('width', w);
+					$modalBody.css('width', w-2);
+				}
 				$(this).removeClass('vertical').addClass('horizontal');
 			}
-			else
+			else//vertical
 			{
-				$modal.find('.albumImageDialog').css('height', h);
-				//$(this).css('height', h-2).removeClass('horizontal').addClass('vertical');
+				if (!smallWin)
+				{
+					$modal.find('.albumImageDialog').css('height', h);
+					$modalBody.css('height', h-2);
+				}
 				$(this).removeClass('horizontal').addClass('vertical');
 			}
+
 		});
 		$modalBody.on('change', 'textarea', function ()
 		{

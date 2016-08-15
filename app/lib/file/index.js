@@ -390,7 +390,7 @@ class File
 
 	static isForbiddenDir(dir)
 	{
-		return (!dir || dir == File.getDocumentRoot || dir == Path.dirname(File.getDocumentRoot) || dir == '.' || dir == '..' || dir == '');
+		return (!dir || dir == File.getDocumentRoot || dir == Path.dirname(File.getDocumentRoot) || dir == '.' || dir == '..' || dir == '' || dir == process.cwd());
 	}
 
 	/**
