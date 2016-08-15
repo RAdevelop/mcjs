@@ -66,7 +66,7 @@ class UserPhotoProfile extends UserPhoto
 				//console.log(file);
 
 				return self.model('user/photo')
-					.updImage(u_id, file.a_id, file.ai_id, file.latitude, file.longitude, '', file.webDirPath, file.name, true)
+					.updImage(u_id, file.a_id, file.ai_id, file.latitude, file.longitude, '', file.webDirPath, file.name, true, 1)
 					.then(function ()
 					{
 						return Promise.resolve(file);

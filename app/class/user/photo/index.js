@@ -66,6 +66,9 @@ class UserPhoto extends User
 
 				albums.forEach(function (album)
 				{
+					album["a_profile"]  = (album["a_profile"]   == '1' ? true : false);
+					album["a_named"]    = (album["a_named"]     == '1' ? true : false);
+
 					if (!album["previews"]) album["previews"] = [];
 					if (album["ai_dir"])
 					{
@@ -94,6 +97,9 @@ class UserPhoto extends User
 				if (!album)
 					return Promise.resolve(null);
 
+				album["a_profile"] = (album["a_profile"] == '1' ? true : false);
+				album["a_named"] = (album["a_named"] == '1' ? true : false);
+
 				return Promise.resolve(album);
 			});
 	}
@@ -116,6 +122,7 @@ class UserPhoto extends User
 					images[indx]["previews"] = {};
 					if (image["ai_dir"])
 					{
+						images[indx]["previews"]['orig'] = image["ai_dir"] + '/orig/' + image["ai_name"];
 						sizeParams.forEach(function (size)
 						{
 							imgSuffix   = size.w+'_'+size.h;
@@ -262,19 +269,6 @@ class UserPhoto extends User
 			});
 	}
 
-	/**
-	 * обновляем описание фотографии
-	 *
-	 * @param u_id
-	 * @param a_id
-	 * @param ai_id
-	 * @param ai_text
-	 */
-	updImgText(u_id, a_id, ai_id, ai_text)
-	{
-		return this.model('user/photo').updImgText(u_id, a_id, ai_id, ai_text);
-	}
-	
 	/**
 	 * обновляем описание фотографии
 	 *

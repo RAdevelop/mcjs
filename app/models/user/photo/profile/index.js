@@ -26,9 +26,9 @@ class UserPhotoProfile extends UserPhoto
 			" FROM (SELECT NULL) AS z" +
 			" JOIN album_type AS t ON (t.a_type_alias = ?)" +
 			" JOIN album AS a ON (t.a_type_id = a.a_type_id)" +
-			" JOIN album_image AS ai ON (ai.a_id = a.a_id AND ai.u_id = ? AND ai.ai_pos = ?)" +
+			" JOIN album_image AS ai ON (ai.a_id = a.a_id AND ai.u_id = ? AND ai.ai_profile = ?)" +
 			" LIMIT 1;";
-		let sqlData = [this.constructor.albumProfile, u_id, 0];
+		let sqlData = [this.constructor.albumProfile, u_id, 1];
 
 		return this.constructor.conn().psRow(sql, sqlData)
 			.then(function (res)

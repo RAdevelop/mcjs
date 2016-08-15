@@ -49,6 +49,7 @@
 
 		var options = $.extend({}, defaults, params);
 		var imgSrc = (img["previews"] && img["previews"]["1024_768"] ? img["previews"]["1024_768"] : '/_0.gif');
+		var origSrc = (img["previews"] && img["previews"]["orig"] ? img["previews"]["orig"] : null);
 
 
 		var htmlDialog = '';
@@ -59,16 +60,19 @@
 
 			htmlDialog += ''+
 				'<div class="btn-toolbar displayInlineBlock" role="toolbar" aria-label="Опции фотографии">' +
-					'<div class="btn-group btn-group-xs" role="group" aria-label="опции фотографии">' +
+					'<div class="btn-group btn-group-sm" role="group" aria-label="опции фотографии">' +
 						'<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">опции <span class="caret"></span></button>' +
 						'<ul class="dropdown-menu dropdown-menu-left">' +
-							'<li><a href="javascript:void(0);">Another action</a></li>' +
-							'<li><a href="javascript:void(0);">Something else here</a></li>' +
-							'<li role="separator" class="divider"></li>' +
+							'<li><a href="javascript:void(0);">Another action</a></li>';
+					if(origSrc)
+					{
+						htmlDialog += '<li><a href="' + origSrc + '" target="blank">оригинал</a></li>';
+					}
+				htmlDialog += '<li role="separator" class="divider"></li>' +
 							'<li><a href="javascript:void(0);" id="btn_album_image_del_modal">удалить</a></li>' +
 						'</ul>'+
 					'</div>' +
-					'<div class="btn-group btn-group-xs" role="group" aria-label="посмотреть на карте">' +
+					'<div class="btn-group btn-group-sm" role="group" aria-label="посмотреть на карте">' +
 						'<button type="button" class="btn btn-default" id="btn_img_map"><span class="fa fa-fw fa-map-marker"></span></button>' +
 					'</div>'+
 				'</div>';
@@ -79,7 +83,7 @@
 
 			htmlDialog += '<div class="textCenter modal-body">';
 				htmlDialog += '<div id="imgMap" data-map-init="false" class="mcMap" style="display: none;"></div>';
-				htmlDialog += '<img src="'+imgSrc+'" class="imageInModal" alt=""/>';
+				htmlDialog += '<img src="'+imgSrc+'" class="imageInModal" alt="" align="center"/>';
 			htmlDialog += '<textarea placeholder="описание фотографии">'+img["ai_text"]+'</textarea>';
 			htmlDialog += '</div>';
 
@@ -247,7 +251,7 @@
 		var deltaW, deltaH, w, h;
 
 		//deltaW = (smallWin ? (portrait ? 0.2 : 0.27) : 0.43);
-		deltaW = 0.43;
+		deltaW = 0.05;
 		//deltaH = (smallWin ? (portrait ? 0.2 : 0.3) : 0.2);
 		deltaH = 0.2;
 
@@ -262,21 +266,13 @@
 
 			if (imgHorizontal)//horizontal
 			{
-				if (!smallWin)
-				{
-					$modal.find('.albumImageDialog').css('width', w);
-					$modalBody.css('width', w-2);
-				}
-				$(this).removeClass('vertical').addClass('horizontal');
+				//$(this).removeClass('vertical').addClass('horizontal');
+				$modal.find('.albumImageDialog').removeClass('vertical').addClass('horizontal');
 			}
 			else//vertical
 			{
-				if (!smallWin)
-				{
-					$modal.find('.albumImageDialog').css('height', h);
-					$modalBody.css('height', h-2);
-				}
-				$(this).removeClass('horizontal').addClass('vertical');
+				//$(this).removeClass('horizontal').addClass('vertical');
+				$modal.find('.albumImageDialog').removeClass('horizontal').addClass('vertical');
 			}
 
 		});

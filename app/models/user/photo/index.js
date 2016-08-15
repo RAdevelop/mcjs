@@ -206,11 +206,11 @@ class Photo extends User
 	 * @param posUpd
 	 * @returns {Promise.<TResult>|*}
 	 */
-	updImage(u_id, a_id, ai_id, ai_latitude, ai_longitude, ai_text, ai_dir, ai_name, posUpd = true)
+	updImage(u_id, a_id, ai_id, ai_latitude, ai_longitude, ai_text, ai_dir, ai_name, posUpd = true, ai_profile = 0)
 	{
 		posUpd = (posUpd ? 1 : 0);
-		let sql = "CALL album_image_update(?, ?, ?, ?, ?, ?, ?, ?, ?)";
-		let sqlData = [u_id, a_id, ai_id, ai_latitude, ai_longitude, ai_text, ai_dir, ai_name, posUpd];
+		let sql = "CALL album_image_update(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		let sqlData = [u_id, a_id, ai_id, ai_latitude, ai_longitude, ai_text, ai_dir, ai_name, ai_profile, posUpd];
 
 		return this.constructor.conn().call(sql, sqlData)
 			.then(function ()
@@ -265,14 +265,17 @@ class Photo extends User
 	getAlbumList(u_id)
 	{
 		let sql = "SELECT a.a_id, a.u_id, a.a_type_id, a.a_name, a.a_alias, a.a_text, a.a_img_cnt, a.a_create_ts, a.a_update_ts," +
-			"t.a_type_alias, ai.ai_id, ai.ai_latitude, ai.ai_longitude, ai.ai_dir" +
+			"t.a_type_alias, " +
+			" IF(t.a_type_alias = ?, 1, 0) AS a_profile," +
+			" IF(t.a_type_alias = ?, 1, 0) AS a_named," +
+			"ai.ai_id, ai.ai_latitude, ai.ai_longitude, ai.ai_dir" +
 			" FROM (SELECT NULL) AS z" +
 			" JOIN album AS a ON (a.u_id = ?)" +
 			" JOIN album_type AS t ON (t.a_type_id = a.a_type_id)" +
 			" LEFT JOIN album_image AS ai ON (ai.a_id = a.a_id AND ai.u_id = ? AND ai_pos = ?)" +
 			" ORDER BY a.a_create_ts DESC;";
 
-		return this.constructor.conn().s(sql, [u_id, u_id, 0]);
+		return this.constructor.conn().s(sql, [this.constructor.albumProfile, this.constructor.albumNamed,u_id, u_id, 0]);
 	}
 
 	/**
@@ -284,12 +287,14 @@ class Photo extends User
 	getAlbum(u_id, a_id)
 	{
 		let sql = "SELECT a.a_id, a.u_id, a.a_type_id, a.a_name, a.a_alias, a.a_text, a.a_img_cnt, a.a_create_ts, a.a_update_ts," +
-			"t.a_type_alias" +
+			"t.a_type_alias," +
+			" IF(t.a_type_alias = ?, 1, 0) AS a_profile," +
+			" IF(t.a_type_alias = ?, 1, 0) AS a_named" +
 			" FROM (SELECT NULL) AS z" +
 			" JOIN album AS a ON (a.a_id = ? AND a.u_id = ?)" +
 			" JOIN album_type AS t ON (t.a_type_id = a.a_type_id);";
 
-		return this.constructor.conn().sRow(sql, [a_id, u_id]);
+		return this.constructor.conn().sRow(sql, [this.constructor.albumProfile, this.constructor.albumNamed, a_id, u_id]);
 	}
 
 	/**

@@ -4,12 +4,14 @@
 		<div class="btn-group btn-group-sm" role="group" aria-label="Опции для фотоальбомов">
 			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fa fa-fw fa-cog"></span> опции <span class="caret"></span></button>
 			<ul class="dropdown-menu ">
-				<% if(album){ %>
+			<% if(album){ %>
+				<% if(album["a_named"]){ %>
 				<li><a href="javascript:void(0)" id="btn_album_upload"><span class="fa fa-fw fa-cloud-upload"></span> загрузить фотографии</a></li>
 				<li><a href="javascript:void(0)" id="btn_edit_album_modal"><span class="fa fa-fw fa-edit"></span> изменить описание</a></li>
 				<li><a href="javascript:void(0)"><span class="fa fa-fw fa-trash-o"></span> удалить альбом</a></li>
 				<li role="separator" class="divider"></li>
 				<% } %>
+			<% } %>
 				<li><a href="javascript:void(0)" id="btn_add_album_modal"><span class="fa fa-fw fa-plus-square-o"></span> создать новый альбом</a></li>
 			</ul>
 		</div>
@@ -20,6 +22,8 @@
 		<% } %>
 	</div>
 </div>
+для удаления и изменения описания альбома сделать проверку,что он не "профильный"
+<br/>
 <div class="row albums">
 	<div class="col-xs-12 col-sm-12 col-md-12">
 	<% if(albums){ %><%- include album_list.ejs %><% } %>

@@ -92,7 +92,7 @@ class ProfilePhoto extends Base {
 					{
 						if (!album)
 							return Promise.reject(new Errors.HttpStatusError(404, "Not found"));
-
+						
 						tplData["a_id"] = a_id;
 						tplData["album"] = album;
 						return Promise.resolve(tplData);

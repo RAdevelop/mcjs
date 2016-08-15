@@ -1,11 +1,11 @@
-<h4 id="a_name"><span class="badge"><i class="fa fa-fw fa-camera"></i> <%=album["a_img_cnt"]%></span>&nbsp;<%=album["a_name"]%></h4>
+<h4><span class="badge"><i class="fa fa-fw fa-camera"></i> <%=album["a_img_cnt"]%></span>&nbsp;<span id="a_name"><%=album["a_name"]%></span></h4>
 <% if (album["a_text"]){%><p id="a_text"><%=album["a_text"]%></p><%}%>
 <div class="imageList">
 <% album["images"].forEach(function (image)
 {
 	let imgSrc = (image["previews"] && image["previews"]["320_213"] ? image["previews"]["320_213"] : '/_0.gif');
 %>
-<div class="image">
+<div class="image ">
 	<img src="<%=imgSrc%>" alt="<%=image["ai_text"]%>" data-img-id="<%=image["ai_id"]%>"/>
 </div>
 <%})%>

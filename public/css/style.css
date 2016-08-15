@@ -344,6 +344,11 @@ a.social:hover
 	color: #FFA500;
 }
 
+.modal-header .close
+{
+	font-size: 29px;
+}
+
 /********** список фотоальбомов **************/
 
 .album-list-toolbar
@@ -365,11 +370,15 @@ a.social:hover
 	position: relative;
 	display: block;
 	overflow: hidden;
-	height: 163px;
-	width: 245px;
 	margin: 0 10px 10px 0;
 	float: left;
 	background-color: #fff;
+
+	max-width: 320px;
+	max-height: 213px;
+
+	/*height: 163px;
+	width: 245px;*/
 }
 .albums .album a.albumImg
 {
@@ -385,7 +394,7 @@ a.social:hover
 .albums .album a.albumImg .fa-camera
 {
 	font-size: 115px;
-	line-height: 174px;
+	line-height: 213px;
 	color: #ccc;
 	text-decoration: none;
 }
@@ -466,127 +475,25 @@ a.social:hover
 	border-top: 1px dotted #fff;
 }
 
-
-/* 320 / 568 */
-@media (min-device-width: 320px) and (max-device-width: 568px) and (orientation : portrait)
+@media (orientation: portrait)
 {
 	.albums .album
 	{
 		width: 100%;
-		height: 193px;
-		margin-right: 0;
 	}
 }
-@media (min-device-width: 320px) and (max-device-width: 568px) and (orientation : landscape)
+@media (orientation: landscape)
 {
 	.albums .album
 	{
-		width: 259px;
-		height: 172px;
+		width: 48%;
+		max-height: 175px;
 	}
-}
-/* END 320 / 568 */
-
-
-/* 360 / 640 */
-@media (min-device-width: 360px) and (max-device-width: 640px) and (orientation : portrait)
-{
-	.albums .album
+	.albums .album a.albumImg .fa-camera
 	{
-		width: 100%;
-		height: 220px;
-		margin-right: 0;
+		line-height: 183px;
 	}
 }
-@media (min-device-width: 360px) and (max-device-width: 640px) and (orientation : landscape)
-{
-	.albums .album
-	{
-		width: 295px;
-		height: 196px;
-	}
-}
-/* END 360 / 640 */
-
-
-/* 375 / 667 */
-@media (min-device-width: 375px) and (max-device-width: 667px) and (orientation : portrait) and (-webkit-device-pixel-ratio: 2)
-{
-	.albums .album
-	{
-		width: 100%;
-		height: 230px;
-		margin-right: 0;
-	}
-}
-@media (min-device-width: 375px) and (max-device-width: 667px) and (orientation : landscape) and (-webkit-device-pixel-ratio: 2)
-{
-	.albums .album
-	{
-		width: 308px;
-		height: 205px;
-	}
-}
-/* END 375 / 667 */
-
-/* 412 / 732 */
-@media (min-device-width: 412px) and (max-device-width: 732px) and (orientation : portrait)
-{
-	.albums .album
-	{
-		width: 100%;
-		height: 255px;
-		margin-right: 0;
-	}
-}
-@media (min-device-width: 412px) and (max-device-width: 732px) and (orientation : landscape)
-{
-	.albums .album
-	{
-		width: 341px;
-		height: 228px;
-	}
-}
-/* END 412 / 732 */
-
-/* 414 / 736 */
-@media (min-device-width: 414px) and (max-device-width: 736px) and (orientation : portrait) and (-webkit-device-pixel-ratio: 3)
-{
-	.albums .album
-	{
-		width: 100%;
-		height: 257px;
-		margin-right: 0;
-	}
-}
-@media (min-device-width: 414px) and (max-device-width: 736px) and (orientation : landscape) and (-webkit-device-pixel-ratio: 3)
-{
-	.albums .album
-	{
-		width: 343px;
-		height: 228px;
-	}
-}
-/* END 414 / 736 */
-
-/* 768 / 1024 */
-@media (min-device-width: 768px) and (max-device-width: 1024px) and (orientation : portrait)
-{
-	.albums .album
-	{
-		width: 231px;
-		height: 154px;
-	}
-}
-@media (min-device-width: 768px) and (max-device-width: 1024px) and (orientation : landscape)
-{
-	.albums .album
-	{
-		width: 264px;
-		height: 176px;
-	}
-}
-/* END 768 / 1024 */
 
 /********** END список фотоальбомов **************/
 
@@ -598,22 +505,53 @@ a.social:hover
 .albums .imageList .image
 {
 	cursor: move;
-	width: 237px;
+	/*width: 237px;
 	height: 158px;
-	overflow: hidden;
+	*/
 	float: left;
+	/*width: 48%;*/
+	max-width: 320px;
+	max-height: 213px;
+	overflow: hidden;
 	margin: 0 10px 10px 0;
 }
-.albums .image img
+
+.albums .imageList .image img
 {
-	width: 100%;
+	/*width: 100%;*/
+	max-width: 320px;
 }
+
+@media (orientation : portrait)
+{
+	.albums .imageList .image
+	{
+		width: 100%;
+	}
+}
+@media (orientation : landscape)
+{
+	.albums .imageList .image
+	{
+		width: 48%;
+		max-height: 175px;
+	}
+	.albums .imageList .image img
+	{
+		/*max-height: 175px;*/
+	}
+}
+
 
 .albumImageDialog.modal-dialog
 {
 
 }
 
+.albumImageDialog .modal-header
+{
+	padding: 15px 10px 5px 10px;
+}
 .albumImageDialog .modal-body
 {
 	padding: 0;
@@ -647,319 +585,62 @@ a.social:hover
 	width: 100%;
 }
 
+.albumImageDialog .modal-body img
+{
+	max-width: calc(100%);
+	max-width: -moz-calc(100%);
+	max-width: -webkit-calc(100%);
+}
+
+@media (min-width: 768px)
+{
+	.albumImageDialog.horizontal
+	{
+		width: 700px;
+	}
+	.albumImageDialog.vertical
+	{
+		width: 544px;
+	}
+}
+
+/*
+
 .albumImageDialog .modal-body img.vertical
 {
-	height: 100%;
+	max-height: 768px;
 }
 .albumImageDialog .modal-body img.horizontal
 {
 	width: 100%;
+	max-width: 1024px;
 }
 
-/* 320 / 568 */
-@media (min-device-width: 320px) and (max-device-width: 568px) and (orientation : portrait)
+@media (orientation : portrait)
 {
-
-}
-@media (min-device-width: 320px) and (max-device-width: 568px) and (orientation : landscape)
-{
-
-}
-/* END 320 / 568 */
-
-/* 360 / 564 */
-@media (min-device-width: 360px) and (max-device-height: 564px) and (orientation : portrait)
-{
-	.albums .imageList .image
-	{
-		width: 325px;
-		height: 216px;
-	}
-
-	.albumImageDialog
-	{
-		width: 340px !important;
-	}
-
-	.albumImageDialog .modal-body
-	{
-		width: 338px !important;
-	}
-	.albumImageDialog .modal-body img.horizontal
-	{
-		width: 338px !important;
-	}
-
 	.albumImageDialog .modal-body img.vertical
 	{
-		height: 452px !important;
+		max-width: calc(100%);
+		max-width: -moz-calc(100%);
+		max-width: -webkit-calc(100%);
 	}
 }
-@media (min-device-width: 360px) and (max-device-height: 564px) and (orientation : landscape)
+@media (orientation : landscape)
 {
-	.albums .imageList .image
-	{
-		width: 295px;
-		height: 196px
-	}
-
-	.albumImageDialog
-	{
-		width: 616px !important;
-	}
-
-	.albumImageDialog .modal-body
-	{
-		width: 614px !important;
-	}
-	.albumImageDialog .modal-body img.horizontal
-	{
-		width: 330px !important;
-	}
-
 	.albumImageDialog .modal-body img.vertical
 	{
-		height: 250px !important;
+		max-width: calc(100%);
+		max-width: -moz-calc(100%);
+		max-width: -webkit-calc(100%);
 	}
 }
-/* END 360 / 564 */
+*/
 
-/* 360 / 640 */
-@media (min-device-width: 360px) and (max-device-width: 640px) and (orientation : portrait)
+
+/* 768 / 1024 *
+@media (min-device-width: 768px) and (max-device-height: 1024px) and (orientation : portrait)
 {
-	.albums .imageList .image
-	{
-		width: 325px;
-		height: 216px;
-	}
 
-	.albumImageDialog
-	{
-		width: 340px !important;
-	}
-
-	.albumImageDialog .modal-body
-	{
-		width: 338px !important;
-	}
-	.albumImageDialog .modal-body img.horizontal
-	{
-		width: 338px !important;
-	}
-
-	.albumImageDialog .modal-body img.vertical
-	{
-		height: 452px !important;
-	}
-}
-@media (min-device-width: 360px) and (max-device-width: 640px) and (orientation : landscape)
-{
-	.albums .imageList .image
-	{
-		width: 295px;
-		height: 196px
-	}
-
-	.albumImageDialog
-	{
-		width: 616px !important;
-	}
-
-	.albumImageDialog .modal-body
-	{
-		width: 614px !important;
-	}
-	.albumImageDialog .modal-body img.horizontal
-	{
-		width: 330px !important;
-	}
-
-	.albumImageDialog .modal-body img.vertical
-	{
-		height: 250px !important;
-	}
-}
-/* END 360 / 640 */
-
-/* 375 / 667 */
-@media (min-device-width: 375px) and (max-device-width: 667px) and (orientation : portrait) and (-webkit-device-pixel-ratio: 2)
-{
-	.albums .imageList .image
-	{
-		width: 340px;
-		height: 226px;
-	}
-
-	.albumImageDialog
-	{
-		width: 340px !important;
-	}
-
-	.albumImageDialog .modal-body
-	{
-		width: 338px !important;
-	}
-	.albumImageDialog .modal-body img.horizontal
-	{
-		width: 338px !important;
-	}
-
-	.albumImageDialog .modal-body img.vertical
-	{
-		height: 452px !important;
-	}
-}
-@media (min-device-width: 375px) and (max-device-width: 667px) and (orientation : landscape) and (-webkit-device-pixel-ratio: 2)
-{
-	.albums .imageList .image
-	{
-		width: 308px;
-		height: 205px
-	}
-
-	.albumImageDialog
-	{
-		width: 644px !important;
-	}
-
-	.albumImageDialog .modal-body
-	{
-		width: 642px !important;
-	}
-	.albumImageDialog .modal-body img.horizontal
-	{
-		width: 290px !important;
-	}
-
-	.albumImageDialog .modal-body img.vertical
-	{
-		height: 216px !important;
-	}
-}
-/* END 375 / 667 */
-
-/* 412 / 732 */
-@media (min-device-width: 412px) and (max-device-width: 732px) and (orientation : portrait)
-{
-	.albums .imageList .image
-	{
-		width: 180px;
-		height: 120px;
-	}
-
-	.albumImageDialog
-	{
-		width: 388px !important;
-	}
-
-	.albumImageDialog .modal-body
-	{
-		width: 386px !important;
-	}
-	.albumImageDialog .modal-body img.horizontal
-	{
-		width: 386px !important;
-	}
-
-	.albumImageDialog .modal-body img.vertical
-	{
-		height: 516px !important;
-	}
-}
-@media (min-device-width: 412px) and (max-device-width: 732px) and (orientation : landscape)
-{
-	.albums .imageList .image
-	{
-		width: 341px;
-		height: 227px
-	}
-
-	.albumImageDialog
-	{
-		width: 704px !important;
-	}
-
-	.albumImageDialog .modal-body
-	{
-		width: 702px !important;
-	}
-	.albumImageDialog .modal-body img.horizontal
-	{
-		width: 406px !important;
-	}
-
-	.albumImageDialog .modal-body img.vertical
-	{
-		height: 306px !important;
-	}
-}
-/* END 412 / 732 */
-
-/* 414 / 736 */
-@media (min-device-width: 414px) and (max-device-width: 736px) and (orientation : portrait) and (-webkit-device-pixel-ratio: 3)
-{
-	.albums .imageList .image
-	{
-		width: 181px;
-		height: 120px;
-	}
-
-	.albumImageDialog
-	{
-		width: 388px !important;
-	}
-
-	.albumImageDialog .modal-body
-	{
-		width: 386px !important;
-	}
-	.albumImageDialog .modal-body img.horizontal
-	{
-		width: 386px !important;
-	}
-
-	.albumImageDialog .modal-body img.vertical
-	{
-		height: 516px !important;
-	}
-}
-@media (min-device-width: 414px) and (max-device-width: 736px) and (orientation : landscape) and (-webkit-device-pixel-ratio: 3)
-{
-	.albums .imageList .image
-	{
-		width: 343px;
-		height: 229px;
-	}
-
-	.albumImageDialog
-	{
-		width: 704px !important;
-	}
-
-	.albumImageDialog .modal-body
-	{
-		width: 702px !important;
-	}
-	.albumImageDialog .modal-body img.horizontal
-	{
-		width: 406px !important;
-	}
-
-	.albumImageDialog .modal-body img.vertical
-	{
-		height: 306px !important;
-	}
-}
-/* END 414 / 736 */
-
-/* 768 / 1024 */
-@media (min-device-width: 768px) and (max-device-width: 1024px) and (orientation : portrait)
-{
-	.albums .imageList .image
-	{
-		width: 231px;
-		height: 154px;
-	}
 
 	.albumImageDialog
 	{
@@ -980,14 +661,8 @@ a.social:hover
 		height: 548px !important;
 	}
 }
-@media (min-device-width: 768px) and (max-device-width: 1024px) and (orientation : landscape)
+@media (min-device-width: 768px) and (max-device-height: 1024px) and (orientation : landscape)
 {
-	.albums .imageList .image
-	{
-		width: 264px;
-		height: 176px;
-	}
-
 	.albumImageDialog
 	{
 		width: 770px !important;
