@@ -155,7 +155,11 @@
 									if (!resData["formError"] || !resData["formError"]["error"])
 									{
 										$modal.modal('hide');
-										$img.remove();
+										$img.parent().remove();
+										var imgCnt = parseInt($(options.albumName).parent().find('.albumImgCnt').text(), 10) - 1;
+
+										imgCnt = (imgCnt < 0 ? 0 : imgCnt);
+										$(options.albumName).parent().find('.albumImgCnt').text(imgCnt);
 									}
 								})
 								.fail(function(resData)
