@@ -522,18 +522,18 @@ a.social:hover
 	max-width: 320px;
 }
 
-@media (orientation : portrait)
+@media screen and (max-width: 768px) and (orientation : portrait)
 {
 	.albums .imageList .image
 	{
 		width: 100%;
 	}
 }
-@media (orientation : landscape)
+@media screen and (max-width: 768px) and (orientation : landscape)
 {
 	.albums .imageList .image
 	{
-		width: 48%;
+		width: calc(50% - 10px);
 		max-height: 175px;
 	}
 	.albums .imageList .image img
@@ -594,13 +594,9 @@ a.social:hover
 
 @media (min-width: 768px)
 {
-	.albumImageDialog.horizontal
+	.albumImageDialog
 	{
 		width: 700px;
-	}
-	.albumImageDialog.vertical
-	{
-		width: 544px;
 	}
 }
 

@@ -18,7 +18,7 @@
 			'</div>' +
 			'<div class="form-group s_album_text">' +
 			'<div class="col-sm-12">' +
-			'<textarea class="form-control" id="s_album_text" name="s_album_text" placeholder="описание альбома" maxlength="255">'+options.aText+'</textarea>' +
+			'<textarea class="form-control" id="s_album_text" name="s_album_text" placeholder="укажите описание альбома" maxlength="255">'+options.aText+'</textarea>' +
 			'</div>' +
 			'</div>' +
 			'</form>';
@@ -53,7 +53,7 @@
 
 
 		var htmlDialog = '';
-		htmlDialog += '<div class="modal fade" id="'+options.id+'" tabindex="-1" role="dialog" aria-labelledby="'+options.id+'">';
+		htmlDialog += '<div class="modal " id="'+options.id+'" tabindex="-1" role="dialog" aria-labelledby="'+options.id+'">';
 		htmlDialog += '<div class="albumImageDialog modal-dialog" role="document">';
 		htmlDialog += '<div class="modal-content">';
 			htmlDialog += '<div class="modal-header">';
@@ -84,7 +84,7 @@
 			htmlDialog += '<div class="textCenter modal-body">';
 				htmlDialog += '<div id="imgMap" data-map-init="false" class="mcMap" style="display: none;"></div>';
 				htmlDialog += '<img src="'+imgSrc+'" class="imageInModal" alt="" align="center"/>';
-			htmlDialog += '<textarea placeholder="описание фотографии">'+img["ai_text"]+'</textarea>';
+			htmlDialog += '<textarea placeholder="укажите описание фотографии">'+img["ai_text"]+'</textarea>';
 			htmlDialog += '</div>';
 
 			htmlDialog += '<div class="textCenter modal-footer">';
@@ -244,20 +244,65 @@
 			});
 	}
 
+	function getNextImg($modal, $img, img, options)
+	{
+		//TODO тут еще надо будет учитывать постраницную разбивку. когда текущая картинка последння из отображаемых,
+		// но еще есть картинки для просмотра. (start, limit, total)
+		$modal.modal('hide');
+
+		var $images = $(options.albumWrapper).find(".image");
+		var index = $images.index($img.parents(".image"));
+
+		if (index == $images.size() - 1)
+		{
+			alert("добавить ajax подгрузку следующих start , limit фотографий");
+			return;
+		}
+		var indexNext = parseInt(index, 10) + 1;
+		$($images.get(indexNext)).find('> img').click();
+
+	}
+
+	function getPrevImg($modal, $img, img, options)
+	{
+		$modal.modal('hide');
+
+		var $images = $(options.albumWrapper).find(".image");
+		var index = $images.index($img.parents(".image"));
+
+		if (index == 0)
+			return;
+
+		var indexPrev = parseInt(index, 10) - 1;
+		$($images.get(indexPrev)).find('> img').click();
+	}
+
+	function bindGetPrevNextImg($currentImg, $modal, $img, img, options)
+	{
+		$currentImg.one( "swipeleft click", function (event)
+		{
+			getNextImg($modal, $img, img, options);
+		} );
+		$currentImg.one( "swiperight", function (event)
+		{
+			getPrevImg($modal, $img, img, options);
+		} );
+	}
+
 	function onShowBsModal($modal, $img, img, options)
 	{
 		var winW = Math.floor($(window).width());
 		var winH = Math.floor($(window).height());
-		/*var portrait = (winW < winH);
-		var landscape = (winW >= winH);*/
+		var portrait = (winW < winH);
+		//var landscape = (winW >= winH);
 
-		var smallWin = (winW <= 1024);
+		var smallWin = (winW <= 768);
 		var deltaW, deltaH, w, h;
 
 		//deltaW = (smallWin ? (portrait ? 0.2 : 0.27) : 0.43);
 		deltaW = 0.05;
-		//deltaH = (smallWin ? (portrait ? 0.2 : 0.3) : 0.2);
-		deltaH = 0.2;
+		deltaH = (smallWin ? (portrait ? 0.2 : 0.35) : 0.2);
+		//deltaH = 0.2;
 
 		w = Math.ceil(winW - (winW * deltaW));
 		h = Math.ceil(winH - (winH * deltaH));
@@ -266,19 +311,29 @@
 
 		$modalBody.find('> img').one('load', function ()
 		{
+			bindGetPrevNextImg($(this), $modal, $img, img, options);
 			var imgHorizontal = (this.width >= this.height);
 
-			if (imgHorizontal)//horizontal
-			{
-				//$(this).removeClass('vertical').addClass('horizontal');
-				$modal.find('.albumImageDialog').removeClass('vertical').addClass('horizontal');
-			}
-			else//vertical
-			{
-				//$(this).removeClass('horizontal').addClass('vertical');
-				$modal.find('.albumImageDialog').removeClass('horizontal').addClass('vertical');
-			}
+			/*alert(
+				'winH = ' + winH + '\n'
+				+'h = ' + h + '\n'
+				+'smallWin = ' + smallWin + '\n'
+				+'imgHorizontal = ' + imgHorizontal + '\n'
+				+'portrait = ' + portrait + '\n'
+			);*/
 
+			if (smallWin)
+			{
+				$modal.find('.albumImageDialog').css('height', h);
+				if ( (portrait && !imgHorizontal) || !portrait)
+				{
+					$(this).css('max-height', h-2);
+				}
+			}
+			else if (!imgHorizontal)
+			{
+				$(this).css('max-height', h-2);
+			}
 		});
 		$modalBody.on('change', 'textarea', function ()
 		{

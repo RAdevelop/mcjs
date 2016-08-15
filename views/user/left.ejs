@@ -19,7 +19,7 @@
         </div>
         <% } if (user.l_name) {%>
         <div class="col-xs-6 col-sm-12 col-md-12 cursor-pointer">
-            <span data-toggle="tooltip" title="<%= user.l_full_name%>"><span class="fa fa-map-marker fa-fw" aria-hidden="true"></span> <%= user.l_name%></span>
+            <span data-toggle="tooltip" title="<%= user.l_full_name%>" data-container="body" data-placement="auto"><span class="fa fa-map-marker fa-fw" aria-hidden="true"></span> <%= user.l_name%></span>
         </div>
         <% }%>
         <div class="col-xs-6 col-sm-12 col-md-12"><span class="fa fa-motorcycle fa-fw"></span> CBR1000RA</div>
