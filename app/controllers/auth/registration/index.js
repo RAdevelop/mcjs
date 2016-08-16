@@ -6,7 +6,25 @@ const Mail = require('app/lib/mail');
 const Logger = require('app/lib/logger');
 const Base = require('app/lib/controller');
 
-class Registration extends Base {
+class Registration extends Base
+{
+	/**
+	 * @see Base.routePaths()
+	 * @returns {{index: {^\/?$: Array}}}
+	 */
+	routePaths()
+	{
+		return {
+			"index": {
+				'^\/?$': null
+			},
+			"confirm": {
+				'^\/?$': null,
+				'^\/?[0-9A-Za-z]{32,255}\/?$': ['s_key'],
+			}
+		}
+	}
+
 	/**
 	 *
 	 * форма регистрации
@@ -191,13 +209,13 @@ class Registration extends Base {
 		if (this.getUserId())
 			return this.getRes().redirect('/');
 		
-		if (this.getArgs().length > 1)
-			return cb(new Errors.HttpStatusError(404, "Not Found"));
-		
+		/*if (this.getArgs().length > 1)
+			return cb(new Errors.HttpStatusError(404, "Not Found"));*/
+
 		const self = this;
-		
-		let key = this.getArgs().shift() || '';
-		let u_id = key.substr(32);
+
+		let {s_key} = this.routeArgs;
+		let u_id = s_key.substr(32);
 		let tplData = {confirmed: false};
 		
 		function confirmed(u_id, key)
@@ -217,7 +235,7 @@ class Registration extends Base {
 			});
 		}
 
-		confirmed(u_id, key)
+		confirmed(u_id, s_key)
 		.then(function(tplData)
 		{
 			self.view.setTplData('auth/confirm', tplData);

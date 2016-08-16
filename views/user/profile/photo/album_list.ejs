@@ -4,7 +4,7 @@
 let imgSrc = (album["previews"]["320_213"] ? album["previews"]["320_213"] : null);
 %>
 <div class="album">
-	<a class="albumImg" href="<%=album["a_id"]%>/">
+	<a class="albumImg" href="<%=(_reqBaseUrl+'/'+album["a_id"])%>/">
 		<%if(imgSrc){%><img src="<%=imgSrc%>" alt="<%=album["a_name"]%>"/><%} else{%><i class="fa fa-fw fa-camera"></i><%}%>
 	</a>
 	<div class="albumTools">

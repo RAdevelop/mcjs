@@ -1,0 +1,11 @@
+<nav aria-label="Page navigation">
+	<ul class="pagination">
+<% if (!pages["first_page"]){%><li><a href="<%=_reqBaseUrl%>/" aria-label="первая"><span aria-hidden="true">&laquo;</span></a></li><%}%>
+<% pages["links"].forEach(function (link)
+{
+	if (pages["page"] == link){%><li class="active"><span><%=link%></span></li><%}
+	else {%><li><a href="<%=(link == 1 ? _reqBaseUrl : _reqBaseUrl+'/page/'+link)%>/"><%=link%></a></li><%}
+});%>
+<% if (!pages["last_page"]){%><li><a  href="<%=_reqBaseUrl+'/page/'+pages["total_pages"]%>/" aria-label="последняя"><span aria-hidden="true">&raquo;</span></a></li><%}%>
+	</ul>
+</nav>

@@ -1,5 +1,6 @@
 "use strict";
 
+const Pages = require("app/lib/pages");
 const Logger = require('app/lib/logger');
 const Promise = require("bluebird");
 const Errors = require('app/lib/errors');
@@ -7,14 +8,19 @@ const Errors = require('app/lib/errors');
 const FileUpload = require('app/lib/file/upload');
 const Base = require('app/lib/controller');
 
-class ProfilePhoto extends Base {
+let limit_per_page = 2;
+
+class ProfilePhoto extends Base
+{
 
 	routePaths()
 	{
 		return {
 			"index": {
-				'^\/?$' : [],
-				'^\/?[0-9]+\/page\/[0-9]+\/?$' : ["i_a_id", ,"i_page"]
+				'^\/?$' : null //список альбомов
+				,'^\/?page\/[0-9]+\/?$' : [ ,"i_page"] //список альбомов с постраничкой
+				,'^\/?[0-9]+\/page\/[0-9]+\/?$' : ["i_a_id", ,"i_page"] //список фоток в альбоме с постраничкой
+				,'^\/?[0-9]+\/?$' : ["i_a_id"] //список фоток в альбоме
 			}
 		}
 	}
@@ -41,8 +47,9 @@ class ProfilePhoto extends Base {
 				tplData = Object.assign(tplData, {user: userData});
 				tplData["albums"] = null;
 				tplData["album"] = null;
+				tplData["pages"] = null;
 
-				if (this.routeArgs)
+				if (this.routeArgs["i_a_id"])
 					return this.album(cb, tplData);
 
 				return this.albumList(cb, tplData);
@@ -62,20 +69,26 @@ class ProfilePhoto extends Base {
 	albumList(cb, tplData)
 	{
 		let tplFile = 'user/profile/photo/albums.ejs';
+		let {i_page=1} = this.routeArgs;
 
 		return Promise.resolve(tplData)
 			.bind(this)
 			.then(function (tplData)
 			{
-				return this.getClass('user/photo').getAlbumList(this.getUserId())
+				return this.getClass('user/photo').getAlbumList(this.getUserId(), new Pages(i_page, limit_per_page))
 					.then(function (albums)
 					{
 						tplData["albums"] = albums;
+						tplData["pages"] = albums["pages"];
+						delete albums["pages"];
+
 						return Promise.resolve(tplData);
 					});
 			})
 			.then(function (tplData)
 			{
+				console.log(tplData);
+
 				this.view.setTplData(tplFile, tplData);
 				this.view.addPartialData('user/left', {user: tplData["user"]});
 

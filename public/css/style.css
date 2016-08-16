@@ -519,6 +519,7 @@ a.social:hover
 .albums .imageList .image img
 {
 	/*width: 100%;*/
+	cursor: move;
 	max-width: 320px;
 }
 

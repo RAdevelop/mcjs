@@ -95,7 +95,6 @@ class Login extends Base
 
 		const self = this;
 
-		//let key = this.getArgs().shift().trim();
 		let {s_key} = this.routeArgs;
 
 		let tplData = {
@@ -120,7 +119,7 @@ class Login extends Base
 	{
 		let tplData = this.getReqBody();
 
-		this._formPassUpdate(tplData, cb);
+		return this._formPassUpdate(tplData, cb);
 	}
 	
 	_formPassUpdate(tplData, cb)
@@ -340,12 +339,12 @@ class Login extends Base
 		{
 			errors["s_password"] = 'короткий пароль';
 		}
-		if(!this.getReq()._reqbody.m_email)
+		if(!tplData["m_email"])
 		{
 			errors["m_email"] = 'e-mail указан неверно';
 		}
 		
-		tplData.b_remember = this.getReq()._reqbody.b_remember;
+		tplData.b_remember = (tplData.b_remember ? tplData.b_remember : 0);
 		
 		const self = this;
 

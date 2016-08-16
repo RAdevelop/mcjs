@@ -258,22 +258,43 @@ class Photo extends User
 	}
 
 	/**
+	 * подсчитываем кол-во альбомов пользователя
+	 *
+	 * @param u_id
+	 * @returns {*|Promise.<TResult>}
+	 */
+	countUserAlbums(u_id)
+	{
+		let sql = "SELECT COUNT(a.a_id) AS cnt FROM album AS a WHERE a.u_id = ?;";
+
+		return this.constructor.conn().sRow(sql, [u_id])
+			.then(function (res)
+			{
+				return Promise.resolve(res["cnt"]);
+			});
+	}
+
+	/**
 	 * список фотоальбомов пользователя
 	 * @param u_id
 	 * @returns {*}
 	 */
-	getAlbumList(u_id)
+	getAlbumList(u_id, offset = 0, limit = 10)
 	{
+		offset = parseInt(offset, 10) || 0;
+		limit = parseInt(limit, 10) || 10;
+
 		let sql = "SELECT a.a_id, a.u_id, a.a_type_id, a.a_name, a.a_alias, a.a_text, a.a_img_cnt, a.a_create_ts, a.a_update_ts," +
 			"t.a_type_alias, " +
 			" IF(t.a_type_alias = ?, 1, 0) AS a_profile," +
 			" IF(t.a_type_alias = ?, 1, 0) AS a_named," +
-			"ai.ai_id, ai.ai_latitude, ai.ai_longitude, ai.ai_dir" +
+			" ai.ai_id, ai.ai_latitude, ai.ai_longitude, ai.ai_dir" +
 			" FROM (SELECT NULL) AS z" +
 			" JOIN album AS a ON (a.u_id = ?)" +
 			" JOIN album_type AS t ON (t.a_type_id = a.a_type_id)" +
 			" LEFT JOIN album_image AS ai ON (ai.a_id = a.a_id AND ai.u_id = ? AND ai_pos = ?)" +
-			" ORDER BY a.a_create_ts DESC;";
+			" ORDER BY a.a_update_ts DESC" +
+			" LIMIT "+limit+" OFFSET "+offset+";";
 
 		return this.constructor.conn().s(sql, [this.constructor.albumProfile, this.constructor.albumNamed,u_id, u_id, 0]);
 	}

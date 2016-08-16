@@ -23,10 +23,10 @@ class Profile extends Base
 	{
 		return {
 			"index": {
-				'^\/?$': []
+				'^\/?$': null
 			},
 			"edit": {
-				'^\/?$': []
+				'^\/?$': null
 			},
 			"change": {
 				'^\/?$': [] //TODO

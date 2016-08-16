@@ -54,32 +54,50 @@ class UserPhoto extends User
 	 * @param u_id
 	 * @returns {*}
 	 */
-	getAlbumList(u_id)
+	getAlbumList(u_id, Pages)
 	{
-		return this.model('user/photo').getAlbumList(u_id)
-			.then(function (albums)
+
+		let start = 0, limit = 2;
+		return this.model('user/photo').countUserAlbums(u_id)
+			.bind(this)
+			.then(function (a_cnt)
 			{
-				if (albums["info"]["numRows"] == 0)
+				console.log('a_cnt = ', a_cnt);
+				if (!a_cnt)
 					return Promise.resolve(null);
 
-				let sizeParams = FileUpload.getUploadConfig('user_photo').sizeParams;
 
-				albums.forEach(function (album)
-				{
-					album["a_profile"]  = (album["a_profile"]   == '1' ? true : false);
-					album["a_named"]    = (album["a_named"]     == '1' ? true : false);
+				Pages.setTotal(a_cnt);
+				let pages = Pages.pages();
 
-					if (!album["previews"]) album["previews"] = [];
-					if (album["ai_dir"])
+				if (pages["limit_exceeded"])
+					return Promise.reject(new FileErrors.HttpStatusError(404, "Not found"));
+
+				return this.model('user/photo').getAlbumList(u_id, pages.offset, pages.limit)
+					.then(function (albums)
 					{
-						sizeParams.forEach(function (size)
+						let sizeParams = FileUpload.getUploadConfig('user_photo').sizeParams;
+						
+						albums.forEach(function (album)
 						{
-							album["previews"][size.w+'_'+size.h] = album["ai_dir"] + '/' + size.w+'_'+size.h +'.jpg';
+							album["a_profile"]  = (album["a_profile"]   == '1' ? true : false);
+							album["a_named"]    = (album["a_named"]     == '1' ? true : false);
+							
+							if (!album["previews"]) album["previews"] = [];
+							if (album["ai_dir"])
+							{
+								sizeParams.forEach(function (size)
+								{
+									album["previews"][size.w+'_'+size.h] = album["ai_dir"] + '/' + size.w+'_'+size.h +'.jpg';
+								});
+							}
 						});
-					}
-				});
-				//console.log(albums);
-				return Promise.resolve(albums);
+						albums["a_cnt"] = a_cnt;
+						albums["pages"] = pages;
+
+						//console.log(albums);
+						return Promise.resolve(albums);
+					});
 			});
 	}
 

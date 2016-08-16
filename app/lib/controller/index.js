@@ -1,6 +1,6 @@
 "use strict";
 
-const Helpers = require("app/helpers");
+//const Helpers = require("app/helpers");
 const Errors = require('app/lib/errors');
 const Template = require('app/lib/template');
 //const Async = require('async');
@@ -32,12 +32,14 @@ class Base
 		//this.setControls(Controls);
 
 		this.setArgs([]);
-		this.routeArgs = null;
+		this.routeArgs = {};
 	}
 	
 	_setBaseUrl(req, res)
 	{
+		//console.log('res.locals.menuItem.m_path = ', res.locals.menuItem.m_path);
 		req.baseUrl = res.locals.menuItem.m_path + '/' + (this.getActionName() == 'index' ? '' : this.getActionName());
+		//console.log('req.baseUrl = ', req.baseUrl);
 		return this;
 	}
 
@@ -58,37 +60,6 @@ class Base
 		//path = (path[path.length-1] == '/' ? path.substr(0, path.length-1) : path);
 		//return path;
 		return this.getArgs().join('/');
-	}
-
-	/**
-	 * пути адресов страниц описанные в дочерних классах
-	 * вид
-	 * {
-	 *  actionName1: {
-	 *  'regExpOFRoute1' : [var1, var2, ..., varN],
-	 *  'regExpOFRoute2': [var1, var2, ..., varN],
-	 *  ...
-	 *  'regExpOFRouteN': [var1, var2, ..., varN]
-	 *  },
-	 *
-	 *  ......
-	 *
-	 *  actionName2: {
-	 *  'regExpOFRoute1' : [var1, var2, ..., varN],
-	 *  'regExpOFRoute2': [var1, var2, ..., varN],
-	 *  ...
-	 *  'regExpOFRouteN': [var1, var2, ..., varN]
-	 *  },
-	 * }
-	 * @returns {{}}
-	 */
-	routePaths()
-	{
-		return {
-			"index":{
-				'^\/?$' : []
-			}
-		};
 	}
 
 	getReqQuery()
@@ -235,6 +206,38 @@ class Base
 		return this._res;
 	}
 
+
+	/**
+	 * пути адресов страниц описанные в дочерних классах
+	 * вид
+	 * {
+	 *  actionName1: {
+	 *  'regExpOFRoute1' : [var1, var2, ..., varN],
+	 *  'regExpOFRoute2': [var1, var2, ..., varN],
+	 *  ...
+	 *  'regExpOFRouteN': [var1, var2, ..., varN]
+	 *  },
+	 *
+	 *  ......
+	 *
+	 *  actionName2: {
+	 *  'regExpOFRoute1' : [var1, var2, ..., varN],
+	 *  'regExpOFRoute2': [var1, var2, ..., varN],
+	 *  ...
+	 *  'regExpOFRouteN': [var1, var2, ..., varN]
+	 *  },
+	 * }
+	 * @returns {{}}
+	 */
+	routePaths()
+	{
+		return {
+			"index":{
+				'^\/?$' : null
+			}
+		};
+	}
+
 	_parseRoutePaths()
 	{
 		if (this.getReq().method.toLowerCase() != 'get')
@@ -242,12 +245,14 @@ class Base
 
 		let actionName = this.getActionName();
 		let routePaths = this.routePaths();
+		let reqPath = this.getPath();
 
-		console.log('\n');
+		//console.log('\n');
 		console.log('actionName = ', actionName);
 		console.log('routePaths:');
 		console.log(routePaths);
-		console.log('\n');
+		console.log('reqPath');
+		console.log(reqPath);
 		/*
 		let regExp = new RegExp(this.routePaths().index[0], 'ig');
 
@@ -259,7 +264,6 @@ class Base
 		if (!routePaths[actionName])
 			return false;
 
-		let reqPath = this.getPath();
 		let routers = Object.keys(routePaths[actionName]);
 		let args = this.getArgs();
 
@@ -268,13 +272,15 @@ class Base
 		{
 			regExp = new RegExp(routers[i], 'ig');
 
-			/*console.log(reqPath);
+			console.log(regExp);
+
+			/*
 			console.log(routers[i]);
 			console.log( reqPath.search(regExp) != -1);*/
 
 			if (reqPath.search(regExp) != -1)
 			{
-				if (routePaths[actionName][routers[i]].length)
+				if (routePaths[actionName][routers[i]] && routePaths[actionName][routers[i]].length)
 				{
 					routePaths[actionName][routers[i]].forEach(function (varName, i)
 					{
@@ -287,6 +293,8 @@ class Base
 					//this.routeArgs = Helpers.varsValidate(tmpArgs);
 					this.routeArgs = tmpArgs;
 				}
+				console.log("this.routeArgs");
+				console.log(this.routeArgs);
 
 				return true;
 			}
@@ -311,13 +319,12 @@ class Base
 	{
 		this.setAction();
 
-		//if (!this[this._action]) return cb(new Errors.HttpStatusError(404, "Not Found"));
-
 		//console.log('this.isAction() = ', this.isAction());
 		//console.log('-----------------------');
 		//console.log('');
 
-		if (!this.isAction() || !this._parseRoutePaths())
+		//if (!this.isAction() || !this._parseRoutePaths())
+		if (!this._parseRoutePaths())
 			return cb(new Errors.HttpStatusError(404, "Not Found"));
 
 
