@@ -1,5 +1,6 @@
 "use strict";
 
+const Helpers = require("app/helpers");
 const Errors = require('app/lib/errors');
 const Template = require('app/lib/template');
 //const Async = require('async');
@@ -31,6 +32,64 @@ class Base
 		//this.setControls(Controls);
 
 		this.setArgs([]);
+		this.routeArgs = null;
+	}
+	
+	_setBaseUrl(req, res)
+	{
+		req.baseUrl = res.locals.menuItem.m_path + '/' + (this.getActionName() == 'index' ? '' : this.getActionName());
+		return this;
+	}
+
+	getBaseUrl()
+	{
+		let path = this.getReq().baseUrl;
+		if (path.length > 1)
+			path = (path[path.length-1] == '/' ? path.substr(0, path.length-1) : path);
+		return path;
+	}
+
+	getPath()
+	{
+		//return this.getReq().path.replace(this.getBaseUrl(), '')
+		//let path = this.getReq().path.replace(this.getBaseUrl(), '')
+		//path = (path[path.length] == '/' ? path.substr(1) : path);
+		//if (path.length > 1)
+		//path = (path[path.length-1] == '/' ? path.substr(0, path.length-1) : path);
+		//return path;
+		return this.getArgs().join('/');
+	}
+
+	/**
+	 * пути адресов страниц описанные в дочерних классах
+	 * вид
+	 * {
+	 *  actionName1: {
+	 *  'regExpOFRoute1' : [var1, var2, ..., varN],
+	 *  'regExpOFRoute2': [var1, var2, ..., varN],
+	 *  ...
+	 *  'regExpOFRouteN': [var1, var2, ..., varN]
+	 *  },
+	 *
+	 *  ......
+	 *
+	 *  actionName2: {
+	 *  'regExpOFRoute1' : [var1, var2, ..., varN],
+	 *  'regExpOFRoute2': [var1, var2, ..., varN],
+	 *  ...
+	 *  'regExpOFRouteN': [var1, var2, ..., varN]
+	 *  },
+	 * }
+	 * @returns {{}}
+	 */
+	routePaths()
+	{
+		return {};
+	}
+
+	getReqQuery()
+	{
+		return this.getReq().query;
 	}
 
 	set view(view)
@@ -102,12 +161,14 @@ class Base
 
 		if (this._isMethod(this._action))
 		{
+			this._setActionName(method);
 			args.splice(0, 1);
 			this.setArgs(args);
 		}
 		else
 		{
 			this._action = defAction+method;
+			this._setActionName(method);
 			this.setArgs(args);
 		}
 
@@ -117,6 +178,22 @@ class Base
 		//console.log('this.getArgs() =', this.getArgs());
 		
 		return this;
+	}
+
+	getAction()
+	{
+		return this._action;
+	}
+
+	_setActionName(method)
+	{
+		this._actionName = this._action.replace(method, '');
+		//this._actionName = (this._actionName == 'index' ? '' : this._actionName);
+		return this;
+	}
+	getActionName()
+	{
+		return this._actionName;
 	}
 	
 	setArgs(args)
@@ -153,23 +230,98 @@ class Base
 	{
 		return this._res;
 	}
-	
+
+	_parseRoutePaths()
+	{
+		if (this.getReq().method.toLowerCase() != 'get')
+			return true;
+
+		let actionName = this.getActionName();
+		let routePaths = this.routePaths();
+
+		console.log('\n');
+		console.log('actionName = ', actionName);
+		console.log('routePaths:');
+		console.log(routePaths);
+		console.log('\n');
+		/*
+		let regExp = new RegExp(this.routePaths().index[0], 'ig');
+
+		console.log(this.getPath().search(regExp));
+		console.log(this.routePaths());
+
+		*/
+
+		if (!routePaths[actionName])
+			return false;
+
+		let reqPath = this.getPath();
+		let routers = Object.keys(routePaths[actionName]);
+		let args = this.getArgs();
+
+		let regExp, i, tmpArgs = {};
+		for(i in routers)
+		{
+			regExp = new RegExp(routers[i], 'ig');
+
+			/*console.log(reqPath);
+			console.log(routers[i]);
+			console.log( reqPath.search(regExp) != -1);*/
+
+			if (reqPath.search(regExp) != -1)
+			{
+				if (routePaths[actionName][routers[i]].length)
+				{
+					routePaths[actionName][routers[i]].forEach(function (varName, i)
+					{
+						if (varName)
+						{
+							tmpArgs[varName] = args[i];
+						}
+					});
+
+					//this.routeArgs = Helpers.varsValidate(tmpArgs);
+					this.routeArgs = tmpArgs;
+				}
+
+				return true;
+			}
+		}
+
+		console.log('\n');
+		return false;
+	}
+
+	set routeArgs(args)
+	{
+		this._routeArgs = args;
+		return this;
+	}
+	get routeArgs()
+	{
+		return this._routeArgs;
+	}
+
+
 	callAction(cb)
 	{
 		this.setAction();
-		
+
 		//if (!this[this._action]) return cb(new Errors.HttpStatusError(404, "Not Found"));
 
 		//console.log('this.isAction() = ', this.isAction());
 		//console.log('-----------------------');
 		//console.log('');
 
-		if (!this.isAction())
+		if (!this.isAction() || !this._parseRoutePaths())
 			return cb(new Errors.HttpStatusError(404, "Not Found"));
 
-		this.view = new Template(this.getReq(), this.getRes(), this.next);
 
-		this[this._action](cb);
+		this._setBaseUrl(this.getReq(), this.getRes());
+		//this.view = new Template(this.getReq(), this.getRes(), this.next, this);
+		this.view = Template.getTemplate(this);
+
+		this[this.getAction()](cb);
 		return this;
 		//return cb(new Errors.HttpStatusError(404, "Not Found"));
 	}

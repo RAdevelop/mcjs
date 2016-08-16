@@ -6,8 +6,10 @@
 const Promise = require('bluebird');
 const _ = require("lodash");
 
-function Template(req, res, next)
+function Template(req, res, next, Controller = null)
 {
+	this.setController(Controller);
+
 	let back = '/';
 	let reStr = '^https?://'+req.header('host');
 	let re = new RegExp(reStr);
@@ -37,11 +39,30 @@ function Template(req, res, next)
 	this.res = res;
 	this.next = next;
 
-	this.res.locals.isXHR           = this.req.xhr;
+	this.res.locals._reqQuery       = req.query;
+	this.res.locals.isXHR           = req.xhr;
 	this.res.locals._reqOriginalUrl = req.originalUrl;
-	this.res.locals._reqBaseUrl     = req.baseUrl;
-	this.res.locals._reqPath        = req.path;
+	this.res.locals._reqBaseUrl     = (this.controller() ? this.controller().getBaseUrl() : req.baseUrl);
+	//this.res.locals._reqPath        = req.path;
+	this.res.locals._reqPath        = (this.controller() ? this.controller().getPath() : req.path);
+
 }
+
+Template.getTemplate = function (Controller)
+{
+	return new Template(Controller.getReq(), Controller.getRes(), Controller.next, Controller);
+};
+
+Template.prototype.controller = function()
+{
+	return this._controller;
+};
+
+Template.prototype.setController = function(controller)
+{
+	this._controller = controller;
+	return this;
+};
 
 Template.prototype.getData = function()
 {
@@ -94,6 +115,8 @@ Template.prototype.render = function(json = false)
 		self.res.set('Content-Type', 'application/json');
 		self.setAjaxData(renderData);
 		self.res.json(self.getAjaxData());
+
+		self.setController(null);
 		return;
 	}
 
@@ -121,11 +144,14 @@ Template.prototype.render = function(json = false)
 			{
 				if(err) return Promise.reject(err);
 
+				self.setController(null);
+
 				return self.res.send(html);
 			});
 		})
 		.catch(function (err)
 		{
+			self.setController(null);
 			return self.next(err);
 		});
 };

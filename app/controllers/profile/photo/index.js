@@ -1,19 +1,24 @@
 "use strict";
 
 const Logger = require('app/lib/logger');
-//const Moment = require('moment');
 const Promise = require("bluebird");
 const Errors = require('app/lib/errors');
-//const Mail = require('app/lib/mail');
 //const MultiGeocoder = require('multi-geocoder');
 const FileUpload = require('app/lib/file/upload');
-
-//const FileErrors = require('app/lib/file/errors');
-//const _ = require('lodash');
-
 const Base = require('app/lib/controller');
 
 class ProfilePhoto extends Base {
+
+	routePaths()
+	{
+		return {
+			"index": {
+				'^\/?$' : [],
+				'^\/?[0-9]+\/page\/[0-9]+\/?$' : ["i_a_id", ,"i_page"]
+			}
+		}
+	}
+
 	/**
 	 * показываем страницу пользователя (свою, или выбранного)
 	 * @param cb
@@ -24,10 +29,8 @@ class ProfilePhoto extends Base {
 		if (!this.isAuthorized())
 			return cb(new Errors.HttpStatusError(401, "Unauthorized"));
 
-		let args = this.getArgs();
-
-		if (args.length > 1)
-			return cb(new Errors.HttpStatusError(404, "Not found"));
+		//if (args.length > 1)
+		//	return cb(new Errors.HttpStatusError(404, "Not found"));
 
 		let tplData = this.getUser();
 		
@@ -39,8 +42,8 @@ class ProfilePhoto extends Base {
 				tplData["albums"] = null;
 				tplData["album"] = null;
 
-				if (args.length)
-					return this.album(cb, tplData, args.shift());
+				if (this.routeArgs)
+					return this.album(cb, tplData);
 
 				return this.albumList(cb, tplData);
 			})
@@ -52,6 +55,7 @@ class ProfilePhoto extends Base {
 	
 	/**
 	 * список фотоальбомов пользователя
+	 *
 	 * @param u_id
 	 * @returns {*}
 	 */
@@ -79,28 +83,36 @@ class ProfilePhoto extends Base {
 			});
 	}
 
-	album(cb, tplData, a_id)
+	/**
+	 * просмотр фотоальбома
+	 *
+	 * @param cb
+	 * @param tplData
+	 * @returns {Promise.<TResult>}
+	 */
+	album(cb, tplData)
 	{
 		let tplFile = 'user/profile/photo/albums.ejs';
+		let {i_a_id, i_page=1} = this.routeArgs;
 
 		return Promise.resolve(tplData)
 			.bind(this)
 			.then(function (tplData)
 			{
-				return this.getClass('user/photo').getAlbum(this.getUserId(), a_id)
+				return this.getClass('user/photo').getAlbum(this.getUserId(), i_a_id)
 					.then(function (album)
 					{
 						if (!album)
 							return Promise.reject(new Errors.HttpStatusError(404, "Not found"));
-						
-						tplData["a_id"] = a_id;
+
+						tplData["a_id"] = i_a_id;
 						tplData["album"] = album;
 						return Promise.resolve(tplData);
 					});
 			})
 			.then(function (tplData)
 			{
-				return this.getClass('user/photo').getAlbumImages(this.getUserId(), a_id)
+				return this.getClass('user/photo').getAlbumImages(this.getUserId(), i_a_id)
 					.then(function (images)
 					{
 						tplData["album"]["images"] = images;
@@ -169,6 +181,7 @@ class ProfilePhoto extends Base {
 
 	/**
 	 * обработка POST событий над формами
+	 *
 	 * @param tplData
 	 * @returns {*}
 	 */
@@ -201,6 +214,12 @@ class ProfilePhoto extends Base {
 		}
 	}
 
+	/**
+	 * создание фотоальбома
+	 *
+	 * @param tplData
+	 * @returns {Promise.<TResult>}
+	 */
 	addNamedAlbum(tplData)
 	{
 		let errors = {};
@@ -240,6 +259,12 @@ class ProfilePhoto extends Base {
 			});
 	}
 
+	/**
+	 * радактирование названия и описания фотоальбома
+	 *
+	 * @param tplData
+	 * @returns {*}
+	 */
 	editAlbum(tplData)
 	{
 		let errors = {};

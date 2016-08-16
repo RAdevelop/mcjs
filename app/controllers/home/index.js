@@ -9,6 +9,19 @@ const Base = require('app/lib/controller');
 class Home extends Base
 {
 	/**
+	 * @see Base.routePaths()
+	 * @returns {{index: {^\/?$: Array}}}
+	 */
+	routePaths()
+	{
+		return {
+			"index": {
+				'^\/?$': []
+			}
+		}
+	}
+
+	/**
 	 *
 	 * @param cb
 	 * @returns {*}

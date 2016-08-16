@@ -16,6 +16,25 @@ const Base = require('app/lib/controller');
 class Profile extends Base 
 {
 	/**
+	 * @see Base.routePaths()
+	 * @returns {{index: {^\/?$: Array}}}
+	 */
+	routePaths()
+	{
+		return {
+			"index": {
+				'^\/?$': []
+			},
+			"edit": {
+				'^\/?$': []
+			},
+			"change": {
+				'^\/?$': [] //TODO
+			}
+		}
+	}
+
+	/**
 	 * показываем страницу пользователя (свою, или выбранного)
 	 * @param cb
 	 * @returns {*}
@@ -157,7 +176,7 @@ class Profile extends Base
 		
 		let tplData = this.getReqBody();
 		
-		this._changeConfirm(tplData).bind(this)
+		return this._changeConfirm(tplData).bind(this)
 		.then(function(tplData)
 		{
 			this.view.setTplData('user/profile/change_mail_confirm.ejs', tplData);
@@ -171,6 +190,9 @@ class Profile extends Base
 	
 	_changeConfirm(tplData)
 	{
+		//TODO!!!!!!!!
+		let {changeType, key} = this.routeArgs;
+
 		let changeType = this.getArgs().shift().toLowerCase();
 		switch (changeType)
 		{
@@ -180,30 +202,26 @@ class Profile extends Base
 			
 			case 'mail':
 
-				return this._changeMailConfirm(tplData);
+				return this._changeMailConfirm(tplData, key);
 				break;
 		}
 	}
 	
-	_changeMailConfirm(tplData)
+	_changeMailConfirm(tplData, key)
 	{
-		let key = this.getArgs().shift();
+		//let key = this.getArgs().shift();
 		
 		const self = this;
 		
-		return Promise.resolve(key)
-		.then(function(key)
+		return new Promise(function(resolve, reject)
 		{
-			return new Promise(function(resolve, reject)
+			self.model("user/profile").confirmReqChangeMail(self.getUser().u_id, key, function(err, confirmed)
 			{
-				self.model("user/profile").confirmReqChangeMail(self.getUser().u_id, key, function(err, confirmed)
-				{
-					if (err) return reject(err);
-					
-					tplData.confirmed = confirmed;
-					
-					return resolve(tplData);
-				});
+				if (err) return reject(err);
+
+				tplData.confirmed = confirmed;
+
+				return resolve(tplData);
 			});
 		});
 	}
