@@ -193,7 +193,7 @@ class Profile extends Base
 		//TODO!!!!!!!!
 		let {changeType, key} = this.routeArgs;
 
-		let changeType = this.getArgs().shift().toLowerCase();
+		//let changeType = this.getArgs().shift().toLowerCase();
 		switch (changeType)
 		{
 			default:

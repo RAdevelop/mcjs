@@ -213,7 +213,7 @@ class User extends BaseModel
 		
 		let sqlData = [u_id, u_req_type, u_req_key, Moment().unix()];
 		
-		this.constructor.conn().ps(sql, sqlData, function(err, res)
+		return this.constructor.conn().ps(sql, sqlData, function(err, res)
 		{
 			if (err) return cb(err, false);
 			

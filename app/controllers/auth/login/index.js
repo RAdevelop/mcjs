@@ -14,6 +14,22 @@ const Base = require('app/lib/controller');
 class Login extends Base
 {
 	/**
+	 * @see Base.routePaths()
+	 * @returns {{index: {^\/?$: Array}}}
+	 */
+	routePaths()
+	{
+		return {
+			"index": {
+				'^\/?$': []
+			},
+			"reset": {
+				'^\/?\\S{32,}\/?$': ['s_key']
+			}
+		}
+	}
+
+	/**
 	 *
 	 * @param cb
 	 * @returns {*}
@@ -47,23 +63,22 @@ class Login extends Base
 	{
 		//if(this.getUser()) return this.getRes().redirect('back');
 		
-		const self = this;
-		
-		let tplData = this.getReqBody();
+		//let tplData = this.getReqBody();
+		let tplData = this.getParsedBody();
 
-		switch(this.getReq()._reqbody["btn_action"].toLowerCase())
+		switch(tplData["btn_action"])
 		{
 			default:
-				self.view.setTplData("auth/login", tplData);
+				this.view.setTplData("auth/login", tplData);
 				return cb(new Errors.HttpStatusError(400, "Bad Request"));
 			break;
 			
 			case 'login':
-				return self._formLoginValidation(tplData, cb);
+				return this._formLoginValidation(tplData, cb);
 			break;
 			
 			case 'reset':
-				return self._formResetValidation(tplData, cb);
+				return this._formResetValidation(tplData, cb);
 			break;
 		}
 	}
@@ -75,19 +90,21 @@ class Login extends Base
 	 */
 	resetActionGet(cb)
 	{
-		if(this.getUserId()) return this.getRes().redirect('back');
+		if(this.getUserId())
+			return this.getRes().redirect('back');
 
 		const self = this;
-		
-		let key = this.getArgs().shift().trim();
-		
+
+		//let key = this.getArgs().shift().trim();
+		let {s_key} = this.routeArgs;
+
 		let tplData = {
 			s_password:'',
 			s_password2:'',
-			s_key: key
+			s_key: s_key
 		};
 		
-		self.model("user").issetChangeRequest('pass_reset_confirm', key, function(err, isset)
+		return self.model("user").issetChangeRequest('pass_reset_confirm', s_key, function(err, isset)
 		{
 			if (err) return cb(err);
 

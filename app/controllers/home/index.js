@@ -9,33 +9,19 @@ const Base = require('app/lib/controller');
 class Home extends Base
 {
 	/**
-	 * @see Base.routePaths()
-	 * @returns {{index: {^\/?$: Array}}}
-	 */
-	routePaths()
-	{
-		return {
-			"index": {
-				'^\/?$': []
-			}
-		}
-	}
-
-	/**
 	 *
 	 * @param cb
 	 * @returns {*}
 	 */
 	indexActionGet(cb)
 	{
-		const self = this;
-		
-		self.getClass("user").getUser(self.getUserId())
+		this.getClass("user").getUser(this.getUserId())
+			.bind(this)
 			.then(function(userData)
 			{
-				self.view.setTplData("home", {});
-				self.view.addPartialData("user/left", {user: userData});
-				self.view.addPartialData("user/right", {title: 'right_col'});
+				this.view.setTplData("home", {});
+				this.view.addPartialData("user/left", {user: userData});
+				this.view.addPartialData("user/right", {title: 'right_col'});
 
 				return cb(null);
 			})

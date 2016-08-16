@@ -10,13 +10,12 @@ class News extends Base
 {
 	indexActionGet(cb)
 	{
-		const self = this;
-
-		self.getClass("user").getUser(self.getUserId())
+		this.getClass("user").getUser(this.getUserId())
+			.bind(this)
 		.then(function(userData)
 		{
-			self.view.setTplData("news", {});
-			self.view.addPartialData("user/left", {user: userData});
+			this.view.setTplData("news", {});
+			this.view.addPartialData("user/left", {user: userData});
 
 			return cb(null);
 		})

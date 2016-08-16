@@ -84,7 +84,11 @@ class Base
 	 */
 	routePaths()
 	{
-		return {};
+		return {
+			"index":{
+				'^\/?$' : []
+			}
+		};
 	}
 
 	getReqQuery()

@@ -19,14 +19,13 @@ class User extends Base
 	{
 		if (!this.isAuthorized())
 			return cb(new Errors.HttpStatusError(401, "Unauthorized"));
-		
-		const self = this;
-		
-		self.getClass("user").getUser(self.getUserId())
+
+		this.getClass("user").getUser(this.getUserId())
+			.bind(this)
 		.then(function(userData)
 		{
-			self.view.setTplData("user", {});
-			self.view.addPartialData("user/left", {user: userData});
+			this.view.setTplData("user", {});
+			this.view.addPartialData("user/left", {user: userData});
 			//self.view.addPartialData("user/right", {}); //TODO
 
 			return cb(null);
