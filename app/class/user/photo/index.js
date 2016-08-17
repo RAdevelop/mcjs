@@ -56,17 +56,13 @@ class UserPhoto extends User
 	 */
 	getAlbumList(u_id, Pages)
 	{
-
-		let start = 0, limit = 2;
 		return this.model('user/photo').countUserAlbums(u_id)
 			.bind(this)
 			.then(function (a_cnt)
 			{
-				console.log('a_cnt = ', a_cnt);
 				if (!a_cnt)
-					return Promise.resolve(null);
-
-
+					return [null, Pages];
+				
 				Pages.setTotal(a_cnt);
 				let pages = Pages.pages();
 
@@ -93,10 +89,8 @@ class UserPhoto extends User
 							}
 						});
 						albums["a_cnt"] = a_cnt;
-						albums["pages"] = pages;
 
-						//console.log(albums);
-						return Promise.resolve(albums);
+						return [albums, Pages];
 					});
 			});
 	}
@@ -122,18 +116,30 @@ class UserPhoto extends User
 			});
 	}
 
-	getAlbumImages(u_id, a_id)
+	/**
+	 * список фоток в альбоме
+	 *
+	 * @param u_id
+	 * @param a_id
+	 * @param Pages
+	 * @returns {*}
+	 */
+	getAlbumImages(u_id, a_id, Pages)
 	{
-		return this.model('user/photo').getAlbumImages(u_id, a_id)
+		if (Pages.limitExceeded())
+			return Promise.reject(new FileErrors.HttpStatusError(404, "Not found"));
+		
+		return this.model('user/photo').getAlbumImages(u_id, a_id, Pages.getOffset(), Pages.getLimit())
 			.then(function (images)
 			{
 				if (!images)
-					return Promise.resolve([]);
+					return [[], Pages];
 
 				let sizeParams = FileUpload.getUploadConfig('user_photo').sizeParams;
 
 				let imgSuffix;
 				let imgPath;
+
 				images["previews"] = [];
 				images.forEach(function (image, indx)
 				{
@@ -152,7 +158,7 @@ class UserPhoto extends User
 					}
 				});
 
-				return Promise.resolve(images);
+				return [images, Pages];
 			});
 	}
 

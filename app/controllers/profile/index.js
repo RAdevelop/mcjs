@@ -110,23 +110,23 @@ class Profile extends Base
 
 		this.getClass("user").getUser(this.getUserId())
 			.bind(this)
-		.then(function(userData)
-		{
-			tplData = Object.assign(tplData, userData, FileUpload.createToken('user_ava', tplData) );
+			.then(function(userData)
+			{
+				tplData = Object.assign(tplData, userData, FileUpload.createToken('user_ava', tplData) );
 
-			this.view.setTplData(tplFile, tplData);
-			this.view.addPartialData('user/left', {user: userData});
+				this.view.setTplData(tplFile, tplData);
+				this.view.addPartialData('user/left', {user: userData});
 
-			//экспрот данных в JS на клиента
-			this.getRes().expose(userData, 'userLocation');
-			this.getRes().expose(FileUpload.getUploadConfig('user_ava'), 'avaUploadOpts');
+				//экспрот данных в JS на клиента
+				this.getRes().expose(userData, 'userLocation');
+				this.getRes().expose(FileUpload.getUploadConfig('user_ava'), 'avaUploadOpts');
 
-			return cb(null);
-		})
-		.catch(function(err)
-		{
-			return cb(err);
-		});		
+				return cb(null);
+			})
+			.catch(function(err)
+			{
+				return cb(err);
+			});
 	}
 	
 	/**

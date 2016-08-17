@@ -76,11 +76,13 @@ class ProfilePhoto extends Base
 			.then(function (tplData)
 			{
 				return this.getClass('user/photo').getAlbumList(this.getUserId(), new Pages(i_page, limit_per_page))
-					.then(function (albums)
+					.bind(this)
+					.spread(function (albums, Pages)
 					{
+						Pages.setLinksUri(this.getBaseUrl());
+
 						tplData["albums"] = albums;
-						tplData["pages"] = albums["pages"];
-						delete albums["pages"];
+						tplData["pages"] = Pages.pages();
 
 						return Promise.resolve(tplData);
 					});
@@ -125,12 +127,25 @@ class ProfilePhoto extends Base
 			})
 			.then(function (tplData)
 			{
-				return this.getClass('user/photo').getAlbumImages(this.getUserId(), i_a_id)
-					.then(function (images)
-					{
-						tplData["album"]["images"] = images;
+				if (!tplData["album"]["a_img_cnt"])
+				{
+					tplData["album"]["images"] = [];
+					return Promise.resolve(tplData);
+				}
 
-						//console.log(tplData["album"]["images"]);
+				let {i_page=1} = this.routeArgs;
+
+				return this.getClass('user/photo')
+					.getAlbumImages(this.getUserId(), i_a_id, new Pages(i_page, limit_per_page, tplData["album"]["a_img_cnt"]))
+					.bind(this)
+					.spread(function (images, Pages)
+					{
+						Pages.setLinksUri(this.getBaseUrl()+'/'+i_a_id);
+
+						tplData["album"]["images"] = images;
+						tplData["pages"] = Pages.pages();
+
+						console.log(tplData["pages"]);
 						return Promise.resolve(tplData);
 					});
 			})

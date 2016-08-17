@@ -3,9 +3,9 @@
  */
 class Pages
 {
-	constructor(page = 1, per_page = 10)
+	constructor(page = 1, per_page = 10, total = 0)
 	{
-		this.setPage(page).setLimit(per_page);
+		this.setPage(page).setLimit(per_page).setTotal(total).setLinksUri();
 	}
 
 	/**
@@ -47,15 +47,15 @@ class Pages
 	/**
 	 * сколько всего элементов
 	 *
-	 * @param cnt
+	 * @param total
 	 * @returns {Pages}
 	 */
-	setTotal(cnt)
+	setTotal(total)
 	{
-		cnt = parseInt(cnt, 10);
-		cnt = (!cnt ? 0 : cnt);
+		total = parseInt(total, 10);
+		total = (!total ? 0 : total);
 
-		this._total = cnt;
+		this._total = total;
 		return this;
 	}
 	getTotal()
@@ -80,29 +80,47 @@ class Pages
 		return (startPage < 0 || !startPage ? 0 : startPage);
 	}
 
+	setLinksUri(uri = '')
+	{
+		this._linksUri = uri;
+		return this;
+	}
+
+	getLinksUri()
+	{
+		return this._linksUri;
+	}
+
 	getLinks()
 	{
 		let links = [];
 		for (let i = 1; i <= this.getTotalPages(); i++)
-		{
-			links.push(i);
-		}
+		links.push(i);
 
 		return links;
 	}
 
+	limitExceeded()
+	{
+		return (this.getPage() > this.getTotalPages());
+	}
+
 	pages()
 	{
+		if (this.getTotalPages() == 1)
+			return null;
+
 		return {
 			"total": this.getTotal()
 			,"limit": this.getLimit()
 			,"page": this.getPage()
 			,"total_pages": this.getTotalPages()
-			,"limit_exceeded": (this.getPage() > this.getTotalPages())
+			,"limit_exceeded": this.limitExceeded()
 			,"last_page": (this.getPage() >= this.getTotalPages())
 			,"first_page": (this.getPage() == 1)
 			,"offset": this.getOffset()
 			,"links": this.getLinks()
+			,"uri": this.getLinksUri()
 		};
 	}
 }
