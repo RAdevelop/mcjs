@@ -1,13 +1,65 @@
-<% if (pages) {%>
-<nav aria-label="Page navigation">
+<% if (pages) { %>
+<nav class="pages" aria-label="Page navigation">
 	<ul class="pagination">
-<% if (!pages["first_page"]){%><li><a href="<%=pages["uri"]%>/" aria-label="первая"><span aria-hidden="true">&leftarrow;&nbsp;первая</span></a></li><%}%>
-<% pages["links"].forEach(function (link)
-{
-	if (pages["page"] == link){%><li class="active"><span><%=link%></span></li><%}
-	else {%><li><a href="<%=(link == 1 ? pages["uri"] : pages["uri"]+'/page/'+link)%>/"><%=link%></a></li><%}
-});%>
-<% if (!pages["last_page"]){%><li><a  href="<%=pages["uri"]+'/page/'+pages["total_pages"]%>/" aria-label="последняя"><span aria-hidden="true">последняя&nbsp;&rightarrow;</span></a></li><%}%>
+<% if (pages["is_ajax"]) {
+%><li><span class="nextPages btn btn-default" data-loading-text="загружаю...">следующие <span aria-hidden="true">&rarr;</span></span></li><%
+}  else {
+		if (!pages["first_page"]){%><li><a href="<%=pages["uri"]%>/<%=(pages["query"] ? '?'+pages["query"] : '')%>" aria-label="первая"><span aria-hidden="true">&leftarrow;&nbsp;первая</span></a></li><%}%>
+<%
+		for (let link = 1; link <= pages["total_pages"]; link++)
+		{
+			if (pages["page"] == link){%><li class="active"><span><%=link%></span></li><%}
+			else {%><li><a href="<%=(link == 1 ? pages["uri"] : pages["uri"]+'/page/'+link)%>/<%=(pages["query"] ? '?'+pages["query"] : '')%>"><%=link%></a></li><%}
+		}
+		if (!pages["last_page"]){%><li><a  href="<%=pages["uri"]+'/page/'+pages["total_pages"]%>/<%=(pages["query"] ? '?'+pages["query"] : '')%>" aria-label="последняя"><span aria-hidden="true">последняя&nbsp;&rightarrow;</span></a></li><%}%>
+	<% }  %>
 	</ul>
 </nav>
-<% } %>
+<% if (pages["is_ajax"]) {%>
+<script type="text/javascript">
+	//<!--
+	(function($)
+	{
+		var pages = MCJS["pages"] || null;
+		if (!pages) return;
+
+		console.log('pages 0');
+
+		$('.pages .nextPages').click(function (event)
+		{
+			var $self = $(this);
+console.log('pages 1');
+			event.preventDefault();
+			event.stopPropagation();
+
+			var sendData = {
+
+			};
+			var next = (parseInt(pages.page, 10) + 1);
+			if (next > pages.total_pages)
+				return;
+			console.log('pages 2');
+
+			var uri = pages.uri + '/page/'+next+'/';
+			$self.button('loading');
+			$.ajax({
+				url: uri,
+				method: "GET",
+				data: sendData,
+				dataType: "json"
+			})
+			.done(function(resData)
+			{
+				$self.button('reset');
+				console.log(resData);
+			})
+			.fail(function(resData)
+			{
+				$self.button('reset');
+				console.log(resData);
+			});
+		});
+	})($);
+	//-->
+</script>
+<%} } %>

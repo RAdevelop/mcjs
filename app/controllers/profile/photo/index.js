@@ -37,22 +37,35 @@ class ProfilePhoto extends Base
 
 		//if (args.length > 1)
 		//	return cb(new Errors.HttpStatusError(404, "Not found"));
-
-		let tplData = this.getUser();
-		
-		this.getClass("user").getUser(this.getUserId())
+			
+		return Promise.resolve(this.getReq().xhr)
 			.bind(this)
-			.then(function (userData)
+			.then(function (xhr)
 			{
-				tplData = Object.assign(tplData, {user: userData});
+				if (xhr)
+					return Promise.resolve({});
+
+				let tplData = (xhr ? {} : this.getUser());
+				return this.getClass("user").getUser(this.getUserId())
+					.then(function (userData)
+					{
+						tplData["user"] = userData;
+						return Promise.resolve(tplData);
+					});
+			})
+			.then(function (tplData)
+			{
+
+				//console.log("this.getReq().xhr = ",this.getReq().xhr);
+
 				tplData["albums"] = null;
 				tplData["album"] = null;
 				tplData["pages"] = null;
 
 				if (this.routeArgs["i_a_id"])
-					return this.album(cb, tplData);
+					return this.album(cb, tplData, this.getReq().xhr);
 
-				return this.albumList(cb, tplData);
+				return this.albumList(cb, tplData, this.getReq().xhr);
 			})
 			.catch(function (err)
 			{
@@ -66,7 +79,7 @@ class ProfilePhoto extends Base
 	 * @param u_id
 	 * @returns {*}
 	 */
-	albumList(cb, tplData)
+	albumList(cb, tplData, isAjax = false)
 	{
 		let tplFile = 'user/profile/photo/albums.ejs';
 		let {i_page=1} = this.routeArgs;
@@ -82,7 +95,7 @@ class ProfilePhoto extends Base
 						Pages.setLinksUri(this.getBaseUrl());
 
 						tplData["albums"]   = albums;
-						tplData["pages"]    = Pages.pages();
+						tplData["pages"]    = Pages.setAjaxPagesType(true).pages();
 
 						return Promise.resolve(tplData);
 					});
@@ -92,7 +105,13 @@ class ProfilePhoto extends Base
 				console.log(tplData);
 
 				this.view.setTplData(tplFile, tplData);
-				this.view.addPartialData('user/left', {user: tplData["user"]});
+
+				if (!isAjax)
+				{
+					this.view.addPartialData('user/left', {user: tplData["user"]});
+				}
+
+				this.getRes().expose(tplData["pages"], 'pages');
 
 				return cb(null);
 			});
@@ -105,7 +124,7 @@ class ProfilePhoto extends Base
 	 * @param tplData
 	 * @returns {Promise.<TResult>}
 	 */
-	album(cb, tplData)
+	album(cb, tplData, isAjax = false)
 	{
 		let tplFile = 'user/profile/photo/albums.ejs';
 		let {i_a_id, i_page=1} = this.routeArgs;
@@ -142,7 +161,7 @@ class ProfilePhoto extends Base
 						Pages.setLinksUri(this.getBaseUrl()+'/'+i_a_id);
 
 						tplData["album"]["images"] = images;
-						tplData["pages"] = Pages.pages();
+						tplData["pages"] = Pages.setAjaxPagesType(true).pages();
 
 						console.log(tplData["pages"]);
 						//return Promise.resolve(tplData);
@@ -151,14 +170,22 @@ class ProfilePhoto extends Base
 			})
 			.spread(function (tplData, allPreviews)
 			{
-				tplData = Object.assign(tplData, FileUpload.createToken('user_photo', {"a_id": i_a_id}) );
+				if (!isAjax)
+				{
+					tplData = Object.assign(tplData, FileUpload.createToken('user_photo', {"a_id": i_a_id}) );
+					this.getRes().expose(FileUpload.getUploadConfig('user_photo'), 'albumUploadOpts');
+				}
 
 				this.view.setTplData(tplFile, tplData);
-				this.view.addPartialData('user/left', {user: tplData["user"]});
+
+				if (!isAjax)
+				{
+					this.view.addPartialData('user/left', {user: tplData["user"]});
+				}
 
 				this.getRes().expose(tplData["album"]["images"], 'albumImages');
 				this.getRes().expose(allPreviews, 'albumPreviews');
-				this.getRes().expose(FileUpload.getUploadConfig('user_photo'), 'albumUploadOpts');
+				this.getRes().expose(tplData["pages"], 'pages');
 
 				return cb(null);
 			})

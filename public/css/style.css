@@ -600,95 +600,14 @@ a.social:hover
 		width: 700px;
 	}
 }
-
-/*
-
-.albumImageDialog .modal-body img.vertical
-{
-	max-height: 768px;
-}
-.albumImageDialog .modal-body img.horizontal
-{
-	width: 100%;
-	max-width: 1024px;
-}
-
-@media (orientation : portrait)
-{
-	.albumImageDialog .modal-body img.vertical
-	{
-		max-width: calc(100%);
-		max-width: -moz-calc(100%);
-		max-width: -webkit-calc(100%);
-	}
-}
-@media (orientation : landscape)
-{
-	.albumImageDialog .modal-body img.vertical
-	{
-		max-width: calc(100%);
-		max-width: -moz-calc(100%);
-		max-width: -webkit-calc(100%);
-	}
-}
-*/
-
-
-/* 768 / 1024 *
-@media (min-device-width: 768px) and (max-device-height: 1024px) and (orientation : portrait)
-{
-
-
-	.albumImageDialog
-	{
-		width: 730px !important;
-	}
-
-	.albumImageDialog .modal-body
-	{
-		width: 728px !important;
-	}
-	.albumImageDialog .modal-body img.horizontal
-	{
-		width: 728px !important;
-	}
-
-	.albumImageDialog .modal-body img.vertical
-	{
-		height: 548px !important;
-	}
-}
-@media (min-device-width: 768px) and (max-device-height: 1024px) and (orientation : landscape)
-{
-	.albumImageDialog
-	{
-		width: 770px !important;
-	}
-
-	.albumImageDialog .modal-body
-	{
-		width: 768px !important;
-	}
-	.albumImageDialog .modal-body img.horizontal
-	{
-		width: 768px !important;
-	}
-
-	.albumImageDialog .modal-body img.vertical
-	{
-		height: 568px !important;
-	}
-}
-/* END 768 / 1024 */
-
-
-
-
-
-
-
-
 /********** END список фоток в альбоме **************/
+
+/**********  список страниц (постраничная разбивка) **************/
+nav.pages
+{
+	text-align: center;
+}
+/**********  END список страниц (постраничная разбивка) **************/
 
 
 

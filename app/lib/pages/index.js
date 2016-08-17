@@ -5,7 +5,19 @@ class Pages
 {
 	constructor(page = 1, per_page = 10, total = 0)
 	{
-		this.setPage(page).setLimit(per_page).setTotal(total).setLinksUri();
+		this.setPage(page).setLimit(per_page).setTotal(total).setLinksUri()
+			.setAjaxPagesType();
+	}
+
+	setAjaxPagesType(ajax = false)
+	{
+		this._ajaxPagesType = ajax;
+		return this;
+	}
+
+	isAjaxPagesType()
+	{
+		return this._ajaxPagesType;
 	}
 
 	/**
@@ -91,13 +103,18 @@ class Pages
 		return this._linksUri;
 	}
 
-	getLinks()
+	setLinksQuery(uriQuery = '')
 	{
-		let links = [];
-		for (let i = 1; i <= this.getTotalPages(); i++)
-		links.push(i);
+		this._linksQuery = uriQuery;
+		return this;
+	}
 
-		return links;
+	getLinksQuery()
+	{
+		if (!this._linksQuery)
+			this.setLinksQuery();
+
+		return this._linksQuery;
 	}
 
 	limitExceeded()
@@ -119,8 +136,9 @@ class Pages
 			,"last_page": (this.getPage() >= this.getTotalPages())
 			,"first_page": (this.getPage() == 1)
 			,"offset": this.getOffset()
-			,"links": this.getLinks()
 			,"uri": this.getLinksUri()
+			,"query": this.getLinksQuery()
+			,"is_ajax": this.isAjaxPagesType()
 		};
 	}
 }
