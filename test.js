@@ -1,15 +1,29 @@
 const FS = require('fs');
 const Path = require('path');
+const Crypto = require('crypto');
 
 
-//let file = __dirname +'/public/ra';
-let file = '../';
-console.log(Path.join(__dirname, file));
-/*
-FS.unlink(file, function (err)
+let tokenStr = secret;
+
+console.log(fields);
+console.log(this.tokenFields);
+
+if (!fields["i_time"])
+	return false;
+
+tokenStr += fields.i_time;
+
+for(let f in this.tokenFields)
 {
-	if (err) return console.log(err);
+	if (fields[this.tokenFields[f]])
+	{
+		console.log(this.tokenFields[f], fields[this.tokenFields[f]])
+		tokenStr += fields[this.tokenFields[f]];
+	}
+}
 
-	return console.log(true);
-});*/
-console.log(`Current directory: ${process.cwd()}`);
+let c = Crypto.createHash('md5').update(tokenStr).digest("hex");
+
+console.log();
+console.log();
+console.log();

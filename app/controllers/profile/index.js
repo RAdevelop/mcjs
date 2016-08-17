@@ -112,7 +112,7 @@ class Profile extends Base
 			.bind(this)
 			.then(function(userData)
 			{
-				tplData = Object.assign(tplData, userData, FileUpload.createToken('user_ava', tplData) );
+				tplData = Object.assign(tplData, userData, FileUpload.createToken('user_ava', {"u_id": userData["u_id"]}) );
 
 				this.view.setTplData(tplFile, tplData);
 				this.view.addPartialData('user/left', {user: userData});
@@ -746,7 +746,7 @@ class Profile extends Base
 				return self.getClass('user/photo').delImage(file["u_id"], file["a_id"], file["ai_id"], file);
 		});
 
-		self.getClass('user/photo/profile')
+		return self.getClass('user/photo/profile')
 			.uploadProfile(this.getUserId(), this.getReq(), this.getRes())
 			.then(function (file)
 			{
@@ -769,7 +769,7 @@ class Profile extends Base
 			})
 			.catch(function (err)
 			{
-				Logger.error(err);
+				Logger().error(err);
 
 				tplData.formError.text = err.message;
 				tplData.formError.error = true;

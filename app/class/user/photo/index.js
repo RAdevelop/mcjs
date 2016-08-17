@@ -50,6 +50,33 @@ class UserPhoto extends User
 	}
 
 	/**
+	 * формируем проевьюхи для объекта obj (льбом или картинка в альбоме)
+	 *
+	 * @param sizeParams
+	 * @param obj
+	 * @param spread
+	 * @returns {*}
+	 */
+	static previews(sizeParams, obj, spread = false)
+	{
+		let previews = [];
+		if (!obj["previews"]) obj["previews"] = {};
+		if (obj["ai_dir"])
+		{
+			sizeParams.forEach(function (size)
+			{
+				obj["previews"][size.w+'_'+size.h] = obj["ai_dir"] + '/' + size.w+'_'+size.h +'.jpg';
+
+				if (spread)
+					previews.push(obj["previews"][size.w+'_'+size.h]);
+			});
+		}
+
+
+		return {obj: obj, previews: previews};
+	}
+
+	/**
 	 * список фотоальбомов пользователя
 	 * @param u_id
 	 * @returns {*}
@@ -60,33 +87,25 @@ class UserPhoto extends User
 			.bind(this)
 			.then(function (a_cnt)
 			{
+				Pages.setTotal(a_cnt);
+
 				if (!a_cnt)
 					return [null, Pages];
-				
-				Pages.setTotal(a_cnt);
-				let pages = Pages.pages();
 
-				if (pages["limit_exceeded"])
+				if (Pages.limitExceeded())
 					return Promise.reject(new FileErrors.HttpStatusError(404, "Not found"));
 
-				return this.model('user/photo').getAlbumList(u_id, pages.offset, pages.limit)
+				return this.model('user/photo').getAlbumList(u_id, Pages.getOffset(), Pages.getLimit())
 					.then(function (albums)
 					{
 						let sizeParams = FileUpload.getUploadConfig('user_photo').sizeParams;
-						
+
 						albums.forEach(function (album)
 						{
-							album["a_profile"]  = (album["a_profile"]   == '1' ? true : false);
-							album["a_named"]    = (album["a_named"]     == '1' ? true : false);
-							
-							if (!album["previews"]) album["previews"] = [];
-							if (album["ai_dir"])
-							{
-								sizeParams.forEach(function (size)
-								{
-									album["previews"][size.w+'_'+size.h] = album["ai_dir"] + '/' + size.w+'_'+size.h +'.jpg';
-								});
-							}
+							album["a_profile"]  = (album["a_profile"]   == '1');
+							album["a_named"]    = (album["a_named"]     == '1');
+
+							album = Object.assign(album, UserPhoto.previews(sizeParams, album)["obj"]);
 						});
 						albums["a_cnt"] = a_cnt;
 
@@ -109,8 +128,8 @@ class UserPhoto extends User
 				if (!album)
 					return Promise.resolve(null);
 
-				album["a_profile"] = (album["a_profile"] == '1' ? true : false);
-				album["a_named"] = (album["a_named"] == '1' ? true : false);
+				album["a_profile"]  = (album["a_profile"]   == '1');
+				album["a_named"]    = (album["a_named"]     == '1');
 
 				return Promise.resolve(album);
 			});
@@ -133,32 +152,26 @@ class UserPhoto extends User
 			.then(function (images)
 			{
 				if (!images)
-					return [[], Pages];
+					return [Pages, [], []];
 
 				let sizeParams = FileUpload.getUploadConfig('user_photo').sizeParams;
 
-				let imgSuffix;
-				let imgPath;
-
-				images["previews"] = [];
+				let allPreviews = [];
 				images.forEach(function (image, indx)
 				{
 					images[indx]["previews"] = {};
 					if (image["ai_dir"])
 					{
-						images[indx]["previews"]['orig'] = image["ai_dir"] + '/orig/' + image["ai_name"];
-						sizeParams.forEach(function (size)
-						{
-							imgSuffix   = size.w+'_'+size.h;
-							imgPath     = image["ai_dir"] + '/' + imgSuffix +'.jpg';
+						let obj = UserPhoto.previews(sizeParams, image, true);
+						image = obj["obj"];
 
-							images[indx]["previews"][imgSuffix] = imgPath;
-							images["previews"].push(imgPath);
-						});
+						allPreviews = allPreviews.concat(obj["previews"]);
+
+						image["previews"]['orig'] = image["ai_dir"] + '/orig/' + image["ai_name"];
 					}
 				});
 
-				return [images, Pages];
+				return [Pages, images, allPreviews];
 			});
 	}
 

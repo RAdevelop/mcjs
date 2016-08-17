@@ -216,7 +216,7 @@ class UploadFile extends File
 			{
 				//console.log(fields);
 
-				if (!UploadFile.checkToken(fields))
+				if (!self.checkToken(fields))
 				{
 					if (file && !File.isForbiddenDir(file.path))
 					{
@@ -284,17 +284,24 @@ class UploadFile extends File
 	 * создаем токен для проверки подделки данных во время загрузки
 	 * @returns {{i_time: number, s_token: *}}
 	 */
-	static createToken(tokenFields, tplData)
+	static createToken(uploadTypeConf, tokenData)
 	{
+
+		let tokenFields = UploadFile.getUploadConfig(uploadTypeConf)["tokenFields"] || ['i_time'];
 		let tokenStr = secret;
-		tplData.i_time = (new Date()).getTime();
+		tokenData.i_time = (new Date()).getTime();
+
+		tokenStr += tokenData.i_time;
+
 		for(let i in tokenFields)
 		{
-			if (tplData[tokenFields[i]])
-			tokenStr += tplData[tokenFields[i]];
+			if (tokenData[tokenFields[i]])
+			{
+				tokenStr += tokenData[tokenFields[i]];
+			}
 		}
 
-		return {"i_time": tplData.i_time, "s_token": Crypto.createHash('md5').update(tokenStr).digest("hex")};
+		return {"i_time": tokenData.i_time, "s_token": Crypto.createHash('md5').update(tokenStr).digest("hex")};
 	}
 
 	/**
@@ -303,14 +310,21 @@ class UploadFile extends File
 	 * @param fields
 	 * @returns {boolean}
 	 */
-	static checkToken(fields)
+	checkToken(fields)
 	{
 		let tokenStr = secret;
+
+		if (!fields["i_time"])
+			return false;
+
+		tokenStr += fields.i_time;
 
 		for(let f in this.tokenFields)
 		{
 			if (fields[this.tokenFields[f]])
-			tokenStr += fields[this.tokenFields[f]];
+			{
+				tokenStr += fields[this.tokenFields[f]];
+			}
 		}
 
 		let c = Crypto.createHash('md5').update(tokenStr).digest("hex");

@@ -39,7 +39,7 @@
 <script type="text/javascript" src="/js/jquery/mcAlbum.js"></script>
 <script type="text/javascript">
 //<!--
-$(function()
+(function($)
 {
 	$('mcAlbum').mcAlbum({
 		uri: '<%=menuItem.m_path%>'
@@ -50,8 +50,9 @@ $(function()
 		, albumText: '#a_text'
 		, s_token: '<%=(typeof s_token == 'undefined' ? '' : s_token)%>'
 		, i_time: '<%=(typeof i_time == 'undefined' ? '' : i_time)%>'
-		, a_id: '<%=(typeof a_id  == 'undefined'? '' : a_id)%>'
+		, a_id: '<%=(album ? album["a_id"] : '')%>'
+		, sortable: true
 	});
-});
+})($);
 //-->
 </script>

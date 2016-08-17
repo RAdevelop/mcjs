@@ -14,6 +14,7 @@
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                     <form class="form-horizontal text-center" action="<%=menuItem.m_path%>/ava"  enctype="multipart/form-data" method="post" target="null_frame" id="formAva">
                         <input type="hidden" name="btn_save_profile" value="ava_upload"/>
+                        <input type="hidden" name="u_id" value="<%= _user.u_id%>"/>
                         <input type="hidden" name="s_token" value="<%=s_token%>"/>
                         <input type="hidden" name="i_time" value="<%=i_time%>"/>
                         <div class="form-group uploadWrapper">

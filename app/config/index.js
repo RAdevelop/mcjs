@@ -106,7 +106,7 @@ var config = {
 			fileMediaType: 'image',
 			multiUpload: false,
 			maxFileSize: 6,//Mb
-			tokenFields: ['i_time'],
+			tokenFields: ['i_time', 'u_id'],
 			sizeParams: [
 				{w: 1280, h: 853},
 				{w: 1024, h: 768},

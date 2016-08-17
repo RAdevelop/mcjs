@@ -81,8 +81,8 @@ class ProfilePhoto extends Base
 					{
 						Pages.setLinksUri(this.getBaseUrl());
 
-						tplData["albums"] = albums;
-						tplData["pages"] = Pages.pages();
+						tplData["albums"]   = albums;
+						tplData["pages"]    = Pages.pages();
 
 						return Promise.resolve(tplData);
 					});
@@ -120,7 +120,6 @@ class ProfilePhoto extends Base
 						if (!album)
 							return Promise.reject(new Errors.HttpStatusError(404, "Not found"));
 
-						tplData["a_id"] = i_a_id;
 						tplData["album"] = album;
 						return Promise.resolve(tplData);
 					});
@@ -130,7 +129,7 @@ class ProfilePhoto extends Base
 				if (!tplData["album"]["a_img_cnt"])
 				{
 					tplData["album"]["images"] = [];
-					return Promise.resolve(tplData);
+					return [tplData, []];
 				}
 
 				let {i_page=1} = this.routeArgs;
@@ -138,7 +137,7 @@ class ProfilePhoto extends Base
 				return this.getClass('user/photo')
 					.getAlbumImages(this.getUserId(), i_a_id, new Pages(i_page, limit_per_page, tplData["album"]["a_img_cnt"]))
 					.bind(this)
-					.spread(function (images, Pages)
+					.spread(function (Pages, images, allPreviews)
 					{
 						Pages.setLinksUri(this.getBaseUrl()+'/'+i_a_id);
 
@@ -146,18 +145,19 @@ class ProfilePhoto extends Base
 						tplData["pages"] = Pages.pages();
 
 						console.log(tplData["pages"]);
-						return Promise.resolve(tplData);
+						//return Promise.resolve(tplData);
+						return [tplData, allPreviews];
 					});
 			})
-			.then(function (tplData)
+			.spread(function (tplData, allPreviews)
 			{
-				tplData = Object.assign(tplData, FileUpload.createToken('user_photo', tplData) );
+				tplData = Object.assign(tplData, FileUpload.createToken('user_photo', {"a_id": i_a_id}) );
 
 				this.view.setTplData(tplFile, tplData);
 				this.view.addPartialData('user/left', {user: tplData["user"]});
 
 				this.getRes().expose(tplData["album"]["images"], 'albumImages');
-				this.getRes().expose(tplData["album"]["images"]["previews"], 'albumPreviews');
+				this.getRes().expose(allPreviews, 'albumPreviews');
 				this.getRes().expose(FileUpload.getUploadConfig('user_photo'), 'albumUploadOpts');
 
 				return cb(null);
