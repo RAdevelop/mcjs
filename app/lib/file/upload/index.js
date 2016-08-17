@@ -310,22 +310,27 @@ class UploadFile extends File
 	 * @param fields
 	 * @returns {boolean}
 	 */
-	checkToken(fields)
+	checkToken(fields = {})
 	{
 		let tokenStr = secret;
 
-		if (!fields["i_time"])
+		if (!fields["i_time"] || !this.tokenFields || !this.tokenFields.length)
 			return false;
 
 		tokenStr += fields.i_time;
 
+		let i=0;
 		for(let f in this.tokenFields)
 		{
 			if (fields[this.tokenFields[f]])
 			{
+				i++;
 				tokenStr += fields[this.tokenFields[f]];
 			}
 		}
+
+		if (i < this.tokenFields.length)
+			return false;
 
 		let c = Crypto.createHash('md5').update(tokenStr).digest("hex");
 		let check = (fields["s_token"] && c == fields["s_token"]);

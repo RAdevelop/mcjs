@@ -128,7 +128,8 @@ var config = {
 			fileMediaType: 'video',
 			multiUpload: false,
 			maxFileSize: 2048,//Mb
-			sizeParams: []
+			sizeParams: [],
+			tokenFields: ['i_time', 'u_id']
 		},
 		user_audio: {
 			pathUpload: "user/audio",
@@ -136,7 +137,8 @@ var config = {
 			fileMediaType: 'audio',
 			multiUpload: false,
 			maxFileSize: 10,//Mb
-			sizeParams: []
+			sizeParams: [],
+			tokenFields: ['i_time', 'u_id'],
 		}
 	},
 };
