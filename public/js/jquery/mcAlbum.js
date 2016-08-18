@@ -39,6 +39,7 @@
 			options.aName = options.aName || '';
 			options.aText = options.aText || '';
 			options.a_id = options.a_id || null;
+			
 			var html = '<form class="form-horizontal" action="'+options.uri+'" method="post" id="formAddAlbum">' +
 				'<input type="hidden" name="btn_save_album" value="'+options.btnSaveAlbumVal+'"/>' +
 				'<input type="hidden" name="i_a_id" value="'+options.a_id+'"/>' +
@@ -453,7 +454,7 @@
 
 			options.id = '_album_img_dialog_'+img["ai_id"];
 
-			var $imageDialog = $(imageDialog(img, options))
+			$(imageDialog(img, options))
 				.appendTo('body')
 				.modal('hide')
 				.on('show.bs.modal', function (event)

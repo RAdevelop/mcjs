@@ -103,7 +103,7 @@ class ProfilePhoto extends Base
 			{
 				console.log(tplData);
 
-				this.view.setTplData(tplFile, tplData);
+				this.view.setTplData(tplFile, tplData, isAjax);
 
 				if (!isAjax)
 				{
@@ -384,8 +384,6 @@ class ProfilePhoto extends Base
 
 	updImgText(tplData)
 	{
-		let errors = {};
-
 		if (!tplData["i_a_id"] || !tplData["i_ai_id"] || !tplData.hasOwnProperty("s_ai_text"))
 			return Promise.reject(new Errors.HttpStatusError(400, 'Bad request'));
 
@@ -402,8 +400,6 @@ class ProfilePhoto extends Base
 
 	delImg(tplData)
 	{
-		let errors = {};
-
 		if (!tplData["i_a_id"] || !tplData["i_ai_id"])
 			return Promise.reject(new Errors.HttpStatusError(400, 'Bad request'));
 

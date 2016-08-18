@@ -126,7 +126,10 @@
 		var sPages = '';
 
 		for(var i in pages)
+		{
+			if (pages.hasOwnProperty(i))
 			sPages += pages[i].toString();
+		}
 
 		return sPages;
 	}

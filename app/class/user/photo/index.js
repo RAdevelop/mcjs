@@ -78,8 +78,10 @@ class UserPhoto extends User
 
 	/**
 	 * список фотоальбомов пользователя
+	 * 
 	 * @param u_id
-	 * @returns {*}
+	 * @param Pages
+	 * @returns {Promise.<TResult>|*}
 	 */
 	getAlbumList(u_id, Pages)
 	{
@@ -267,7 +269,7 @@ class UserPhoto extends User
 			.bind(this)
 			.then(function (image)
 			{
-				if (!image || image["a_id"] != a_id)
+				if (!image || image["a_id"] != a_id || image["u_id"] != u_id)
 					throw new FileErrors.io.FileNotFoundError();
 
 				return Promise.resolve(image);

@@ -517,6 +517,8 @@
 
 				for(var i in formData)
 				{
+					if (!formData.hasOwnProperty(i)) continue;
+					
 					var item = {};
 					item[i] = formData[i];
 					$fileUpload.uploadify("settings", "formData", item);
@@ -566,7 +568,7 @@
 						$fileUpload.uploadify('cancel', file["id"]);
 						//$fileUpload.uploadify('cancel','*');
 					}
-					console.log(data)
+					console.log(data);
 					switch (data["formError"]["errorName"])
 					{
 						case "FileTooBig":
@@ -623,7 +625,9 @@
 				console.log('uploadify onUploadProgress');
 				console.log(file);
 
-				$('#'+file["id"]).find('.progress').show();
+				var $item = $('#'+file["id"]);
+
+				$item.find('.progress').show();
 				clearTimerResultFilesUpload();
 
 				//var percent = Math.round((totalBytesUploaded / totalBytesTotal) * 100);
@@ -631,8 +635,8 @@
 				//$('#progress').html(totalBytesUploaded + ' bytes uploaded of ' + totalBytesTotal + ' bytes.');
 
 
-				$('#'+file["id"]).find('.fileinfo').html(percent + '%');
-				$('#'+file["id"]).find('.progress-bar').css('width', percent+ '%');
+					$item.find('.fileinfo').html(percent + '%');
+					$item.find('.progress-bar').css('width', percent+ '%');
 				console.log('END uploadify onUploadProgress');
 			};
 			settings.onDialogOpen = function(file, errorCode, errorMsg)
