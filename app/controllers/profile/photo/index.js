@@ -8,7 +8,7 @@ const Errors = require('app/lib/errors');
 const FileUpload = require('app/lib/file/upload');
 const Base = require('app/lib/controller');
 
-let limit_per_page = 2;
+let limit_per_page = 10;
 
 class ProfilePhoto extends Base
 {
@@ -17,10 +17,10 @@ class ProfilePhoto extends Base
 	{
 		return {
 			"index": {
-				'^\/?$' : null //список альбомов
-				,'^\/?page\/[0-9]+\/?$' : [ ,"i_page"] //список альбомов с постраничкой
-				,'^\/?[0-9]+\/page\/[0-9]+\/?$' : ["i_a_id", ,"i_page"] //список фоток в альбоме с постраничкой
-				,'^\/?[0-9]+\/?$' : ["i_a_id"] //список фоток в альбоме
+				"^\/?$" : null //список альбомов
+				,"^\/?page\/[0-9]+\/?$" : [ ,"i_page"] //список альбомов с постраничкой
+				,"^\/?[0-9]+\/page\/[0-9]+\/?$" : ["i_a_id", ,"i_page"] //список фоток в альбоме с постраничкой
+				,"^\/?[0-9]+\/?$" : ["i_a_id"] //список фоток в альбоме
 			}
 		}
 	}
@@ -55,9 +55,6 @@ class ProfilePhoto extends Base
 			})
 			.then(function (tplData)
 			{
-
-				//console.log("this.getReq().xhr = ",this.getReq().xhr);
-
 				tplData["albums"] = null;
 				tplData["album"] = null;
 				tplData["pages"] = null;
@@ -76,8 +73,10 @@ class ProfilePhoto extends Base
 	/**
 	 * список фотоальбомов пользователя
 	 *
-	 * @param u_id
-	 * @returns {*}
+	 * @param cb
+	 * @param tplData
+	 * @param isAjax
+	 * @returns {Promise.<TResult>}
 	 */
 	albumList(cb, tplData, isAjax = false)
 	{
@@ -122,11 +121,10 @@ class ProfilePhoto extends Base
 	 *
 	 * @param cb
 	 * @param tplData
-	 * @returns {Promise.<TResult>}
+	 * @param isAjax
 	 */
 	album(cb, tplData, isAjax = false)
 	{
-		let tplFile = 'user/profile/photo/albums.ejs';
 		let {i_a_id, i_page=1} = this.routeArgs;
 
 		return Promise.resolve(tplData)
@@ -148,10 +146,8 @@ class ProfilePhoto extends Base
 				if (!tplData["album"]["a_img_cnt"])
 				{
 					tplData["album"]["images"] = [];
-					return [tplData, []];
+					return [tplData, [], null];
 				}
-
-				let {i_page=1} = this.routeArgs;
 
 				return this.getClass('user/photo')
 					.getAlbumImages(this.getUserId(), i_a_id, new Pages(i_page, limit_per_page, tplData["album"]["a_img_cnt"]))
@@ -161,29 +157,53 @@ class ProfilePhoto extends Base
 						Pages.setLinksUri(this.getBaseUrl()+'/'+i_a_id);
 
 						tplData["album"]["images"] = images;
-						tplData["pages"] = Pages.setAjaxPagesType(true).pages();
-
-						console.log(tplData["pages"]);
 						//return Promise.resolve(tplData);
-						return [tplData, allPreviews];
+						return [tplData, allPreviews, Pages];
 					});
 			})
-			.spread(function (tplData, allPreviews)
+			.spread(function (tplData, allPreviews, Pages)
 			{
 				if (!isAjax)
 				{
 					tplData = Object.assign(tplData, FileUpload.createToken('user_photo', {"a_id": i_a_id}) );
-					this.getRes().expose(FileUpload.getUploadConfig('user_photo'), 'albumUploadOpts');
+
+					let uploadConfig = FileUpload.getUploadConfig('user_photo');
+
+					this.getRes().expose({
+						"fileMediaType":    uploadConfig["fileMediaType"]
+						,"fileSizeLimit":   uploadConfig["fileSizeLimit"]
+						,"fileTypes":       uploadConfig["fileTypes"]
+						,"maxFileSize":     uploadConfig["maxFileSize"]
+						,"multiUpload":     uploadConfig["multiUpload"]
+					}, 'albumUploadOpts');
 				}
 
-				this.view.setTplData(tplFile, tplData);
-
-				if (!isAjax)
+				let exposeAlbumImages = 'albumImages';
+				if (Pages)
 				{
+					Pages.setAjaxPagesType(true)
+						.setAjaxDataSrc(['album', 'images'])
+						.setAjaxDataTarget(exposeAlbumImages)
+						.setJquerySelectorData('.imageList .image');
+
+					tplData["pages"] = Pages.pages();
+
+					console.log(tplData["pages"]);
+				}
+
+				let tplFile = '';
+
+				if (isAjax)
+				{
+					tplFile = 'user/profile/photo/image_list.ejs';
+				}
+				else{
+					tplFile = 'user/profile/photo/albums.ejs';
 					this.view.addPartialData('user/left', {user: tplData["user"]});
 				}
 
-				this.getRes().expose(tplData["album"]["images"], 'albumImages');
+				this.view.setTplData(tplFile, tplData, isAjax);
+				this.getRes().expose(tplData["album"]["images"], exposeAlbumImages);
 				this.getRes().expose(allPreviews, 'albumPreviews');
 				this.getRes().expose(tplData["pages"], 'pages');
 

@@ -16,7 +16,8 @@
 			, sortable: false
 		};
 
-		var albumImages = (MCJS["albumImages"] ? MCJS["albumImages"] : []);
+		//var albumImages = (MCJS["albumImages"] ? MCJS["albumImages"] : []);
+		MCJS["albumImages"] = MCJS["albumImages"] || [];
 		var albumPreviews = (MCJS["albumPreviews"] ? MCJS["albumPreviews"] : []);
 		
 		/*при многократном вызове функции настройки будут сохранятся, и замещаться при необходимости*/
@@ -406,11 +407,11 @@
 			console.log('getImg(ai_id)');
 			var img = null;
 			var i;
-			for(i in albumImages)
+			for(i in MCJS["albumImages"])
 			{
-				if (albumImages[i].hasOwnProperty("ai_id") && albumImages[i]["ai_id"] == ai_id)
+				if (MCJS["albumImages"][i].hasOwnProperty("ai_id") && MCJS["albumImages"][i]["ai_id"] == ai_id)
 				{
-					img = albumImages[i];
+					img = MCJS["albumImages"][i];
 					break;
 				}
 			}
@@ -420,7 +421,7 @@
 		}
 
 		/**
-		 * обновялем данные указанной фотки в массиве фоток albumImages
+		 * обновялем данные указанной фотки в массиве фоток MCJS["albumImages"]
 		 *
 		 * @param ai_id
 		 * @param data
@@ -430,11 +431,11 @@
 		{
 			data = data || {};
 			var i;
-			for(i in albumImages)
+			for(i in MCJS["albumImages"])
 			{
-				if (albumImages[i].hasOwnProperty("ai_id") && albumImages[i]["ai_id"] == ai_id)
+				if (MCJS["albumImages"][i].hasOwnProperty("ai_id") && MCJS["albumImages"][i]["ai_id"] == ai_id)
 				{
-					albumImages[i] = $.extend({}, albumImages[i], data);
+					MCJS["albumImages"][i] = $.extend({}, MCJS["albumImages"][i], data);
 					return true;
 				}
 			}
@@ -474,6 +475,9 @@
 
 		function prependImgToAlbum(filesUploaded, $albumWrapper)
 		{
+			if (!filesUploaded || !filesUploaded.length)
+				return;
+
 			var i, image, html, imgSrc;
 
 			for(i = 0; i < filesUploaded.length; i++)
@@ -487,7 +491,7 @@
 				imgCnt = (!imgCnt ? 0 : imgCnt) + 1;
 				$(options.albumName).parent().find('.albumImgCnt').text(imgCnt);
 
-				albumImages.unshift(image);
+				MCJS["albumImages"].unshift(image);
 			}
 		}
 
@@ -664,14 +668,13 @@
 		if(albumPreviews.length)
 		preloadImages(albumPreviews);
 
-		if ($albumImages.size())
+		$albumWrapper.on('click', options.albumImages +' img', function (event)
 		{
-			$albumWrapper.on('click', options.albumImages +' img', function ()
-			{
-				//console.log();
-				openImageDialog($(this), options);
-			});
-		}
+			event.preventDefault();
+			event.stopPropagation();
+
+			openImageDialog($(this), options);
+		});
 		
 		return $(this);
 	}

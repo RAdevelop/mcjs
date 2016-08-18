@@ -107,7 +107,7 @@
 			removeFileFromQueueData(file);
 		}
 
-		function onQueueSizeLimit()
+		function onQueueLimitExceeded()
 		{
 			mcDialog('Одновременно можно загружать не более '+settings.queueSizeLimit+' файлов.', true);
 		}
@@ -356,8 +356,8 @@
 				console.log("uploadifive onError");
 				console.log(file);
 
-				if (file)
-				saveNotUploadedFile(file);
+				//if (file)
+				//saveNotUploadedFile(file);
 
 				switch (errorType)
 				{
@@ -366,6 +366,9 @@
 						break;
 					case "FORBIDDEN_FILE_TYPE":
 						onForbiddenFileType(file);
+						break;
+					case "QUEUE_LIMIT_EXCEEDED":
+						onQueueLimitExceeded(file);
 						break;
 					default:
 						console.log(errorType); //TODO

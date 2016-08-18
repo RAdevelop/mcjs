@@ -108,16 +108,38 @@ Template.prototype.render = function(json = false)
 	let renderData = self.getPageData(json);
 
 	if (!_.isObject(renderData))
-		return self.next(new Error("renderData is not object"));
+		return self.next(new Error("Template: renderData is not object"));
+
+
 
 	if (json)//то renderData - должен быть Объектом {}
 	{
-		self.res.set('Content-Type', 'application/json');
-		self.setAjaxData(renderData);
-		self.res.json(self.getAjaxData());
+		self.setAjaxData(renderData["data"]);
 
-		self.setController(null);
-		return;
+		let ajaxData = self.getAjaxData();
+
+		if (self.ajaxWithHtml())
+		{
+			let tplFile = renderData["tpl"];
+
+			return self.res.render(tplFile, ajaxData, function(err, html)
+			{
+				self.setController(null);
+
+				if(err) return Promise.reject(err);
+
+				ajaxData["html"] = html;
+
+				return self.res.json(ajaxData);
+			});
+		}
+		else
+		{
+			self.res.set('Content-Type', 'application/json');
+			self.setController(null);
+			ajaxData["html"] = '';
+			return self.res.json(ajaxData);
+		}
 	}
 
 	/*console.log('==========renderData==============');
@@ -145,7 +167,6 @@ Template.prototype.render = function(json = false)
 				if(err) return Promise.reject(err);
 
 				self.setController(null);
-
 				return self.res.send(html);
 			});
 		})
@@ -190,7 +211,7 @@ Template.prototype.partial = function(tplFile, tplData)
 
 			if(err) return reject(err);
 
-			resolve({[tplFile.split('/').join('_')]:html});
+			return resolve({[tplFile.split('/').join('_')]:html});
 		}).catch(function (err)
 		{
 			/*console.log('self.res.render');
@@ -218,7 +239,10 @@ Template.prototype.getPageData = function(json = false)
 	pageData["tpl"] = this.getTplData();
 
 	if (json)
-		return pageData["tpl"][Object.keys(pageData["tpl"]).shift()];
+	{
+		let file = Object.keys(pageData["tpl"]).shift();
+		return {"tpl": file, "data": pageData["tpl"][file]};
+	}
 
 	pageData["partial"] = [];
 	let partialData = this.getPartialData();
@@ -238,11 +262,17 @@ Template.prototype.getPageData = function(json = false)
 	return pageData;
 };
 
-Template.prototype.setTplData = function(tplFile, tplData = {})
+Template.prototype.setTplData = function(tplFile, tplData = {}, ajaxWithHtml = false)
 {
 	this._tplData = {[tplFile]: tplData};
+	this._ajaxWithHtml = ajaxWithHtml;
 
 	return this;
+};
+
+Template.prototype.ajaxWithHtml = function()
+{
+	return this._ajaxWithHtml;
 };
 
 Template.prototype.getTplData = function()

@@ -17,49 +17,120 @@
 </nav>
 <% if (pages["is_ajax"]) {%>
 <script type="text/javascript">
-	//<!--
-	(function($)
+//<!--
+(function($)
+{
+	var pages = MCJS["pages"] || null;
+	if (!pages) return;
+
+	var strPages = md5(sPages(pages));
+
+	var page = pages.page;
+	var ts = (new Date()).getTime();
+	$('.pages .nextPages').click(function (event)
 	{
-		var pages = MCJS["pages"] || null;
-		if (!pages) return;
+		event.preventDefault();
+		event.stopPropagation();
 
-		console.log('pages 0');
+		var $self = $(this);
+		var clickTs = (new Date()).getTime();
+		var next = (parseInt(page, 10) + 1);
 
-		$('.pages .nextPages').click(function (event)
+		if (clickTs - ts <= 1000 || strPages != md5(sPages(pages)))
+			return;
+		else
+			ts = clickTs;
+
+		if (next > pages.total_pages)
 		{
-			var $self = $(this);
-console.log('pages 1');
-			event.preventDefault();
-			event.stopPropagation();
+			$self.hide();
+			return;
+		}
 
-			var sendData = {
+		var sendData = {};
+		var uri = pages.uri + '/page/'+next+'/';
 
-			};
-			var next = (parseInt(pages.page, 10) + 1);
-			if (next > pages.total_pages)
+		$self.button('loading');
+
+		$.ajax({
+			url: uri,
+			method: "GET",
+			data: sendData,
+			dataType: "json"
+		})
+		.done(function(resData)
+		{
+			$self.button('reset');
+			//console.log(resData);
+
+			if (!resData["pages"] || !resData["html"] || !resData["pages"]["ajaxDataSrc"])
 				return;
-			console.log('pages 2');
 
-			var uri = pages.uri + '/page/'+next+'/';
-			$self.button('loading');
-			$.ajax({
-				url: uri,
-				method: "GET",
-				data: sendData,
-				dataType: "json"
-			})
-			.done(function(resData)
+			page = resData["pages"]["page"];
+
+			var data = getDataSrc(resData["pages"]["ajaxDataSrc"], resData);
+
+			if (!data.length || !MCJS[resData["pages"]["ajaxDataTarget"]])
+				return;
+
+			//console.log(data);
+
+			for(var i in data)
 			{
-				$self.button('reset');
-				console.log(resData);
-			})
-			.fail(function(resData)
-			{
-				$self.button('reset');
-				console.log(resData);
-			});
+				if (data[i].hasOwnProperty("previews"))
+				preloadImages(data[i]["previews"]);
+			}
+
+			MCJS[resData["pages"]["ajaxDataTarget"]] = MCJS[resData["pages"]["ajaxDataTarget"]].concat(data);
+
+			var $htmlContainer = $(resData["pages"]["jQuerySelector"]).parent();
+
+			var $html  = $('<div>'+resData["html"]+'</div>').find(resData["pages"]["jQuerySelector"]);
+
+			$htmlContainer.append($html);
+
+			if (resData["pages"]["last_page"])
+				$self.button('reset').hide();
+		})
+		.fail(function(resData)
+		{
+			$self.button('reset');
+			//console.log(resData);
 		});
-	})($);
-	//-->
+	});
+
+	function getDataSrc(ajaxDataSrc, resData)
+	{
+		if (!ajaxDataSrc || !ajaxDataSrc.length || !resData)
+			return [];
+
+		for(var i = 0; i < ajaxDataSrc.length; i++)
+		{
+			var dataSrc = ajaxDataSrc[i];
+
+			if (resData.hasOwnProperty(dataSrc))
+			{
+				ajaxDataSrc.splice(i, 1);
+
+				if (ajaxDataSrc.length)
+					return getDataSrc(ajaxDataSrc, resData[dataSrc]);
+				else
+					return resData[dataSrc] || [];
+			}
+		}
+		return [];
+	}
+
+	function sPages(pages)
+	{
+		var sPages = '';
+
+		for(var i in pages)
+			sPages += pages[i].toString();
+
+		return sPages;
+	}
+})($);
+//-->
 </script>
 <%} } %>

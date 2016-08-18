@@ -122,6 +122,50 @@ class Pages
 		return (this.getPage() > this.getTotalPages());
 	}
 
+	setAjaxDataSrc(dataSrc = [])
+	{
+		this._ajaxDataSrc = dataSrc;
+		return this;
+	}
+	getAjaxDataSrc()
+	{
+		if (!this._ajaxDataSrc)
+			this.setAjaxDataSrc();
+
+		return this._ajaxDataSrc;
+	}
+
+	/**
+	 * название переменной в объекте expose на клиенте JS куда надо будет добавить подкрюженные данные
+	 *
+	 * @param target
+	 * @returns {Pages}
+	 */
+	setAjaxDataTarget(target)
+	{
+		this._ajaxDataTarget = target;
+		return this;
+	}
+	getAjaxDataTarget()
+	{
+		return this._ajaxDataTarget;
+	}
+
+	/**
+	 * селектор jquery откуда получить данные в ответе сервере
+	 *
+	 * @param selector
+	 * @returns {Pages}
+	 */
+	setJquerySelectorData(selector = '')
+	{
+		this._jquerySelectorData = selector;
+		return this;
+	}
+	getJquerySelectorData()
+	{
+		return this._jquerySelectorData;
+	}
 	pages()
 	{
 		if (this.getTotalPages() == 1)
@@ -139,6 +183,9 @@ class Pages
 			,"uri": this.getLinksUri()
 			,"query": this.getLinksQuery()
 			,"is_ajax": this.isAjaxPagesType()
+			,"ajaxDataSrc": this.getAjaxDataSrc()
+			,"ajaxDataTarget": this.getAjaxDataTarget()
+			,"jQuerySelector": this.getJquerySelectorData() //селектор jquery откуда получить данные в ответе сервере
 		};
 	}
 }
