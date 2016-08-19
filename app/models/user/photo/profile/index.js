@@ -18,7 +18,7 @@ class UserPhotoProfile extends UserPhoto
 	{
 		let ava = {
 			a_id: null,
-			u_id: u_id,
+			u_id: null,
 			ai_id: null,
 			ai_dir: null
 		};

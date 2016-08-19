@@ -276,7 +276,7 @@ class UserPhoto extends User
 			.then(function (image)
 			{
 				if (!image)
-					throw new FileUpload.io.FileNotFoundError("фотография не найдена");
+					throw new FileErrors.io.FileNotFoundError("фотография не найдена: UserPhoto.getImage(u_id="+u_id+", ai_id="+ai_id+")");
 
 				let sizeParams = FileUpload.getUploadConfig('user_photo').sizeParams;
 

@@ -16,17 +16,7 @@ class User extends Base
 	 */
 	getUserData(u_id)
 	{
-		const self = this;
-		
-		return new Promise(function(resolve, reject)
-		{
-			self.model("user").getUserData(u_id, function(err, uData)
-			{
-				if (err) return reject(err);
-				
-				return resolve(uData);
-			});
-		});
+		return this.model("user").getUserData(u_id);
 	}
 	
 	/**
@@ -37,17 +27,7 @@ class User extends Base
 	 */
 	getUserLocation(u_id)
 	{
-		const self = this;
-
-		return new Promise(function(resolve, reject)
-		{
-			self.model("user").getUserLocation(u_id, function(err, uData)
-			{
-				if (err) return reject(err);
-				
-				return resolve(uData);
-			});
-		});
+		return this.model("user").getUserLocation(u_id);
 	}
 
 	getById(u_id)
@@ -82,7 +62,7 @@ class User extends Base
 		})
 			.then(function(props)
 			{
-				return Promise.resolve(Object.assign(props.user, props.userData, props.userLocation, props.userAva));
+				return Promise.resolve(Object.assign(props.userAva, props.userLocation, props.userData, props.user));
 			});
 	}
 }

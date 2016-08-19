@@ -130,30 +130,27 @@ class User extends BaseModel
 	 */
 	getUserData(u_id, cb)
 	{
-		let userData = {u_id: u_id, u_name:'', u_surname:'', u_sex:'', u_birthday:'',bd_birthday:''};
+		let userData = {u_id: null, u_name:'', u_surname:'', u_sex:'', u_birthday:'',bd_birthday:''};
 
 		if (!u_id)
 			return cb(null, userData);
 
 		let sql = "SELECT u_id, u_name, u_surname, u_sex, u_birthday FROM `users_data` WHERE u_id = ?;";
 		
-		this.constructor.conn().ps(sql, [u_id], function (err, rows)
-		{
-			if (err) return cb(err, userData);
-			
-			if (rows["info"]["numRows"] == 1)
+		return this.constructor.conn().psRow(sql, [u_id])
+			.then(function (res)
 			{
-				userData = Object.assign(userData, rows[0]);
-				
+				if (!res)
+					return Promise.resolve(userData);
+
+				if (userData['u_id'])
+				userData = Object.assign(userData, res);
+
 				if (userData['u_birthday'])
-				userData['bd_birthday'] = Moment.unix(userData['u_birthday']).format("DD-MM-YYYY");
-				
-				return cb(null, userData);
-			}
-			
-			//нет данных
-			return cb(null, userData);
-		});
+					userData['bd_birthday'] = Moment.unix(userData['u_birthday']).format("DD-MM-YYYY");
+
+				return Promise.resolve(userData);
+			});
 	}
 	
 	/**
@@ -164,13 +161,9 @@ class User extends BaseModel
 	getUserLocation(u_id, cb)
 	{
 		let userData = {
-			u_id: u_id, u_location_id:'', u_latitude: '', u_longitude: '',
-			l_pid:'', l_name:'', l_latitude:'',l_longitude:'',
-			l_kind:'',
-			l_full_name:'',
-			l_level:'',
-			l_lk:'',
-			l_rk:''
+			u_id: null, u_location_id:null, u_latitude: null, u_longitude: null,
+			l_pid:null, l_name:'', l_latitude:null,l_longitude:null,
+			l_kind: '', l_full_name: '', l_level: null, l_lk: null, l_rk: null
 		};
 
 		if (!u_id)
@@ -182,19 +175,14 @@ class User extends BaseModel
 			"JOIN `location` AS ul ON (ul.l_id = ud.u_location_id) " +
 			"WHERE ud.u_id = ?;";
 		
-		this.constructor.conn().ps(sql, [u_id], function (err, rows)
-		{
-			if (err) return cb(err, userData);
-			
-			if (rows["info"]["numRows"] == 1)
+		return this.constructor.conn().psRow(sql, [u_id])
+			.then(function (res)
 			{
-				userData = Object.assign(userData, rows[0]);
-				return cb(null, userData);
-			}
-			
-			//нет данных
-			return cb(null, userData);
-		});
+				if (res)
+					userData = Object.assign(userData, res);
+
+				return Promise.resolve(userData);
+			});
 	}
 	
 	/**

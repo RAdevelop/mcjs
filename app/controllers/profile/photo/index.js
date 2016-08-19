@@ -8,7 +8,7 @@ const Errors = require('app/lib/errors');
 const FileUpload = require('app/lib/file/upload');
 const Base = require('app/lib/controller');
 
-let limit_per_page = 12;
+let limit_per_page = 9;
 
 class ProfilePhoto extends Base
 {
@@ -454,10 +454,19 @@ class ProfilePhoto extends Base
 
 		//return Promise.resolve(tplData);
 
-		return this.getClass('user/photo').delImage(this.getUserId(), tplData["i_a_id"], tplData["i_ai_id"])
-			.then(function ()
+		return this.getClass('user/photo').getImage(this.getUserId(), tplData["i_ai_id"])
+			.bind(this)
+			.then(function (image)
 			{
-				return Promise.resolve(tplData);
+				return this.getClass('user/photo').delImage(this.getUserId(), image["a_id"], image["ai_id"])
+				.then(function ()
+				{
+					return Promise.resolve(tplData);
+				})
+			})
+			.catch(Errors.io.FileNotFoundError, function(err){
+				Logger().error(err);
+				throw new Errors.HttpStatusError(404, 'Фотография не найдена');
 			});
 	}
 

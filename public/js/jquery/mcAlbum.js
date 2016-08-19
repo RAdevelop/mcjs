@@ -80,6 +80,7 @@
 			};
 
 			var options = $.extend({}, defaults, params);
+
 			var imgSrc = (img["previews"] && img["previews"]["1024_768"] ? img["previews"]["1024_768"] : '/_0.gif');
 			var origSrc = (img["previews"] && img["previews"]["orig"] ? img["previews"]["orig"] : null);
 
@@ -104,8 +105,8 @@
 				'<li><a href="javascript:void(0);" id="btn_album_image_del_modal">удалить</a></li>' +
 				'</ul>'+
 				'</div>' +
-				'<div class="btn-group btn-group-sm" role="group" aria-label="посмотреть на карте">' +
-					'<button type="button" class="btn btn-default" id="btn_img_map" data-toggle="tooltip" title="посмотреть на карте" data-container="body" data-placement="bottom"><span class="fa fa-fw fa-map-marker"></span></button>' +
+				'<div class="btn-group btn-group-sm" role="group" aria-label="посмотреть на карте" data-toggle="tooltip" title="посмотреть на карте" data-container="body" data-placement="bottom">' +
+					'<button type="button" class="btn btn-default" id="btn_img_map"><span class="fa fa-fw fa-map-marker"></span></button>' +
 				'</div>'+
 				'</div>';
 
@@ -120,6 +121,7 @@
 				htmlDialog += '</div>';
 				htmlDialog += '<div class="imageModalContent">';
 
+					htmlDialog += '<h5>'+$albumName.text()+'</h5>';
 					htmlDialog += '<textarea id="imageText" placeholder="укажите описание фотографии">'+img["ai_text"]+'</textarea>';
 
 				htmlDialog += 'imageModalContentimageModalContent imageModalContent';
@@ -190,6 +192,7 @@
 							})
 								.done(function(resData)
 								{
+									console.log('on done');
 									console.log(resData);
 									if (!resData["formError"] || !resData["formError"]["error"])
 									{
@@ -199,11 +202,19 @@
 
 										imgCnt = (!imgCnt ? 0 : imgCnt);
 										$(options.albumName).parent().find('.albumImgCnt').text(imgCnt);
+
+										updImg(img["ai_id"]);//удалим
 									}
 								})
 								.fail(function(resData)
 								{
+									console.log('on fail');
 									console.log(resData);
+
+									$('__album_image_delete_fail_dialog__').mcDialog({
+										title: resData.responseJSON.error.message
+									});
+
 								});
 						}
 					}
@@ -283,26 +294,31 @@
 				});
 		}
 
-		function getNextImg($modal, $img, img, options)
+		function getNextImg($imgInModal, $modal, $img, img, options)
 		{
-			//TODO тут еще надо будет учитывать постраницную разбивку. когда текущая картинка последння из отображаемых,
-			// но еще есть картинки для просмотра. (start, limit, total)
-			$modal.modal('hide');
-
 			var $images = $(options.albumWrapper).find(".image");
 			var index = $images.index($img.parents(".image"));
+			var indexNext = parseInt(index, 10) + 1;
 
-			if (index == $images.size() - 1)
+			if (index == $images.size() - 1 && window["Pagination"])
 			{
-				alert("добавить ajax подгрузку следующих start , limit фотографий");
+				$imgInModal.css('opacity', 0.5);
+
+				Pagination.clickNextPageBtn(function ($btnNextPage)
+				{
+					setTimeout(function ()
+					{
+						$( $(options.albumWrapper).find(".image").get(indexNext) ).find('> img').click();
+						$modal.modal('hide');
+					}, Pagination.scrollDelayMs);
+				});
 				return;
 			}
-			var indexNext = parseInt(index, 10) + 1;
+			$modal.modal('hide');
 			$($images.get(indexNext)).find('> img').click();
-
 		}
 
-		function getPrevImg($modal, $img, img, options)
+		function getPrevImg($imgInModal, $modal, $img, img, options)
 		{
 			$modal.modal('hide');
 
@@ -320,11 +336,11 @@
 		{
 			$currentImg.one( "swipeleft click", function (event)
 			{
-				getNextImg($modal, $img, img, options);
+				getNextImg($(this), $modal, $img, img, options);
 			} );
 			$currentImg.one( "swiperight", function (event)
 			{
-				getPrevImg($modal, $img, img, options);
+				getPrevImg($(this), $modal, $img, img, options);
 			} );
 		}
 
@@ -384,8 +400,8 @@
 					//$(this).css('max-width', w-2);
 					//$(this).parent().css('max-width', w-2);
 
-					console.log('ratio = ' + ratio);
-					console.log('w = ' + w);
+					//console.log('ratio = ' + ratio);
+					//console.log('w = ' + w);
 
 					$modal.find('.albumImageDialog').css('width', 'auto');
 					$modal.find('.albumImageDialog').css('min-width', w);
@@ -397,6 +413,7 @@
 			});
 
 			$modal.find('#btn_img_map').attr('disabled',  true);
+
 			if (img["ai_latitude"] && img["ai_longitude"] && window["McMap"])
 			{
 				$modal.find('#btn_img_map').attr('disabled',  false);
@@ -458,7 +475,15 @@
 			var i;
 			for(i in MCJS["albumImages"])
 			{
-				if (MCJS["albumImages"][i].hasOwnProperty("ai_id") && MCJS["albumImages"][i]["ai_id"] == ai_id)
+				if ( !(MCJS["albumImages"][i].hasOwnProperty("ai_id") && MCJS["albumImages"][i]["ai_id"] == ai_id))
+					continue;
+
+				if (!data["ai_id"])
+				{
+					MCJS["albumImages"].splice(i, 1);
+					return true;
+				}
+				else
 				{
 					MCJS["albumImages"][i] = $.extend({}, MCJS["albumImages"][i], data);
 					return true;
