@@ -8,7 +8,7 @@ const Errors = require('app/lib/errors');
 const FileUpload = require('app/lib/file/upload');
 const Base = require('app/lib/controller');
 
-let limit_per_page = 2;
+let limit_per_page = 12;
 
 class ProfilePhoto extends Base
 {

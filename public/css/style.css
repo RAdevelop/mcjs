@@ -501,6 +501,7 @@ a.social:hover
 .albums .imageList
 {
 	min-height: 158px;
+	overflow: hidden;
 }
 .albums .imageList .image
 {
@@ -559,12 +560,68 @@ a.social:hover
 	position: relative;
 }
 
-.albumImageDialog .modal-body textarea
+
+
+.albumImageDialog .modal-body .imageModalBody
 {
-	position: absolute;
-	left: 0;
-	right: 0;
-	bottom: 0px;
+	border: 1px solid red;
+	max-width: calc(70%);
+	max-width: -moz-calc(70%);
+	max-width: -webkit-calc(70%);
+
+	min-width: calc(50%);
+	min-width: -moz-calc(50%);
+	min-width: -webkit-calc(50%);
+
+	text-align: center;
+	display: block;
+	float: left;
+}
+.albumImageDialog .modal-body .imageModalBody img.imageInModal
+{
+	max-width: calc(100%);
+	max-width: -moz-calc(100%);
+	max-width: -webkit-calc(100%);
+}
+
+.albumImageDialog .modal-body .imageModalBody .mcMap
+{
+	min-width: calc(70%);
+	min-width: -moz-calc(70%);
+	min-width: -webkit-calc(70%);
+
+	min-height: calc(100%);
+	min-height: -moz-calc(100%);
+	min-height: -webkit-calc(100%);
+}
+.albumImageDialog .modal-body .imageModalBody .mcMap .albumImageInMapBalloon
+{
+	width: 158px;
+	overflow: hidden;
+}
+.albumImageDialog .modal-body .imageModalBody .mcMap .albumImageInMapBalloon img
+{
+	width: 100%;
+}
+
+.albumImageDialog .modal-body .imageModalContent
+{
+	border: 1px solid green;
+	display: block;
+	overflow-y: scroll;
+	padding: 5px;
+
+	max-width: calc(50%);
+	max-width: -moz-calc(50%);
+	max-width: -webkit-calc(50%);
+
+	max-height: calc(100%);
+	max-height: -moz-calc(100%);
+	max-height: -webkit-calc(100%);
+}
+
+.albumImageDialog .modal-body .imageModalContent textarea#imageText
+{
 	width: 100%;
 	height: 70px;
 	overflow: hidden;
@@ -572,34 +629,36 @@ a.social:hover
 	border-radius: 0;
 	margin: 0;
 	padding: 5px;
-	background-color: rgba(51, 51, 51, 0.5);
-	color: #fff;
 }
 
-.mcMap .albumImageInMapBalloon
-{
-	width: 158px;
-	overflow: hidden;
-}
-.mcMap .albumImageInMapBalloon img
-{
-	width: 100%;
-}
-
-.albumImageDialog .modal-body img
-{
-	max-width: calc(100%);
-	max-width: -moz-calc(100%);
-	max-width: -webkit-calc(100%);
-}
 
 @media (min-width: 768px)
 {
 	.albumImageDialog
 	{
 		width: 700px;
+		margin: 10px auto;
 	}
 }
+
+@media (max-width: 1024px)
+{
+	.albumImageDialog .modal-body .imageModalBody,
+	.albumImageDialog .modal-body .imageModalContent
+	{
+		min-width: calc(100%);
+		min-width: -moz-calc(100%);
+		min-width: -webkit-calc(100%);
+	}
+
+	.albumImageDialog .modal-body .imageModalBody
+	{
+		min-height: calc(70%);
+		min-height: -moz-calc(70%);
+		min-height: -webkit-calc(70%);
+	}
+}
+
 /********** END список фоток в альбоме **************/
 
 /**********  список страниц (постраничная разбивка) **************/

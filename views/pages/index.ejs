@@ -85,12 +85,27 @@
 
 			var $htmlContainer = $(resData["pages"]["jQuerySelector"]).parent();
 
+			var minHeight = $(resData["pages"]["jQuerySelector"]).height();
+
 			var $html  = $('<div>'+resData["html"]+'</div>').find(resData["pages"]["jQuerySelector"]);
 
 			$htmlContainer.append($html);
 
 			if (resData["pages"]["last_page"])
 				$self.button('reset').hide();
+
+			var $items = $htmlContainer.children().each(function (i, item)
+			{
+				$(item).css('height', minHeight);
+			});
+			var $scrollToItem = $($items.get( $items.size() - $html.size()) );
+
+			if ($scrollToItem.size())
+			{
+				var to = parseInt($scrollToItem.offset().top, 10) - $('#navbarFixedTop').outerHeight();
+
+				$(window).delay(700).scrollTo(to, 1000, {axis:'y', limit: false});
+			}
 		})
 		.fail(function(resData)
 		{

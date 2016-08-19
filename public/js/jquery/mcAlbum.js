@@ -39,7 +39,7 @@
 			options.aName = options.aName || '';
 			options.aText = options.aText || '';
 			options.a_id = options.a_id || null;
-			
+
 			var html = '<form class="form-horizontal" action="'+options.uri+'" method="post" id="formAddAlbum">' +
 				'<input type="hidden" name="btn_save_album" value="'+options.btnSaveAlbumVal+'"/>' +
 				'<input type="hidden" name="i_a_id" value="'+options.a_id+'"/>' +
@@ -113,10 +113,17 @@
 			htmlDialog += '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
 			htmlDialog += '</div>';
 
-			htmlDialog += '<div class="textCenter modal-body">';
-			htmlDialog += '<div id="imgMap" data-map-init="false" class="mcMap" style="display: none;"></div>';
-			htmlDialog += '<img src="'+imgSrc+'" class="imageInModal" alt="" align="center"/>';
-			htmlDialog += '<textarea placeholder="укажите описание фотографии">'+img["ai_text"]+'</textarea>';
+			htmlDialog += '<div class="modal-body">';
+				htmlDialog += '<div class="imageModalBody">';
+					htmlDialog += '<div id="imgMap" data-map-init="false" class="mcMap" style="display: none;"></div>';
+					htmlDialog += '<img src="'+imgSrc+'" class="imageInModal" alt=""/>';
+				htmlDialog += '</div>';
+				htmlDialog += '<div class="imageModalContent">';
+
+					htmlDialog += '<textarea id="imageText" placeholder="укажите описание фотографии">'+img["ai_text"]+'</textarea>';
+
+				htmlDialog += 'imageModalContentimageModalContent imageModalContent';
+				htmlDialog += '</div>';
 			htmlDialog += '</div>';
 
 			htmlDialog += '<div class="textCenter modal-footer">';
@@ -219,16 +226,16 @@
 		function onImgMap(img, $modal, ImgMcMap)
 		{
 			var $img = $modal.find('.modal-body img.imageInModal');
-			var $imgMap = $modal.find('#'+ImgMcMap.getMapId());
+			var $mcMap = $modal.find('#'+ImgMcMap.getMapId());
 
-			$imgMap.css({
-				width: $modal.find('.modal-body').width(),
-				height: $modal.find('.modal-body').height()
+			$mcMap.css({
+				//width: $modal.find('.modal-body').width(),
+				height: $mcMap.parent().css('max-height')
 			});
 
 			if (ImgMcMap.isInit())
 			{
-				$imgMap.toggle();
+				$mcMap.toggle();
 				$img.toggle();
 				return;
 			}
@@ -236,7 +243,7 @@
 			ImgMcMap.init()
 				.then(function (imgMcMap)
 				{
-					$imgMap.toggle();
+					$mcMap.toggle();
 					$img.toggle();
 
 					imgMcMap.behaviors.disable('multiTouch');
@@ -333,7 +340,7 @@
 
 			//deltaW = (smallWin ? (portrait ? 0.2 : 0.27) : 0.43);
 			deltaW = 0.05;
-			deltaH = (smallWin ? (portrait ? 0.2 : 0.35) : 0.2);
+			deltaH = (smallWin ? (portrait ? 0.2 : 0.35) : 0.15);
 			//deltaH = 0.2;
 
 			w = Math.ceil(winW - (winW * deltaW));
@@ -341,7 +348,7 @@
 
 			var $modalBody = $modal.find('.albumImageDialog .modal-body');
 
-			$modalBody.find('> img').one('load', function ()
+			$modalBody.find('.imageModalBody img.imageInModal').one('load', function ()
 			{
 				bindGetPrevNextImg($(this), $modal, $img, img, options);
 				var imgHorizontal = (this.width >= this.height);
@@ -361,13 +368,30 @@
 					{
 						$(this).css('max-height', h-2);
 					}
+
+					$(this).parent().css('max-height', h-2);
 				}
-				else if (!imgHorizontal)
+				else
 				{
-					$(this).css('max-height', h-2);
+					//if (!imgHorizontal)
+					$(this).css('max-height', h-2).parent().css('max-height', h-2);
+
+					var ratio = (h / this.height);
+					//alert(ratio);
+					w = (ratio >= 1 ? this.width + this.width * ratio : this.width - this.width * ratio);
+					w = (imgHorizontal && w > 1024 ? 1024 : w);
+
+					//$(this).css('max-width', w-2);
+					//$(this).parent().css('max-width', w-2);
+
+					console.log('ratio = ' + ratio);
+					console.log('w = ' + w);
+
+					$modal.find('.albumImageDialog').css('width', 'auto');
+					$modal.find('.albumImageDialog').css('min-width', w);
 				}
 			});
-			$modalBody.on('change', 'textarea', function ()
+			$modalBody.on('change', '.imageModalContent textarea#imageText', function ()
 			{
 				onChangeImgText(img, options, $(this).val());
 			});

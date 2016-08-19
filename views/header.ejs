@@ -77,11 +77,12 @@
     <script src="//api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
 
 	<script src="/js/jquery/jquery.detect_swipe.js"></script>
-	<%- include expose/index.ejs -%>
+	<script src="/js/jquery/jquery.scrollTo.min.js"></script>
+	<%- include expose/index.ejs %>
 </head>
 <body>
 <iframe charset="utf-8" name="null_frame" id="null_frame" src="about:blank" height="0" width="0" style="display:none;visibility:hidden;height:0; width:0;"></iframe>
-<nav class="navbar navbar-default navbar-fixed-top">
+<nav class="navbar navbar-default navbar-fixed-top" id="navbarFixedTop">
 	<div class="container-fluid navbar-social">
             <span class="social">Мы в социальных сетях</span>
             <a class="social fa fa-vk fa-fw" href="https://vk.com/motocommunityru" target="_blank" rel="nofollow" title="MotoСommunity ВКонтакте"></a>
@@ -127,7 +128,7 @@
             <a class="btn btn-default" href="/login" role="button">Войти</a>
             <a class="btn btn-default" href="/registration" role="button">Регистрация</a>
             </div>
-            <% } -%>
+            <% }%>
 <!--
             <form class="navbar-form navbar-right">
                 <div class="form-group">
