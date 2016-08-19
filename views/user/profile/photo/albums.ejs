@@ -41,18 +41,20 @@
 //<!--
 (function($)
 {
-	$('mcAlbum').mcAlbum({
-		uri: '<%=menuItem.m_path%>'
-		, albumToolbar: '.album-list-toolbar'
+	var mcAlbumProps = {
+		albumToolbar: '.album-list-toolbar'
 		, albumWrapper: '.albums .imageList'
 		, albumImages: '.image'
 		, albumName: '#a_name'
 		, albumText: '#a_text'
-		, s_token: '<%=(typeof s_token == 'undefined' ? '' : s_token)%>'
-		, i_time: '<%=(typeof i_time == 'undefined' ? '' : i_time)%>'
-		, a_id: '<%=(album ? album["a_id"] : '')%>'
-		, sortable: true
-	});
+	};
+	<% if(album && album["u_id"] == _user["u_id"]) { %>
+	mcAlbumProps["s_token"] = '<%=(typeof s_token == 'undefined' ? '' : s_token)%>';
+	mcAlbumProps["i_time"] = '<%=(typeof i_time == 'undefined' ? '' : i_time)%>';
+	mcAlbumProps["a_id"] = '<%=album["a_id"]%>';
+	mcAlbumProps["sortable"] = (<%=(album && album["u_id"] == _user["u_id"])%>);
+	<%}%>
+	$('mcAlbum').mcAlbum(mcAlbumProps);
 })($);
 //-->
 </script>

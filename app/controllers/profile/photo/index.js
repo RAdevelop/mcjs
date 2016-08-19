@@ -230,11 +230,6 @@ class ProfilePhoto extends Base
 		if (!this.isAuthorized())
 			return cb(new Errors.HttpStatusError(401, "Unauthorized"));
 
-		let args = this.getArgs();
-
-		if (args.length > 1)
-			return cb(new Errors.HttpStatusError(404, "Not found"));
-
 		let tplData = this.getParsedBody();
 
 		if (!tplData["btn_save_album"])
@@ -300,7 +295,28 @@ class ProfilePhoto extends Base
 			case 'del_img':
 				return this.delImg(tplData);
 				break;
+
+			case 'sort_img':
+				return this.sortImg(tplData);
+				break;
 		}
+	}
+
+	/**
+	 * сорхранение позиций фотографий после их сортировке на клиенте
+	 *
+	 * @param tplData
+	 */
+	sortImg(tplData)
+	{
+		if (!tplData["i_a_id"] || !tplData.hasOwnProperty("ai_pos") || !tplData["ai_pos"].length)
+			return Promise.resolve(tplData);
+
+		return this.getClass('user/photo').sortImgUpd(this.getUserId(), tplData["i_a_id"], tplData["ai_pos"])
+			.then(function ()
+			{
+				return Promise.resolve(tplData);
+			});
 	}
 
 	/**
@@ -332,7 +348,7 @@ class ProfilePhoto extends Base
 					});
 
 					tplData.formError.message = 'Ошибка при создании фотоальбома';
-					return Promise.reject(new Errors.ValidationError(tplData.formError.message));
+					throw(new Errors.ValidationError(tplData.formError.message));
 				}
 
 				return Promise.resolve(tplData);
@@ -387,23 +403,36 @@ class ProfilePhoto extends Base
 			})
 			.then(function (tplData)
 			{
-				return this.getClass('user/photo').editAlbumNamed(this.getUserId(), tplData["i_a_id"], tplData["s_album_name"], tplData["s_album_text"])
-					.then(function (a_id)
+
+				return this.getClass('user/photo').getAlbum(this.getUserId(), tplData["i_a_id"])
+					.bind(this)
+					.then(function (album)
 					{
-						tplData["a_id"] = a_id;
-						return Promise.resolve(tplData);
+						if (!album || album["u_id"] != this.getUserId())
+							throw new Errors.HttpStatusError(400, "Bad request");
+
+						return this.getClass('user/photo').editAlbumNamed(this.getUserId(), tplData["i_a_id"], tplData["s_album_name"], tplData["s_album_text"])
+							.then(function (a_id)
+							{
+								tplData["a_id"] = a_id;
+								return Promise.resolve(tplData);
+							});
 					});
 			});
 	}
 
+	/**
+	 * обновляем описание фотографии
+	 *
+	 * @param tplData
+	 * @returns {*}
+	 */
 	updImgText(tplData)
 	{
 		if (!tplData["i_a_id"] || !tplData["i_ai_id"] || !tplData.hasOwnProperty("s_ai_text"))
 			return Promise.reject(new Errors.HttpStatusError(400, 'Bad request'));
 
 		tplData["s_ai_text"] = (tplData["s_ai_text"] || '').trim();
-
-		//return Promise.resolve(tplData);
 
 		return this.getClass('user/photo').updImgText(this.getUserId(), tplData["i_a_id"], tplData["i_ai_id"], tplData["s_ai_text"])
 			.then(function ()
@@ -412,6 +441,12 @@ class ProfilePhoto extends Base
 			});
 	}
 
+	/**
+	 * удаление фотографии пользователем
+	 *
+	 * @param tplData
+	 * @returns {*}
+	 */
 	delImg(tplData)
 	{
 		if (!tplData["i_a_id"] || !tplData["i_ai_id"])

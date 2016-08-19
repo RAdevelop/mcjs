@@ -1,5 +1,5 @@
 <% if (pages) { %>
-<nav class="pages" aria-label="Page navigation">
+<nav class="pagesNavigation" aria-label="Page navigation">
 	<ul class="pagination">
 <% if (pages["is_ajax"]) {
 	let link = pages["uri"] + '/page/'+(pages["page"]+1) + '/';
@@ -28,7 +28,7 @@
 
 	var page = pages.page;
 	var ts = (new Date()).getTime();
-	$('.pages .nextPages').click(function (event)
+	$('.pagesNavigation .nextPages').click(function (event)
 	{
 		event.preventDefault();
 		event.stopPropagation();
@@ -150,7 +150,7 @@
 
 		return sPages;
 	}
-})($);
+})(jQuery);
 //-->
 </script>
 <%} } %>

@@ -318,11 +318,18 @@ class Photo extends User
 		return this.constructor.conn().sRow(sql, [this.constructor.albumProfile, this.constructor.albumNamed, a_id, u_id]);
 	}
 
+	/**
+	 * кол-вл фоток в альбоме пользователя
+	 *
+	 * @param u_id
+	 * @param a_id
+	 * @returns {*|Promise.<TResult>}
+	 */
 	countAlbumImages(u_id, a_id)
 	{
-		let sql = "SELECT COUNT(ai_id) AS cnt FROM album_image AS a WHERE a_id = ? AND u_id = ?;";
+		let sql = "SELECT COUNT(ai_id) AS cnt FROM album_image WHERE a_id = ? AND u_id = ?;";
 
-		return this.constructor.conn().sRow(sql, [u_id])
+		return this.constructor.conn().sRow(sql, [a_id, u_id])
 			.then(function (res)
 			{
 				return Promise.resolve(res["cnt"]);
@@ -384,6 +391,44 @@ class Photo extends User
 			"WHERE ai_id = ? AND a_id = ? AND u_id = ?";
 
 		return this.constructor.conn().upd(sql, [ai_text, ai_id, a_id, u_id]);
+	}
+
+	/**
+	 * сорхранение позиций фотографий после их сортировке на клиенте
+	 *
+	 * @param u_id
+	 * @param a_id
+	 * @param ai_pos - id фоток
+	 * @returns {*}
+	 */
+	updSortImg(u_id, a_id, ai_pos)
+	{
+		return this.countAlbumImages(u_id, a_id)
+			.bind(this)
+			.then(function (cnt)
+			{
+				cnt = parseInt(cnt, 10);
+				cnt = (!cnt ? 0 : cnt);
+				if (!cnt || !ai_pos.length || cnt < ai_pos.length)
+					return Promise.resolve();
+
+				let setOrdi = [];
+				let setData = [];
+
+				ai_pos.forEach(function (ai_id, i)
+				{
+					setOrdi.push("IF(ai_id = ?, ? ");
+					setData.push(ai_id, i);
+				});
+
+				let sql = "UPDATE album_image SET ai_pos = " + setOrdi.join(',') + ', ai_pos' +')'.repeat(setOrdi.length) +
+					" WHERE a_id = ? AND u_id = ?";
+
+				setData.push(a_id, u_id);
+
+				//return Promise.resolve();
+				return this.constructor.conn().upd(sql, setData);
+			});
 	}
 }
 

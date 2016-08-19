@@ -29,7 +29,7 @@ class Profile extends Base
 				'^\/?$': null
 			},
 			"change": {
-				'^\/?$': [] //TODO
+				'^\/?mail\/[0-9A-Za-z]{32,255}\/?$': ['s_change_type', 's_key']
 			}
 		}
 	}
@@ -190,11 +190,9 @@ class Profile extends Base
 	
 	_changeConfirm(tplData)
 	{
-		//TODO!!!!!!!!
-		let {changeType, key} = this.routeArgs;
+		let {s_change_type, s_key} = this.routeArgs;
 
-		//let changeType = this.getArgs().shift().toLowerCase();
-		switch (changeType)
+		switch (s_change_type)
 		{
 			default:
 				return Promise.reject(new Errors.HttpStatusError(404, "Not Found"));
@@ -202,7 +200,7 @@ class Profile extends Base
 			
 			case 'mail':
 
-				return this._changeMailConfirm(tplData, key);
+				return this._changeMailConfirm(tplData, s_key);
 				break;
 		}
 	}
@@ -692,8 +690,8 @@ class Profile extends Base
 				tplName:    'user/change_email',
 				tplData: {
 					title: title,
-					links: 'https://'+self.getHostPort(),//'https://www.MotoCommunity.ru',
-					link: 'http://'+self.getHostPort(),//'http://www.MotoCommunity.ru', //TODO
+					links: 'https://'+self.getHostPort(),
+					link: 'http://'+self.getHostPort(),
 					key: tplData.userData.u_req_key
 				}
 			};
@@ -702,7 +700,6 @@ class Profile extends Base
 			{
 				Mailer.send(sendParams, function (err)
 				{
-					//то, что письмо не отправилось, не повод "запрещать" пользователю быть авторизованным при регистрации
 					if(err)
 					{
 						tplData.mailError = true;

@@ -105,7 +105,7 @@
 				'</ul>'+
 				'</div>' +
 				'<div class="btn-group btn-group-sm" role="group" aria-label="посмотреть на карте">' +
-				'<button type="button" class="btn btn-default" id="btn_img_map"><span class="fa fa-fw fa-map-marker"></span></button>' +
+					'<button type="button" class="btn btn-default" id="btn_img_map" data-toggle="tooltip" title="посмотреть на карте" data-container="body" data-placement="bottom"><span class="fa fa-fw fa-map-marker"></span></button>' +
 				'</div>'+
 				'</div>';
 
@@ -489,6 +489,7 @@
 				})
 				.on('shown.bs.modal', function (event)
 				{
+					Helpers.initTooltip();
 					console.log("$mcDialog.on('shown.bs.modal', function (event)");
 				})
 				.on('hidden.bs.modal', function (event)
@@ -527,6 +528,39 @@
 				{
 					//TODO сортрировку
 					console.log('TODO сортрировку');
+
+					var imgPos = [];
+					$(options.albumImages +' img').each(function (i, item)
+					{
+						imgPos.push($(item).attr("data-img-id"));
+					});
+
+					if (!imgPos.length)
+						return;
+
+					var postData = {
+						"btn_save_album": "sort_img",
+						"i_a_id": options.a_id,
+						"ai_pos": imgPos
+					};
+
+					console.log(postData);
+					//return;
+
+					$.ajax({
+						url: options.uri,
+						method: "POST",
+						data: postData,
+						dataType: "json"
+					})
+					.done(function(resData)
+					{
+						console.log(resData);
+					})
+					.fail(function(resData)
+					{
+						console.log(resData);
+					});
 				}
 			});
 		}
@@ -646,8 +680,6 @@
 			albumUploadOpts.onEnd = function()
 			{
 				var filesUploaded = ($(this).data('uploadFileData') ? $(this).data('uploadFileData') : null);
-				console.log('filesUploaded');
-				console.log(filesUploaded);
 
 				$(this).parents('.modal').find('.modal-footer').show();
 

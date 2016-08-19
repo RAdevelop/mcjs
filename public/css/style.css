@@ -629,6 +629,7 @@ a.social:hover
 	border-radius: 0;
 	margin: 0;
 	padding: 5px;
+	background-color: rgba(0, 0, 0, 0.5);
 }
 
 
@@ -662,7 +663,7 @@ a.social:hover
 /********** END список фоток в альбоме **************/
 
 /**********  список страниц (постраничная разбивка) **************/
-nav.pages
+nav.pagesNavigation
 {
 	text-align: center;
 }

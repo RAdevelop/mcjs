@@ -3,6 +3,7 @@
 //const Errors = require('app/lib/errors');
 const Promise = require("bluebird");
 const FileErrors = require('app/lib/file/errors');
+const Errors = require('app/lib/errors');
 const FileUpload = require('app/lib/file/upload');
 const Crypto = require('crypto');
 const Path = require('path');
@@ -78,7 +79,7 @@ class UserPhoto extends User
 
 	/**
 	 * список фотоальбомов пользователя
-	 * 
+	 *
 	 * @param u_id
 	 * @param Pages
 	 * @returns {Promise.<TResult>|*}
@@ -177,6 +178,14 @@ class UserPhoto extends User
 			});
 	}
 
+	/**
+	 * загружаем фотографию в "именованный" альбом пользователя
+	 *
+	 * @param u_id
+	 * @param req
+	 * @param res
+	 * @returns {Promise.<TResult>}
+	 */
 	uploadImage(u_id, req, res)
 	{
 		const self = this;
@@ -255,6 +264,32 @@ class UserPhoto extends User
 	}
 
 	/**
+	 * получаем данные для указанной фотографии указанного пользователя
+	 *
+	 * @param u_id
+	 * @param ai_id
+	 * @returns {*}
+	 */
+	getImage(u_id, ai_id)
+	{
+		return this.model('user/photo').getImage(u_id, ai_id)
+			.then(function (image)
+			{
+				if (!image)
+					throw new FileUpload.io.FileNotFoundError("фотография не найдена");
+
+				let sizeParams = FileUpload.getUploadConfig('user_photo').sizeParams;
+
+				image["previews"] = {};
+				if (image["ai_dir"])
+				{
+					image = UserPhoto.previews(sizeParams, image, false)["obj"];
+				}
+				return Promise.resolve(image);
+			});
+	}
+
+	/**
 	 * удаление фотографии
 	 *
 	 * @param u_id
@@ -319,6 +354,19 @@ class UserPhoto extends User
 	updImgText(u_id, a_id, ai_id, ai_text)
 	{
 		return this.model('user/photo').updImgText(u_id, a_id, ai_id, ai_text);
+	}
+
+	/**
+	 * сорхранение позиций фотографий после их сортировке на клиенте
+	 *
+	 * @param u_id
+	 * @param a_id
+	 * @param ai_pos
+	 * @returns {*}
+	 */
+	sortImgUpd(u_id, a_id, ai_pos)
+	{
+		return this.model('user/photo').updSortImg(u_id, a_id, ai_pos);
 	}
 }
 //************************************************************************* module.exports
