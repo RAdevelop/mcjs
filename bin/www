@@ -101,19 +101,18 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
-
+/**
 setInterval(function() {
 	//todo замер памяти
 	console.log('from '+__dirname);
 	printMem();
 }, 2000);
 
-function printMem()
-{
+function printMem() {
 	var mem = process.memoryUsage();
 	for (var p in mem) {
 		// convert to MB
 		mem[p] = mem[p] / 1000000;
 	}
 	console.log(mem);
-}
+}*/

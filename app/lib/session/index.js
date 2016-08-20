@@ -1,23 +1,87 @@
-/**
- * Created by RA on 01.12.2015.
- */
-"use strict";
-const Config = require('app/config');
-const ExpressSession = require('express-session');
-const RedisStore = require('connect-redis')(ExpressSession);
-const IORedis = require('ioredis');
+'use strict';
+//const Logger = require('app/lib/logger');
 
-module.exports = function(){
+const Session = (function()
+{
+    let _instance;
+    let _req;
+    let _res;
 
-    const redisClient = new IORedis(Config.redis);
+    function init()
+    {
+        if (!_instance)
+        {
+            _instance = new Singleton();
+        }
+        return _instance;
+    }
 
-    redisClient.on('error', function(err){
+    // Конструктор
+    function Singleton()
+    {
+        /*loadedClass = loadedClass + 1;
+         console.log("loadedClass = " + loadedClass);*/
 
-        console.log(err);
+        /*this._req = null;
+        this._res = null;*/
 
-    });
+        // Публичные свойства
+    }
 
-    Config.session.store = new RedisStore({client: redisClient, prefix: Config.redisClient.prefix});
+    // Приватные методы и свойства
+    // ...
 
-    return ExpressSession(Config.session);
-};
+
+    /****************************************************************/
+    // Публичные методы
+    Singleton.prototype.setReqRes = function (req, res)
+    {
+        _req = req;
+        _res = res;
+        return this;
+    };
+
+    Singleton.prototype.getReq = function ()
+    {
+        return _req;
+    };
+    Singleton.prototype.getRes = function ()
+    {
+        return _res;
+    };
+
+    Singleton.prototype.all = function ()
+    {
+        return this.getReq().session;
+    };
+
+    Singleton.prototype.get = function (name = null)
+    {
+        if (!name || !this.getReq().session[name])
+            return null;
+
+        return this.getReq().session[name];
+    };
+
+    Singleton.prototype.set =  function (name, value)
+    {
+        this.getReq().session[name] = value;
+        return this;
+    };
+
+    Singleton.prototype.del = function (name)
+    {
+        //if (this.getReq().session[name])
+        {
+            console.log('Singleton.prototype.del name');
+            this.getReq().session[name] = null;
+            delete this.getReq().session[name];
+        }
+
+        return this;
+    };
+
+    return init();
+})();
+
+module.exports = Session;

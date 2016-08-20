@@ -25,8 +25,8 @@ const Class = (function()
 	{
 		/*loadedClass = loadedClass + 1;
 		console.log("loadedClass = " + loadedClass);*/
-		this._req = null;
-		this._res = null;
+		this._session = null;
+
 		// Публичные свойства
 		load(__dirname, 0, '/');
 	}
@@ -120,29 +120,16 @@ const Class = (function()
 	{
 		return Models.model(modelName);
 	};
-	
-	Singleton.prototype.getReq = function ()
+
+	Singleton.prototype.setSession = function(Session)
 	{
-		return this._req;
-	};
-	Singleton.prototype.getRes = function ()
-	{
-		return this._res;
+		this._session = Session;
+		return this;
 	};
 
-	//Singleton.prototype.setReqRes = function ()
-	Singleton.prototype.setReqRes = function (req, res)
+	Singleton.prototype.getSession = function()
 	{
-		this._req = req;
-		this._res = res;
-
-		/*const self = this;
-		return function (req, res, next)
-		{
-			self._req = req;
-			self._res = res;
-			return next();
-		}*/
+		return this._session;
 	};
 
 	/*Singleton.prototype.models = function()

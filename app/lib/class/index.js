@@ -29,40 +29,11 @@ class Base
 		return this;
 	}
 
-	getReq()
+	get session()
 	{
-		return this._classes.getReq();
-	}
-	getRes()
-	{
-		return this._classes.getRes();
+		return this._classes.getSession();
 	}
 
-	getSession(name = null)
-	{
-		//console.log(this.getReq().session[name]);
-		if (!name || !this.getReq().session[name])
-		return null;
-
-		return this.getReq().session[name];
-	}
-
-	setSession(name, value)
-	{
-		this.getReq().session[name] = value;
-		return this;
-	}
-
-	delSession(name)
-	{
-		if (this.getReq().session[name])
-		{
-			this.getReq().session[name] = null;
-			delete this.getReq().session[name];
-		}
-
-		return this;
-	}
 	/*_setModels(models)
 	{
 		this._models = models;

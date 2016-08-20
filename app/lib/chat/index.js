@@ -3,9 +3,8 @@
  */
 "use strict";
 	
-const Config = require('app/config');
-const Session = require('app/lib/session')();
-//var Async = require('async');
+//const Config = require('app/config');
+const Session = require('app/middlewares/session')();
 const Logger = require('app/lib/logger');
 //var Errors = require('app/lib/errors');
 

@@ -14,12 +14,11 @@ const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
 const Errors = require('app/lib/errors');
 
-const Session = require('app/lib/session');
-
 /**********************/
 const Class = require('app/class');
 const Control = require('app/controllers');
 //////////////////////////////////////////////
+const Session = require('app/middlewares/session');
 
 const app = express();
 

@@ -2,17 +2,11 @@
 
 //const Helpers = require("app/helpers");
 const Errors = require('app/lib/errors');
+const Session = require('app/lib/session');
 const Template = require('app/lib/template');
-//const Async = require('async');
 const _ = require('lodash');
 
 /*
-let [firstName, lastName] = ["Илья", "Кантор"];
-не работает в текущей версии Ноды
-console.log(firstName); // Илья
-console.log(lastName);  // Кантор
- 
- 
  console.log("req.method %s", req.method);
  console.log("req.baseUrl %s", req.baseUrl);
  console.log("req.originalUrl %s", req.originalUrl);
@@ -319,10 +313,12 @@ class Base
 		return this._routeArgs;
 	}
 
-
 	callAction(cb)
 	{
 		this.setAction();
+
+		this._setBaseUrl(this.getReq(), this.getRes());
+
 
 		//console.log('this.isAction() = ', this.isAction());
 		//console.log('-----------------------');
@@ -332,10 +328,8 @@ class Base
 		if (!this._parseRoutePaths())
 			return cb(new Errors.HttpStatusError(404, "Not Found"));
 
-
-		this._setBaseUrl(this.getReq(), this.getRes());
-
-		this._getClasses().setReqRes(this.getReq(), this.getRes());
+		Session.setReqRes(this.getReq(), this.getRes());
+		this._getClasses().setSession(Session);
 
 		//this.view = new Template(this.getReq(), this.getRes(), this.next, this);
 		this.view = Template.getTemplate(this);

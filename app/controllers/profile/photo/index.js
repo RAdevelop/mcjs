@@ -35,6 +35,10 @@ class ProfilePhoto extends Base
 		if (!this.isAuthorized())
 			return cb(new Errors.HttpStatusError(401, "Unauthorized"));
 
+		console.log("this.getClass('user').session.all()");
+		console.log(this.getClass('user').session.all());
+		console.log('\n');
+
 		//if (args.length > 1)
 		//	return cb(new Errors.HttpStatusError(404, "Not found"));
 		let xhr = this.getReq().xhr;
@@ -81,7 +85,7 @@ class ProfilePhoto extends Base
 	albumList(cb, tplData, isAjax = false)
 	{
 		let {i_page=1} = this.routeArgs;
-		
+
 		return Promise.resolve(tplData)
 			.bind(this)
 			.then(function (tplData)
