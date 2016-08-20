@@ -7,7 +7,6 @@ const Errors = require('app/lib/errors');
 const Mail = require('app/lib/mail');
 const Template = require('app/lib/template');
 
-//module.exports = function(app, Classes, Template)
 module.exports = function(app, Classes)
 {
 	return function(err, req, res, next)

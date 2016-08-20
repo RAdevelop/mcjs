@@ -112,7 +112,7 @@
 					{
 						var to = parseInt($scrollToItem.offset().top, 10) - $('#navbarFixedTop').outerHeight();
 
-						$(window).delay(Pagination.scrollDelayMs).scrollTo(to, 1000, {axis:'y', limit: false});
+						$(window).delay(Pagination.scrollDelayMs).scrollTo(to, 1000, {axis:'y', interrupt: true, limit: false});
 					}
 				})
 				.fail(function(resData)

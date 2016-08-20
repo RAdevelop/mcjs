@@ -99,6 +99,7 @@ const Class = (function()
 	// Публичные методы
 	Singleton.prototype.getClass = function(className)
 	{
+		//console.log("_require = ", _require.keys());
 		className = className.toString().toLowerCase();
 
 		let cn = {[className]:className};
@@ -130,6 +131,11 @@ const Class = (function()
 	Singleton.prototype.getSession = function()
 	{
 		return this._session;
+	};
+
+	Singleton.prototype.getRequire = function()
+	{
+		return _require;
 	};
 
 	/*Singleton.prototype.models = function()

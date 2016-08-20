@@ -40,24 +40,28 @@ module.exports = function(Classes, Control)
 	{
 		let cName = (res.locals.menuItem.c_path[0] == '/') ? res.locals.menuItem.c_path.substr(1) : res.locals.menuItem.c_path;
 		console.log('cName = ' + cName);
-		
+
 		let C = new (Control.get(cName))(req, res, next, Classes);
 
 		C.callAction(function(err, json = false)
 		{
 			if (err)
 			{
-				console.log('----- in router.all ----');
+				console.log('----- error in router.all ----');
 				console.log(__dirname);
 				console.log(err);
-				console.log('----- END in router.all ----');
+				console.log('----- END error in router.all ----');
 
 				//C.view = null;
 				C = null;
+				Classes = null;
+				Control = null;
+
 				return next(err);
 			}
 
 			C.view.render(json);
+
 		});
 	});
 
