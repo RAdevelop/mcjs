@@ -16,8 +16,9 @@ module.exports = function(Classes, Control)
 	
 	 */
 	
+	//router.use(Classes.setReqRes());
 	router.use(require('app/middlewares/_reqbody'));
-	
+
 	router.use(require('app/middlewares/user/load.js')(Classes));
 	router.use(require('app/middlewares/menu/site.js')(Classes));
 	
@@ -40,7 +41,9 @@ module.exports = function(Classes, Control)
 		let cName = (res.locals.menuItem.c_path[0] == '/') ? res.locals.menuItem.c_path.substr(1) : res.locals.menuItem.c_path;
 		console.log('cName = ' + cName);
 
-		const C = new (Control.get(cName))(req, res, next, Classes);
+		Classes.setReqRes();
+
+		let C = new (Control.get(cName))(req, res, next, Classes);
 
 		C.callAction(function(err, json = false)
 		{
@@ -51,7 +54,8 @@ module.exports = function(Classes, Control)
 				console.log(err);
 				console.log('----- END in router.all ----');
 
-				C.view = null;
+				//C.view = null;
+				C = null;
 				return next(err);
 			}
 

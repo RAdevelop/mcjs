@@ -2,6 +2,7 @@
 const Path = require('path');
 const fs = require('fs');
 const Models = require('app/models');
+const Logger = require('app/lib/logger');
 
 const Class = (function()
 {
@@ -24,7 +25,8 @@ const Class = (function()
 	{
 		/*loadedClass = loadedClass + 1;
 		console.log("loadedClass = " + loadedClass);*/
-		
+		this._req = null;
+		this._res = null;
 		// Публичные свойства
 		load(__dirname, 0, '/');
 	}
@@ -85,10 +87,10 @@ const Class = (function()
 		catch (err)
 		{
 			//logger.error('Empty routers (call from helpers.loadRouters) in dir %j', {"dir":dir});
-			//logger.error(err);
-			err.message = 'Empty routers (call from helpers.loadRouters) in dir:\n:  ' + dir;
+			Logger().error(err);
+			err.message = 'Empty routers (call from loadRouters) in dir:\n:  ' + dir;
 			err.status = 500;
-			//console.log(err);
+			
 			throw new Error(err);
 		}
 	}
@@ -117,6 +119,30 @@ const Class = (function()
 	Singleton.prototype.model = function(modelName)
 	{
 		return Models.model(modelName);
+	};
+	
+	Singleton.prototype.getReq = function ()
+	{
+		return this._req;
+	};
+	Singleton.prototype.getRes = function ()
+	{
+		return this._res;
+	};
+
+	//Singleton.prototype.setReqRes = function ()
+	Singleton.prototype.setReqRes = function (req, res)
+	{
+		this._req = req;
+		this._res = res;
+
+		/*const self = this;
+		return function (req, res, next)
+		{
+			self._req = req;
+			self._res = res;
+			return next();
+		}*/
 	};
 
 	/*Singleton.prototype.models = function()

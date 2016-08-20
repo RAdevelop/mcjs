@@ -62,6 +62,9 @@ class User extends Base
 		})
 			.then(function(props)
 			{
+				/*console.log('props');
+				console.log(props);
+				console.log('props\n');*/
 				return Promise.resolve(Object.assign(props.userAva, props.userLocation, props.userData, props.user));
 			});
 	}

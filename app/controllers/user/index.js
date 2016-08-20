@@ -20,7 +20,7 @@ class User extends Base
 		if (!this.isAuthorized())
 			return cb(new Errors.HttpStatusError(401, "Unauthorized"));
 
-		this.getClass("user").getUser(this.getUserId())
+		return this.getClass("user").getUser(this.getUserId())
 			.bind(this)
 		.then(function(userData)
 		{

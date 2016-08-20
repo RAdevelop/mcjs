@@ -4,7 +4,7 @@
 "use strict";
 const Path = require('path');
 const fs = require('fs');
-//const Logger = require('app/lib/logger');
+const Logger = require('app/lib/logger');
 ///////////////////////////////
 
 const Control = (function()
@@ -90,7 +90,7 @@ const Control = (function()
 		catch (err)
 		{
 			//Logger().error('Empty routers (call from helpers.loadRouters) in dir %j', {"dir":dir});
-			//Logger().error(err);
+			Logger().error(err);
 			err.message = 'Empty routers (call from helpers.loadRouters) in dir:\n:  ' + dir;
 			err.status = 500;
 			//console.log(err);

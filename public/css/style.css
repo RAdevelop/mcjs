@@ -353,7 +353,7 @@ a.social:hover
 
 .album-list-toolbar
 {
-	margin: 10px 0 10px 0;
+	margin: 10px 0 0 0;
 }
 
 .album-list-toolbar .dropdown-menu>li>a
@@ -411,8 +411,8 @@ a.social:hover
 	left:0;
 	right:0;
 	display: inline-block;
-	height: 28px;
-	padding: 5px 0 0 5px;
+	height: 24px;
+	padding: 3px 0 0 3px;
 	background-color: rgba(102, 102, 102, 0.6);
 	z-index: 1;
 }
@@ -449,20 +449,27 @@ a.social:hover
 	padding: 0;
 	left: 0;
 	right: 0;
-	bottom: -30px;
+	top: 148px;
+	bottom: -148px;
 	font-size: 12px;
 	color: #fff;
 	background-color: rgba(0, 0, 0, 0.7);
 
-	-webkit-transition: bottom 0.5s ease-out 0.1s;
+	-webkit-transition: top 0.5s ease-out 0.1s;
+	-moz-transition: top 0.5s ease-out 0.1s;
+	-o-transition: top 0.5s ease-out 0.1s;
+	transition: top 0.5s ease-out 0.1s;
+
+	/*-webkit-transition: bottom 0.5s ease-out 0.1s;
 	-moz-transition: bottom 0.5s ease-out 0.1s;
 	-o-transition: bottom 0.5s ease-out 0.1s;
-	transition: bottom 0.5s ease-out 0.1s;
+	transition: bottom 0.5s ease-out 0.1s;*/
 }
 
 .albums .album .albumTitle:hover
 {
 	bottom: 0;
+	top: 24px;
 }
 
 .albums .album .albumTitle .albumName,

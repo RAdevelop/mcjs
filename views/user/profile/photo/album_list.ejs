@@ -1,3 +1,4 @@
+<h3>Фотоальбомы <%=(!user.u_login ? user.u_login : (user.u_name || user.u_surname ? [user.u_name, user.u_surname].join(' ') : ''))%></h3>
 <% albums.forEach(function (album)
 {
 //let imgSrc = (album["previews"]["320_213"] ? album["previews"]["320_213"] : '/_0.gif');

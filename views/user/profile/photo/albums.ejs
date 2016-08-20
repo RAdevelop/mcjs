@@ -22,8 +22,6 @@
 		<% } %>
 	</div>
 </div>
-для удаления и изменения описания альбома сделать проверку,что он не "профильный"
-<br/>
 <div class="row albums">
 	<div class="col-xs-12 col-sm-12 col-md-12">
 	<% if(albums){ %><%- include album_list.ejs %><% } %>
@@ -42,7 +40,8 @@
 (function($)
 {
 	var mcAlbumProps = {
-		albumToolbar: '.album-list-toolbar'
+		uri: '<%=_reqBaseUrl%>'
+		, albumToolbar: '.album-list-toolbar'
 		, albumWrapper: '.albums .imageList'
 		, albumImages: '.image'
 		, albumName: '#a_name'

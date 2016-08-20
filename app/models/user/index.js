@@ -143,7 +143,7 @@ class User extends BaseModel
 				if (!res)
 					return Promise.resolve(userData);
 
-				if (userData['u_id'])
+				if (res['u_id'])
 				userData = Object.assign(userData, res);
 
 				if (userData['u_birthday'])

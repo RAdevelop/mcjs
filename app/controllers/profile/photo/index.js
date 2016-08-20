@@ -17,10 +17,10 @@ class ProfilePhoto extends Base
 	{
 		return {
 			"index": {
-				"^\/?$" : null //список альбомов
+				"^\/?[0-9]+\/page\/[0-9]+\/?$" : ["i_a_id", ,"i_page"] //список фоток в альбоме с постраничкой
 				,"^\/?page\/[0-9]+\/?$" : [ ,"i_page"] //список альбомов с постраничкой
-				,"^\/?[0-9]+\/page\/[0-9]+\/?$" : ["i_a_id", ,"i_page"] //список фоток в альбоме с постраничкой
 				,"^\/?[0-9]+\/?$" : ["i_a_id"] //список фоток в альбоме
+				,"^\/?$" : null //список альбомов
 			}
 		}
 	}
@@ -37,19 +37,19 @@ class ProfilePhoto extends Base
 
 		//if (args.length > 1)
 		//	return cb(new Errors.HttpStatusError(404, "Not found"));
-			
-		return Promise.resolve(this.getReq().xhr)
+		let xhr = this.getReq().xhr;
+		return Promise.resolve(xhr)
 			.bind(this)
 			.then(function (xhr)
 			{
 				if (xhr)
 					return Promise.resolve({});
 
-				let tplData = (xhr ? {} : this.getUser());
 				return this.getClass("user").getUser(this.getUserId())
 					.then(function (userData)
 					{
-						tplData["user"] = userData;
+						let tplData = (xhr ? {} : {"user": userData});
+
 						return Promise.resolve(tplData);
 					});
 			})
@@ -60,9 +60,9 @@ class ProfilePhoto extends Base
 				tplData["pages"] = null;
 
 				if (this.routeArgs["i_a_id"])
-					return this.album(cb, tplData, this.getReq().xhr);
+					return this.album(cb, tplData, xhr);
 
-				return this.albumList(cb, tplData, this.getReq().xhr);
+				return this.albumList(cb, tplData, xhr);
 			})
 			.catch(function (err)
 			{
@@ -106,7 +106,7 @@ class ProfilePhoto extends Base
 
 				tplData["pages"] = Pages.pages();
 
-				console.log(tplData);
+				console.log(tplData["user"]);
 
 				let tplFile = '';
 
