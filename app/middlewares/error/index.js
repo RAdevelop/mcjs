@@ -45,7 +45,7 @@ module.exports = function(app, Classes)
 		}
 		let error = err;
 
-		if(app.get('env') === 'dev')
+		if(app.get('env') === 'prod')
 			error.stack = '';
 
 		let tplData = {
