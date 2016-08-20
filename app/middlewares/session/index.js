@@ -6,6 +6,7 @@ const Config = require('app/config');
 const ExpressSession = require('express-session');
 const RedisStore = require('connect-redis')(ExpressSession);
 const IORedis = require('ioredis');
+const Logger = require('app/lib/logger');
 
 module.exports = function(){
 
@@ -13,7 +14,7 @@ module.exports = function(){
 
     redisClient.on('error', function(err){
 
-        console.log(err);
+        Logger().error(err);
 
     });
 

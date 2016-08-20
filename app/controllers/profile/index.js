@@ -320,7 +320,6 @@ class Profile extends Base
 				return this.getClass('user/photo/profile').getUserAva(this.getUserId())
 					.then(function (ava)
 					{
-						console.log(ava);
 						ava["cropSrc"] = ava["previews"]["1024_768"];
 						ava["dir"] = ava["ai_dir"];
 

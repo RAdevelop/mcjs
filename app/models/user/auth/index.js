@@ -84,8 +84,6 @@ class Auth extends User
 			{
 				if(err) return cb(err);
 
-				//console.log(res);
-
 				user.u_id = res.insertId;
 				
 				self.createReqConfirmKey(user, function(err, user)

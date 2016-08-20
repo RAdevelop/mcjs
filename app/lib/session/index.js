@@ -22,9 +22,6 @@ const Session = (function()
         /*loadedClass = loadedClass + 1;
          console.log("loadedClass = " + loadedClass);*/
 
-        /*this._req = null;
-        this._res = null;*/
-
         // Публичные свойства
     }
 
@@ -73,7 +70,6 @@ const Session = (function()
     {
         //if (this.getReq().session[name])
         {
-            console.log('Singleton.prototype.del name');
             this.getReq().session[name] = null;
             delete this.getReq().session[name];
         }
