@@ -97,6 +97,11 @@ class Base
 		this._classes = classes;
 		return this;
 	}
+
+	_getClasses()
+	{
+		return this._classes;
+	}
 	
 	model(model)
 	{
@@ -295,7 +300,7 @@ class Base
 				}
 				console.log("this.routeArgs");
 				console.log(this.routeArgs);
-
+				console.log('\n');
 				return true;
 			}
 		}
@@ -329,6 +334,9 @@ class Base
 
 
 		this._setBaseUrl(this.getReq(), this.getRes());
+
+		this._getClasses().setReqRes(this.getReq(), this.getRes());
+
 		//this.view = new Template(this.getReq(), this.getRes(), this.next, this);
 		this.view = Template.getTemplate(this);
 

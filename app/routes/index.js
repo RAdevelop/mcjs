@@ -40,9 +40,7 @@ module.exports = function(Classes, Control)
 	{
 		let cName = (res.locals.menuItem.c_path[0] == '/') ? res.locals.menuItem.c_path.substr(1) : res.locals.menuItem.c_path;
 		console.log('cName = ' + cName);
-
-		Classes.setReqRes();
-
+		
 		let C = new (Control.get(cName))(req, res, next, Classes);
 
 		C.callAction(function(err, json = false)

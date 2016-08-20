@@ -56,7 +56,10 @@ class Base
 	delSession(name)
 	{
 		if (this.getReq().session[name])
+		{
 			this.getReq().session[name] = null;
+			delete this.getReq().session[name];
+		}
 
 		return this;
 	}

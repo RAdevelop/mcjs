@@ -81,7 +81,7 @@ class ProfilePhoto extends Base
 	albumList(cb, tplData, isAjax = false)
 	{
 		let {i_page=1} = this.routeArgs;
-
+		
 		return Promise.resolve(tplData)
 			.bind(this)
 			.then(function (tplData)
@@ -105,8 +105,6 @@ class ProfilePhoto extends Base
 					.setJquerySelectorData('.album');
 
 				tplData["pages"] = Pages.pages();
-
-				console.log(tplData["user"]);
 
 				let tplFile = '';
 
@@ -200,8 +198,6 @@ class ProfilePhoto extends Base
 						.setJquerySelectorData('.imageList .image');
 
 					tplData["pages"] = Pages.pages();
-
-					console.log(tplData["pages"]);
 				}
 
 				let tplFile = '';
@@ -237,7 +233,7 @@ class ProfilePhoto extends Base
 
 		let tplFile = 'user/profile/photo/albums.ejs';
 
-		console.log(tplData);
+		//console.log(tplData);
 
 		return this.albumPostActions(tplData)
 			.bind(this)
@@ -403,7 +399,6 @@ class ProfilePhoto extends Base
 			})
 			.then(function (tplData)
 			{
-
 				return this.getClass('user/photo').getAlbum(this.getUserId(), tplData["i_a_id"])
 					.bind(this)
 					.then(function (album)

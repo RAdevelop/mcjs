@@ -22,18 +22,18 @@ class User extends Base
 
 		return this.getClass("user").getUser(this.getUserId())
 			.bind(this)
-		.then(function(userData)
-		{
-			this.view.setTplData("user", {});
-			this.view.addPartialData("user/left", {user: userData});
-			//self.view.addPartialData("user/right", {}); //TODO
+			.then(function(userData)
+			{
+				this.view.setTplData("user", {});
+				this.view.addPartialData("user/left", {user: userData});
+				//self.view.addPartialData("user/right", {}); //TODO
 
-			return cb(null);
-		})
-		.catch(function(err)
-		{
-			return cb(err);
-		});
+				return cb(null);
+			})
+			.catch(function(err)
+			{
+				return cb(err);
+			});
 	}
 }
 
