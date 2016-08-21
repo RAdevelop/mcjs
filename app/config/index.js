@@ -16,7 +16,7 @@ var config = {
 	session:  {
 		saveUninitialized: true, // saved new sessions
 		resave           : false, // do not automatically write to the session store
-		secret           : 'varRy Sicret st0ka',
+		secret           : 'varRy Sicret str0ka',
 		cookie           : {
 			secure: true
 			,httpOnly: true
@@ -28,7 +28,9 @@ var config = {
 	redis:{
 		port: 6379,
 		host: 'localhost',
-		showFriendlyErrorStack: true/*,
+		showFriendlyErrorStack: true
+		//TODO установить пароль
+		/*,
 		reconnectOnError: function (err) {
 			var targetError = 'READONLY';
 			if (err.message.slice(0, targetError.length) === targetError) {

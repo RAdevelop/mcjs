@@ -105,8 +105,8 @@ module.exports = function(Classes)
 				
 				req._user = res.locals._user = userData;
 
-				if (userData)
-					req.session.touch();
+				//if (userData)
+				//	req.session.touch();
 
 				next();
 			});
