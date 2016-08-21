@@ -4,7 +4,7 @@ const Path = require('path');
 
 //console.log(Path.join(__dirname, '../../public'));
 
-
+let document_root = Path.join(__dirname, '../../public');
 /**
  * кофигруационный файл
  *
@@ -12,17 +12,18 @@ const Path = require('path');
  */
 var config = {
 	port: 3000,
-	document_root: Path.join(__dirname, '../../public'),
+	document_root: document_root,
 	session:  {
 		saveUninitialized: true, // saved new sessions
 		resave           : false, // do not automatically write to the session store
 		secret           : 'varRy Sicret st0ka',
 		cookie           : {
-			secure: true, //TODO 
-			httpOnly: true,
-			path: '/',
-			maxAge: null
+			secure: true
+			,httpOnly: true
+			,path: '/'
+			//,maxAge: 86400000 //in milliseconds
 		}
+		, unset: 'destroy'
 	},
 	redis:{
 		port: 6379,
@@ -77,7 +78,7 @@ var config = {
 	userCookieExpires: 15552000000, //значение в милисекундах= 60*60*24 * 30 (дн) * 6 (мес) = пол года
 	uploads: {
 		default: {
-			pathUpload: "/upload",
+			pathUpload: "upload",
 			fileTypes: [],
 			fileMediaType: '',
 			multiUpload: false,

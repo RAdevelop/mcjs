@@ -61,7 +61,6 @@ module.exports = function(Classes, Control)
 			}
 
 			C.view.render(json);
-
 		});
 	});
 

@@ -34,7 +34,7 @@ class ProfilePhoto extends Base
 	{
 		if (!this.isAuthorized())
 			return cb(new Errors.HttpStatusError(401, "Unauthorized"));
-		
+
 		//if (args.length > 1)
 		//	return cb(new Errors.HttpStatusError(404, "Not found"));
 		let xhr = this.getReq().xhr;
@@ -86,7 +86,7 @@ class ProfilePhoto extends Base
 			.bind(this)
 			.then(function (tplData)
 			{
-				return this.getClass('user/photo').getAlbumList(this.getUserId(), new Pages(i_page, limit_per_page))
+				return this.getClass('user/photo').getAlbumList(this.getUserId(), this.getUserId(), new Pages(i_page, limit_per_page))
 					.bind(this)
 					.spread(function (albums, Pages)
 					{
@@ -142,7 +142,7 @@ class ProfilePhoto extends Base
 			.bind(this)
 			.then(function (tplData)
 			{
-				return this.getClass('user/photo').getAlbum(this.getUserId(), i_a_id)
+				return this.getClass('user/photo').getAlbum(this.getUserId(), this.getUserId(), i_a_id)
 					.then(function (album)
 					{
 						if (!album)
@@ -399,11 +399,11 @@ class ProfilePhoto extends Base
 			})
 			.then(function (tplData)
 			{
-				return this.getClass('user/photo').getAlbum(this.getUserId(), tplData["i_a_id"])
+				return this.getClass('user/photo').getAlbum(this.getUserId(), this.getUserId(), tplData["i_a_id"])
 					.bind(this)
 					.then(function (album)
 					{
-						if (!album || album["u_id"] != this.getUserId())
+						if (!album || !album["a_is_owner"])
 							throw new Errors.HttpStatusError(400, "Bad request");
 
 						return this.getClass('user/photo').editAlbumNamed(this.getUserId(), tplData["i_a_id"], tplData["s_album_name"], tplData["s_album_text"])
@@ -449,7 +449,7 @@ class ProfilePhoto extends Base
 
 		//return Promise.resolve(tplData);
 
-		return this.getClass('user/photo').getImage(this.getUserId(), tplData["i_ai_id"])
+		return this.getClass('user/photo').getImage(this.getUserId(), this.getUserId(), tplData["i_ai_id"])
 			.bind(this)
 			.then(function (image)
 			{

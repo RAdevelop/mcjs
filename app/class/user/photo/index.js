@@ -1,6 +1,6 @@
 "use strict";
 
-//const Errors = require('app/lib/errors');
+const Logger = require('app/lib/logger');
 const Promise = require("bluebird");
 const FileErrors = require('app/lib/file/errors');
 const Errors = require('app/lib/errors');
@@ -81,12 +81,13 @@ class UserPhoto extends User
 	 * список фотоальбомов пользователя
 	 *
 	 * @param u_id
+	 * @param owner_u_id - чей альбом запросил
 	 * @param Pages
 	 * @returns {Promise.<TResult>|*}
 	 */
-	getAlbumList(u_id, Pages)
+	getAlbumList(u_id, owner_u_id, Pages)
 	{
-		return this.model('user/photo').countUserAlbums(u_id)
+		return this.model('user/photo').countUserAlbums(owner_u_id)
 			.bind(this)
 			.then(function (a_cnt)
 			{
@@ -98,15 +99,16 @@ class UserPhoto extends User
 				if (Pages.limitExceeded())
 					return Promise.reject(new FileErrors.HttpStatusError(404, "Not found"));
 
-				return this.model('user/photo').getAlbumList(u_id, Pages.getOffset(), Pages.getLimit())
+				return this.model('user/photo').getAlbumList(owner_u_id, Pages.getOffset(), Pages.getLimit())
 					.then(function (albums)
 					{
 						let sizeParams = FileUpload.getUploadConfig('user_photo').sizeParams;
 
 						albums.forEach(function (album)
 						{
-							album["a_profile"]  = (album["a_profile"]   == '1');
-							album["a_named"]    = (album["a_named"]     == '1');
+							album["a_is_owner"] = (album["u_id"]        == u_id);
+							album["a_profile"]  = (album["a_profile"]   == 1);
+							album["a_named"]    = (album["a_named"]     == 1);
 
 							album = Object.assign(album, UserPhoto.previews(sizeParams, album)["obj"]);
 						});
@@ -119,20 +121,23 @@ class UserPhoto extends User
 
 	/**
 	 * выбранный альбом пользователя
-	 * @param u_id
+	 *
+	 * @param u_id - кто запросил
+	 * @param owner_u_id - чей альбом запросил
 	 * @param a_id
 	 * @returns {*}
 	 */
-	getAlbum(u_id, a_id)
+	getAlbum(u_id, owner_u_id, a_id)
 	{
-		return this.model('user/photo').getAlbum(u_id, a_id)
+		return this.model('user/photo').getAlbum(owner_u_id, a_id)
 			.then(function (album)
 			{
 				if (!album)
 					return Promise.resolve(null);
 
-				album["a_profile"]  = (album["a_profile"]   == '1');
-				album["a_named"]    = (album["a_named"]     == '1');
+				album["a_is_owner"] = (album["u_id"]        == u_id);
+				album["a_profile"]  = (album["a_profile"]   == 1);
+				album["a_named"]    = (album["a_named"]     == 1);
 
 				return Promise.resolve(album);
 			});
@@ -266,20 +271,21 @@ class UserPhoto extends User
 	/**
 	 * получаем данные для указанной фотографии указанного пользователя
 	 *
-	 * @param u_id
+	 * @param u_id - кто запрсил
+	 * @param owner_u_id - чью фото запросил
 	 * @param ai_id
 	 * @returns {*}
 	 */
-	getImage(u_id, ai_id)
+	getImage(u_id, owner_u_id, ai_id)
 	{
-		return this.model('user/photo').getImage(u_id, ai_id)
+		return this.model('user/photo').getImage(owner_u_id, ai_id)
 			.then(function (image)
 			{
 				if (!image)
 					throw new FileErrors.io.FileNotFoundError("фотография не найдена: UserPhoto.getImage(u_id="+u_id+", ai_id="+ai_id+")");
 
 				let sizeParams = FileUpload.getUploadConfig('user_photo').sizeParams;
-
+				image["ai_is_owner"] = (image["u_id"] == u_id);
 				image["previews"] = {};
 				if (image["ai_dir"])
 				{
@@ -300,11 +306,11 @@ class UserPhoto extends User
 	 */
 	delImage(u_id, a_id, ai_id, file = {})
 	{
-		return this.model('user/photo').getImage(u_id, ai_id)
+		return this.getImage(u_id, u_id, ai_id)
 			.bind(this)
 			.then(function (image)
 			{
-				if (!image || image["a_id"] != a_id || image["u_id"] != u_id)
+				if (!image || image["a_id"] != a_id || !image["ai_is_owner"])
 					throw new FileErrors.io.FileNotFoundError();
 
 				return Promise.resolve(image);
@@ -332,7 +338,7 @@ class UserPhoto extends User
 			.catch(function (err)
 			{
 				console.log('class UserPhoto delImage catch');
-				console.log(err);
+				Logger().error(err);
 				console.log('\n');
 
 				return this.model('user/photo').delImage(u_id, a_id, ai_id)

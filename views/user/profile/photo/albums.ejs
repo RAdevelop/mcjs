@@ -4,13 +4,11 @@
 		<div class="btn-group btn-group-sm" role="group" aria-label="Опции для фотоальбомов">
 			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fa fa-fw fa-cog"></span> опции <span class="caret"></span></button>
 			<ul class="dropdown-menu ">
-			<% if(album){ %>
-				<% if(album["a_named"]){ %>
+			<% if(album && album["a_is_owner"] && album["a_named"]){ %>
 				<li><a href="javascript:void(0)" id="btn_album_upload"><span class="fa fa-fw fa-cloud-upload"></span> загрузить фотографии</a></li>
 				<li><a href="javascript:void(0)" id="btn_edit_album_modal"><span class="fa fa-fw fa-edit"></span> изменить описание</a></li>
 				<li><a href="javascript:void(0)"><span class="fa fa-fw fa-trash-o"></span> удалить альбом</a></li>
 				<li role="separator" class="divider"></li>
-				<% } %>
 			<% } %>
 				<li><a href="javascript:void(0)" id="btn_add_album_modal"><span class="fa fa-fw fa-plus-square-o"></span> создать новый альбом</a></li>
 			</ul>
@@ -47,7 +45,8 @@
 		, albumName: '#a_name'
 		, albumText: '#a_text'
 	};
-	<% if(album && album["u_id"] == _user["u_id"]) { %>
+	<% if(album && album["a_is_owner"]) { %>
+	mcAlbumProps["is_owner"] = '<%=(typeof s_token == 'undefined' ? '' : s_token)%>';
 	mcAlbumProps["s_token"] = '<%=(typeof s_token == 'undefined' ? '' : s_token)%>';
 	mcAlbumProps["i_time"] = '<%=(typeof i_time == 'undefined' ? '' : i_time)%>';
 	mcAlbumProps["a_id"] = '<%=album["a_id"]%>';

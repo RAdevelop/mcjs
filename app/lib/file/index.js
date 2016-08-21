@@ -9,6 +9,20 @@ const Promise = require("bluebird");
 const GM = require('gm');
 const FileErrors = require('./errors');
 
+/**
+ * список директорий для загрузки файлов
+ * @type {Array}
+ */
+let uploadDirs = [];
+Object.keys(AppConfig.uploads).forEach(function (key)
+{
+	uploadDirs.push(AppConfig.uploads[key]["pathUpload"]);
+});
+
+//console.log(uploadDirs);
+//рефакторинг в lib/file - получение списка директорий для загрузки
+
+
 class File
 {
 	constructor(req, res)
@@ -388,9 +402,41 @@ class File
 		});
 	}
 
+	/**
+	 *
+	 * @param dir
+	 * @returns {boolean} - true - запрещено, false - разрешено
+	 */
 	static isForbiddenDir(dir)
 	{
-		return (!dir || dir == File.getDocumentRoot || dir == Path.dirname(File.getDocumentRoot) || dir == '.' || dir == '..' || dir == '' || dir == process.cwd());
+		switch (dir)
+		{
+			case File.getDocumentRoot:
+			case Path.dirname(File.getDocumentRoot):
+			case '.':
+			case '..':
+			case process.cwd():
+			case Path.dirname(process.cwd()):
+
+				console.log('isForbiddenDir(dir) in switch (dir)');
+				console.log('\n');
+
+				return true;
+			break;
+		}
+
+		//return (!dir ? false : true);
+
+		//if (bd[0].search(/^\d{2,2}$/ig) == -1) return false;
+
+		if (!dir || dir.search(/\.*\.+\//ig) >= 0 || uploadDirs.indexOf(dir) >=0 )
+		{
+			console.log('isForbiddenDir(dir) in if (!dir || dir.search(/\.+/ig) >= 0 || uploadDirs.indexOf(dir) >=0 )');
+			console.log('\n');
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -401,11 +447,11 @@ class File
 	 */
 	static deleteDir(dir, delNotEmptyDir = true)
 	{
-		if (File.isForbiddenDir(dir))
-			return Promise.reject(new FileErrors.ForbiddenDirectory(dir));
-
 		return new Promise(function (resolve, reject)
 		{
+			if (File.isForbiddenDir(dir))
+				return reject(new FileErrors.ForbiddenDirectory(dir));
+
 			File.walkDir(dir, function (err, dirData)
 			{
 				if (err) return reject(err);

@@ -19,6 +19,8 @@ class Logout extends Base
 		this.getReq().session.destroy(function(err)
 		{
 			if(err) return cb(err);
+
+			delete self.getReq().session;
 			return self.getRes().redirect('/login');
 		});
 	}

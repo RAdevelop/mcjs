@@ -119,10 +119,10 @@ const Control = (function()
 		//return _classes.get(cn);
 	};
 
-	SingletonControl.prototype.getRequire = function()
+	/*SingletonControl.prototype.getRequire = function()
 	{
 		return _require;
-	};
+	};*/
 
 	return init();
 })();

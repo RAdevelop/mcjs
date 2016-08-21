@@ -9,7 +9,8 @@ module.exports = function(Classes)
 		Async.waterfall([
 				function (asyncCb)
 				{
-					if (!req.session) return asyncCb(new Error('check session work'), null);
+					if (!req.session)
+						return asyncCb(new Error('check session work'), null);
 					
 					/*console.log(req.session);
 					console.log('req.signedCookies', req.signedCookies);*/
@@ -35,7 +36,10 @@ module.exports = function(Classes)
 								case 'NotFoundError':
 								case 'TypeError':
 									
-									req.session.destroy();
+									req.session.destroy(function (err)
+									{
+										delete req.session;
+									});
 									
 									if (req.signedCookies.rtid)
 										Cookie.clearUserId(req, res);
@@ -59,9 +63,13 @@ module.exports = function(Classes)
 						{
 							if (err)
 							{
-								req.session.destroy();
+								req.session.destroy(function (err)
+								{
+									delete req.session;
+								});
 								
-								if (req.signedCookies.rtid)  Cookie.clearUserId(req, res);
+								if (req.signedCookies.rtid)
+									Cookie.clearUserId(req, res);
 								
 								return asyncCb(err, null);
 							}
@@ -92,10 +100,14 @@ module.exports = function(Classes)
 				
 				if (err) return next(err);
 				
-				/*console.log('FROM ' + __dirname+'/load.js');
+				/*console.log('FROM ' + __dirname);
 				console.log(userData);*/
 				
 				req._user = res.locals._user = userData;
+
+				if (userData)
+					req.session.touch();
+
 				next();
 			});
 	};

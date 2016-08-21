@@ -10,10 +10,6 @@ class News extends Base
 {
 	indexActionGet(cb)
 	{
-
-		this.getClass('user').session.set('ad', 'ra');
-
-
 		this.getClass("user").getUser(this.getUserId())
 			.bind(this)
 		.then(function(userData)

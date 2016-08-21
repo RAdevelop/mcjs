@@ -6,6 +6,7 @@
 function preloadImages(imgs)
 {
 	//jQuery(window).load(function (){
+	jQuery(document).ready(function (){
 		for (var i in imgs)
 		{
 			if (i == 'orig') continue;
@@ -13,7 +14,7 @@ function preloadImages(imgs)
 			if (imgs.hasOwnProperty(i))
 			jQuery("<img />").attr("src", imgs[i]);
 		}
-	//});
+	});
 }
 
 function getRandomMinMax(min, max)

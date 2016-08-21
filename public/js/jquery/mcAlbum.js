@@ -14,6 +14,7 @@
 			, i_time: null
 			, a_id: null
 			, sortable: false
+			, is_owner: false
 		};
 
 		//var albumImages = (MCJS["albumImages"] ? MCJS["albumImages"] : []);
@@ -101,10 +102,14 @@
 			{
 				htmlDialog += '<li><a href="' + origSrc + '" target="blank">оригинал</a></li>';
 			}
-			htmlDialog += '<li role="separator" class="divider"></li>' +
-				'<li><a href="javascript:void(0);" id="btn_album_image_del_modal">удалить</a></li>' +
-				'</ul>'+
-				'</div>' +
+			if (options.is_owner)
+			{
+				htmlDialog += '<li role="separator" class="divider"></li>'
+				htmlDialog += '<li><a href="javascript:void(0);" id="btn_album_image_del_modal">удалить</a></li>'
+			}
+
+			htmlDialog += '</ul>'
+			htmlDialog += '</div>' +
 				'<div class="btn-group btn-group-sm" role="group" aria-label="посмотреть на карте" data-toggle="tooltip" title="посмотреть на карте" data-container="body" data-placement="bottom">' +
 					'<button type="button" class="btn btn-default" id="btn_img_map"><span class="fa fa-fw fa-map-marker"></span></button>' +
 				'</div>'+
@@ -122,7 +127,14 @@
 				htmlDialog += '<div class="imageModalContent">';
 
 					htmlDialog += '<h5>'+$albumName.text()+'</h5>';
-					htmlDialog += '<textarea id="imageText" placeholder="укажите описание фотографии">'+img["ai_text"]+'</textarea>';
+			if (options.is_owner)
+			{
+				htmlDialog += '<textarea id="imageText" placeholder="укажите описание фотографии">'+img["ai_text"]+'</textarea>';
+			}
+			else
+			{
+				htmlDialog += '<div>'+img["ai_text"]+'</div>';
+			}
 
 				htmlDialog += 'imageModalContentimageModalContent imageModalContent';
 				htmlDialog += '</div>';
@@ -700,7 +712,7 @@
 
 		var albumUploadOpts = (MCJS["albumUploadOpts"] ? MCJS["albumUploadOpts"] : null);
 
-		if (albumUploadOpts)
+		if (albumUploadOpts && options.is_owner)
 		{
 			albumUploadOpts.onEnd = function()
 			{
@@ -721,6 +733,9 @@
 			{
 				event.preventDefault();
 				event.stopPropagation();
+
+				if (!options.is_owner)
+					return;
 
 				$('__upload_album_dialog__').mcDialog({
 					title: 'Загрузить новый фотографии в альбом'

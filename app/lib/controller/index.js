@@ -2,7 +2,6 @@
 
 //const Helpers = require("app/helpers");
 const Errors = require('app/lib/errors');
-const Session = require('app/lib/session');
 const Template = require('app/lib/template');
 const _ = require('lodash');
 
@@ -328,8 +327,7 @@ class Base
 		if (!this._parseRoutePaths())
 			return cb(new Errors.HttpStatusError(404, "Not Found"));
 
-		Session.setReqRes(this.getReq(), this.getRes());
-		this._getClasses().setSession(Session);
+		this._getClasses().setSession(this.getReq().session);
 
 		//this.view = new Template(this.getReq(), this.getRes(), this.next, this);
 		this.view = Template.getTemplate(this);
