@@ -212,6 +212,7 @@ class User extends BaseModel
 
 	/**
 	 * удаляем ранее созданный запрос на изменения для указанного пользователя и типа запроса
+	 *
 	 * @param u_id
 	 * @param u_req_type
 	 * @param cb
@@ -221,12 +222,50 @@ class User extends BaseModel
 		let sql = "DELETE FROM `user_change_request` " +
 			"WHERE u_id = ? AND u_req_type = ?;";
 
-		this.constructor.conn().del(sql, [u_id, u_req_type], function(err)
+		return this.constructor.conn().del(sql, [u_id, u_req_type], function(err)
 		{
 			if (err) return cb(err, u_id);
 
 			return cb(null, u_id);
 		});
+	}
+
+	/**
+	 * подсчет кол-ва всех пользователей
+	 */
+	countUsers()
+	{
+		let sql = "SELECT COUNT(u_id) AS u_cnt FROM users";
+
+		return this.constructor.conn().sRow(sql)
+			.then(function (res)
+			{
+				if(!res)
+					return Promise.resolve(0);
+
+				return Promise.resolve(res["u_cnt"]);
+			});
+	}
+
+	/**
+	 * список пользователей
+	 *
+	 * @param offset
+	 * @param limit
+	 * @returns {*}
+	 */
+	getUsers(offset, limit)
+	{
+		offset = parseInt(offset, 10) || 0;
+		limit = parseInt(limit, 10) || 20;
+
+		let sql = "SELECT u.u_id, u.u_mail, u.u_date_reg, u.u_date_visit, u.u_login, u.u_reg," +
+			" ud.u_name, ud.u_surname, ud.u_sex, ud.u_birthday, ud.u_location_id, ud.u_latitude, ud.u_longitude" +
+			" FROM users AS u" +
+			" JOIN users_data AS ud ON (ud.u_id = u.u_id)" +
+			" LIMIT "+limit+" OFFSET "+offset;
+
+		return this.constructor.conn().s(sql);
 	}
 }
 

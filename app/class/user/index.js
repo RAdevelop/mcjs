@@ -68,6 +68,48 @@ class User extends Base
 				return Promise.resolve(Object.assign(props.userAva, props.userLocation, props.userData, props.user));
 			});
 	}
+
+	/**
+	 * подсчет кол-ва всех пользователей
+	 */
+	countUsers()
+	{
+		return this.model('user').countUsers();
+	}
+
+	/**
+	 * список пользователей
+	 *
+	 * @param Pages
+	 * @returns {Promise.<TResult>|*} [users, users_cnt, Pages]
+	 */
+	getUsers(Pages)
+	{
+		return this.model('user/photo').countUsers()
+			.bind(this)
+			.then(function (users_cnt)
+			{
+				Pages.setTotal(users_cnt);
+
+				if (!users_cnt)
+					return Promise.resolve({"users":null, "users_cnt":users_cnt, "Pages":Pages});//[null, users_cnt, Pages];
+
+				if (Pages.limitExceeded())
+					return Promise.reject(new FileErrors.HttpStatusError(404, "Not found"));
+
+				return this.model('user/photo').getUsers(Pages.getOffset(), Pages.getLimit())
+					.then(function (users)
+					{
+						/*let sizeParams = FileUpload.getUploadConfig('user_ava').sizeParams;
+
+						users.forEach(function (user)
+						{
+							users = Object.assign(users, UserPhoto.previews(sizeParams, users)["obj"]);
+						});*/
+						return Promise.resolve({"users":users, "users_cnt":users_cnt, "Pages":Pages});
+					});
+			});
+	}
 }
 
 //************************************************************************* module.exports

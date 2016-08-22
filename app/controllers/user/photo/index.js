@@ -8,19 +8,21 @@ const Errors = require('app/lib/errors');
 const FileUpload = require('app/lib/file/upload');
 const Base = require('app/lib/controller');
 
-let limit_per_page = 20;
+let limit_per_page = 3;
 
-class ProfilePhoto extends Base
+class UserPhoto extends Base
 {
 
 	routePaths()
 	{
 		return {
 			"index": {
-				"^\/?[0-9]+\/page\/[0-9]+\/?$" : ["i_a_id", ,"i_page"] //список фоток в альбоме с постраничкой
-				,"^\/?page\/[0-9]+\/?$" : [ ,"i_page"] //список альбомов с постраничкой
-				,"^\/?[0-9]+\/?$" : ["i_a_id"] //список фоток в альбоме
-				,"^\/?$" : null //список альбомов
+				"^\/?[1-9]+[0-9]*\/[1-9]+[0-9]*\/page\/[1-9]+[0-9]*\/?$" : ["i_u_id", "i_a_id", ,"i_page"] //список фоток в альбоме с постраничкой
+				,"^\/?[1-9]+[0-9]*\/[1-9]+[0-9]*\/?$" : ["i_u_id", "i_a_id"] //список фоток в альбоме юзера
+
+				,"^\/?[1-9]+[0-9]*\/page\/[1-9]+[0-9]*\/?$" : ["i_u_id", ,"i_page"] //список альбомов юзера с постраничкой
+				,"^\/?[1-9]+[0-9]*\/?$" : ["i_u_id"] //профиль юзера
+				,"^\/?$" : null //список юзеров
 			}
 		}
 	}
@@ -35,34 +37,46 @@ class ProfilePhoto extends Base
 		if (!this.isAuthorized())
 			return cb(new Errors.HttpStatusError(401, "Unauthorized"));
 
+		console.log("UserPhoto");
+
 		//if (args.length > 1)
 		//	return cb(new Errors.HttpStatusError(404, "Not found"));
+
 		let xhr = this.getReq().xhr;
+		let {i_u_id=this.getUserId(), i_a_id} = this.routeArgs;
+
 		return Promise.resolve(xhr)
 			.bind(this)
 			.then(function (xhr)
 			{
-				if (xhr)
-					return Promise.resolve({});
+				//if (xhr)
+				//	return Promise.resolve({});
 
-				return this.getClass("user").getUser(this.getUserId())
+				return this.getClass("user").getUser(i_u_id)
+					.bind(this)
 					.then(function (userData)
 					{
-						let tplData = (xhr ? {} : {"user": userData});
+						if (!userData["u_id"])
+							throw new Errors.HttpStatusError(404, "Not found");
 
-						return Promise.resolve(tplData);
+						userData["u_is_owner"] = (this.getUserId() == i_u_id);
+
+						return Promise.resolve(userData);
 					});
 			})
-			.then(function (tplData)
+			.then(function (userData)
 			{
-				tplData["albums"] = null;
-				tplData["album"] = null;
-				tplData["pages"] = null;
+				let tplData = {
+					"user": userData
+				,   "albums": null
+				,   "album": null
+				,   "pages": null
+				};
 
-				if (this.routeArgs["i_a_id"])
-					return this.album(cb, tplData, xhr);
+				if (i_a_id)
+					return this.album(cb, i_u_id, tplData, xhr);
 
-				return this.albumList(cb, tplData, xhr);
+				return this.albumList(cb, i_u_id, tplData, xhr);
 			})
 			.catch(function (err)
 			{
@@ -78,7 +92,7 @@ class ProfilePhoto extends Base
 	 * @param isAjax
 	 * @returns {Promise.<TResult>}
 	 */
-	albumList(cb, tplData, isAjax = false)
+	albumList(cb, i_u_id, tplData, isAjax = false)
 	{
 		let {i_page=1} = this.routeArgs;
 
@@ -86,7 +100,7 @@ class ProfilePhoto extends Base
 			.bind(this)
 			.then(function (tplData)
 			{
-				return this.getClass('user/photo').getAlbumList(this.getUserId(), this.getUserId(), new Pages(i_page, limit_per_page))
+				return this.getClass('user/photo').getAlbumList(this.getUserId(), i_u_id, new Pages(i_page, limit_per_page))
 					.bind(this)
 					.spread(function (albums, Pages)
 					{
@@ -98,11 +112,11 @@ class ProfilePhoto extends Base
 			.spread(function (tplData, Pages)
 			{
 				let exposeAlbums = 'albums';
-				Pages.setLinksUri(this.getBaseUrl())
+				Pages.setLinksUri(this.getBaseUrl()+'/'+ i_u_id)
 					.setAjaxPagesType(true)
 					.setAjaxDataSrc(['albums'])
 					.setAjaxDataTarget(exposeAlbums)
-					.setJquerySelectorData('.album');
+					.setJquerySelectorData('.albumList .album');
 
 				tplData["pages"] = Pages.pages();
 
@@ -134,7 +148,7 @@ class ProfilePhoto extends Base
 	 * @param tplData
 	 * @param isAjax
 	 */
-	album(cb, tplData, isAjax = false)
+	album(cb, i_u_id, tplData, isAjax = false)
 	{
 		let {i_a_id, i_page=1} = this.routeArgs;
 
@@ -142,7 +156,7 @@ class ProfilePhoto extends Base
 			.bind(this)
 			.then(function (tplData)
 			{
-				return this.getClass('user/photo').getAlbum(this.getUserId(), this.getUserId(), i_a_id)
+				return this.getClass('user/photo').getAlbum(this.getUserId(), i_u_id, i_a_id)
 					.then(function (album)
 					{
 						if (!album)
@@ -161,11 +175,11 @@ class ProfilePhoto extends Base
 				}
 
 				return this.getClass('user/photo')
-					.getAlbumImages(this.getUserId(), i_a_id, new Pages(i_page, limit_per_page, tplData["album"]["a_img_cnt"]))
+					.getAlbumImages(i_u_id, i_a_id, new Pages(i_page, limit_per_page, tplData["album"]["a_img_cnt"]))
 					.bind(this)
 					.spread(function (Pages, images, allPreviews)
 					{
-						Pages.setLinksUri(this.getBaseUrl()+'/'+i_a_id);
+						Pages.setLinksUri(this.getBaseUrl()+'/'+i_u_id+'/'+i_a_id);
 
 						tplData["album"]["images"] = images;
 						//return Promise.resolve(tplData);
@@ -213,6 +227,7 @@ class ProfilePhoto extends Base
 				}
 
 				this.view.setTplData(tplFile, tplData, isAjax);
+				this.getRes().expose(tplData["album"], 'album');
 				this.getRes().expose(tplData["album"]["images"], exposeAlbumImages);
 				this.getRes().expose(allPreviews, 'albumPreviews');
 				this.getRes().expose(tplData["pages"], 'pages');
@@ -324,6 +339,9 @@ class ProfilePhoto extends Base
 	addNamedAlbum(tplData)
 	{
 		let errors = {};
+
+		if (!tplData["i_u_id"] || tplData["i_u_id"] != this.getUserId())
+			return Promise.reject(new Errors.HttpStatusError(400, 'Bad request'));
 
 		tplData["s_album_name"] = (tplData["s_album_name"] || '').trim();
 
@@ -454,7 +472,8 @@ class ProfilePhoto extends Base
 			{
 				return Promise.resolve(tplData);
 			})
-			.catch(Errors.io.FileNotFoundError, function(err){
+			.catch(Errors.io.FileNotFoundError, function(err)
+			{
 				Logger().error(err);
 				throw new Errors.HttpStatusError(404, 'Фотография не найдена');
 			});
@@ -515,4 +534,4 @@ class ProfilePhoto extends Base
 }
 //************************************************************************* module.exports
 //писать после class Name....{}
-module.exports = ProfilePhoto;
+module.exports = UserPhoto;

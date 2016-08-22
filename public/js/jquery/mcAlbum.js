@@ -5,6 +5,8 @@
 		/* значение по умолчанию */
 		var defaults = {
 			uri: null
+			, u_id: null
+			, album: null
 			, albumToolbar: null
 			, albumWrapper: null //родитель списка фоток в альбоме
 			, albumImages: null //список фоток в альбоме
@@ -12,9 +14,7 @@
 			, albumText: null
 			, s_token: null
 			, i_time: null
-			, a_id: null
 			, sortable: false
-			, is_owner: false
 		};
 
 		//var albumImages = (MCJS["albumImages"] ? MCJS["albumImages"] : []);
@@ -24,7 +24,10 @@
 		/*при многократном вызове функции настройки будут сохранятся, и замещаться при необходимости*/
 		var options = $.extend({}, defaults, params);
 		/**/
-		
+
+		options.album = (MCJS["album"] ? MCJS["album"] : {});
+		options.is_owner = (options.album.a_is_owner);
+
 		var $albumToolbar = $(options.albumToolbar);
 		var $albumWrapper = $(options.albumWrapper);
 		var $albumImages = $(options.albumWrapper+' '+options.albumImages);
@@ -39,11 +42,12 @@
 		{
 			options.aName = options.aName || '';
 			options.aText = options.aText || '';
-			options.a_id = options.a_id || null;
+			var a_id = (options.album && options.album.a_id  && options.album.a_is_owner ? options.album.a_id : null);
 
 			var html = '<form class="form-horizontal" action="'+options.uri+'" method="post" id="formAddAlbum">' +
 				'<input type="hidden" name="btn_save_album" value="'+options.btnSaveAlbumVal+'"/>' +
-				'<input type="hidden" name="i_a_id" value="'+options.a_id+'"/>' +
+				'<input type="hidden" name="i_u_id" value="'+options.u_id+'"/>' +
+				'<input type="hidden" name="i_a_id" value="'+a_id+'"/>' +
 				'<div class="form-group s_album_name">' +
 				'<div class="col-sm-12">' +
 				'<input type="text" class="form-control" id="s_album_name" name="s_album_name" value="'+options.aName+'" placeholder="название альбома *" required maxlength="100"/>' +
@@ -65,7 +69,7 @@
 				'<input type="hidden" name="btn_save_album" value="album_image_upload"/>' +
 				'<input type="hidden" name="s_token" value="'+options.s_token+'"/>' +
 				'<input type="hidden" name="i_time" value="'+options.i_time+'"/>' +
-				'<input type="hidden" name="a_id" value="'+options.a_id+'"/>' +
+				'<input type="hidden" name="a_id" value="'+options.album.a_id+'"/>' +
 				'<div class="form-group uploadWrapper">' +
 				'<input type="file" name="album_image_upload" id="album_image_upload" style="display: none;"/>' +
 				'</div>' +
@@ -192,7 +196,7 @@
 
 							var  postData = {
 								'btn_save_album': 'del_img',
-								'i_a_id': options.a_id,
+								'i_a_id': options.album.a_id,
 								'i_ai_id': img["ai_id"]
 							};
 
@@ -446,7 +450,8 @@
 				});
 			}
 
-			$modal.on('click', '.modal-header #btn_album_image_del_modal', function (event){
+			$modal.on('click', '.modal-header #btn_album_image_del_modal', function (event)
+			{
 				event.preventDefault();
 				event.stopPropagation();
 
@@ -458,7 +463,7 @@
 
 		function getImg(ai_id)
 		{
-			console.log('getImg(ai_id)');
+			//console.log('getImg(ai_id)');
 			var img = null;
 			var i;
 			for(i in MCJS["albumImages"])
@@ -469,8 +474,8 @@
 					break;
 				}
 			}
-			console.log(img);
-			console.log('END getImg(ai_id)');
+			//console.log(img);
+			//console.log('END getImg(ai_id)');
 			return img;
 		}
 
@@ -577,12 +582,9 @@
 
 					var postData = {
 						"btn_save_album": "sort_img",
-						"i_a_id": options.a_id,
+						"i_a_id": options.album.a_id,
 						"ai_pos": imgPos
 					};
-
-					console.log(postData);
-					//return;
 
 					$.ajax({
 						url: options.uri,
@@ -617,7 +619,7 @@
 						onSuccess: function($respDialog, resp)
 						{
 							if(resp["a_id"])
-								window.location.href = options.uri +'/'+resp["a_id"]+'/';
+								window.location.href = options.uri+'/'+options.u_id+'/'+resp["a_id"]+'/';
 
 							//не показать диалог
 							return false;

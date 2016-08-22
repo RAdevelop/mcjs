@@ -102,11 +102,13 @@
 					if (resData["pages"]["last_page"])
 						$self.button('reset').hide();
 
-					var $items = $htmlContainer.children().each(function (i, item)
+					var $items = $htmlContainer.children();
+					$items.each(function (i, item)
 					{
 						$(item).css('height', minHeight);
 					});
-					var $scrollToItem = $($items.get( $items.size() - $html.size()) );
+
+					var $scrollToItem = $($items.get( $items.size() - $html.size() ));
 
 					if ($scrollToItem.size())
 					{

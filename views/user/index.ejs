@@ -1,2 +1,13 @@
 <%  if(!isXHR){%><%- layout('layout/user/index') %><% } %>
-<h1>Алексей Романов</h1>
+<% if (users){
+	users.forEach(function (user)
+	{
+	let userName = (user["u_login"] ? user["u_login"] : (user["u_name"] || user["u_surname"] ? [user["u_name"], user["u_surname"]].join(' ') : ''));
+	let linkToUser = _reqBaseUrl+'/'+user["u_id"];
+%>
+<a href="<%=linkToUser%>/"><%=userName%></a>
+<%
+	});
+}
+%>
+<%- include ../pages/index.ejs %>

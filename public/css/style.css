@@ -365,7 +365,12 @@ a.social:hover
 	/*border: 1px solid;*/
 }
 
-.albums .album
+.albums .albumList
+{
+	overflow: hidden;
+	min-height: 175px;
+}
+.albums .albumList .album
 {
 	position: relative;
 	display: block;
@@ -377,10 +382,12 @@ a.social:hover
 	max-width: 320px;
 	max-height: 213px;
 
+	width: 100%;
+
 	/*height: 163px;
 	width: 245px;*/
 }
-.albums .album a.albumImg
+.albums .albumList .album a.albumImg
 {
 	/*height: 213px;
 	width: 320px;*/
@@ -391,20 +398,19 @@ a.social:hover
 	background: #F1F1F1;
 }
 
-.albums .album a.albumImg .fa-camera
+.albums .albumList .album a.albumImg .fa-camera
 {
 	font-size: 115px;
 	line-height: 213px;
 	color: #ccc;
 	text-decoration: none;
 }
-.albums .album a.albumImg img
+.albums .albumList .album a.albumImg img
 {
-	/*width: 245px;*/
 	width: 100%;
 }
 
-.albums .album .albumTools
+.albums .albumList .album .albumTools
 {
 	position: absolute;
 	top:0;
@@ -417,25 +423,25 @@ a.social:hover
 	z-index: 1;
 }
 
-.albums .album .albumTools:hover
+.albums .albumList .album .albumTools:hover
 {
 	background-color: rgba(255, 255, 255, 0.6);
 }
 
-.albums .album .albumTools a,
-.albums .album .albumTools span
+.albums .albumList .album .albumTools a,
+.albums .albumList .album .albumTools span
 {
 	color: rgba(0, 0, 0, 0.6);
 	display: inline-block;
 	text-decoration: none;
 }
-.albums .album .albumTools a
+.albums .albumList .album .albumTools a
 {
 	line-height: 18px;
 	font-size: 21px;
 	background-color: transparent;
 }
-.albums .album .albumTools .badge
+.albums .albumList .album .albumTools .badge
 {
 	font-size: 12px;
 	vertical-align: top;
@@ -443,14 +449,19 @@ a.social:hover
 	background-color: rgba(0, 0, 0, 0.6);
 }
 
-.albums .album .albumTitle
+.albums .albumList .album .albumTitle
 {
 	position: absolute;
 	padding: 0;
 	left: 0;
 	right: 0;
-	top: 148px;
-	bottom: -148px;
+
+	top: 166px;
+	bottom: -166px;
+
+	/*top: 148px;
+	bottom: -148px;*/
+
 	font-size: 12px;
 	color: #fff;
 	background-color: rgba(0, 0, 0, 0.7);
@@ -466,41 +477,95 @@ a.social:hover
 	transition: bottom 0.5s ease-out 0.1s;*/
 }
 
-.albums .album .albumTitle:hover
+.albums .albumList .album .albumTitle:hover
 {
 	bottom: 0;
 	top: 24px;
 }
 
-.albums .album .albumTitle .albumName,
-.albums .album .albumTitle .albumText
+.albums .albumList .album .albumTitle .albumName,
+.albums .albumList .album .albumTitle .albumText
 {
 	padding: 5px;
 }
-.albums .album .albumTitle .albumText
+.albums .albumList .album .albumTitle .albumText
 {
 	border-top: 1px dotted #fff;
 }
 
 @media (orientation: portrait)
 {
-	.albums .album
+	.albums .albumList .album
 	{
-		width: 100%;
+		width: calc(100%);
 	}
 }
 @media (orientation: landscape)
 {
-	.albums .album
+	.albums .albumList .album
 	{
-		width: 48%;
-		max-height: 175px;
-	}
-	.albums .album a.albumImg .fa-camera
-	{
-		line-height: 183px;
+		width: calc(50% - 10px);
 	}
 }
+
+/* Small devices (tablets, 768px and up) */
+@media (min-width: 768px)
+{
+	.albums .albumList .album
+	{
+		width: calc(100%);
+	}
+
+	.albums .albumList .album .albumTitle
+	{
+		top: 187px;
+		bottom: -187px;
+	}
+	.albums .albumList .album a.albumImg .fa-camera
+	{
+		line-height: 213px;
+	}
+}
+
+/* Medium devices (desktops, 992px and up) */
+/*@media (orientation: portrait) and (min-width: 992px)*/
+@media (min-width: 992px)
+{
+	.albums .albumList .album
+	{
+		width: calc(100%);
+	}
+
+	.albums .albumList .album .albumTitle
+	{
+		top: 187px;
+		bottom: -187px;
+	}
+	.albums .albumList .album a.albumImg .fa-camera
+	{
+		line-height: 213px;
+	}
+}
+
+/* Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px)
+{
+
+}
+
+
+/*@media (orientation: landscape) and (min-width: 992px)
+{
+	.albums .albumList .album
+	{
+		width: calc(100%);
+		max-height: 175px;
+	}
+	.albums .albumList .album a.albumImg .fa-camera
+	{
+		line-height: 213px;
+	}
+}*/
 
 /********** END список фотоальбомов **************/
 

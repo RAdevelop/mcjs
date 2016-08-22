@@ -54,13 +54,13 @@ module.exports = function(Classes, Control)
 
 				//C.view = null;
 				C = null;
-				Classes = null;
-				Control = null;
+				//Classes = null;
+				//Control = null;
 
 				return next(err);
 			}
 
-			C.view.render(json);
+			return C.view.render(json);
 		});
 	});
 

@@ -1,11 +1,12 @@
-<h3>Фотоальбомы <%=(!user.u_login ? user.u_login : (user.u_name || user.u_surname ? [user.u_name, user.u_surname].join(' ') : ''))%></h3>
+<h3>Фотоальбомы <%=(user.u_login ? user.u_login : (user.u_name || user.u_surname ? [user.u_name, user.u_surname].join(' ') : ''))%></h3>
+<div class="albumList">
 <% albums.forEach(function (album)
 {
 //let imgSrc = (album["previews"]["320_213"] ? album["previews"]["320_213"] : '/_0.gif');
 let imgSrc = (album["previews"]["320_213"] ? album["previews"]["320_213"] : null);
 %>
 <div class="album">
-	<a class="albumImg" href="<%=(_reqBaseUrl+'/'+album["a_id"])%>/">
+	<a class="albumImg" href="<%=(_reqBaseUrl+'/'+album["u_id"]+'/'+album["a_id"])%>/">
 		<%if(imgSrc){%><img src="<%=imgSrc%>" alt="<%=album["a_name"]%>"/><%} else{%><i class="fa fa-fw fa-camera"></i><%}%>
 	</a>
 	<div class="albumTools">
@@ -17,4 +18,4 @@ let imgSrc = (album["previews"]["320_213"] ? album["previews"]["320_213"] : null
 	</div>
 </div>
 <%})%>
-
+</div>
