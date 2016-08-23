@@ -7,7 +7,7 @@ let imgSrc = (album["previews"]["320_213"] ? album["previews"]["320_213"] : null
 %>
 <div class="album">
 	<a class="albumImg" href="<%=(_reqBaseUrl+'/'+album["u_id"]+'/'+album["a_id"])%>/">
-		<%if(imgSrc){%><img src="<%=imgSrc%>" alt="<%=album["a_name"]%>"/><%} else{%><i class="fa fa-fw fa-camera"></i><%}%>
+		<%if(imgSrc){%><img src="<%=imgSrc%>" alt="<%=album["a_name"]%>"/><%} else{%><i class="fa fa-fw fa-camera fa-5x"></i><%}%>
 	</a>
 	<div class="albumTools">
 		<span class="badge"><i class="fa fa-fw fa-camera"></i> <%=album["a_img_cnt"]%></span>

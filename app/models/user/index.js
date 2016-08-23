@@ -130,7 +130,7 @@ class User extends BaseModel
 	 */
 	getUserData(u_id, cb)
 	{
-		let userData = {u_id: null, u_name:'', u_surname:'', u_sex:'', u_birthday:'',bd_birthday:''};
+		let userData = {u_id: null, u_name:'', u_surname:'', u_sex:'', u_sex_name:'', u_birthday:'',bd_birthday:''};
 
 		if (!u_id)
 			return cb(null, userData);
@@ -146,8 +146,23 @@ class User extends BaseModel
 				if (res['u_id'])
 				userData = Object.assign(userData, res);
 
-				if (userData['u_birthday'])
+				if (userData['u_birthday'] > 0)
+				{
 					userData['bd_birthday'] = Moment.unix(userData['u_birthday']).format("DD-MM-YYYY");
+				}
+
+				switch (userData.u_sex)
+				{
+					default:
+						userData.u_sex_name = '';
+						break;
+					case "1":
+						userData.u_sex_name = 'мужской';
+						break;
+					case "0":
+						userData.u_sex_name = 'женский';
+						break;
+				}
 
 				return Promise.resolve(userData);
 			});

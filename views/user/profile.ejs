@@ -1,0 +1,15 @@
+<%  if(!isXHR){%><%- layout('layout/user/index') %><% } %>
+<p>логин <%=user.u_login%></p>
+<p>фи <%=[user.u_name, user.u_surname].join(' ')%></p>
+<p>пол <%=user.u_sex_name%></p>
+<p>населенный пункт <%=user.l_name%> u_location_id = <%=user.u_location_id%></p>
+<p>ДР <%=user.bd_birthday%></p>
+<p>мотоцикл CBR1000RA</p>
+<p>интересы: ...</p>
+
+<% if (albums){
+	albums.forEach(function (album)
+	{
+		%><%=album["a_name"]%><%
+	});
+}%>

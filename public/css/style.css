@@ -382,6 +382,9 @@ a.social:hover
 	max-width: 320px;
 	max-height: 213px;
 
+	max-width: 308px;
+	max-height: 205px;
+
 	width: 100%;
 
 	/*height: 163px;
@@ -391,6 +394,7 @@ a.social:hover
 {
 	/*height: 213px;
 	width: 320px;*/
+	max-height: 213px;
 	position: relative;
 	display: block;
 	overflow: hidden;
@@ -401,6 +405,7 @@ a.social:hover
 .albums .albumList .album a.albumImg .fa-camera
 {
 	font-size: 115px;
+	font-size: 8em;
 	line-height: 213px;
 	color: #ccc;
 	text-decoration: none;
@@ -493,21 +498,6 @@ a.social:hover
 	border-top: 1px dotted #fff;
 }
 
-@media (orientation: portrait)
-{
-	.albums .albumList .album
-	{
-		width: calc(100%);
-	}
-}
-@media (orientation: landscape)
-{
-	.albums .albumList .album
-	{
-		width: calc(50% - 10px);
-	}
-}
-
 /* Small devices (tablets, 768px and up) */
 @media (min-width: 768px)
 {
@@ -518,8 +508,8 @@ a.social:hover
 
 	.albums .albumList .album .albumTitle
 	{
-		top: 187px;
-		bottom: -187px;
+		top: 178px;
+		bottom: -178px;
 	}
 	.albums .albumList .album a.albumImg .fa-camera
 	{
@@ -538,8 +528,8 @@ a.social:hover
 
 	.albums .albumList .album .albumTitle
 	{
-		top: 187px;
-		bottom: -187px;
+		top: 180px;
+		bottom: -180px;
 	}
 	.albums .albumList .album a.albumImg .fa-camera
 	{

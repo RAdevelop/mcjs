@@ -52,8 +52,36 @@ class User extends Base
 	 */
 	userProfile(cb, u_id)
 	{
-		console.log(u_id);
-		return cb(new Errors.HttpStatusError(404, "Not found"));
+		return this.getClass("user").getUser(u_id)
+			.bind(this)
+			.then(function (userData)
+			{
+				if (!userData || !userData.u_id)
+					return cb(new Errors.HttpStatusError(404, "Not found"));
+
+				return this.getClass('user/photo').getAlbumList(this.getUserId(), u_id, new Pages(1, 4))
+					.spread(function (albums, Pages)
+					{
+						return [userData, albums];
+					});
+			})
+			.spread(function (userData, albums)
+			{
+				let tplFile = "user/profile.ejs";
+				let tplData = {
+					user: userData,
+					albums: albums
+				};
+				this.view.setTplData(tplFile, tplData);
+				this.view.addPartialData("user/left", {user: userData});
+				//self.view.addPartialData("user/right", {}); //TODO
+
+				return cb(null);
+			})
+			.catch(function (err)
+			{
+				return cb(err);
+			});
 	}
 
 	/**
