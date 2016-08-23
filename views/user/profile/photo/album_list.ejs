@@ -2,13 +2,16 @@
 <div class="albumList">
 <% albums.forEach(function (album)
 {
-//let imgSrc = (album["previews"]["320_213"] ? album["previews"]["320_213"] : '/_0.gif');
-let imgSrc = (album["previews"]["320_213"] ? album["previews"]["320_213"] : null);
+let img = '';
+if(album["previews"]["512_384"])
+{
+	img = '<img src="'+album["previews"]["512_384"]+'" alt="'+album["a_name"]+'"/>';
+}else{
+	img = '<img src="/img/no_image.png" alt="'+album["a_name"]+'" class="noImg"/>';
+}
 %>
 <div class="album">
-	<a class="albumImg" href="<%=(_reqBaseUrl+'/'+album["u_id"]+'/'+album["a_id"])%>/">
-		<%if(imgSrc){%><img src="<%=imgSrc%>" alt="<%=album["a_name"]%>"/><%} else{%><i class="fa fa-fw fa-camera fa-5x"></i><%}%>
-	</a>
+	<a class="albumImg" href="<%=(_reqBaseUrl+'/'+album["u_id"]+'/'+album["a_id"])%>/"><%-img%></a>
 	<div class="albumTools">
 		<span class="badge"><i class="fa fa-fw fa-camera"></i> <%=album["a_img_cnt"]%></span>
 	</div>

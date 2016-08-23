@@ -279,7 +279,7 @@
 					var imgPlacemark = new ymaps.Placemark(imgMcMap.getCenter(),
 						{
 							//balloonContentHeader: 'Заголовок балуна',
-							balloonContentBody: '<div class="albumImageInMapBalloon"><img src="'+img["previews"]["320_213"]+'"/></div>'
+							balloonContentBody: '<div class="albumImageInMapBalloon"><img src="'+img["previews"]["512_384"]+'"/></div>'
 						},
 						{
 							balloonCloseButton: false,
@@ -551,7 +551,7 @@
 			for(i = 0; i < filesUploaded.length; i++)
 			{
 				image = filesUploaded[i];
-				imgSrc = (image["previews"] && image["previews"]["320_213"] ? image["previews"]["320_213"] : '/_0.gif');
+				imgSrc = (image["previews"] && image["previews"]["512_384"] ? image["previews"]["512_384"] : '/_0.gif');
 				html = '<div class="image"><img src="'+imgSrc+'" alt="'+image["ai_text"]+'" data-img-id="'+image["ai_id"]+'"/></div>';
 				$albumWrapper.prepend(html);
 
