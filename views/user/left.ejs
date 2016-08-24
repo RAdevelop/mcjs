@@ -1,6 +1,6 @@
 <div class="logo">&nbsp;</div>
 <div id="profile-ava" class="col-xs-12 col-sm-12 col-md-12">
-    <a href="<%=(_user && _user.u_id == user.u_id ? '/profile/' : '#')%>">
+    <a href="<%=(_user && _user.u_id == user.u_id ? '/profile/' : '/user/'+user.u_id+'/')%>">
         <% if (user.previews["180_180"]) {%>
         <img class="img-circle img-responsive" src="<%=user.previews["180_180"]%>" />
         <% } else {%>

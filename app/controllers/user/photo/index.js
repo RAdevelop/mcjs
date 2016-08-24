@@ -34,14 +34,9 @@ class UserPhoto extends Base
 	 */
 	indexActionGet(cb)
 	{
-		if (!this.isAuthorized())
-			return cb(new Errors.HttpStatusError(401, "Unauthorized"));
-
-		console.log("UserPhoto");
-
-		//if (args.length > 1)
-		//	return cb(new Errors.HttpStatusError(404, "Not found"));
-
+		//if (!this.isAuthorized())
+		//	return cb(new Errors.HttpStatusError(401, "Unauthorized"));
+		
 		let xhr = this.getReq().xhr;
 		let {i_u_id=this.getUserId(), i_a_id} = this.routeArgs;
 

@@ -4,10 +4,12 @@
 	{
 	let userName = (user["u_login"] ? user["u_login"] : (user["u_name"] || user["u_surname"] ? [user["u_name"], user["u_surname"]].join(' ') : ''));
 	let linkToUser = _reqBaseUrl+'/'+user["u_id"];
+	let userAvaSrc = (user["previews"]["180_180"] ? user["previews"]["180_180"] : '/_0.gif');
 %>
-<a href="<%=linkToUser%>/"><%=userName%></a>
-<%
-	});
-}
-%>
+<a href="<%=linkToUser%>/">
+	<%=userName%>
+	<%=user.l_name%>
+	<img src="<%=userAvaSrc%>" style="width: 180px; border: 1px solid;"/>
+</a>
+<%});} %>
 <%- include ../pages/index.ejs %>

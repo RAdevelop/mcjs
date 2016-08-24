@@ -96,7 +96,7 @@ class User extends Base
 
 		return Promise.props({
 			user: this.getClass("user").getUser(this.getUserId()),
-			users: this.getClass("user").getUsers(new Pages(i_page, limit_per_page)) //[users, users_cnt, Pages]
+			users: this.getClass("user").getUsers(new Pages(i_page, limit_per_page)) //{users:users, users_cnt:users_cnt, Pages:Pages}
 		})
 			.bind(this)
 			.then(function(props)
@@ -112,8 +112,6 @@ class User extends Base
 				delete props.users.Pages;
 
 				tplData["pages"] = Pages.setLinksUri(this.getBaseUrl()).pages();
-
-				console.log(tplData.users);
 
 				this.view.setTplData(tplFile, tplData);
 				this.view.addPartialData("user/left", {user: tplData.user});

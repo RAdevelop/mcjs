@@ -61,7 +61,11 @@ class UserPhoto extends User
 	static previews(sizeParams, obj, spread = false)
 	{
 		let previews = [];
-		if (!obj["previews"]) obj["previews"] = {};
+		//if (!obj["previews"]) obj["previews"] = {};
+
+		if (!obj["previews"])
+		obj["previews"] = {};
+
 		if (obj["ai_dir"])
 		{
 			sizeParams.forEach(function (size)
@@ -112,6 +116,7 @@ class UserPhoto extends User
 
 							album = Object.assign(album, UserPhoto.previews(sizeParams, album)["obj"]);
 						});
+						
 						albums["a_cnt"] = a_cnt;
 
 						return [albums, Pages];

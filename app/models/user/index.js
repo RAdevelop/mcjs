@@ -126,14 +126,13 @@ class User extends BaseModel
 	/**
 	 * получаем данные для юзера из users_data
 	 * @param u_id
-	 * @param cb
 	 */
-	getUserData(u_id, cb)
+	getUserData(u_id)
 	{
 		let userData = {u_id: null, u_name:'', u_surname:'', u_sex:'', u_sex_name:'', u_birthday:'',bd_birthday:''};
 
 		if (!u_id)
-			return cb(null, userData);
+			return Promise.resolve(userData);
 
 		let sql = "SELECT u_id, u_name, u_surname, u_sex, u_birthday FROM `users_data` WHERE u_id = ?;";
 		
@@ -173,7 +172,7 @@ class User extends BaseModel
 	 * @param u_id
 	 * @param cb
 	 */
-	getUserLocation(u_id, cb)
+	getUserLocation(u_id)
 	{
 		let userData = {
 			u_id: null, u_location_id:null, u_latitude: null, u_longitude: null,
@@ -182,8 +181,8 @@ class User extends BaseModel
 		};
 
 		if (!u_id)
-			return cb(null, userData);
-		
+			return Promise.resolve(userData);
+
 		let sql = "SELECT ud.u_location_id, ud.u_latitude, ud.u_longitude, uln.l_pid, uln.l_name, uln.l_latitude, uln.l_longitude, uln.l_kind, uln.l_full_name, ul.l_level, ul.l_lk, ul.l_rk " +
 			"FROM `users_data` AS ud " +
 			"JOIN `location_names` AS uln ON (uln.l_id = ud.u_location_id) " +
@@ -197,6 +196,49 @@ class User extends BaseModel
 					userData = Object.assign(userData, res);
 
 				return Promise.resolve(userData);
+			});
+	}
+
+	/**
+	 * получаем данные по населенному пункту указанных юзеров
+	 *
+	 * @param user_ids
+	 * @returns {usersLocation = {u_id:{ocationData}}}
+	 */
+	getUsersLocation(user_ids = [])
+	{
+		let sql = "SELECT ud.u_location_id, ud.u_latitude, ud.u_longitude, uln.l_pid, uln.l_name, uln.l_latitude, uln.l_longitude, uln.l_kind, uln.l_full_name, ul.l_level, ul.l_lk, ul.l_rk " +
+			"FROM `users_data` AS ud " +
+			"JOIN `location_names` AS uln ON (uln.l_id = ud.u_location_id) " +
+			"JOIN `location` AS ul ON (ul.l_id = ud.u_location_id) " +
+			"WHERE ud.u_id IN ("+(new Array(user_ids.length)).fill('?').join(',')+");";
+
+		return this.constructor.conn().ps(sql, user_ids)
+			.then(function (res)
+			{
+				let userData = {
+					u_id: null, u_location_id:null, u_latitude: null, u_longitude: null,
+					l_pid:null, l_name:'', l_latitude:null,l_longitude:null,
+					l_kind: '', l_full_name: '', l_level: null, l_lk: null, l_rk: null
+				};
+
+				let usersLocation = {};
+
+				user_ids.forEach(function (u_id)
+				{
+					userData["u_id"] = u_id;
+					usersLocation[u_id] = userData;
+					if (res)
+					{
+						res.forEach(function (item)
+						{
+							Object.assign(usersLocation[u_id], item);
+						});
+					}
+				});
+
+				userData = null;
+				return Promise.resolve(usersLocation);
 			});
 	}
 	
@@ -280,7 +322,28 @@ class User extends BaseModel
 			" JOIN users_data AS ud ON (ud.u_id = u.u_id)" +
 			" LIMIT "+limit+" OFFSET "+offset;
 
-		return this.constructor.conn().s(sql);
+		return this.constructor.conn().s(sql)
+			.then(function (res)
+			{
+				let user = {
+					u_id:null, u_mail:null, u_date_reg:null, u_date_visit:null, u_login:null, u_reg:null, u_name:null, u_surname:null, u_sex:null,
+					u_birthday:null, u_location_id:null, u_latitude:null, u_longitude:null
+				};
+				let users_ids = [];
+				let users = [];
+
+				if (res.info.numRows)
+				{
+					res.forEach(function (u)
+					{
+						users_ids.push(u.u_id);
+
+						users.push(Object.assign(user, u));
+					});
+				}
+
+				return [users, users_ids];
+			});
 	}
 }
 

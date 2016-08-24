@@ -104,15 +104,34 @@ class UserPhotoProfile extends UserPhoto
 		return this.model('user/photo/profile').getUserAva(u_id)
 			.then(function (ava)
 			{
-				ava["previews"] = [];
+				ava["previews"] = {};
 				if (!ava || !ava["ai_id"])
 					return Promise.resolve(ava);
 
 				let sizeParams = FileUpload.getUploadConfig('user_ava').sizeParams;
 
-				sizeParams.forEach(function (item)
+				ava = Object.assign(ava, UserPhotoProfile.previews(sizeParams, ava)["obj"]);
+
+				return Promise.resolve(ava);
+			});
+	}
+
+	/**
+	 * получаем аватарки указанных юзеров
+	 *
+	 * @param user_ids
+	 * @returns {Promise.<TResult>}
+	 */
+	getUsersAva(users_ids = [])
+	{
+		return this.model('user/photo/profile').getUsersAva(users_ids)
+			.then(function (ava)
+			{
+				let sizeParams = FileUpload.getUploadConfig('user_ava').sizeParams;
+
+				Object.keys(ava).forEach(function (i, item)
 				{
-					ava["previews"][item.w+'_'+item.h] = ava["ai_dir"]+'/'+item.w+'_'+item.h+'.jpg';
+					ava[i] = Object.assign(ava[i], UserPhotoProfile.previews(sizeParams, ava[i])["obj"]);
 				});
 
 				return Promise.resolve(ava);

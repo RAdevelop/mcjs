@@ -55,10 +55,10 @@ class User extends Base
 	getUser(u_id)
 	{
 		return Promise.props({
-			user: this.getById(u_id),
-			userData: this.getUserData(u_id),
-			userLocation: this.getUserLocation(u_id),
-			userAva: this.getClass('user/photo/profile').getUserAva(u_id)
+			user:           this.getById(u_id),
+			userData:       this.getUserData(u_id),
+			userLocation:   this.getUserLocation(u_id),
+			userAva:        this.getClass('user/photo/profile').getUserAva(u_id)
 		})
 			.then(function(props)
 			{
@@ -85,30 +85,71 @@ class User extends Base
 	 */
 	getUsers(Pages)
 	{
-		return this.model('user/photo').countUsers()
+		return this.model('user').countUsers()
 			.bind(this)
 			.then(function (users_cnt)
 			{
 				Pages.setTotal(users_cnt);
 
+				let usersData = {"users":null, "users_cnt":users_cnt, "Pages":Pages};
+
 				if (!users_cnt)
-					return Promise.resolve({"users":null, "users_cnt":users_cnt, "Pages":Pages});//[null, users_cnt, Pages];
+					return Promise.resolve(usersData);
 
 				if (Pages.limitExceeded())
-					return Promise.reject(new FileErrors.HttpStatusError(404, "Not found"));
+					return Promise.reject(new Errors.HttpStatusError(404, "Not found"));
 
-				return this.model('user/photo').getUsers(Pages.getOffset(), Pages.getLimit())
-					.then(function (users)
+				return this.model('user').getUsers(Pages.getOffset(), Pages.getLimit())
+					.bind(this)
+					.spread(function (users, users_ids)//собираем аватарки
 					{
-						/*let sizeParams = FileUpload.getUploadConfig('user_ava').sizeParams;
 
-						users.forEach(function (user)
-						{
-							users = Object.assign(users, UserPhoto.previews(sizeParams, users)["obj"]);
-						});*/
-						return Promise.resolve({"users":users, "users_cnt":users_cnt, "Pages":Pages});
+						return this.getClass('user/photo/profile').getUsersAva(users_ids)
+							.then(function (usersAva)
+							{
+								users.forEach(function (user)
+								{
+									Object.assign(user, usersAva[user["u_id"]]);
+								});
+
+								return [users, users_ids];
+							});
+					})
+					.spread(function (users, users_ids)//собираем данные о населенных пунктах юзеров
+					{
+						return this.getClass('user').getUsersLocation(users_ids)
+							.then(function (usersLocation)
+							{
+								users.forEach(function (user)
+								{
+									Object.assign(user, usersLocation[user["u_id"]]);
+								});
+
+								return [users, users_ids];
+							});
+					})
+					.spread(function (users, users_ids)
+					{
+						/*console.log('\nusers_ids');
+						console.log(users);
+						console.log('=======\n');*/
+
+						usersData.users = users;
+
+						return Promise.resolve(usersData);
 					});
 			});
+	}
+
+	/**
+	 * получаем данные по населенному пункту указанных юзеров
+	 *
+	 * @param user_ids
+	 * @returns {usersLocation = {u_id:{ocationData}}}
+	 */
+	getUsersLocation(user_ids = [])
+	{
+		return this.model('user').getUsersLocation(user_ids);
 	}
 }
 

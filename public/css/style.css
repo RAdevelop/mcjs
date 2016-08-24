@@ -379,11 +379,13 @@ a.social:hover
 	float: left;
 	background-color: #fff;
 
-	max-width: 330px;
-	max-height: 248px;
-	width: calc(100%);
+	/*max-width: 329px;
+	max-height: 248px;*/
+
+	max-width: 216px;
+	max-height: 162px;
 }
-.albums .albumList .album a.albumImg
+.albums .albumList .album .albumImg
 {
 	position: relative;
 	display: block;
@@ -392,7 +394,7 @@ a.social:hover
 	background: #F1F1F1;
 }
 
-.albums .albumList .album a.albumImg .fa-camera
+.albums .albumList .album .albumImg .fa-camera
 {
 	font-size: 115px;
 	font-size: 8em;
@@ -400,11 +402,12 @@ a.social:hover
 	color: #ccc;
 	text-decoration: none;
 }
-.albums .albumList .album a.albumImg img
+
+.albums .albumList .album .albumImg img
 {
-	width: 100%;
+	width: calc(100%);
 }
-.albums .albumList .album a.albumImg img.noImg
+.albums .albumList .album .albumImg img.noImg
 {
 
 }
@@ -455,8 +458,8 @@ a.social:hover
 	left: 0;
 	right: 0;
 
-	top: 221px;
-	bottom: -221px;
+	top: 135px;
+	bottom: -135px;
 
 	font-size: 12px;
 	color: #fff;
@@ -485,98 +488,124 @@ a.social:hover
 }
 
 
+@media (min-width: 1200px)
+{
+	.albums .albumList .album
+	{
 
-@media (max-width: 768px)
-{
-	.albums .albumList .album
-	{
-		width: calc(50% - 10px);
-	}
-	.albums .albumList .album .albumTitle
-	{
-		top: 110px;
-		bottom: -110px;
-	}
-}
-@media (max-width: 768px) and (orientation: landscape)
-{
-	.albums .albumList .album .albumTitle
-	{
-		top: 221px;
-		bottom: -221px;
-	}
-}
-@media (min-width: 768px) and (max-width: 992px)
-{
-	.albums .albumList .album
-	{
-		width: calc(50% - 10px);
 	}
 }
 @media (min-width: 992px) and (max-width: 1200px)
 {
 	.albums .albumList .album
 	{
-		max-width: 402px;
+
 	}
 }
+@media (max-width: 1024px)
+{
+	.albums .albumList .album
+	{
+		max-width: calc(33% - 8px);
+		max-height: 162px;
+	}
+}
+@media (min-width: 768px) and (max-width: 992px)
+{
+	.albums .albumList .album
+	{
 
+	}
+}
+@media (max-width: 768px)
+{
+	.albums .albumList .album
+	{
+		max-width: calc(50% - 10px);
+		max-height: 162px;
+	}
+
+}
+
+@media (min-width: 320px) and (max-width: 480px)
+{
+	.albums .albumList .album
+	{
+		max-width: calc(100%);
+		max-height: 162px;
+	}
+}
 
 /********** END список фотоальбомов **************/
 
 /********** список фоток в альбоме **************/
 .albums .imageList
 {
-	min-height: 158px;
+	min-height: 162px;
 	overflow: hidden;
 }
 .albums .imageList .image
 {
 	cursor: move;
 	float: left;
-	width: calc(100%);
-	max-width: 330px;
-	max-height: 248px;
 	overflow: hidden;
 	margin: 0 10px 10px 0;
+	max-width: 216px;
+	max-height: 162px;
 }
 
 .albums .imageList .image img
 {
-	/*width: 100%;*/
 	cursor: move;
 	width: calc(100%);
 }
 
 
-@media (max-width: 768px)
+@media (min-width: 1200px)
 {
 	.albums .imageList .image
 	{
-		width: calc(50% - 10px);
-		height: calc(101px);
-	}
-}
-@media (max-width: 768px) and (orientation: landscape)
-{
-	.albums .imageList .image
-	{
-		width: calc(50% - 10px);
-		height: calc(161px);
-	}
-}
-@media (min-width: 768px) and (max-width: 992px)
-{
-	.albums .imageList .image
-	{
-		width: calc(50% - 10px);
+
 	}
 }
 @media (min-width: 992px) and (max-width: 1200px)
 {
 	.albums .imageList .image
 	{
-		max-width: 402px;
+
+	}
+}
+@media (max-width: 1024px)
+{
+	.albums .imageList .image
+	{
+		max-width: calc(33% - 8px);
+		max-height: 162px;
+	}
+}
+@media (min-width: 768px) and (max-width: 992px)
+{
+	.albums .imageList .image
+	{
+
+	}
+}
+@media (max-width: 768px)
+{
+	.albums .imageList .image
+	{
+		max-width: calc(50% - 10px);
+		max-height: 162px;
+	}
+
+}
+
+@media (min-width: 320px) and (max-width: 480px)
+{
+	.albums .imageList .image
+	{
+		max-width: calc(100%);
+		max-height: 162px;
 	}
 }
 
@@ -594,8 +623,6 @@ a.social:hover
 	padding: 0;
 	position: relative;
 }
-
-
 
 .albumImageDialog .modal-body .imageModalBody
 {
@@ -696,6 +723,18 @@ a.social:hover
 }
 
 /********** END список фоток в альбоме **************/
+
+/********** профиль просматриваемого юзера **************/
+.userProfile
+{
+
+}
+
+.userProfile .blocks
+{
+	max-width: calc(40% - 7px);
+}
+/********** END профиль просматриваемого юзера **************/
 
 /**********  список страниц (постраничная разбивка) **************/
 nav.pagesNavigation
