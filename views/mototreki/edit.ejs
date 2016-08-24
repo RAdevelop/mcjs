@@ -1,0 +1,82 @@
+<%  if(!isXHR){%><%- layout('layout/user/index') %><% } %>
+<h1><%=menuItem.m_h1%> - добавление трека</h1>
+<ul class="nav nav-pills nav-justified" role="tablist">
+	<li class="active" role="presentation"><a href="#base" aria-controls="base" role="tab" data-toggle="tab"><span class="fa fa-cog"></span> Основное</a></li>
+	<li role="presentation"><a href="#contacts" aria-controls="contacts" role="tab" data-toggle="tab"><span class="fa fa-map-marker "></span> Контакты</a></li>
+</ul>
+<!-- Tab panes -->
+<form class="form-horizontal" action="<%=menuItem.m_path%>/edit/" method="post" id="formMototrek">
+<div class="panel panel-default">
+	<div class="panel-body tab-content">
+		<div role="tabpanel" class="tab-pane active" id="base">
+			<div class="form-group s_mtt_name">
+				<label for="s_mtt_name" class="col-sm-2 control-label">название *</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" id="s_mtt_name" name="s_mtt_name" value="" placeholder="название трека" required />
+				</div>
+			</div>
+			<div class="form-group s_mtt_descrip">
+				<label for="s_mtt_descrip" class="col-sm-2 control-label">описание</label>
+				<div class="col-sm-10">
+					<textarea class="form-control" id="s_mtt_descrip" name="s_mtt_descrip" placeholder="описание трека" required></textarea>
+				</div>
+			</div>
+		</div>
+		<div role="tabpanel" class="tab-pane" id="contacts">
+			<div class="form-group">
+				<label for="s_mtt_website" class="col-sm-4 s_mtt_website">веб-сайт</label>
+				<label for="s_mtt_email" class="col-sm-4 s_mtt_email">E-mail</label>
+				<label for="s_mtt_phones" class="col-sm-4 s_mtt_phones">телефон(-ы)</label>
+			</div>
+			<div class="form-group">
+
+				<div class="col-sm-4 s_mtt_website">
+					<input type="text" class="form-control" id="s_mtt_website" name="s_mtt_website" value="" placeholder="веб-сайт" required />
+				</div>
+
+				<div class="col-sm-4 s_mtt_email">
+					<input type="text" class="form-control" id="s_mtt_email" name="s_mtt_email" value="" placeholder="E-mail" required />
+				</div>
+
+				<div class="col-sm-4 s_mtt_phones">
+					<input type="text" class="form-control" id="s_mtt_phones" name="s_mtt_phones" value="" placeholder="веб-сайт" required />
+				</div>
+			</div>
+			<div class="form-group" >
+				<div class="col-sm-12" id="mttMap" style="border: 1px solid red; min-height: 300px;">
+	яндкс карта
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+	<div class="form-group">
+		<div class="col-xs-offset-4 col-sm-offset-5 ">
+			<input type="hidden" name="btn_save_mototrek" value="main"/>
+			<button type="submit" class="btn btn-primary" id="btn_edit_mototrek" value="1" data-loading-text="сохраняю..." autocomplete="off">сохранить</button>
+		</div>
+	</div>
+</form>
+
+<p>данные по треку:</p>
+<p>даты создания и обновления в БД</p>
+<p>функционирует да или нет</p>
+<p>название</p>
+<p>адрес: страна. населенный пункт, улица, дом...</p>
+<p>адрес: долгота, широта</p>
+<p>контакты: веб-сайт</p>
+<p>контакты: емейл</p>
+<p>контакты: телефон</p>
+<p>контакты: режим работы?!</p>
+<p>описание</p>
+<p>тип покрытия: асфальт, грунт...</p>
+<p>фотографии?! (добавить в конфиг uploads)</p>
+<script src="/js/mcMap.js" type="text/javascript"></script>
+<script type="text/javascript">
+//<!--
+(function($)
+{
+
+})($);
+//-->
+</script>
