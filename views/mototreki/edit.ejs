@@ -55,7 +55,7 @@
 	</div>
 </div>
 	<div class="form-group">
-		<div class="col-xs-offset-4 col-sm-offset-5 ">
+		<div class="col-xs-offset-5 col-sm-offset-5 ">
 			<input type="hidden" name="btn_save_mototrek" value="main"/>
 			<button type="submit" class="btn btn-primary" id="btn_edit_mototrek" value="1" data-loading-text="сохраняю..." autocomplete="off">сохранить</button>
 		</div>
@@ -109,14 +109,23 @@
 					/*res.stopPropagation();
 					res.preventDefault();
 					res.stopImmediatePropagation();
-					 console.log(res);
+
 					 */
+
 
 					searchControl.hideResult();
 
 					var geoObject = searchControl.getResultsArray()[res.get('index')];
+					console.log(searchControl.getResponseMetaData());
 
-					balloon(MttMap, searchControl.getResponseMetaData().request, geoObject.geometry.getCoordinates());
+					var coords = geoObject.geometry.getCoordinates();
+					McMap.locationByLatLng(coords[0], coords[1], 'house', 1)
+							.then(function (location)
+							{
+								balloon(MttMap, location.text, location.coords);
+							});
+
+					//balloon(MttMap, searchControl.getResponseMetaData().request, geoObject.geometry.getCoordinates());
 
 				}, this);
 

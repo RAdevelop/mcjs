@@ -171,45 +171,15 @@ class Profile extends User
 	 * @param u_id
 	 * @param f_lat
 	 * @param f_lng
-	 * @param userLocationData - json данные по населенному пункту
-	 * @param cb
+	 * @param location_id
+	 * @return Promise
 	 */
-	//updLocation(u_id, f_lat, f_lng, userLocationData, cb)
 	updLocation(u_id, f_lat, f_lng, location_id)
 	{
-		//const self = this;
-
-		/*function _add_location(inPid, inName, lat, lng, kind, fullName)
-		{
-			inPid = inPid || 0;
-			let sql = 'CALL location_create(?, ?, ?, ?, ?, ?, ?,  @last_ins_id); SELECT @last_ins_id AS last_ins_id FROM DUAL;';
-			let sqlData = [inPid, 0, inName, lat, lng, kind, fullName];
-
-			return new Promise(function(resolve, reject)
-			{
-				self.constructor.conn().multis(sql, sqlData, function(err, res)
-				{
-					if(err) return reject(err);
-
-					return resolve(res[1][0]["last_ins_id"]);
-				});
-			});
-		}*/
-
-		/*return Promise.reduce(userLocationData, function(pId, location)
-		{
-			return _add_location(pId, location["name"], location["lat"], location["lng"], location["kind"], location["text"])
-			.then(function(inPid)
-			{
-				return inPid;
-			});
-		}, 0)*/
-
 		let sql = 'INSERT INTO `users_data` (u_id, u_location_id, u_latitude, u_longitude) ' +
 		'VALUES (?, ?, ?, ?) ' +
 		'ON DUPLICATE KEY UPDATE u_location_id=VALUES(u_location_id), u_latitude=VALUES(u_latitude), u_longitude=VALUES(u_longitude)';
 
-		//let sqlData = [u_location_id, f_lat, f_lng, u_id];
 		let sqlData = [u_id, location_id, f_lat, f_lng];
 
 		return this.constructor.conn().ins(sql, sqlData)
