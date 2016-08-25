@@ -196,6 +196,7 @@
         <div role="tabpanel" class="tab-pane" id="interests">interests</div>
     </div>
 </div>
+<script src="/js/mcMap.js" type="text/javascript"></script>
 <script type="text/javascript" src="/js/jquery/postRes.js"></script>
 <script src="/js/uploadify/jquery.uploadify.min.js" type="text/javascript" ></script>
 <script src="/js/uploadify/jquery.uploadifive.min.js" type="text/javascript" ></script>
@@ -273,135 +274,100 @@ $(function()
         }}
     );
 
-    //yaMap TODO
-    ymaps.ready(init);
-    var yaMap;
+    var mapState = {
+        controls: ["zoomControl", "searchControl"]
+        , zoom: 10
+    };
+    var mapOptions = {};
+    var UserMcMap = new McMap('yaMap', {state: mapState, options: mapOptions});
 
-    function init()
-    {
-        var autoSave = false;
-        
-        //пытаемся автоматом определить координаты пользователя
-        function userCoords()
-        {
-            if (MCJS["userLocation"] && MCJS["userLocation"]["l_latitude"] && MCJS["userLocation"]["l_longitude"])
+    UserMcMap.init()
+            .then(function (UserMap)
             {
-                autoSave = false;
-                var coords = {
-                    coords: [ MCJS["userLocation"]["u_latitude"], MCJS["userLocation"]["u_longitude"] ],
-                    lat: MCJS["userLocation"]["u_latitude"],
-                    lng:  MCJS["userLocation"]["u_longitude"],
-                    names: MCJS["userLocation"]["l_full_name"].split(',')
-                };
-                var res = {};
-                res.position = coords["coords"];
-                return ymaps.vow.resolve(res);
-            }
-            
-            var geolocation = ymaps.geolocation;
-            
-            return ymaps.vow.any([
-                geolocation.get({
-                provider: 'yandex',
-                mapStateAutoApply: true
-                }),
-                geolocation.get({
-                    provider: 'browser',
-                    mapStateAutoApply: true
-                })
-            ]).then(function(res)
+                UserMap.behaviors.disable('multiTouch');
+                UserMap.behaviors.disable('scrollZoom');
+
+                UserMap.events.add('click', function (event)
+                {
+                    var coords = event.get('coords');
+
+                    return McMap.locationByLatLng(coords[0], coords[1])
+                            .then(function(location)
+                            {
+                                UserMap.geoObjects.removeAll();
+                                UserMap.geoObjects.add(new ymaps.Placemark(location.coords));
+
+                                $('#s_location').val(location.text);
+                                $('#f_lat').val(location.lat);
+                                $('#f_lng').val(location.lng);
+                            });
+                });
+
+                return ymaps.vow.resolve(UserMap);
+            })
+            .then(function (UserMap)
             {
-                autoSave = true;
-                return ymaps.vow.resolve(res);
-            });
-        }
-        
-        //получаем информацию о местоположении пользователя
-        function locationDataByLatLng(coords)
-        {
-            return ymaps.geocode(coords, {kind: 'locality', results: 1})
-            .then(function (res)
+                if (MCJS["userLocation"] && MCJS["userLocation"]["u_latitude"] && MCJS["userLocation"]["u_longitude"])
+                {
+                    var location = {
+                        coords: [ MCJS["userLocation"]["u_latitude"], MCJS["userLocation"]["u_longitude"] ],
+                        lat: MCJS["userLocation"]["u_latitude"],
+                        lng:  MCJS["userLocation"]["u_longitude"],
+                        text: MCJS["userLocation"]["l_full_name"],
+                        names: MCJS["userLocation"]["l_full_name"].split(',')
+                    };
+
+                    return ymaps.vow.resolve([UserMap, false, location]);
+                }
+
+                return ymaps.vow.resolve([UserMap, true, {}]);
+            })
+            .spread(function (UserMap, autoSave, location)
             {
-                var info = res.geoObjects.get(0).properties.get('metaDataProperty')["GeocoderMetaData"];
+                if (!autoSave)
+                    return ymaps.vow.resolve([UserMap, location]);
 
-                //console.log( info );
-                
-                var location = {
-                    coords: coords,
-                    lat: coords[0],
-                    lng: coords[1],
-                    names: info["text"].split(',').map(function(str){ return str.trim();})
-                };
+                return McMap.userLocation()
+                        .then(function (location)
+                        {
+                            $('#s_location').val(location.text);
+                            $('#f_lat').val(location.lat);
+                            $('#f_lng').val(location.lng);
 
-                //console.log( location );
-                
-                return ymaps.vow.resolve(location);
-            });
-        }
-        
-        //обработчик клика мышки по карте
-        function mapClick(event)
-        {
-            var coords = event.get('coords');
-            
-            return locationDataByLatLng(coords).then(function(location){
+                            $.ajax({
+                                url: $('#formLocation').attr('action'),
+                                method: "POST",
+                                data: $('#formLocation').serialize(),
+                                dataType: "json"
+                            })
+                            .done(function(data)
+                            {
+                                //console.log( data );
+                            })
+                            .fail(function(data)
+                            {
+                                //console.log( data );
+                            });
 
-                yaMap.geoObjects.removeAll();
-                yaMap.geoObjects.add(new ymaps.Placemark(location.coords));
-                
-                $('#s_location').val(location.names.join(', ').trim());
+                            return ymaps.vow.resolve([UserMap, location]);
+                        });
+            })
+            .spread(function (UserMap, location)
+            {
+                $('#s_location').val(location.text);
                 $('#f_lat').val(location.lat);
                 $('#f_lng').val(location.lng);
+
+                UserMap.geoObjects.removeAll();
+                UserMap.setCenter(location.coords);
+                UserMap.geoObjects.add(new ymaps.Placemark(location.coords));
+
+                return ymaps.vow.resolve(true);
+            })
+            .fail(function(err){
+                console.log("не удалось определить координаты");
+                console.log(err);
             });
-        };
-
-        userCoords().then(function(res)
-        {
-            var coords = (res["geoObjects"] && res["geoObjects"]["position"] ? res["geoObjects"]["position"] : res.position);
-         
-            return locationDataByLatLng(coords);
-        }).then(function(location)
-        {
-            $('#s_location').val(location.names.join(', ').trim());
-            $('#f_lat').val(location.lat);
-            $('#f_lng').val(location.lng);
-
-            if (autoSave)
-            {
-                $.ajax({
-                    url: $('#formLocation').attr('action'),
-                    method: "POST",
-                    data: $('#formLocation').serialize(),
-                    dataType: "json"
-                })
-                .done(function(data) {
-                    autoSave = false;
-                    //console.log( data );
-                    //alert(data.title);
-                })
-                .fail(function(data) {
-                    //console.log( data );
-                });
-            }
-            
-            yaMap = new ymaps.Map("yaMap", {
-                zoom: 10
-                , center: location.coords
-                //, controls: ["geolocationControl","searchControl"]
-                //, controls: ["geolocationControl"]
-                , controls: ["zoomControl"]
-            });
-
-            yaMap.geoObjects.add(new ymaps.Placemark(location.coords));
-            
-            yaMap.events.add('click', mapClick);
-            
-        }).fail(function(err)
-        {
-            console.log("не удалось определить координаты");
-            console.log(err);
-        });
-    }
 });
 //-->
 </script>

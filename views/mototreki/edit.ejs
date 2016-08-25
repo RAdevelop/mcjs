@@ -29,23 +29,27 @@
 				<label for="s_mtt_phones" class="col-sm-4 s_mtt_phones">телефон(-ы)</label>
 			</div>
 			<div class="form-group">
-
 				<div class="col-sm-4 s_mtt_website">
-					<input type="text" class="form-control" id="s_mtt_website" name="s_mtt_website" value="" placeholder="веб-сайт" required />
+					<input type="text" class="form-control" id="s_mtt_website" name="s_mtt_website" value="" placeholder="веб-сайт" />
 				</div>
-
 				<div class="col-sm-4 s_mtt_email">
-					<input type="text" class="form-control" id="s_mtt_email" name="s_mtt_email" value="" placeholder="E-mail" required />
+					<input type="text" class="form-control" id="s_mtt_email" name="s_mtt_email" value="" placeholder="E-mail" />
 				</div>
-
 				<div class="col-sm-4 s_mtt_phones">
-					<input type="text" class="form-control" id="s_mtt_phones" name="s_mtt_phones" value="" placeholder="веб-сайт" required />
+					<input type="text" class="form-control" id="s_mtt_phones" name="s_mtt_phones" value="" placeholder="веб-сайт" />
+				</div>
+			</div>
+			<div class="form-group s_mtt_address">
+				<label for="m_mail" class="col-sm-1 control-label">адрес *</label>
+				<div class="col-sm-11">
+					<input type="text" class="form-control" id="s_mtt_address" name="s_mtt_address" value="" readonly="readonly" placeholder="адрес" required="">
+					<span class="help-block">укажите адрес с помощью карты: через поиск адреса, или по клику на карте.</span>
+					<input type="text" id="f_mtt_lat" name="f_lat" value="" readonly="readonly" maxlength="20" required="" />
+					<input type="text" id="f_mtt_lng" name="f_lat" value="" readonly="readonly" maxlength="20" required="" />
 				</div>
 			</div>
 			<div class="form-group" >
-				<div class="col-sm-12" id="mttMap" style="border: 1px solid red; min-height: 300px;">
-	яндкс карта
-				</div>
+				<div class="col-sm-12" id="mttMap" style="border: 1px solid red; height: 300px;"></div>
 			</div>
 		</div>
 	</div>
@@ -76,7 +80,164 @@
 //<!--
 (function($)
 {
+	var mapState = {
+		//center: [img["ai_latitude"], img["ai_longitude"]]
+		 controls: ["zoomControl", "searchControl"]
+		, zoom: 16
+	};
+	var mapOptions = {};
+	var MttMcMap = new McMap('mttMap', {state: mapState, options: mapOptions});
+	var mttPlacemark;
+	MttMcMap.init()
+			.then(function (MttMap)
+			{
+				MttMap.behaviors.disable('multiTouch');
+				MttMap.behaviors.disable('scrollZoom');
 
+				var searchControl = MttMap.controls.get("searchControl");
+				searchControl.options.set("float", "right");
+
+				searchControl.events.add('submit', function () {
+
+					console.log('request: ' + searchControl.getRequestString());
+
+				}, this);
+				searchControl.events.add('resultselect', function () {
+
+					console.log('resultselect:');
+					console.log(searchControl.getResultsArray());
+
+				}, this);
+
+
+
+				var iconContent = 'МотоТрек на карте';
+				var contentHeader = 'МотоТрек на карте';
+				var contentBody =   '<p>' +
+						'Чтобы указать место расположения объекта, ' +
+						'найдите его с помощью поисковой строки, ' +
+						'или кликните мышкой по карте.' +
+						'</p>';
+
+				var contentFooter = '<p>' +
+						'<strong>Сейчас указан:</strong><br/>' +
+						MttMap.getCenter() +
+						'</p>';
+
+				mttPlacemark = new ymaps.Placemark(
+						MttMap.getCenter()
+						,	{
+							/* Свойства*/
+							iconContent: iconContent
+							,	balloonContentHeader: contentHeader
+							,	balloonContentBody: contentBody
+							,	balloonContentFooter: contentFooter
+						}
+						,   {
+							/* Опции*/
+							preset: 'islands#blueStretchyIcon' /* иконка растягивается под контент */
+							,	draggable: true
+						}
+				);
+
+				//MttMap.geoObjects.add(mttPlacemark);
+
+				/* когда двигаем метку */
+				mttPlacemark.events.add('dragend', function (e)
+				{
+					var thisPlacemark = e.get('target');
+					var coords = thisPlacemark.geometry.getCoordinates();
+
+					return McMap.locationByLatLng(coords[0], coords[1], 'house')
+							.then(function (location)
+							{
+								var contentFooter = '<p>' +
+										'<strong>Сейчас указан:</strong><br/>' +
+										location.text + '<br/>' +
+										location.coords.join(', ') +
+										'</p>';
+
+								mttPlacemark.properties.set('balloonContentFooter', contentFooter);
+								mttPlacemark.geometry.setCoordinates(location.coords);
+
+								$('#s_mtt_address').val(location.text);
+								$('#f_mtt_lat').val(location.lat);
+								$('#f_mtt_lng').val(location.lng);
+
+							})
+							.fail(function(error)
+							{
+								console.log(error);
+							});
+				});
+
+				/* когда кликаем по карте */
+				MttMap.events.add('click', function (event)
+				{
+					var coords = event.get('coords');
+					console.log(coords);
+					return McMap.locationByLatLng(coords[0], coords[1], 'house')
+							.then(function(location)
+							{
+								console.log('location on map click');
+								console.log(location);
+
+								MttMap.geoObjects.removeAll();
+								MttMap.geoObjects.add(mttPlacemark);
+
+								var contentFooter = '<p>' +
+										'<strong>Сейчас указан:</strong><br/>' +
+										location.text + '<br/>' +
+										location.coords.join(', ') +
+										'</p>';
+
+								mttPlacemark.properties.set('balloonContentFooter', contentFooter);
+
+								mttPlacemark.geometry.setCoordinates(location.coords);
+
+								$('#s_mtt_address').val(location.text);
+								$('#f_mtt_lat').val(location.lat);
+								$('#f_mtt_lng').val(location.lng);
+
+								console.log('END location on map click');
+							});
+				});
+
+				//console.log(searchControl);
+				//var searchControl = MttMap.constrols.get("searchControl");
+				/*var mttPlacemark = new ymaps.Placemark(MttMap.getCenter(),
+						{
+							//balloonContentHeader: 'Заголовок балуна',
+							balloonContentBody: 'balloonContentBody'
+						},
+						{
+							balloonCloseButton: false,
+							balloonPanelMaxMapArea: 0
+						}
+				);
+
+				MttMap.geoObjects.add(mttPlacemark);
+				mttPlacemark.balloon.open();*/
+
+				return ymaps.vow.resolve(MttMap);
+			})
+			.then(function (MttMap)
+			{
+				console.log("MttMap");
+				/*return MttMap.locationByLatLng(MttMcMap.getCenter()[0], MttMcMap.getCenter()[1], 'house', 1)
+						.then(function (location)
+						{
+							MttMcMap.hint.open(MttMcMap.getCenter(),
+									location["text"]
+							);
+
+							return ymaps.vow.resolve(location);
+						});*/
+			})
+			.fail(function (err)
+			{
+				console.log(err);
+			});
 })($);
 //-->
 </script>

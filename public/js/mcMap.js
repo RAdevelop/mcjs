@@ -10,6 +10,10 @@
 		this.map;
 	}
 
+	/**
+	 * проверяем, была ли инициализирована "карта"
+	 * @returns {boolean}
+	 */
 	McMap.prototype.isInit = function()
 	{
 		var mapIsInit = $('#'+this.mapId).attr('data-map-init');
@@ -23,12 +27,24 @@
 			return false;
 		}
 	};
+
+	/**
+	 * устанавливаем флаг, была ли инициализирована "карта"
+	 *
+	 * @param flag
+	 * @returns {McMap}
+	 */
 	McMap.prototype.setInit = function(flag)
 	{
 		$('#'+this.mapId).attr('data-map-init', (flag ? 'true' : 'false'));
 		return this;
 	};
 
+	/**
+	 * инициализация карты
+	 *
+	 * @returns {*}
+	 */
 	McMap.prototype.init = function ()
 	{
 		if (this.isInit())
@@ -51,24 +67,73 @@
 		{
 			$('#'+self.mapId).attr('data-map-init', 'true');
 			self.map = new ymaps.Map(self.mapId, state, options);
-			//cb(self.map);
 		}
 
-		return ymaps.ready(init)
+		return Bluebird.resolve(typeof ymaps != 'undefined')
+			.then(function (is_ymaps)
+			{
+				if (is_ymaps)
+					return Bluebird.resolve(true);
+
+				//загружаем api-maps.yandex.ru
+				return new Bluebird(function(resolve, reject)
+				{
+					$.cachedScriptLoad("\/\/api-maps.yandex.ru\/2.1\/?lang=ru_RU")
+						.done(function(script, textStatus)
+						{
+							return resolve(true);
+						})
+						.fail(function(jqxhr, settings, exception)
+						{
+							return reject(exception);
+						});
+				});
+
+			})
 			.then(function ()
 			{
-				return ymaps.vow.resolve(self.map);
+				return ymaps.ready(init)
+					.then(function ()
+					{
+						return ymaps.vow.resolve(self.map);
+					});
+			})
+			.fail(function (err)
+			{
+				console.log(err);
+				return Bluebird.reject(err);
 			});
 	};
+
+	/**
+	 * получаем текущий объект карты
+	 *
+	 * @returns {ymaps.Map|*|Map}
+	 */
 	McMap.prototype.getMap = function ()
 	{
 		return this.map;
 	};
+
+	/**
+	 * получаем htmlElementId в котором загружена "карта"
+	 * @returns {*}
+	 */
 	McMap.prototype.getMapId = function ()
 	{
 		return this.mapId;
 	};
 
+	/**
+	 *
+	 * данные по расположению точки [latitude,longitude]
+	 *
+	 * @param latitude
+	 * @param longitude
+	 * @param kind
+	 * @param results - кол-во результаов поиска
+	 * @returns {Promise.<TResult>|*}
+	 */
 	McMap.locationByLatLng = function (latitude, longitude, kind, results)
 	{
 		kind = kind || 'locality';
@@ -92,6 +157,49 @@
 				//console.log( location );
 
 				return ymaps.vow.resolve(location);
+			});
+	};
+
+	/**
+	 * пытаемся автоматом определить координаты пользователя c помощью браузера
+	 * или по IP (Яндексом)
+	 *
+	 * @returns {Promise}
+	 */
+	McMap.userLocation = function ()
+	{
+		var geolocation = ymaps.geolocation;
+		
+		return ymaps.vow.any([
+			geolocation.get({
+				provider: 'yandex',
+				mapStateAutoApply: true
+			}),
+			geolocation.get({
+				provider: 'browser',
+				mapStateAutoApply: true
+			})
+		]).then(function(res)
+		{
+			var info = res.geoObjects.get(0).properties.get('metaDataProperty')["GeocoderMetaData"];
+			var coords = res.geoObjects.position;
+			console.log( info );
+			console.log( coords );
+
+			var location = {
+				coords: coords,
+				lat: coords[0],
+				lng: coords[1],
+				text: info["text"],
+				names: info["text"].split(',').map(function(str){ return str.trim();})
+			};
+
+			return ymaps.vow.resolve(location);
+		})
+			.fail(function (err)
+			{
+				console.log('Error McMap.userLocation');
+				console.log(err);
 			});
 	};
 
