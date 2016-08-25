@@ -1,13 +1,37 @@
 "use strict";
 
-const Errors = require('app/lib/errors');
-const Moment = require('moment'); //работа со временем
-//const Promise = require("bluebird");
+//const Errors = require('app/lib/errors');
+//const Moment = require('moment'); //работа со временем
+const Promise = require("bluebird");
 
 const BaseModel = require('app/lib/db');
 
 class Location extends BaseModel
 {
+	/**
+	 * добавляем данные по локации
+	 *
+	 * @param inPid
+	 * @param inName
+	 * @param lat
+	 * @param lng
+	 * @param kind
+	 * @param fullName
+	 * @returns {Promise.<TResult>}
+	 */
+	addLocation(inPid = 0, inName, lat, lng, kind, fullName)
+	{
+		let sql = 'CALL location_create(?, ?, ?, ?, ?, ?, ?,  @last_ins_id); SELECT @last_ins_id AS last_ins_id FROM DUAL;';
+		let sqlData = [inPid, 0, inName, lat, lng, kind, fullName];
+
+		return this.constructor.conn().multis(sql, sqlData)
+			.then(function (res)
+			{
+				return Promise.resolve(res[1][0]["last_ins_id"]);
+			});
+	}
+
+
 	/**
 	 * получаем список расположений (страна - область - населенный пункт)
 	 */
@@ -19,18 +43,8 @@ class Location extends BaseModel
 			"JOIN `location_names` AS nl ON (nl.l_id = l.l_id) " +
 			"ORDER BY l.l_lk";
 		
-		let self = this;
-		self.constructor.conn().s(sql, [], function(err, res)
-		{
-			if(err) return cb(err, []);
-			
-			//не нашли
-			if(res["info"]["numRows"] == 0) return cb(null, []);
-			
-			let list = JSON.parse(JSON.stringify(res));
-			
-			cb(null, list);
-		});
+
+		return this.constructor.conn().s(sql);
 	}
 }
 

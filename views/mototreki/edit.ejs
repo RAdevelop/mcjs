@@ -223,6 +223,8 @@
 		MttMap.geoObjects.add(mttPlacemark);
 		MttMap.setCenter(coords);
 
+		//mttPlacemark.balloon.open();
+
 		/* когда двигаем метку */
 		mttPlacemark.events.add('dragend', function (e)
 		{

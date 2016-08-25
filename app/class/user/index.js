@@ -151,6 +151,11 @@ class User extends Base
 	{
 		return this.model('user').getUsersLocation(user_ids);
 	}
+
+	updLocation(u_id, f_lat, f_lng, location_id)
+	{
+		return this.model('user/profile').updLocation(u_id, f_lat, f_lng, location_id);
+	}
 }
 
 //************************************************************************* module.exports

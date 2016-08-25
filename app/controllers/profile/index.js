@@ -371,67 +371,60 @@ class Profile extends Base
 			})
 			.then(function(tplData)
 			{
-				return new Promise(function(resolve, reject)
+				s_location = s_location.split(',').map(function(str){ return str.trim();}).join(',');
+				let locationNames = s_location.split(',');
+				let size = locationNames.length;
+				let locationArr = [];
+
+				for(let i = size; i > 0; i--)
 				{
-					s_location = s_location.split(',').map(function(str){ return str.trim();}).join(',');
-					let locationNames = s_location.split(',');
-					let size = locationNames.length;
-					let locationArr = [];
-					
-					for(let i = size; i > 0; i--)
+					locationArr.push( s_location.split(',', i).join(','));
+				}
+				locationArr = locationArr.reverse();
+
+				//return resolve(tplData);
+
+				let geocoder = new MultiGeocoder({ provider: 'yandex', coordorder: 'latlong', lang: 'ru-RU' });
+
+				return geocoder.geocode(locationArr,{lang: 'ru-RU', kind: 'locality'})
+					.then(function (res)
 					{
-						locationArr.push( s_location.split(',', i).join(','));
-					}
-					locationArr = locationArr.reverse();
-					
-					//return resolve(tplData);
-					
-					let geocoder = new MultiGeocoder({ provider: 'yandex', coordorder: 'latlong', lang: 'ru-RU' });
-					
-					return geocoder.geocode(locationArr,{lang: 'ru-RU', kind: 'locality'})
-						.then(function (res)
+						//console.log(res["errors"]);
+
+						if (res["errors"] == locationArr.length)
 						{
-							//console.log(res["errors"]);
-							
-							if (res["errors"] == locationArr.length)
-							{
-								tplData.formError.message = 'Не удалось определить указанный населенный пункт';
-								tplData.formError.error = true;
-								tplData.formError.fields["s_location"] = "Уточните название, или просто кликните по карте";
-								return reject(tplData);
-							}
-							
-							let features = res["result"]["features"];
-							let userLocationData = [];
-							for(let i in features)
-							{
-								let GeocoderMetaData = features[i]["properties"]["metaDataProperty"]["GeocoderMetaData"];
+							tplData.formError.message = 'Не удалось определить указанный населенный пункт';
+							tplData.formError.error = true;
+							tplData.formError.fields["s_location"] = "Уточните название, или просто кликните по карте";
+							return Promise.reject(tplData);
+						}
 
-								//чтобы в таблицах location не сохранять улицы и дома...
-								if (GeocoderMetaData["kind"] == 'street' || GeocoderMetaData["kind"] == 'house')
-									continue;
-
-								userLocationData.push({
-									"coords": features[i]["geometry"]["coordinates"],
-									"lat": features[i]["geometry"]["coordinates"][0],
-									"lng": features[i]["geometry"]["coordinates"][1],
-									"kind": GeocoderMetaData["kind"],
-									"text": GeocoderMetaData["text"],
-									"name": locationNames[i]
-								});
-								/*console.log('i ='+ i);
-								
-								console.log( features[i]["geometry"]["coordinates"]);
-								console.log('data %j', features[i]["properties"]["metaDataProperty"]["GeocoderMetaData"]);*/
-							}
-							self.model("user/profile").updLocation(tplData["i_u_id"], f_lat, f_lng, userLocationData, function(err)
-							{
-								if (err) return reject(err);
-								
-								return resolve(tplData);
+						let features = res["result"]["features"];
+						let userLocationData = [];
+						for(let i in features)
+						{
+							let GeocoderMetaData = features[i]["properties"]["metaDataProperty"]["GeocoderMetaData"];
+							
+							userLocationData.push({
+								"coords": features[i]["geometry"]["coordinates"],
+								"lat": features[i]["geometry"]["coordinates"][0],
+								"lng": features[i]["geometry"]["coordinates"][1],
+								"kind": GeocoderMetaData["kind"],
+								"text": GeocoderMetaData["text"],
+								"name": locationNames[i]
 							});
-						});
-				});
+						}
+
+						return self.getClass('location').create(userLocationData)
+							.then(function (location_id)
+							{
+								return self.getClass('user').updLocation(self.getUserId(), f_lat, f_lng, location_id)
+									.then(function ()
+									{
+										return Promise.resolve(tplData);
+									});
+							});
+					});
 			});
 	}
 	
