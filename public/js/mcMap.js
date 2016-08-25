@@ -1,3 +1,8 @@
+/**
+ * @required
+ *  Bluebird
+ *  api-maps.yandex
+ */
 (function ($)
 {
 	if (window["McMap"]) return;
@@ -169,7 +174,7 @@
 	McMap.userLocation = function ()
 	{
 		var geolocation = ymaps.geolocation;
-		
+
 		return ymaps.vow.any([
 			geolocation.get({
 				provider: 'yandex',

@@ -12,7 +12,7 @@
         <div role="tabpanel" class="tab-pane active" id="ava">
             <div class="row">
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                    <form class="form-horizontal text-center" action="<%=menuItem.m_path%>/ava"  enctype="multipart/form-data" method="post" target="null_frame" id="formAva">
+                    <form class="form-horizontal text-center" action="<%=menuItem.m_path%>/ava/"  enctype="multipart/form-data" method="post" target="null_frame" id="formAva">
                         <input type="hidden" name="btn_save_profile" value="ava_upload"/>
                         <input type="hidden" name="u_id" value="<%= _user.u_id%>"/>
                         <input type="hidden" name="s_token" value="<%=s_token%>"/>
@@ -317,12 +317,12 @@ $(function()
                         names: MCJS["userLocation"]["l_full_name"].split(',')
                     };
 
-                    return ymaps.vow.resolve([UserMap, false, location]);
+                    return ymaps.vow.resolve([UserMap, location, false]);
                 }
 
-                return ymaps.vow.resolve([UserMap, true, {}]);
+                return ymaps.vow.resolve([UserMap, {}, true]);
             })
-            .spread(function (UserMap, autoSave, location)
+            .spread(function (UserMap, location, autoSave)
             {
                 if (!autoSave)
                     return ymaps.vow.resolve([UserMap, location]);

@@ -44,8 +44,8 @@
 				<div class="col-sm-11">
 					<input type="text" class="form-control" id="s_mtt_address" name="s_mtt_address" value="" readonly="readonly" placeholder="адрес" required="">
 					<span class="help-block">укажите адрес с помощью карты: через поиск адреса, или по клику на карте.</span>
-					<input type="text" id="f_mtt_lat" name="f_lat" value="" readonly="readonly" maxlength="20" required="" />
-					<input type="text" id="f_mtt_lng" name="f_lat" value="" readonly="readonly" maxlength="20" required="" />
+					<input type="text" id="f_mtt_lat" name="f_mtt_lat" value="" readonly="readonly" maxlength="20" required="" />
+					<input type="text" id="f_mtt_lng" name="f_mtt_lng" value="" readonly="readonly" maxlength="20" required="" />
 				</div>
 			</div>
 			<div class="form-group" >
@@ -80,10 +80,12 @@
 //<!--
 (function($)
 {
+
+
 	var mapState = {
 		//center: [img["ai_latitude"], img["ai_longitude"]]
 		 controls: ["zoomControl", "searchControl"]
-		, zoom: 16
+		, zoom: 10
 	};
 	var mapOptions = {};
 	var MttMcMap = new McMap('mttMap', {state: mapState, options: mapOptions});
@@ -102,74 +104,29 @@
 					console.log('request: ' + searchControl.getRequestString());
 
 				}, this);
-				searchControl.events.add('resultselect', function () {
+				searchControl.events.add('resultselect', function (res)
+				{
+					/*res.stopPropagation();
+					res.preventDefault();
+					res.stopImmediatePropagation();
+					 console.log(res);
+					 */
 
-					console.log('resultselect:');
-					console.log(searchControl.getResultsArray());
+					searchControl.hideResult();
+
+					var geoObject = searchControl.getResultsArray()[res.get('index')];
+
+					balloon(MttMap, searchControl.getResponseMetaData().request, geoObject.geometry.getCoordinates());
 
 				}, this);
 
+//Россия, Москва, Волоколамское шоссе, 88
 
-
-				var iconContent = 'МотоТрек на карте';
-				var contentHeader = 'МотоТрек на карте';
-				var contentBody =   '<p>' +
-						'Чтобы указать место расположения объекта, ' +
-						'найдите его с помощью поисковой строки, ' +
-						'или кликните мышкой по карте.' +
-						'</p>';
-
-				var contentFooter = '<p>' +
-						'<strong>Сейчас указан:</strong><br/>' +
-						MttMap.getCenter() +
-						'</p>';
-
-				mttPlacemark = new ymaps.Placemark(
-						MttMap.getCenter()
-						,	{
-							/* Свойства*/
-							iconContent: iconContent
-							,	balloonContentHeader: contentHeader
-							,	balloonContentBody: contentBody
-							,	balloonContentFooter: contentFooter
-						}
-						,   {
-							/* Опции*/
-							preset: 'islands#blueStretchyIcon' /* иконка растягивается под контент */
-							,	draggable: true
-						}
-				);
+				balloon(MttMap, '', MttMap.getCenter());
 
 				//MttMap.geoObjects.add(mttPlacemark);
 
-				/* когда двигаем метку */
-				mttPlacemark.events.add('dragend', function (e)
-				{
-					var thisPlacemark = e.get('target');
-					var coords = thisPlacemark.geometry.getCoordinates();
 
-					return McMap.locationByLatLng(coords[0], coords[1], 'house')
-							.then(function (location)
-							{
-								var contentFooter = '<p>' +
-										'<strong>Сейчас указан:</strong><br/>' +
-										location.text + '<br/>' +
-										location.coords.join(', ') +
-										'</p>';
-
-								mttPlacemark.properties.set('balloonContentFooter', contentFooter);
-								mttPlacemark.geometry.setCoordinates(location.coords);
-
-								$('#s_mtt_address').val(location.text);
-								$('#f_mtt_lat').val(location.lat);
-								$('#f_mtt_lng').val(location.lng);
-
-							})
-							.fail(function(error)
-							{
-								console.log(error);
-							});
-				});
 
 				/* когда кликаем по карте */
 				MttMap.events.add('click', function (event)
@@ -182,22 +139,7 @@
 								console.log('location on map click');
 								console.log(location);
 
-								MttMap.geoObjects.removeAll();
-								MttMap.geoObjects.add(mttPlacemark);
-
-								var contentFooter = '<p>' +
-										'<strong>Сейчас указан:</strong><br/>' +
-										location.text + '<br/>' +
-										location.coords.join(', ') +
-										'</p>';
-
-								mttPlacemark.properties.set('balloonContentFooter', contentFooter);
-
-								mttPlacemark.geometry.setCoordinates(location.coords);
-
-								$('#s_mtt_address').val(location.text);
-								$('#f_mtt_lat').val(location.lat);
-								$('#f_mtt_lng').val(location.lng);
+								balloon(MttMap, location.text, location.coords);
 
 								console.log('END location on map click');
 							});
@@ -238,6 +180,74 @@
 			{
 				console.log(err);
 			});
+
+	function balloon(MttMap, text, coords)
+	{
+
+		MttMap.geoObjects.removeAll();
+
+		var iconContent = 'МотоТрек на карте';
+		var contentHeader = 'МотоТрек на карте';
+		var contentBody =   '<p>' +
+				'Чтобы указать место расположения объекта, ' +
+				'найдите его с помощью поисковой строки, ' +
+				'или кликните мышкой по карте.' +
+				'</p>';
+
+		var contentFooter = '<p>' +
+				'<strong>Сейчас указан:</strong><br/>' +
+				MttMap.getCenter() +
+				'</p>';
+
+		mttPlacemark = new ymaps.Placemark(
+				MttMap.getCenter()
+				,	{
+					/* Свойства*/
+					iconContent: iconContent
+					,	balloonContentHeader: contentHeader
+					,	balloonContentBody: contentBody
+					,	balloonContentFooter: contentFooter
+				}
+				,   {
+					/* Опции*/
+					preset: 'islands#blueStretchyIcon' /* иконка растягивается под контент */
+					,	draggable: true
+				});
+
+		var contentFooter = '<p>' +
+				'<strong>Сейчас указан:</strong><br/>' +
+				text + '<br/>' +
+				coords.join(', ') +
+				'</p>';
+
+		MttMap.geoObjects.add(mttPlacemark);
+		MttMap.setCenter(coords);
+
+		/* когда двигаем метку */
+		mttPlacemark.events.add('dragend', function (e)
+		{
+			var thisPlacemark = e.get('target');
+			var coords = thisPlacemark.geometry.getCoordinates();
+
+			return McMap.locationByLatLng(coords[0], coords[1], 'house')
+					.then(function (location)
+					{
+						balloon(MttMap, location.text, location.coords);
+					})
+					.fail(function(error)
+					{
+						console.log(error);
+					});
+		});
+
+		mttPlacemark.properties.set('balloonContentFooter', contentFooter);
+		mttPlacemark.geometry.setCoordinates(coords);
+
+		$('#s_mtt_address').val(text);
+		$('#f_mtt_lat').val(coords[0]);
+		$('#f_mtt_lng').val(coords[1]);
+	}
+
 })($);
 //-->
 </script>

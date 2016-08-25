@@ -388,7 +388,7 @@ class Profile extends Base
 					
 					let geocoder = new MultiGeocoder({ provider: 'yandex', coordorder: 'latlong', lang: 'ru-RU' });
 					
-					geocoder.geocode(locationArr,{lang: 'ru-RU'})
+					return geocoder.geocode(locationArr,{lang: 'ru-RU', kind: 'locality'})
 						.then(function (res)
 						{
 							//console.log(res["errors"]);
@@ -406,6 +406,11 @@ class Profile extends Base
 							for(let i in features)
 							{
 								let GeocoderMetaData = features[i]["properties"]["metaDataProperty"]["GeocoderMetaData"];
+
+								//чтобы в таблицах location не сохранять улицы и дома...
+								if (GeocoderMetaData["kind"] == 'street' || GeocoderMetaData["kind"] == 'house')
+									continue;
+
 								userLocationData.push({
 									"coords": features[i]["geometry"]["coordinates"],
 									"lat": features[i]["geometry"]["coordinates"][0],
