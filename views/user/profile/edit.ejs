@@ -162,7 +162,7 @@
                         <div class="row">
                             <div class="col-sm-12">
                                 <div class="input-group">
-                                    <input type="text" class="form-control" id="s_location" name="s_location" value="<%=(l_full_name?l_full_name:'')%>" placeholder="Расположение" readonly="readonly" maxlength="255" required />
+                                    <input type="text" class="form-control" id="s_location" name="s_location" value="<%=(l_full_name?l_full_name:'')%>" placeholder="Расположение"  maxlength="255" required />
                                     <input type="hidden" id="f_lat" name="f_lat" value="<%=(u_latitude?u_latitude:'')%>"  readonly="readonly" maxlength="20" required />
                                     <input type="hidden" id="f_lng" name="f_lng" value="<%=(u_longitude?u_longitude:'')%>"  readonly="readonly" maxlength="20" required />
                                     <div class="input-group-btn">
@@ -301,6 +301,12 @@ $(function()
                                 $('#s_location').val(location.text);
                                 $('#f_lat').val(location.lat);
                                 $('#f_lng').val(location.lng);
+                            })
+                            .fail(function(err)
+                            {
+                                $('#s_location').val('');
+                                $('#f_lat').val('');
+                                $('#f_lng').val('');
                             });
                 });
 
@@ -345,12 +351,20 @@ $(function()
                             {
                                 //console.log( data );
                             })
-                            .fail(function(data)
+                            .fail(function(err)
                             {
-                                //console.log( data );
+                                $('#s_location').val('');
+                                $('#f_lat').val('');
+                                $('#f_lng').val('');
                             });
 
                             return ymaps.vow.resolve([UserMap, location]);
+                        })
+                        .fail(function(err)
+                        {
+                            $('#s_location').val('');
+                            $('#f_lat').val('');
+                            $('#f_lng').val('');
                         });
             })
             .spread(function (UserMap, location)
@@ -365,9 +379,13 @@ $(function()
 
                 return ymaps.vow.resolve(true);
             })
-            .fail(function(err){
+            .fail(function(err)
+            {
                 console.log("не удалось определить координаты");
                 console.log(err);
+                $('#s_location').val('');
+                $('#f_lat').val('');
+                $('#f_lng').val('');
             });
 });
 //-->

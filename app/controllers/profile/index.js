@@ -382,39 +382,49 @@ class Profile extends Base
 				}
 				locationArr = locationArr.reverse();
 
-				//return resolve(tplData);
-
 				let geocoder = new MultiGeocoder({ provider: 'yandex', coordorder: 'latlong', lang: 'ru-RU' });
 
 				return geocoder.geocode(locationArr,{lang: 'ru-RU', kind: 'locality'})
 					.then(function (res)
 					{
-						//console.log(res["errors"]);
-
-						if (res["errors"] == locationArr.length)
+						/*if (res["errors"] == locationArr.length)
 						{
 							tplData.formError.message = 'Не удалось определить указанный населенный пункт';
 							tplData.formError.error = true;
 							tplData.formError.fields["s_location"] = "Уточните название, или просто кликните по карте";
 							return Promise.reject(tplData);
-						}
+						}*/
 
 						let features = res["result"]["features"];
+
 						let userLocationData = [];
 						for(let i in features)
 						{
 							let GeocoderMetaData = features[i]["properties"]["metaDataProperty"]["GeocoderMetaData"];
-							
+
+							if(locationNames[i] != features[i]["properties"]["name"])
+								continue;
+
 							userLocationData.push({
 								"coords": features[i]["geometry"]["coordinates"],
 								"lat": features[i]["geometry"]["coordinates"][0],
 								"lng": features[i]["geometry"]["coordinates"][1],
 								"kind": GeocoderMetaData["kind"],
 								"text": GeocoderMetaData["text"],
-								"name": locationNames[i]
+								"name": features[i]["properties"]["name"]
+								//"name": locationNames[i]
 							});
 						}
 
+						//console.log(userLocationData.length +' == '+ locationArr.length);
+
+						if (res["errors"].length || userLocationData.length != locationArr.length)
+						{
+							tplData.formError.message = 'Не удалось определить указанный населенный пункт';
+							tplData.formError.error = true;
+							tplData.formError.fields["s_location"] = "Уточните название, или просто кликните по карте";
+							throw new Errors.ValidationError(tplData.formError.message);
+						}
 						return self.getClass('location').create(userLocationData)
 							.then(function (location_id)
 							{

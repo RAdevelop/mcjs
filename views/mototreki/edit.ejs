@@ -96,12 +96,17 @@
 				MttMap.behaviors.disable('multiTouch');
 				MttMap.behaviors.disable('scrollZoom');
 
+				MttMap.geoObjects.removeAll();
+
+				addPlaceMark(MttMap);
+
 				var searchControl = MttMap.controls.get("searchControl");
 				searchControl.options.set("float", "right");
 
-				searchControl.events.add('submit', function () {
+				searchControl.events.add('submit', function ()
+				{
 
-					console.log('request: ' + searchControl.getRequestString());
+					//console.log('request: ' + searchControl.getRequestString());
 
 				}, this);
 				searchControl.events.add('resultselect', function (res)
@@ -109,48 +114,45 @@
 					/*res.stopPropagation();
 					res.preventDefault();
 					res.stopImmediatePropagation();
-
 					 */
-
-
 					searchControl.hideResult();
-
-					var geoObject = searchControl.getResultsArray()[res.get('index')];
-					console.log(searchControl.getResponseMetaData());
-
-					var coords = geoObject.geometry.getCoordinates();
-					McMap.locationByLatLng(coords[0], coords[1], 'house', 1)
-							.then(function (location)
+					searchControl.getResult(res.get('index'))
+							.then(function (result)
 							{
-								balloon(MttMap, location.text, location.coords);
+								//console.log('result = ', result);
+								//console.log('result.geometry.getCoordinates() = ', result.geometry.getCoordinates());
+								//console.log("result.properties.get('name') = ", result.properties.get('name'));
+								//console.log("result.properties.get('text') = ", result.properties.get('text'));
+
+								updPlaceMark(MttMap, result.properties.get('text'), result.geometry.getCoordinates());
+							})
+							.fail(function (err)
+							{
+								updPlaceMark(MttMap, err.message, [], err);
 							});
-
-					//balloon(MttMap, searchControl.getResponseMetaData().request, geoObject.geometry.getCoordinates());
-
 				}, this);
 
 //Россия, Москва, Волоколамское шоссе, 88
-
-				balloon(MttMap, '', MttMap.getCenter());
-
-				//MttMap.geoObjects.add(mttPlacemark);
-
 
 
 				/* когда кликаем по карте */
 				MttMap.events.add('click', function (event)
 				{
 					var coords = event.get('coords');
-					console.log(coords);
+
 					return McMap.locationByLatLng(coords[0], coords[1], 'house')
 							.then(function(location)
 							{
 								console.log('location on map click');
 								console.log(location);
 
-								balloon(MttMap, location.text, location.coords);
+								updPlaceMark(MttMap, location.text, location.coords);
 
 								console.log('END location on map click');
+							})
+							.fail(function(err)
+							{
+								updPlaceMark(MttMap, err.message, coords, err);
 							});
 				});
 
@@ -190,11 +192,8 @@
 				console.log(err);
 			});
 
-	function balloon(MttMap, text, coords)
+	function addPlaceMark(MttMap)
 	{
-
-		MttMap.geoObjects.removeAll();
-
 		var iconContent = 'МотоТрек на карте';
 		var contentHeader = 'МотоТрек на карте';
 		var contentBody =   '<p>' +
@@ -223,17 +222,6 @@
 					,	draggable: true
 				});
 
-		var contentFooter = '<p>' +
-				'<strong>Сейчас указан:</strong><br/>' +
-				text + '<br/>' +
-				coords.join(', ') +
-				'</p>';
-
-		MttMap.geoObjects.add(mttPlacemark);
-		MttMap.setCenter(coords);
-
-		//mttPlacemark.balloon.open();
-
 		/* когда двигаем метку */
 		mttPlacemark.events.add('dragend', function (e)
 		{
@@ -243,16 +231,40 @@
 			return McMap.locationByLatLng(coords[0], coords[1], 'house')
 					.then(function (location)
 					{
-						balloon(MttMap, location.text, location.coords);
+						updPlaceMark(MttMap, location.text, location.coords);
 					})
-					.fail(function(error)
+					.fail(function(err)
 					{
-						console.log(error);
+						updPlaceMark(MttMap, err.message, coords, err);
 					});
 		});
 
+		MttMap.geoObjects.add(mttPlacemark);
+	}
+
+	function updPlaceMark(MttMap, text, coords, err)
+	{
+		//MttMap.setCenter(coords);
+
+		var contentFooter = '<p>' +
+				'<strong>Сейчас указан:</strong><br/>' +
+				text + '<br/>' +
+				coords.join(', ') +
+				'</p>';
+
+		//mttPlacemark.balloon.open();
+
 		mttPlacemark.properties.set('balloonContentFooter', contentFooter);
 		mttPlacemark.geometry.setCoordinates(coords);
+
+		if (err)
+		{
+			$('#s_mtt_address').val('');
+			$('#f_mtt_lat').val('');
+			$('#f_mtt_lng').val('');
+
+			return;
+		}
 
 		$('#s_mtt_address').val(text);
 		$('#f_mtt_lat').val(coords[0]);

@@ -147,9 +147,10 @@
 		return ymaps.geocode([latitude, longitude], {kind: kind, results: results})
 			.then(function (res)
 			{
-				var info = res.geoObjects.get(0).properties.get('metaDataProperty')["GeocoderMetaData"];
+				if (!res.metaData.geocoder.found)
+					throw new ErrorMcMapGetLocation();
 
-				//console.log( info );
+				var info = res.geoObjects.get(0).properties.get('metaDataProperty')["GeocoderMetaData"];
 
 				var location = {
 					coords: [latitude, longitude],
@@ -158,8 +159,6 @@
 					text: info["text"],
 					names: info["text"].split(',').map(function(str){ return str.trim();})
 				};
-
-				//console.log( location );
 
 				return ymaps.vow.resolve(location);
 			});
@@ -186,6 +185,9 @@
 			})
 		]).then(function(res)
 		{
+			if (!res.metaData.geocoder.found)
+				throw new ErrorMcMapGetLocation();
+
 			var info = res.geoObjects.get(0).properties.get('metaDataProperty')["GeocoderMetaData"];
 			var coords = res.geoObjects.position;
 			console.log( info );
@@ -200,13 +202,38 @@
 			};
 
 			return ymaps.vow.resolve(location);
-		})
-			.fail(function (err)
-			{
-				console.log('Error McMap.userLocation');
-				console.log(err);
-			});
+		});
 	};
+
+
+	/**
+	 * список ошибок, которые потом можно обработать
+	 *
+	 * @param message
+	 * @constructor
+	 */
+	function ErrorMcMap(message)
+	{
+		message = message || "";
+		this.message = message;
+		Error.captureStackTrace(this, ErrorMcMap);
+	}
+	$.extend( ErrorMcMap, Error);
+	ErrorMcMap.prototype.name = "ErrorMcMap";
+
+	/**
+	 *
+	 * @param message
+	 * @constructor
+	 */
+	function ErrorMcMapGetLocation(message)
+	{
+		message = message || "не удалось найти объект по указанным координатам";
+		this.message = message;
+		Error.captureStackTrace(this, ErrorMcMapGetLocation);
+	}
+	$.extend(ErrorMcMapGetLocation, ErrorMcMap);
+	ErrorMcMap.prototype.name = "ErrorMcMap";
 
 	window.McMap = McMap;
 
