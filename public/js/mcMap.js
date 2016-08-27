@@ -139,23 +139,30 @@
 	 * @param results - кол-во результаов поиска
 	 * @returns {Promise.<TResult>|*}
 	 */
-	McMap.locationByLatLng = function (latitude, longitude, kind, results)
+	McMap.locationByLatLng = function (coords, params)
 	{
-		kind = kind || 'locality';
-		results = results || 1;
+		var defaults = {
+			results: 10
+		};
+		var options = $.extend( defaults, params);
 
-		return ymaps.geocode([latitude, longitude], {kind: kind, results: results})
+		return ymaps.geocode(coords, options)
 			.then(function (res)
 			{
+				//console.log('res', res);
+				var geoObject = res.geoObjects.get(0);
+
+				console.log('geoObject.getAll()', geoObject);
+
 				if (!res.metaData.geocoder.found)
 					throw new ErrorMcMapGetLocation();
 
 				var info = res.geoObjects.get(0).properties.get('metaDataProperty')["GeocoderMetaData"];
-
+				console.log('info', info);
 				var location = {
-					coords: [latitude, longitude],
-					lat: latitude,
-					lng: longitude,
+					coords: coords,
+					lat: coords[0],
+					lng: coords[1],
 					text: info["text"],
 					names: info["text"].split(',').map(function(str){ return str.trim();})
 				};

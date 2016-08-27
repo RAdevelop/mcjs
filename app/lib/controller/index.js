@@ -323,8 +323,8 @@ class Base
 		//console.log('-----------------------');
 		//console.log('');
 
-		//if (!this.isAction() || !this._parseRoutePaths())
-		if (!this._parseRoutePaths())
+		//if (!this._parseRoutePaths())
+		if (!this.isAction() || !this._parseRoutePaths())
 			return cb(new Errors.HttpStatusError(404, "Not Found"));
 
 		this._getClasses().setSession(this.getReq().session);

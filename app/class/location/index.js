@@ -28,11 +28,21 @@ class Location extends Base
 		for(let i = 0; i < locationData.length; i++)
 		{
 			//чтобы в таблицах location не сохранять улицы и дома...
-			if (locationData[i]["kind"].toLowerCase() == 'street' || locationData[i]["kind"].toLowerCase() == 'house')
+
+			//if (locationData[i]["kind"].toLowerCase() == '' || locationData[i]["kind"].toLowerCase() == '')
+
+			switch (locationData[i]["kind"].toLowerCase())
 			{
-				console.log(locationData[i]["kind"]);
-				locationData.splice(i, 1);
-				i--;
+					case 'country':
+					case 'province':
+					case 'area':
+					case 'locality':
+						break;
+				default:
+					//console.log(locationData[i]["kind"]);
+					locationData.splice(i, 1);
+					i--;
+					break;
 			}
 		}
 

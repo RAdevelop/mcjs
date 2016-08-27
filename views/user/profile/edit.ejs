@@ -28,7 +28,7 @@
                     </form>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" id="ava_crop_container">
-                    <form class="form text-center" action="<%=menuItem.m_path%>/edit"  enctype="multipart/form-data" method="post" target="null_frame" id="formAvaCrop">
+                    <form class="form text-center" action="<%=_reqBaseUrl%>"  enctype="multipart/form-data" method="post" target="null_frame" id="formAvaCrop">
                         <% let cropImage = (previews["1024_768"] ? previews["1024_768"] : '/_0.gif');%>
                         <div class="form-group col-xs-12 col-sm-12 col-md-6">
                             <div class="image-crop-container">
@@ -62,7 +62,7 @@
             </div>
         </div>
         <div role="tabpanel" class="tab-pane " id="base">
-            <form class="form-horizontal" action="<%=menuItem.m_path%>/edit" method="post" id="formLogin">
+            <form class="form-horizontal" action="<%=_reqBaseUrl%>" method="post" id="formLogin">
                 <input type="hidden" name="i_u_id" value="<%=(_user && _user.u_id ? _user.u_id :'')%>"/>
                 <div class="form-group s_login">
                     <label for="s_login" class="col-sm-2 control-label">Логин *</label>
@@ -78,7 +78,7 @@
                     </div>
                 </div>
             </form>
-            <form class="form-horizontal" action="<%=menuItem.m_path%>/edit" method="post" id="formPassword">
+            <form class="form-horizontal" action="<%=_reqBaseUrl%>" method="post" id="formPassword">
                 <input type="hidden" name="i_u_id" value="<%=(_user && _user.u_id ? _user.u_id :'')%>"/>
                 <div class="form-group s_password">
                     <label for="s_password" class="col-sm-2 control-label">пароль *</label>
@@ -100,7 +100,7 @@
                     </div>
                 </div>
             </form>
-            <form class="form-horizontal" action="<%=menuItem.m_path%>/edit" method="post" id="formBase">
+            <form class="form-horizontal" action="<%=_reqBaseUrl%>" method="post" id="formBase">
                 <input type="hidden" name="i_u_id" value="<%=(_user && _user.u_id ? _user.u_id :'')%>"/>
                 <div class="form-group s_name">
                     <label for="s_name" class="col-sm-2 control-label">Имя</label>
@@ -138,7 +138,7 @@
             </form>
         </div>
         <div role="tabpanel" class="tab-pane" id="contacts">
-            <form class="form-horizontal" action="<%=menuItem.m_path%>/edit" method="post" id="formChangeEmail">
+            <form class="form-horizontal" action="<%=_reqBaseUrl%>" method="post" id="formChangeEmail">
                 <input type="hidden" name="i_u_id" value="<%=(_user && _user.u_id ? _user.u_id :'')%>"/>
                 <div class="form-group m_mail">
                     <label for="m_mail" class="col-sm-2 control-label">E-mail</label>
@@ -154,7 +154,7 @@
                     </div>
                 </div>
             </form>
-            <form class="form-horizontal" action="<%=menuItem.m_path%>/edit" method="post" id="formLocation">
+            <form class="form-horizontal" action="<%=_reqBaseUrl%>" method="post" id="formLocation">
                 <input type="hidden" name="i_u_id" value="<%=(_user && _user.u_id ? _user.u_id :'')%>"/>
                 <div class="form-group u_location">
                     <label for="s_location" class="col-sm-2 control-label">Расположение</label>
@@ -162,7 +162,7 @@
                         <div class="row">
                             <div class="col-sm-12">
                                 <div class="input-group">
-                                    <input type="text" class="form-control" id="s_location" name="s_location" value="<%=(l_full_name?l_full_name:'')%>" placeholder="Расположение" readonly="readonly" maxlength="255" required />
+                                    <input type="text" class="form-control" id="s_location" name="s_location" value="<%=(l_full_name?l_full_name:'')%>" placeholder="Расположение" readonly="readonly" maxlength="255" required data-toggle="tooltip" data-container="body" data-placement="auto" title="<%=(l_full_name?l_full_name:'')%>"/>
                                     <input type="hidden" id="f_lat" name="f_lat" value="<%=(u_latitude?u_latitude:'')%>"  readonly="readonly" maxlength="20" required />
                                     <input type="hidden" id="f_lng" name="f_lng" value="<%=(u_longitude?u_longitude:'')%>"  readonly="readonly" maxlength="20" required />
                                     <div class="input-group-btn">
@@ -197,7 +197,7 @@
     </div>
 </div>
 <script src="/js/mcMap.js" type="text/javascript"></script>
-<script type="text/javascript" src="/js/jquery/postRes.js"></script>
+<script src="/js/jquery/postRes.js" type="text/javascript" ></script>
 <script src="/js/uploadify/jquery.uploadify.min.js" type="text/javascript" ></script>
 <script src="/js/uploadify/jquery.uploadifive.min.js" type="text/javascript" ></script>
 <script src="/js/uploadify/jquery.fileUpload.js" type="text/javascript"></script>
@@ -275,11 +275,12 @@ $(function()
     );
 
     var mapState = {
-        //controls: ["zoomControl", "searchControl"]
-        controls: ["zoomControl"]
+        controls: ["zoomControl", "searchControl"]
         , zoom: 10
     };
-    var mapOptions = {};
+    var mapOptions = {
+        searchControlProvider: 'yandex#search'
+    };
     var UserMcMap = new McMap('yaMap', {state: mapState, options: mapOptions});
 
     UserMcMap.init()
@@ -288,23 +289,65 @@ $(function()
                 UserMap.behaviors.disable('multiTouch');
                 UserMap.behaviors.disable('scrollZoom');
 
+                UserMap.geoObjects.removeAll();
+
+                var searchControl = UserMap.controls.get("searchControl");
+                searchControl.events.add('resultselect', function (res)
+                {
+                    /*res.stopPropagation();
+                     res.preventDefault();
+                     res.stopImmediatePropagation();
+                     */
+                    searchControl.hideResult();
+                    searchControl.getResult(res.get('index'))
+                            .then(function (result)
+                            {
+                                //console.log('result = ', result);
+                                //console.log('result.geometry.getCoordinates() = ', result.geometry.getCoordinates());
+                                //console.log("result.properties.get('name') = ", result.properties.get('name'));
+                                //console.log("result.properties.get('text') = ", result.properties.get('text'));
+                                console.log("result.properties = ", result.properties.getAll());
+
+                                var coords = result.geometry.getCoordinates();
+                                searchControl.getMap().geoObjects.removeAll();
+                                searchControl.getMap().geoObjects.add(new ymaps.Placemark(coords));
+
+
+                                var text = result.properties.get('text') || result.properties.get('geocoderMetaData.text');
+
+                                $('#s_location').val(text);
+                                $('#s_location').attr('data-original-title', text);
+                                $('#f_lat').val(coords[0]);
+                                $('#f_lng').val(coords[1]);
+
+                            })
+                            .fail(function (err)
+                            {
+                                console.log(err);
+                                $('#s_location').val('');
+                                $('#s_location').attr('data-original-title', '');
+                                $('#f_lat').val('');
+                                $('#f_lng').val('');
+                            });
+                }, this);
+
                 UserMap.events.add('click', function (event)
                 {
-                    var coords = event.get('coords');
-
-                    return McMap.locationByLatLng(coords[0], coords[1])
+                    return McMap.locationByLatLng(event.get('coords'))
                             .then(function(location)
                             {
                                 UserMap.geoObjects.removeAll();
                                 UserMap.geoObjects.add(new ymaps.Placemark(location.coords));
 
                                 $('#s_location').val(location.text);
+                                $('#s_location').attr('data-original-title', location.text);
                                 $('#f_lat').val(location.lat);
                                 $('#f_lng').val(location.lng);
                             })
                             .fail(function(err)
                             {
                                 $('#s_location').val('');
+                                $('#s_location').attr('data-original-title', '');
                                 $('#f_lat').val('');
                                 $('#f_lng').val('');
                             });
@@ -338,6 +381,7 @@ $(function()
                         .then(function (location)
                         {
                             $('#s_location').val(location.text);
+                            $('#s_location').attr('data-original-title', location.text);
                             $('#f_lat').val(location.lat);
                             $('#f_lng').val(location.lng);
 
@@ -354,6 +398,7 @@ $(function()
                             .fail(function(err)
                             {
                                 $('#s_location').val('');
+                                $('#s_location').attr('data-original-title', '');
                                 $('#f_lat').val('');
                                 $('#f_lng').val('');
                             });
@@ -364,6 +409,7 @@ $(function()
             .spread(function (UserMap, location)
             {
                 $('#s_location').val(location.text);
+                $('#s_location').attr('data-original-title', location.text);
                 $('#f_lat').val(location.lat);
                 $('#f_lng').val(location.lng);
 
@@ -378,6 +424,7 @@ $(function()
                 console.log("не удалось определить координаты");
                 console.log(err);
                 $('#s_location').val('');
+                $('#s_location').attr('data-original-title', '');
                 $('#f_lat').val('');
                 $('#f_lng').val('');
             });

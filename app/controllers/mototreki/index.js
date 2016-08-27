@@ -81,6 +81,15 @@ class Mototreki extends Base
 				return cb(err);
 			});
 	}
+
+	addActionPost(cb)
+	{
+		let tplData = this.getParsedBody();
+		let tplFile = "mototreki/edit.ejs";
+		this.view.setTplData(tplFile, tplData);
+		console.log(tplData);
+		return cb(null, true);
+	}
 }
 
 //************************************************************************* module.exports

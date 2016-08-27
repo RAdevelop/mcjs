@@ -225,7 +225,7 @@
 			{
 				var notUploadedFile = getNotUploadedFiles();
 				var message= [];
-				console.log(notUploadedFile);
+				//console.log(notUploadedFile);
 
 				for (var f in notUploadedFile)
 				{
@@ -297,8 +297,8 @@
 
 			settings.onInit = function()
 			{
-				console.log("$fileUpload.data('uploadifive').settings");
-				console.log($fileUpload.data('uploadifive').settings);
+				//console.log("$fileUpload.data('uploadifive').settings");
+				//console.log($fileUpload.data('uploadifive').settings);
 			};
 
 			//Triggered once for every file that is selected whether it returns and error or not
