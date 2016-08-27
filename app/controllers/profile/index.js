@@ -5,7 +5,6 @@ const Moment = require('moment');
 const Promise = require("bluebird");
 const Errors = require('app/lib/errors');
 const Mail = require('app/lib/mail');
-const MultiGeocoder = require('multi-geocoder');
 const FileUpload = require('app/lib/file/upload');
 
 //const FileErrors = require('app/lib/file/errors');
@@ -371,70 +370,26 @@ class Profile extends Base
 			})
 			.then(function(tplData)
 			{
-				s_location = s_location.split(',').map(function(str){ return str.trim();}).join(',');
-				let locationNames = s_location.split(',');
-				let size = locationNames.length;
-				let locationArr = [];
-
-				for(let i = size; i > 0; i--)
-				{
-					locationArr.push( s_location.split(',', i).join(','));
-				}
-				locationArr = locationArr.reverse();
-
-				let geocoder = new MultiGeocoder({ provider: 'yandex', coordorder: 'latlong', lang: 'ru-RU' });
-
-				return geocoder.geocode(locationArr,{lang: 'ru-RU', kind: 'locality'})
-					.then(function (res)
+				return self.getClass('location').geoCoder(s_location)
+					.then(function (userLocationData)
 					{
-						/*if (res["errors"] == locationArr.length)
-						{
-							tplData.formError.message = 'Не удалось определить указанный населенный пункт';
-							tplData.formError.error = true;
-							tplData.formError.fields["s_location"] = "Уточните название, или просто кликните по карте";
-							return Promise.reject(tplData);
-						}*/
-
-						let features = res["result"]["features"];
-
-						let userLocationData = [];
-						for(let i in features)
-						{
-							let GeocoderMetaData = features[i]["properties"]["metaDataProperty"]["GeocoderMetaData"];
-
-							if(locationNames[i] != features[i]["properties"]["name"])
-								continue;
-
-							userLocationData.push({
-								"coords": features[i]["geometry"]["coordinates"],
-								"lat": features[i]["geometry"]["coordinates"][0],
-								"lng": features[i]["geometry"]["coordinates"][1],
-								"kind": GeocoderMetaData["kind"],
-								"text": GeocoderMetaData["text"],
-								"name": features[i]["properties"]["name"]
-								//"name": locationNames[i]
-							});
-						}
-
-						//console.log(userLocationData.length +' == '+ locationArr.length);
-
-						if (res["errors"].length || userLocationData.length != locationArr.length)
-						{
-							tplData.formError.message = 'Не удалось определить указанный населенный пункт';
-							tplData.formError.error = true;
-							tplData.formError.fields["s_location"] = "Уточните название, или просто кликните по карте";
-							throw new Errors.ValidationError(tplData.formError.message);
-						}
-						return self.getClass('location').create(userLocationData)
-							.then(function (location_id)
+						return self.getClass('location').create(userLocationData);
+					})
+					.then(function (location_id)
+					{
+						return self.getClass('user').updLocation(self.getUserId(), f_lat, f_lng, location_id)
+							.then(function ()
 							{
-								return self.getClass('user').updLocation(self.getUserId(), f_lat, f_lng, location_id)
-									.then(function ()
-									{
-										return Promise.resolve(tplData);
-									});
+								return Promise.resolve(tplData);
 							});
 					});
+			})
+			.catch(Errors.ValidationError, function (err)
+			{
+				tplData.formError.message = err.message;
+				tplData.formError.error = true;
+				tplData.formError.fields["s_location"] = "Уточните название, или просто кликните по карте";
+				throw err;
 			});
 	}
 	
