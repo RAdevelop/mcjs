@@ -387,7 +387,6 @@ class Profile extends Base
 			.catch(Errors.ValidationError, function (err)
 			{
 				tplData.formError.message = err.message;
-				tplData.formError.error = true;
 				tplData.formError.fields["s_location"] = "Уточните название, или просто кликните по карте";
 				throw err;
 			});

@@ -101,13 +101,7 @@ class Location extends Base
 		return GeoCoder.geocode(locationArr,{lang: 'ru-RU', kind: 'locality'})
 			.then(function (res)
 			{
-				/*if (res["errors"] == locationArr.length)
-				 {
-				 tplData.formError.message = 'Не удалось определить указанный населенный пункт';
-				 tplData.formError.error = true;
-				 tplData.formError.fields["s_location"] = "Уточните название, или просто кликните по карте";
-				 return Promise.reject(tplData);
-				 }*/
+				//console.log(res["errors"]);
 
 				let features = res["result"]["features"];
 
@@ -130,7 +124,8 @@ class Location extends Base
 					});
 				}
 
-				//console.log(locationData.length +' == '+ locationArr.length)
+				//console.log(locationData.length +' == '+ locationArr.length);
+				//console.log(locationData);
 
 				if (res["errors"].length || locationData.length != locationArr.length)
 					throw new Errors.ValidationError('Не удалось определить указанный населенный пункт');

@@ -162,7 +162,7 @@
                         <div class="row">
                             <div class="col-sm-12">
                                 <div class="input-group">
-                                    <input type="text" class="form-control" id="s_location" name="s_location" value="<%=(l_full_name?l_full_name:'')%>" placeholder="Расположение" readonly="readonly" maxlength="255" required data-toggle="tooltip" data-container="body" data-placement="auto" title="<%=(l_full_name?l_full_name:'')%>"/>
+                                    <input type="text" class="form-control" id="s_location" name="s_location" value="<%=(l_full_name?l_full_name:'')%>" placeholder="Расположение" maxlength="255" required data-toggle="tooltip" data-container="body" data-placement="auto" title="<%=(l_full_name?l_full_name:'')%>"/>
                                     <input type="hidden" id="f_lat" name="f_lat" value="<%=(u_latitude?u_latitude:'')%>"  readonly="readonly" maxlength="20" required />
                                     <input type="hidden" id="f_lng" name="f_lng" value="<%=(u_longitude?u_longitude:'')%>"  readonly="readonly" maxlength="20" required />
                                     <div class="input-group-btn">
@@ -315,19 +315,12 @@ $(function()
 
                                 var text = result.properties.get('text') || result.properties.get('geocoderMetaData.text');
 
-                                $('#s_location').val(text);
-                                $('#s_location').attr('data-original-title', text);
-                                $('#f_lat').val(coords[0]);
-                                $('#f_lng').val(coords[1]);
-
+                                setLocationOnForm(text, coords[0], coords[1]);
                             })
                             .fail(function (err)
                             {
                                 console.log(err);
-                                $('#s_location').val('');
-                                $('#s_location').attr('data-original-title', '');
-                                $('#f_lat').val('');
-                                $('#f_lng').val('');
+                                setLocationOnForm('', '', '');
                             });
                 }, this);
 
@@ -339,17 +332,11 @@ $(function()
                                 UserMap.geoObjects.removeAll();
                                 UserMap.geoObjects.add(new ymaps.Placemark(location.coords));
 
-                                $('#s_location').val(location.text);
-                                $('#s_location').attr('data-original-title', location.text);
-                                $('#f_lat').val(location.lat);
-                                $('#f_lng').val(location.lng);
+                                setLocationOnForm(location.text, location.lat, location.lng);
                             })
                             .fail(function(err)
                             {
-                                $('#s_location').val('');
-                                $('#s_location').attr('data-original-title', '');
-                                $('#f_lat').val('');
-                                $('#f_lng').val('');
+                                setLocationOnForm('', '', '');
                             });
                 });
 
@@ -380,10 +367,7 @@ $(function()
                 return McMap.userLocation()
                         .then(function (location)
                         {
-                            $('#s_location').val(location.text);
-                            $('#s_location').attr('data-original-title', location.text);
-                            $('#f_lat').val(location.lat);
-                            $('#f_lng').val(location.lng);
+                            setLocationOnForm(location.text, location.lat, location.lng);
 
                             $.ajax({
                                 url: $('#formLocation').attr('action'),
@@ -397,10 +381,7 @@ $(function()
                             })
                             .fail(function(err)
                             {
-                                $('#s_location').val('');
-                                $('#s_location').attr('data-original-title', '');
-                                $('#f_lat').val('');
-                                $('#f_lng').val('');
+                                setLocationOnForm('', '', '');
                             });
 
                             return ymaps.vow.resolve([UserMap, location]);
@@ -408,10 +389,7 @@ $(function()
             })
             .spread(function (UserMap, location)
             {
-                $('#s_location').val(location.text);
-                $('#s_location').attr('data-original-title', location.text);
-                $('#f_lat').val(location.lat);
-                $('#f_lng').val(location.lng);
+                setLocationOnForm(location.text, location.lat, location.lng);
 
                 UserMap.geoObjects.removeAll();
                 UserMap.setCenter(location.coords);
@@ -423,11 +401,16 @@ $(function()
             {
                 console.log("не удалось определить координаты");
                 console.log(err);
-                $('#s_location').val('');
-                $('#s_location').attr('data-original-title', '');
-                $('#f_lat').val('');
-                $('#f_lng').val('');
+                setLocationOnForm('', '', '');
             });
+
+    function setLocationOnForm(text, lat, lgn)
+    {
+        $('#s_location').val(text);
+        $('#s_location').attr('data-original-title', text);
+        $('#f_lat').val(lat);
+        $('#f_lng').val(lgn);
+    }
 });
 //-->
 </script>
