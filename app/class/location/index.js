@@ -32,6 +32,7 @@ class Location extends Base
 
 			//if (locationData[i]["kind"].toLowerCase() == '' || locationData[i]["kind"].toLowerCase() == '')
 
+			//https://tech.yandex.ru/maps/doc/geocoder/desc/reference/kind-docpage/
 			switch (locationData[i]["kind"].toLowerCase())
 			{
 					case 'country':
@@ -87,6 +88,11 @@ class Location extends Base
 	{
 		s_location = s_location.split(',').map(function(str){ return str.trim();}).join(',');
 		let locationNames = s_location.split(',');
+		/*
+		console.log("locationNames");
+		console.log(locationNames);
+		console.log('-------');*/
+
 		let size = locationNames.length;
 		let locationArr = [];
 
@@ -96,12 +102,17 @@ class Location extends Base
 		}
 		locationArr = locationArr.reverse();
 
-		const GeoCoder = new MultiGeocoder({ provider: 'yandex', coordorder: 'latlong', lang: 'ru-RU' });
+		const GeoCoder = new MultiGeocoder({ provider: 'yandex', coordorder: 'latlong', lang: 'ru-RU', kind: 'house' });
 
-		return GeoCoder.geocode(locationArr,{lang: 'ru-RU', kind: 'locality'})
+		//locationArr = ["Россия, Москва, Вадковский переулок, 3Ас11"];
+		//console.log(locationArr);
+
+		//return GeoCoder.geocode(locationArr,{lang: 'ru-RU', kind: 'locality'})
+		return GeoCoder.geocode(locationArr,{lang: 'ru-RU'})
 			.then(function (res)
 			{
 				//console.log(res["errors"]);
+				//console.log(res);
 
 				let features = res["result"]["features"];
 
@@ -109,9 +120,11 @@ class Location extends Base
 				for (let i in features)
 				{
 					let GeocoderMetaData = features[i]["properties"]["metaDataProperty"]["GeocoderMetaData"];
+					//console.log(GeocoderMetaData);
 
-					if (locationNames[i] != features[i]["properties"]["name"])
-						continue;
+					//if (locationNames[i] != features[i]["properties"]["name"])
+					//if (locationNames[i] != GeocoderMetaData["text"])
+					//	continue;
 
 					locationData.push({
 						"coords": features[i]["geometry"]["coordinates"],
@@ -125,7 +138,6 @@ class Location extends Base
 				}
 
 				//console.log(locationData.length +' == '+ locationArr.length);
-				//console.log(locationData);
 
 				if (res["errors"].length || locationData.length != locationArr.length)
 					throw new Errors.ValidationError('Не удалось определить указанный населенный пункт');

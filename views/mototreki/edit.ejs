@@ -18,25 +18,25 @@
 			<div class="form-group s_mtt_descrip">
 				<label for="s_mtt_descrip" class="col-sm-2 control-label">описание</label>
 				<div class="col-sm-10">
-					<textarea class="form-control" id="s_mtt_descrip" name="s_mtt_descrip" placeholder="описание трека" required></textarea>
+					<textarea class="form-control" style="height: 250px;" id="s_mtt_descrip" name="t_mtt_descrip" placeholder="описание трека" required></textarea>
 				</div>
 			</div>
 		</div>
 		<div role="tabpanel" class="tab-pane" id="contacts">
-			<div class="form-group">
-				<label for="s_mtt_website" class="col-sm-2 control-label s_mtt_website">веб-сайт</label>
+			<div class="form-group s_mtt_website">
+				<label for="s_mtt_website" class="col-sm-2 control-label">веб-сайт</label>
 				<div class="col-sm-10 s_mtt_website">
 					<input type="text" class="form-control" id="s_mtt_website" name="s_mtt_website" value="" placeholder="веб-сайт" />
 				</div>
 			</div>
-			<div class="form-group">
-				<label for="s_mtt_email" class="col-sm-2 control-label s_mtt_email">E-mail</label>
-				<div class="col-sm-10 s_mtt_email">
-					<input type="text" class="form-control" id="s_mtt_email" name="s_mtt_email" value="" placeholder="E-mail" />
+			<div class="form-group m_mtt_email">
+				<label for="m_mtt_email" class="col-sm-2 control-label">E-mail</label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" id="m_mtt_email" name="m_mtt_email" value="" placeholder="E-mail" />
 				</div>
 			</div>
-			<div class="form-group">
-				<label for="s_mtt_phones" class="col-sm-2 control-label s_mtt_phones">телефон(-ы)</label>
+			<div class="form-group s_mtt_phones">
+				<label for="s_mtt_phones" class="col-sm-2 control-label">телефон(-ы)</label>
 				<div class="col-sm-10 s_mtt_phones">
 					<input type="text" class="form-control" id="s_mtt_phones" name="s_mtt_phones" value="" placeholder="телефон(-ы)" />
 				</div>
@@ -44,7 +44,7 @@
 			<div class="form-group s_mtt_address">
 				<label for="m_mail" class="col-sm-1 control-label">адрес *</label>
 				<div class="col-sm-11">
-					<input type="text" class="form-control" id="s_mtt_address" name="s_mtt_address" value="" placeholder="адрес" required="">
+					<input type="text" class="form-control" id="s_mtt_address" name="s_mtt_address" value="" placeholder="адрес" required="required" data-toggle="tooltip" data-container="body" data-placement="auto" title="">
 					<span class="help-block">укажите адрес с помощью карты: через поиск адреса, или по клику на карте.</span>
 					<input type="text" id="f_mtt_lat" name="f_mtt_lat" value="" readonly="readonly" maxlength="20" required="" />
 					<input type="text" id="f_mtt_lng" name="f_mtt_lng" value="" readonly="readonly" maxlength="20" required="" />
@@ -83,7 +83,15 @@
 //<!--
 (function($)
 {
-	$('#formMototrek').postRes({btnId: 'btn_edit_mototrek'});
+	$('#formMototrek').postRes({btnId: 'btn_edit_mototrek',
+		onSuccess: function($dialog, respData)
+		{
+			if (respData["i_mtt_id"])
+				window.location.href = "<%=menuItem.m_path%>/edit/" +respData["i_mtt_id"];
+
+			return false;
+		}
+	});
 
 	var mapState = {
 		//center: [img["ai_latitude"], img["ai_longitude"]]
@@ -184,19 +192,6 @@ console.log('click by coords', coords);
 
 				return ymaps.vow.resolve(MttMap);
 			})
-			.then(function (MttMap)
-			{
-				console.log("MttMap");
-				/*return MttMap.locationByLatLng(MttMcMap.getCenter()[0], MttMcMap.getCenter()[1], 'house', 1)
-						.then(function (location)
-						{
-							MttMcMap.hint.open(MttMcMap.getCenter(),
-									location["text"]
-							);
-
-							return ymaps.vow.resolve(location);
-						});*/
-			})
 			.fail(function (err)
 			{
 				console.log(err);
@@ -222,13 +217,16 @@ console.log('click by coords', coords);
 				,	{
 					/* Свойства*/
 					iconContent: iconContent
+					, iconCaption: iconContent
 					,	balloonContentHeader: contentHeader
 					,	balloonContentBody: contentBody
 					,	balloonContentFooter: contentFooter
 				}
 				,   {
 					/* Опции*/
-					preset: 'islands#blueStretchyIcon' /* иконка растягивается под контент */
+					//preset: 'islands#blueStretchyIcon' /* иконка растягивается под контент */
+					//preset: 'islands#blueBicycle2Icon
+					preset: 'islands#blueDotIconWithCaption'
 					,	draggable: true
 				});
 
@@ -278,6 +276,7 @@ console.log('click by coords', coords);
 		}
 
 		$('#s_mtt_address').val(text);
+		$('#s_mtt_address').attr('data-original-title', text);
 		$('#f_mtt_lat').val(coords[0]);
 		$('#f_mtt_lng').val(coords[1]);
 	}

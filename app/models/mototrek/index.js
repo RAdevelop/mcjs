@@ -9,17 +9,54 @@ const BaseModel = require('app/lib/db');
 class Mototrek extends BaseModel
 {
 	/**
-	 * получаем список расположений (страна - область - населенный пункт)
+	 * добавляем новый трек
+	 *
+	 * @param s_mtt_name
+	 * @param s_mtt_descrip
+	 * @param s_mtt_website
+	 * @param m_mtt_email
+	 * @param s_mtt_phones
+	 * @param s_mtt_address
+	 * @param f_mtt_lat
+	 * @param f_mtt_lng
+	 * @returns {*}
 	 */
-	locationList(cb)
+	add(s_mtt_name, s_mtt_descrip, s_mtt_website, m_mtt_email, s_mtt_phones, s_mtt_address, f_mtt_lat, f_mtt_lng, location_id)
 	{
-		//nl.l_name AS value для автокомплиттеров на клиенте
-		let sql = "SELECT l.l_id, l.l_pid, l.l_level, l.l_lk, l.l_rk, nl.l_name, nl.l_name AS value " +
-			"FROM `location` AS l " +
-			"JOIN `location_names` AS nl ON (nl.l_id = l.l_id) " +
-			"ORDER BY l.l_lk";
+		let sql = "INSERT INTO moto_track (mtt_name, mtt_website, mtt_address, mtt_descrip, mtt_email, mtt_phones" +
+			", mtt_latitude, mtt_longitude, mtt_location_id" +
+			", mtt_create_ts, mtt_update_ts) " +
+			" VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-		return self.constructor.conn().s(sql);
+		let now_ts = Moment().unix();
+		let sqlData = [s_mtt_name, s_mtt_website, s_mtt_address, s_mtt_descrip, m_mtt_email, s_mtt_phones, f_mtt_lat, f_mtt_lng, location_id, now_ts, now_ts];
+
+		return this.constructor.conn().ins(sql, sqlData)
+			.then(function (res)
+			{
+				return Promise.resolve(res["insertId"]);
+			});
+	}
+
+	/**
+	 * данные трека по его id
+	 *
+	 * @param mtt_id
+	 * @returns {*}
+	 */
+	getById(mtt_id)
+	{
+		let sql = "SELECT mtt_name, mtt_website, mtt_address, mtt_descrip, mtt_email, mtt_phones" +
+			", mtt_latitude, mtt_longitude, mtt_location_id" +
+			", mtt_create_ts, mtt_update_ts" +
+			" FROM moto_track" +
+			" WHERE mtt_id = ?";
+
+		return this.constructor.conn().sRow(sql, [mtt_id])
+			.then(function (res)
+			{
+				return Promise.resolve(res);
+			});
 	}
 }
 
