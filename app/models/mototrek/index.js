@@ -160,6 +160,23 @@ class Mototrek extends BaseModel
 				return Promise.resolve(res);
 			});
 	}
+
+	/**
+	 * список локаций, к которым привязан трек (включая родительские районы, города, страны..)
+	 */
+	getLocations()
+	{
+		/*SELECT
+		 l.l_id, l.l_pid, l.l_level, l.l_lk, l.l_rk
+		 , ln.l_kind, ln.l_name, ln.l_full_name
+		 FROM
+		 moto_track_locations AS mtl
+		 JOIN mcjs.location_names AS ln ON(ln.l_id = mtl.l_id AND ln.l_kind IN ('country','province','locality'))
+		 JOIN mcjs.location AS l ON(l.l_id = ln.l_id)
+		 #WHERE
+		 GROUP BY mtl.l_id
+		 ORDER BY l.l_level, ln.l_name, l.l_lk#, l.l_level, ln.l_kind, ln.l_name*/
+	}
 }
 
 //************************************************************************* module.exports
