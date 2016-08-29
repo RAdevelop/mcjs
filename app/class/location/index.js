@@ -38,6 +38,7 @@ class Location extends Base
 					case 'country':
 					case 'province':
 					case 'area':
+					case 'district':
 					case 'locality':
 						break;
 				default:

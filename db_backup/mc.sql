@@ -159,7 +159,7 @@ CREATE TABLE `location` (
   PRIMARY KEY (`l_id`),
   KEY `lr_level` (`l_lk`,`l_rk`,`l_level`),
   KEY `level` (`l_level`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -168,7 +168,7 @@ CREATE TABLE `location` (
 
 LOCK TABLES `location` WRITE;
 /*!40000 ALTER TABLE `location` DISABLE KEYS */;
-INSERT INTO `location` VALUES (1,0,1,1,12,0),(2,1,2,2,11,0),(3,2,3,5,10,0),(4,3,4,6,9,0),(5,4,5,7,8,0),(6,2,3,3,4,0);
+INSERT INTO `location` VALUES (1,0,1,1,18,0),(2,1,2,12,17,0),(3,2,3,13,16,0),(4,3,4,14,15,0),(5,1,2,2,11,0),(6,5,3,9,10,0),(7,5,3,3,8,0),(8,7,4,4,7,0),(9,8,5,5,6,0);
 /*!40000 ALTER TABLE `location` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -229,7 +229,7 @@ CREATE TABLE `location_names` (
 
 LOCK TABLES `location_names` WRITE;
 /*!40000 ALTER TABLE `location_names` DISABLE KEYS */;
-INSERT INTO `location_names` VALUES (1,0,'Россия',61.69865300,99.50540500,'country','Россия'),(2,1,'Московская область',55.81579200,37.38003100,'province','Россия, Московская область'),(3,2,'Раменский район',55.56728000,38.22580400,'area','Россия, Московская область, Раменский район'),(4,3,'Островецкое сельское поселение',55.59190000,37.99351700,'area','Россия, Московская область, Раменский район, Островецкое сельское поселение'),(5,4,'село Верхнее Мячково',55.55066200,37.97962000,'locality','Россия, Московская область, Раменский район, Островецкое сельское поселение, село Верхнее Мячково'),(6,2,'Подольск',55.43117700,37.54473700,'locality','Россия, Московская область, Подольск');
+INSERT INTO `location_names` VALUES (1,0,'Россия',61.69865300,99.50540500,'country','Россия'),(2,1,'Москва',55.75396000,37.62039300,'locality','Россия, Москва'),(3,2,'Зеленоград',55.99189300,37.21438200,'locality','Россия, Москва, Зеленоград'),(4,3,'район Савёлки',55.98991500,37.23801600,'district','Россия, Москва, Зеленоградский административный округ, район Савёлки'),(5,1,'Московская область',55.81579200,37.38003100,'province','Россия, Московская область'),(6,5,'Подольск',55.43117700,37.54473700,'locality','Россия, Московская область, Подольск'),(7,5,'Раменский район',55.56728000,38.22580400,'area','Россия, Московская область, Раменский район'),(8,7,'Островецкое сельское поселение',55.59190000,37.99351700,'area','Россия, Московская область, Раменский район, Островецкое сельское поселение'),(9,8,'село Верхнее Мячково',55.55066200,37.97962000,'locality','Россия, Московская область, Раменский район, Островецкое сельское поселение, село Верхнее Мячково');
 /*!40000 ALTER TABLE `location_names` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -318,7 +318,7 @@ CREATE TABLE `moto_track` (
   `mtt_update_ts` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`mtt_id`),
   UNIQUE KEY `mtt_name` (`mtt_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -327,8 +327,32 @@ CREATE TABLE `moto_track` (
 
 LOCK TABLES `moto_track` WRITE;
 /*!40000 ALTER TABLE `moto_track` DISABLE KEYS */;
-INSERT INTO `moto_track` VALUES (1,'Автодром «Лидер»','globalracing.ru','Россия, Московская область, Подольск, Симферопольское шоссе, 42-й километр, 1к9','<p>Общие характеристики трассы:</p>\r\n<ul>\r\n<li>Открытие &ndash; осень 2004 г.</li>\r\n<li>Официальное открытие &ndash; 9 июля 2005 г.</li>\r\n<li>Длина &ndash; 1153 метра</li>\r\n<li>Максимальная ширина - 10 метров</li>\r\n<li>Минимальная ширина &ndash; 8 метров</li>\r\n<li>Общее количество поворотов - 17</li>\r\n<li>Количество правых поворотов &ndash; 9</li>\r\n<li>Количество левых поворотов &ndash; 8</li>\r\n<li>Количество гонщиков на стартовой решетке - до 34</li>\r\n<li>Количество судейских постов на трассе &ndash; 9</li>\r\n<li>Количество боксов &ndash; 14 (по 40 м.кв.)</li>\r\n<li>Покрытие &ndash; асфальт (первое покрытие 2004 г)</li>\r\n<li>Вместимость трибуны для зрителей &ndash; до 1.000 человек (4 сектора)</li>\r\n</ul>\r\n<p>Географическое расположение</p>\r\n<p>Трек расположен на 41 км автомагистрали М2 Москва-Крым (направление на Тулу). Южное направление дает некоторые преимущества. Часто, когда в Москве дождь, над треком сияет солнце.</p>\r\n<p>Инфраструктура и сервис</p>\r\n<p>Автодром построен на территории загородного клуба &laquo;Айвенго&raquo;, в уютных номерах которого вы можете с комфортом передохнуть между тренировками, остановиться на несколько дней для более основательной подготовки к соревнованиям, перекусить в кафе, ресторане, поиграть на открытой площадке в большой теннис, сходить в сауну, казино, да и вообще приятно провести время со своей семьей или друзьями, которые наверняка захотят поехать на воскресную гонку вместе с вами.</p>\r\n<p>Спортивные составляющие:</p>\r\n<ul>\r\n<li>подходит для езды на картах (спортивных и прокатных),</li>\r\n<li>минимотоциклах,</li>\r\n<li>супермотардах,</li>\r\n<li>шоссейных мотоциклах</li>\r\n<li>и автомобилях.</li>\r\n</ul>','info@globalracing.ru','+7 (495) 971-16-65; +7 (903) 977-12-40',55.39917189,37.60356793,6,1472393643,1472491391),(2,'АДМ Мячково','admraceway.ru','Россия, Московская область, Раменский район, Островецкое сельское поселение, село Верхнее Мячково, аэродром Мячково','<p>ADM Raceway&nbsp;&mdash; старейшая из ныне действующих российских гоночных трасс, построенная в&nbsp;соответствии с требованиями категории III&nbsp;FIA (фр. F&eacute;d&eacute;ration Internationale&nbsp;<wbr />de l&rsquo;Automobile&nbsp;&mdash; Международная автомобильная федерация). Представляет собой ровный&nbsp;асфальтированный участок длиной 3275 метров с 16 поворотами и несколькими скоростными прямыми, на котором можно проводить заезды как по часовой, так и против часовой стрелки. При необходимости может быть разделена на&nbsp;несколько&nbsp;<a href=\"http://admraceway.ru/configurations/\" target=\"_blank\">конфигураций.</a>&nbsp;Ширина дорожного полотна варьируется&nbsp;от 9 до 12 метров.</p>','adm@adm-raceway.ru','+7 (495) 995-95-93',55.56046900,37.98247700,5,1472394917,1472491335);
+INSERT INTO `moto_track` VALUES (1,'Автодром «Лидер»','globalracing.ru','Россия, Московская область, Подольск, Симферопольское шоссе, 42-й километр, 1к9','<p>Общие характеристики трассы:</p>\r\n<ul>\r\n<li>Открытие &ndash; осень 2004 г.</li>\r\n<li>Официальное открытие &ndash; 9 июля 2005 г.</li>\r\n<li>Длина &ndash; 1153 метра</li>\r\n<li>Максимальная ширина - 10 метров</li>\r\n<li>Минимальная ширина &ndash; 8 метров</li>\r\n<li>Общее количество поворотов - 17</li>\r\n<li>Количество правых поворотов &ndash; 9</li>\r\n<li>Количество левых поворотов &ndash; 8</li>\r\n<li>Количество гонщиков на стартовой решетке - до 34</li>\r\n<li>Количество судейских постов на трассе &ndash; 9</li>\r\n<li>Количество боксов &ndash; 14 (по 40 м.кв.)</li>\r\n<li>Покрытие &ndash; асфальт (первое покрытие 2004 г)</li>\r\n<li>Вместимость трибуны для зрителей &ndash; до 1.000 человек (4 сектора)</li>\r\n</ul>\r\n<p>Географическое расположение</p>\r\n<p>Трек расположен на 41 км автомагистрали М2 Москва-Крым (направление на Тулу). Южное направление дает некоторые преимущества. Часто, когда в Москве дождь, над треком сияет солнце.</p>\r\n<p>Инфраструктура и сервис</p>\r\n<p>Автодром построен на территории загородного клуба &laquo;Айвенго&raquo;, в уютных номерах которого вы можете с комфортом передохнуть между тренировками, остановиться на несколько дней для более основательной подготовки к соревнованиям, перекусить в кафе, ресторане, поиграть на открытой площадке в большой теннис, сходить в сауну, казино, да и вообще приятно провести время со своей семьей или друзьями, которые наверняка захотят поехать на воскресную гонку вместе с вами.</p>\r\n<p>Спортивные составляющие:</p>\r\n<ul>\r\n<li>подходит для езды на картах (спортивных и прокатных),</li>\r\n<li>минимотоциклах,</li>\r\n<li>супермотардах,</li>\r\n<li>шоссейных мотоциклах</li>\r\n<li>и автомобилях.</li>\r\n</ul>','info@globalracing.ru','+7 (495) 971-16-65; +7 (903) 977-12-40',55.39917189,37.60356793,6,1472393643,1472506331),(2,'АДМ Мячково','admraceway.ru','Россия, Московская область, Раменский район, Островецкое сельское поселение, село Верхнее Мячково, аэродром Мячково','<p>ADM Raceway&nbsp;&mdash; старейшая из ныне действующих российских гоночных трасс, построенная в&nbsp;соответствии с требованиями категории III&nbsp;FIA (фр. F&eacute;d&eacute;ration Internationale&nbsp;<wbr />de l&rsquo;Automobile&nbsp;&mdash; Международная автомобильная федерация). Представляет собой ровный&nbsp;асфальтированный участок длиной 3275 метров с 16 поворотами и несколькими скоростными прямыми, на котором можно проводить заезды как по часовой, так и против часовой стрелки. При необходимости может быть разделена на&nbsp;несколько&nbsp;<a href=\"http://admraceway.ru/configurations/\" target=\"_blank\">конфигураций</a>. Ширина дорожного полотна варьируется&nbsp;от 9 до 12 метров.</p>','adm@adm-raceway.ru','+7 (495) 995-95-93',55.56046900,37.98247700,9,1472394917,1472506539),(3,'Картодром «Фирсановка»','','Россия, Москва, Зеленоградский административный округ, район Савёлки','','','',55.97220013,37.25403031,4,1472505185,1472506254);
 /*!40000 ALTER TABLE `moto_track` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `moto_track_locations`
+--
+
+DROP TABLE IF EXISTS `moto_track_locations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `moto_track_locations` (
+  `mtt_id` int(10) unsigned NOT NULL,
+  `l_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`l_id`,`mtt_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `moto_track_locations`
+--
+
+LOCK TABLES `moto_track_locations` WRITE;
+/*!40000 ALTER TABLE `moto_track_locations` DISABLE KEYS */;
+INSERT INTO `moto_track_locations` VALUES (1,1),(2,1),(3,1),(3,2),(3,3),(3,4),(1,5),(2,5),(1,6),(2,7),(2,8),(2,9);
+/*!40000 ALTER TABLE `moto_track_locations` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -556,7 +580,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1472491391,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1472151796,'RoLex',1);
+INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1472506539,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1472151796,'RoLex',1);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -587,7 +611,7 @@ CREATE TABLE `users_data` (
 
 LOCK TABLES `users_data` WRITE;
 /*!40000 ALTER TABLE `users_data` DISABLE KEYS */;
-INSERT INTO `users_data` VALUES (1,'Алексей','Романов',1,359409600,13,55.41466598,37.90089732),(11,'','',2,0,2,55.75396000,37.62039300);
+INSERT INTO `users_data` VALUES (1,'Алексей','Романов',1,359409600,7,55.64356157,37.67044387),(11,'','',2,0,2,55.75396000,37.62039300);
 /*!40000 ALTER TABLE `users_data` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1458,7 +1482,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`mc`@`%` PROCEDURE `location_move`(IN f_id INT, IN t_id INT, OUT res INT)
 BEGIN
@@ -1473,6 +1497,7 @@ BEGIN
   DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK ;
   SET res = 0 ;
   SET max_sp_recursion_depth = 1 ;
+  
   START TRANSACTION ;
   SET done = 0 ;
   SELECT 
@@ -1484,26 +1509,27 @@ BEGIN
   FROM
     `location` 
   WHERE l_id = f_id ;
+  
   IF t_id = 0 
   THEN 
-  SELECT 
-    IFNULL(MIN(l_lk), 1) - 1
-    , IFNULL(MAX(l_rk), 2) + 1
-    , 0 INTO t_lft
-    , t_rgt
-    , t_lev 
-  FROM
-    `location` ;
+	  SELECT 
+		IFNULL(MIN(l_lk), 1) - 1
+		, IFNULL(MAX(l_rk), 2) + 1
+		, 0 INTO t_lft
+		, t_rgt
+		, t_lev 
+	  FROM
+		`location` ;
   ELSE 
-  SELECT 
-    l_lk
-    , l_rk
-    , l_level INTO t_lft
-    , t_rgt
-    , t_lev 
-  FROM
-    `location` 
-  WHERE l_id = t_id ;
+	  SELECT 
+		l_lk
+		, l_rk
+		, l_level INTO t_lft
+		, t_rgt
+		, t_lev 
+	  FROM
+		`location` 
+	  WHERE l_id = t_id ;
   END IF ;
   IF NOT done 
   THEN 
@@ -3166,4 +3192,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-08-29 21:01:12
+-- Dump completed on 2016-08-30  0:41:34

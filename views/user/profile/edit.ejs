@@ -275,14 +275,12 @@ $(function()
     );
 
     var mapState = {
-        controls: ["zoomControl", "searchControl"]
+        controls: ["zoomControl", "searchControl", "typeSelector"]
         , zoom: 10
     };
-    var mapOptions = {
-        searchControlProvider: 'yandex#search'
-    };
+    var mapOptions = {};
     var UserMcMap = new McMap('yaMap', {state: mapState, options: mapOptions});
-
+    var uPlacemark;
     UserMcMap.init()
             .then(function (UserMap)
             {
@@ -329,8 +327,7 @@ $(function()
                     return McMap.locationByLatLng(event.get('coords'))
                             .then(function(location)
                             {
-                                UserMap.geoObjects.removeAll();
-                                UserMap.geoObjects.add(new ymaps.Placemark(location.coords));
+                                uPlacemark.geometry.setCoordinates(location.coords);
 
                                 setLocationOnForm(location.text, location.lat, location.lng);
                             })
@@ -339,6 +336,34 @@ $(function()
                                 setLocationOnForm('', '', '');
                             });
                 });
+
+                uPlacemark = new ymaps.Placemark(
+                        UserMap.getCenter()
+                        ,	{}
+                        ,   {
+                            /* Опции*/
+                            //preset: 'islands#blueStretchyIcon' /* иконка растягивается под контент */
+                            //preset: 'islands#blueBicycle2Icon
+                            preset: 'islands#blueDotIconWithCaption'
+                            ,	draggable: true
+                        });
+                /* когда двигаем метку */
+                uPlacemark.events.add('dragend', function (e)
+                {
+                    var thisPlacemark = e.get('target');
+                    var coords = thisPlacemark.geometry.getCoordinates();
+
+                    return McMap.locationByLatLng(coords)
+                            .then(function (location)
+                            {
+                                setLocationOnForm(location.text, location.coords[0], location.coords[1])
+                            })
+                            .fail(function(err)
+                            {
+                                setLocationOnForm('', '', '');
+                            });
+                });
+                UserMap.geoObjects.add(uPlacemark);
 
                 return ymaps.vow.resolve(UserMap);
             })
@@ -367,8 +392,6 @@ $(function()
                 return McMap.userLocation()
                         .then(function (location)
                         {
-                            setLocationOnForm(location.text, location.lat, location.lng);
-
                             $.ajax({
                                 url: $('#formLocation').attr('action'),
                                 method: "POST",
@@ -391,9 +414,8 @@ $(function()
             {
                 setLocationOnForm(location.text, location.lat, location.lng);
 
-                UserMap.geoObjects.removeAll();
                 UserMap.setCenter(location.coords);
-                UserMap.geoObjects.add(new ymaps.Placemark(location.coords));
+                uPlacemark.geometry.setCoordinates(location.coords);
 
                 return ymaps.vow.resolve(true);
             })

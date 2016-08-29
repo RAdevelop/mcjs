@@ -119,13 +119,11 @@
 	var mapState = {
 		//center: [img["ai_latitude"], img["ai_longitude"]]
 		 controls: ["zoomControl", "searchControl", "typeSelector"]
-		, zoom: 10
+		, zoom: 14
 		, type: 'yandex#hybrid'
 		, behaviors: ["default"]
 	};
-	var mapOptions = {
-		//searchControlProvider: 'yandex#search'
-	};
+	var mapOptions = {};
 	var MttMcMap = new McMap('mttMap', {state: mapState, options: mapOptions});
 	var mttPlacemark;
 	MttMcMap.init()
@@ -229,8 +227,8 @@ console.log('click by coords', coords);
 		else
 			center = MttMap.getCenter();
 
-		var iconContent = 'МотоТрек на карте';
-		var contentHeader = 'МотоТрек на карте';
+		var iconContent = (MCJS["trek"] && MCJS["trek"]["mtt_name"] ? MCJS["trek"]["mtt_name"] : 'МотоТрек на карте');
+		var contentHeader = iconContent;
 		var contentBody =   '<p>Чтобы указать место расположения объекта, найдите его с помощью поисковой строки, ' +
 				'или кликните мышкой по карте.</p>';
 

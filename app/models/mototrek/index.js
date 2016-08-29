@@ -30,11 +30,44 @@ class Mototrek extends BaseModel
 
 		let now_ts = Moment().unix();
 		let sqlData = [s_mtt_name, s_mtt_website, s_mtt_address, t_mtt_descrip, m_mtt_email, s_mtt_phones, f_mtt_lat, f_mtt_lng, location_id, now_ts, now_ts];
+		let i_mtt_id;
 
 		return this.constructor.conn().ins(sql, sqlData)
+			.bind(this)
 			.then(function (res)
 			{
-				return Promise.resolve(res["insertId"]);
+				i_mtt_id = res["insertId"];
+
+				sql = "SELECT l_lk, l_rk FROM location WHERE l_id = ?;";
+
+				return this.constructor.conn().sRow(sql, [location_id]);
+			})
+			.then(function (res)
+			{
+				let {l_lk, l_rk} = res;
+
+				sql = "SELECT l_id FROM location WHERE l_lk <= ? AND l_rk >= ? ORDER BY l_lk;";
+				return this.constructor.conn().s(sql, [l_lk, l_rk]);
+			})
+			.then(function (res)
+			{
+				let sqlIns = [], sqlData = [i_mtt_id];
+				res.forEach(function (item)
+				{
+					sqlIns.push("(?, ?)");
+					sqlData.push(i_mtt_id, item["l_id"]);
+				});
+
+				sql = "DELETE FROM moto_track_locations WHERE mtt_id = ?;" +
+					"INSERT INTO moto_track_locations (mtt_id, l_id) " +
+					"VALUES " +sqlIns.join(',')+ "" +
+					" ON DUPLICATE KEY UPDATE l_id=VALUES(l_id);";
+
+				return this.constructor.conn().multis(sql, sqlData);
+			})
+			.then(function ()
+			{
+				return Promise.resolve(i_mtt_id);
 			});
 	}
 
@@ -71,6 +104,36 @@ class Mototrek extends BaseModel
 		let sqlData = [s_mtt_name, s_mtt_website, s_mtt_address, t_mtt_descrip, m_mtt_email, s_mtt_phones, f_mtt_lat, f_mtt_lng, location_id, now_ts, i_mtt_id];
 
 		return this.constructor.conn().upd(sql, sqlData)
+			.bind(this)
+			.then(function ()
+			{
+				sql = "SELECT l_lk, l_rk FROM location WHERE l_id = ?;";
+
+				return this.constructor.conn().sRow(sql, [location_id]);
+			})
+			.then(function (res)
+			{
+				let {l_lk, l_rk} = res;
+
+				sql = "SELECT l_id FROM location WHERE l_lk <= ? AND l_rk >= ? ORDER BY l_lk;";
+				return this.constructor.conn().s(sql, [l_lk, l_rk]);
+			})
+			.then(function (res)
+			{
+				let sqlIns = [], sqlData = [i_mtt_id];
+				res.forEach(function (item)
+				{
+					sqlIns.push("(?, ?)");
+					sqlData.push(i_mtt_id, item["l_id"]);
+				});
+
+				sql = "DELETE FROM moto_track_locations WHERE mtt_id = ?;" +
+					"INSERT INTO moto_track_locations (mtt_id, l_id) " +
+					"VALUES " +sqlIns.join(',')+ "" +
+					" ON DUPLICATE KEY UPDATE l_id=VALUES(l_id);";
+
+				return this.constructor.conn().multis(sql, sqlData);
+			})
 			.then(function ()
 			{
 				return Promise.resolve(i_mtt_id);
