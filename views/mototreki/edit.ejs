@@ -87,12 +87,19 @@
 	var tMttDescripTinymce = tinymce.init({
 		selector: '#t_mtt_descrip'
 		, language: "ru_RU"
-		, themes: "inlite"
+		, themes: "modern"
 		, setup: function (editor) {
 			editor.on('change', function () {
 				tinymce.triggerSave();
 			});
-		}
+		},
+		plugins: [
+			'lists link charmap preview',
+			'searchreplace wordcount visualblocks visualchars code fullscreen',
+			'table contextmenu paste'
+		]
+		,menubar:false
+		,toolbar: 'undo redo | styleselect | bold italic | bullist numlist outdent indent | link code preview'
 	});
 
 	$('#formMototrek').submit(function ()
@@ -102,8 +109,8 @@
 	}).postRes({btnId: 'btn_edit_mototrek',
 		onSuccess: function($dialog, respData)
 		{
-			//if (respData["i_mtt_id"])
-			//	window.location.href = "<%=menuItem.m_path%>/edit/" +respData["i_mtt_id"];
+			if (respData["i_mtt_id"])
+				window.location.href = "<%=menuItem.m_path%>/edit/" +respData["i_mtt_id"];
 
 			return false;
 		}
