@@ -39,7 +39,11 @@ class Mototreki extends Base
 			.bind(this)
 			.then(function(userData)
 			{
-				this.view.setTplData("mototreki", {});
+				let tplData = {
+					trek: null
+				};
+				let tplFile = "mototreki";
+				this.view.setTplData(tplFile, tplData);
 				this.view.addPartialData("user/left", {user: userData});
 				//this.view.addPartialData("user/right", {title: 'right_col'});
 
@@ -57,16 +61,33 @@ class Mototreki extends Base
 			});
 	}
 
+	/**
+	 * форма добавления трека
+	 *
+	 * @param cb
+	 */
 	addActionGet(cb)
 	{
 		this.getClass("user").getUser(this.getUserId())
 			.bind(this)
 			.then(function(userData)
 			{
-				let tplFile = "mototreki/edit.ejs";
-				this.view.setTplData(tplFile, {});
+				let tplFile = "mototreki";
+				let tplData = {
+					trek: {
+						mtt_name: '',
+						mtt_website: '',
+						mtt_address: '',
+						mtt_descrip: '',
+						mtt_email: '',
+						mtt_phones: '',
+						mtt_latitude: '',
+						mtt_longitude: '',
+						mtt_location_id: ''
+					}
+				};
+				this.view.setTplData(tplFile, tplData);
 				this.view.addPartialData("user/left", {user: userData});
-				//this.view.addPartialData("user/right", {title: 'right_col'});
 
 				return cb(null);
 			})
@@ -144,7 +165,7 @@ class Mototreki extends Base
 			{
 				return this.getClass('mototrek').add(
 					tplData["s_mtt_name"],
-					tplData["s_mtt_descrip"],
+					tplData["t_mtt_descrip"],
 					tplData["s_mtt_website"],
 					tplData["m_mtt_email"],
 					tplData["s_mtt_phones"],
@@ -206,19 +227,144 @@ class Mototreki extends Base
 			})
 			.spread(function (trek, userData)
 			{
-				console.log("\ntrek");
-				console.log(trek);
+				//console.log("\ntrek");
+				//console.log(trek);
 				
-				let tplFile = "mototreki/edit.ejs";
+				let tplFile = "mototreki";
 				let tplData = {
 					trek: trek
 				};
 				this.view.setTplData(tplFile, tplData);
 				this.view.addPartialData("user/left", {user: userData});
 
+				//экспрот данных в JS на клиента
+				this.getRes().expose(tplData["trek"], 'trek');
+
 				return cb(null);
 			})
 			.catch(function(err)
+			{
+				return cb(err);
+			});
+	}
+
+	/**
+	 * добавляем новый трек
+	 *
+	 * @param cb
+	 * @returns {Promise.<TResult>}
+	 */
+	editActionPost(cb)
+	{
+		let formData = this.getReqBody();
+		let tplData = this.getParsedBody();
+
+		/*console.log(formData);
+		console.log('-----');
+		console.log(tplData);*/
+
+		let errors = {};
+
+		if (!tplData["i_mtt_id"])
+			errors["s_mtt_name"] = "Укажите название трека";
+
+		if (!tplData["s_mtt_name"])
+			errors["s_mtt_name"] = "Укажите название трека";
+
+		if (formData["m_mtt_email"] && !tplData["m_mtt_email"])
+			errors["m_mtt_email"] = "E-mail указан не верно";
+		else
+			tplData["m_mtt_email"] = formData["m_mtt_email"];
+
+		if (!tplData["s_mtt_address"])
+			errors["s_mtt_address"] = "Укажите адрес трека";
+
+		if (!tplData["f_mtt_lat"] || !tplData["f_mtt_lng"])
+			errors["s_mtt_address"] = "Укажите адрес трека";
+
+		let tplFile = "mototreki/edit.ejs";
+
+		return Promise.resolve(errors)
+			.bind(this)
+			.then(function(errors)
+			{
+				let errKeys = Object.keys(errors);
+
+				if (errKeys.length)
+				{
+					errKeys.forEach(function(f)
+					{
+						tplData.formError.fields[f] = errors[f];
+					});
+
+					throw new Errors.ValidationError('Ошибки при заполнении формы');
+				}
+
+				return Promise.resolve(tplData);
+			})
+			.then(function (tplData)
+			{
+				return this.getClass('mototrek').get(tplData["i_mtt_id"])
+					.then(function (trek)
+					{
+						if (!trek)
+							throw new Errors.HttpStatusError(404, "Not found");
+
+						return Promise.resolve(tplData);
+					})
+			})
+			.then(function (tplData)
+			{
+				const self = this;
+
+				return this.getClass('location').geoCoder(tplData["s_mtt_address"])
+					.then(function (userLocationData)
+					{
+						return self.getClass('location').create(userLocationData);
+					})
+					.then(function (location_id)
+					{
+						tplData["i_location_id"] = location_id;
+						return Promise.resolve(tplData);
+					});
+			})
+			.then(function (tplData)
+			{
+				return this.getClass('mototrek').edit(
+					tplData["i_mtt_id"],
+					tplData["s_mtt_name"],
+					tplData["t_mtt_descrip"],
+					tplData["s_mtt_website"],
+					tplData["m_mtt_email"],
+					tplData["s_mtt_phones"],
+					tplData["s_mtt_address"],
+					tplData["f_mtt_lat"],
+					tplData["f_mtt_lng"],
+					tplData["i_location_id"]
+				)
+					.then(function ()
+					{
+						return Promise.resolve(tplData);
+					});
+			})
+			.then(function (tplData)
+			{
+				this.view.setTplData(tplFile, tplData);
+
+				return cb(null, true);
+			})
+			.catch(Errors.ValidationError, function (err)
+			{
+				//такие ошибки не уводят со страницы.
+				tplData.formError.error = true;
+				tplData.formError.message = err.message;
+				tplData.formError.errorName = err.name;
+
+				this.view.setTplData(tplFile, tplData);
+
+				return cb(null, true);
+			})
+			.catch(function (err)
 			{
 				return cb(err);
 			});

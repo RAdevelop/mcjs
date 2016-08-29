@@ -199,6 +199,12 @@ class MariaSQL
 	 * @param sqlData - массив данных для запроса
 	 * @param cb - колбэк ф-ция (если указана, вызывается она, иначе врзвращается {Promise})
 	 * @returns {Promise.<TResult>}
+	 * {
+	 *  numRows: '0',
+	 *  affectedRows: '1',
+	 *  insertId: '0',
+	 *  metadata: undefined
+	 * }
 	 */
 	upd(sql, sqlData = [], cb = null)
 	{

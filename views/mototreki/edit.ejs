@@ -1,24 +1,24 @@
-<%  if(!isXHR){%><%- layout('layout/user/index') %><% } %>
-<h1><%=menuItem.m_h1%> - добавление трека</h1>
+<h2>добавление трека</h2>
 <ul class="nav nav-pills nav-justified" role="tablist">
 	<li class="active" role="presentation"><a href="#base" aria-controls="base" role="tab" data-toggle="tab"><span class="fa fa-cog"></span> Основное</a></li>
 	<li role="presentation"><a href="#contacts" aria-controls="contacts" role="tab" data-toggle="tab"><span class="fa fa-map-marker "></span> Контакты</a></li>
 </ul>
 <!-- Tab panes -->
-<form class="form-horizontal" action="<%=menuItem.m_path%>/add/" method="post" id="formMototrek">
+<form class="form-horizontal" action="<%=menuItem.m_path+'/'+_action%>/" method="post" id="formMototrek">
 <div class="panel panel-default">
 	<div class="panel-body tab-content">
 		<div role="tabpanel" class="tab-pane active" id="base">
 			<div class="form-group s_mtt_name">
 				<label for="s_mtt_name" class="col-sm-2 control-label">название *</label>
 				<div class="col-sm-10">
-					<input type="text" class="form-control" id="s_mtt_name" name="s_mtt_name" value="" placeholder="название трека" required />
+					<input type="hidden" id="i_mtt_id" name="i_mtt_id" value="<%=trek.mtt_id%>" />
+					<input type="text" class="form-control" id="s_mtt_name" name="s_mtt_name" value="<%=trek.mtt_name%>" placeholder="название трека" required />
 				</div>
 			</div>
-			<div class="form-group s_mtt_descrip">
-				<label for="s_mtt_descrip" class="col-sm-2 control-label">описание</label>
+			<div class="form-group t_mtt_descrip">
+				<label for="t_mtt_descrip" class="col-sm-2 control-label">описание</label>
 				<div class="col-sm-10">
-					<textarea class="form-control" style="height: 250px;" id="s_mtt_descrip" name="t_mtt_descrip" placeholder="описание трека" required></textarea>
+					<textarea class="form-control" style="height: 250px;" id="t_mtt_descrip" name="t_mtt_descrip" placeholder="описание трека"><%=trek.mtt_descrip%></textarea>
 				</div>
 			</div>
 		</div>
@@ -26,32 +26,32 @@
 			<div class="form-group s_mtt_website">
 				<label for="s_mtt_website" class="col-sm-2 control-label">веб-сайт</label>
 				<div class="col-sm-10 s_mtt_website">
-					<input type="text" class="form-control" id="s_mtt_website" name="s_mtt_website" value="" placeholder="веб-сайт" />
+					<input type="text" class="form-control" id="s_mtt_website" name="s_mtt_website" value="<%=trek.mtt_website%>" placeholder="веб-сайт" />
 				</div>
 			</div>
 			<div class="form-group m_mtt_email">
 				<label for="m_mtt_email" class="col-sm-2 control-label">E-mail</label>
 				<div class="col-sm-10">
-					<input type="text" class="form-control" id="m_mtt_email" name="m_mtt_email" value="" placeholder="E-mail" />
+					<input type="text" class="form-control" id="m_mtt_email" name="m_mtt_email" value="<%=trek.mtt_email%>" placeholder="E-mail" />
 				</div>
 			</div>
 			<div class="form-group s_mtt_phones">
 				<label for="s_mtt_phones" class="col-sm-2 control-label">телефон(-ы)</label>
 				<div class="col-sm-10 s_mtt_phones">
-					<input type="text" class="form-control" id="s_mtt_phones" name="s_mtt_phones" value="" placeholder="телефон(-ы)" />
+					<input type="text" class="form-control" id="s_mtt_phones" name="s_mtt_phones" value="<%=trek.mtt_phones%>" placeholder="телефон(-ы)" />
 				</div>
 			</div>
 			<div class="form-group s_mtt_address">
 				<label for="m_mail" class="col-sm-1 control-label">адрес *</label>
 				<div class="col-sm-11">
-					<input type="text" class="form-control" id="s_mtt_address" name="s_mtt_address" value="" placeholder="адрес" required="required" data-toggle="tooltip" data-container="body" data-placement="auto" title="">
+					<input type="text" class="form-control" id="s_mtt_address" name="s_mtt_address" value="<%=trek.mtt_address%>" placeholder="адрес" required="required" readonly="readonly" data-toggle="tooltip" data-container="body" data-placement="auto" title="<%=trek.mtt_address%>">
 					<span class="help-block">укажите адрес с помощью карты: через поиск адреса, или по клику на карте.</span>
-					<input type="text" id="f_mtt_lat" name="f_mtt_lat" value="" readonly="readonly" maxlength="20" required="" />
-					<input type="text" id="f_mtt_lng" name="f_mtt_lng" value="" readonly="readonly" maxlength="20" required="" />
+					<input type="text" id="f_mtt_lat" name="f_mtt_lat" value="<%=trek.mtt_latitude%>" readonly="readonly" maxlength="20" required="" />
+					<input type="text" id="f_mtt_lng" name="f_mtt_lng" value="<%=trek.mtt_longitude%>" readonly="readonly" maxlength="20" required="" />
 				</div>
 			</div>
 			<div class="form-group" >
-				<div class="col-sm-12" id="mttMap" style="border: 0px solid red; height: 500px;"></div>
+				<div class="col-sm-12" id="mttMap" style="border: 0px solid red; height: 350px;"></div>
 			</div>
 		</div>
 	</div>
@@ -79,15 +79,31 @@
 <p>фотографии?! (добавить в конфиг uploads)</p>
 <script src="/js/mcMap.js" type="text/javascript"></script>
 <script src="/js/jquery/postRes.js" type="text/javascript" ></script>
+<script src="/js/tinymce/4.4.2/tinymce.min.js" type="text/javascript" ></script>
 <script type="text/javascript">
 //<!--
 (function($)
 {
-	$('#formMototrek').postRes({btnId: 'btn_edit_mototrek',
+	var tMttDescripTinymce = tinymce.init({
+		selector: '#t_mtt_descrip'
+		, language: "ru_RU"
+		, themes: "inlite"
+		, setup: function (editor) {
+			editor.on('change', function () {
+				tinymce.triggerSave();
+			});
+		}
+	});
+
+	$('#formMototrek').submit(function ()
+	{
+		//tMttDescripTinymce.triggerSave();
+		//console.log(tMttDescripTinymce);
+	}).postRes({btnId: 'btn_edit_mototrek',
 		onSuccess: function($dialog, respData)
 		{
-			if (respData["i_mtt_id"])
-				window.location.href = "<%=menuItem.m_path%>/edit/" +respData["i_mtt_id"];
+			//if (respData["i_mtt_id"])
+			//	window.location.href = "<%=menuItem.m_path%>/edit/" +respData["i_mtt_id"];
 
 			return false;
 		}
@@ -199,21 +215,24 @@ console.log('click by coords', coords);
 
 	function addPlaceMark(MttMap)
 	{
+		var address = (MCJS["trek"] && MCJS["trek"]["mtt_address"] ? MCJS["trek"]["mtt_address"] : '');
+		var center = [];
+		if (MCJS["trek"] && MCJS["trek"]["mtt_latitude"] && MCJS["trek"]["mtt_longitude"])
+			center = [MCJS["trek"]["mtt_latitude"], MCJS["trek"]["mtt_longitude"]];
+		else
+			center = MttMap.getCenter();
+
 		var iconContent = 'МотоТрек на карте';
 		var contentHeader = 'МотоТрек на карте';
-		var contentBody =   '<p>' +
-				'Чтобы указать место расположения объекта, ' +
-				'найдите его с помощью поисковой строки, ' +
-				'или кликните мышкой по карте.' +
-				'</p>';
+		var contentBody =   '<p>Чтобы указать место расположения объекта, найдите его с помощью поисковой строки, ' +
+				'или кликните мышкой по карте.</p>';
 
-		var contentFooter = '<p>' +
-				'<strong>Сейчас указан:</strong><br/>' +
-				MttMap.getCenter() +
-				'</p>';
+		var contentFooter = '<p><strong>Сейчас указан:</strong><br/>';
+			contentFooter += (address ? address+'<br/>' : '');
+			contentFooter += center.join(', ') + '</p>';
 
 		mttPlacemark = new ymaps.Placemark(
-				MttMap.getCenter()
+				center
 				,	{
 					/* Свойства*/
 					iconContent: iconContent
@@ -249,6 +268,7 @@ console.log('click by coords', coords);
 		});
 
 		MttMap.geoObjects.add(mttPlacemark);
+		MttMap.setCenter(center);
 	}
 
 	function updPlaceMark(MttMap, text, coords, err)

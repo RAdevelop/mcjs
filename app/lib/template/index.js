@@ -45,6 +45,7 @@ function Template(req, res, next, Controller = null)
 	this.res.locals._reqBaseUrl     = (this.controller() ? this.controller().getBaseUrl() : req.baseUrl);
 	//this.res.locals._reqPath        = req.path;
 	this.res.locals._reqPath        = (this.controller() ? this.controller().getPath() : req.path);
+	this.res.locals._action         = (this.controller() ? this.controller().getActionName() : '');
 
 }
 
