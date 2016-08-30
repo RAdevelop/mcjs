@@ -180,7 +180,7 @@
                         </div>
                         <span class="help-block">Если место было определено неправильно, просто кликните на карте по вашему населенному пункту. Сохраняются даные только по населенному пункту.</span>
                         <div class="row">
-                            <div class="col-sm-12" id="yaMap" style="height: 300px;"></div>
+                            <div class="col-sm-12" id="yaMap" style="height: 400px;"></div>
                         </div>
                     </div>
                 </div>
@@ -285,7 +285,7 @@ $(function()
             .then(function (UserMap)
             {
                 UserMap.behaviors.disable('multiTouch');
-                UserMap.behaviors.disable('scrollZoom');
+                //UserMap.behaviors.disable('scrollZoom');
 
                 UserMap.geoObjects.removeAll();
 

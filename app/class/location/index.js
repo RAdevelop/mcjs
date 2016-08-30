@@ -39,12 +39,12 @@ class Location extends Base
 			//https://tech.yandex.ru/maps/doc/geocoder/desc/reference/kind-docpage/
 			switch (locationData[i]["kind"].toLowerCase())
 			{
-					case 'country':
-					case 'province':
-					case 'area':
-					case 'district':
-					case 'locality':
-						break;
+				case 'country':
+				//case 'province':
+				//case 'area':
+				//case 'district':
+					//case 'locality':
+					break;
 				default:
 					//console.log(locationData[i]["kind"]);
 					locationData.splice(i, 1);
@@ -110,18 +110,23 @@ class Location extends Base
 		}
 		locationArr = locationArr.reverse();
 
-		const GeoCoder = new MultiGeocoder({ provider: 'yandex', coordorder: 'latlong', lang: 'ru-RU', kind: 'house' });
+		let geoCoderParams = {
+			"key":"AHy-CE4BAAAADqsNQAIA3ZriqBuo870Gl1cLkXxrpQAYADIAAAAAAAAAAADcFU_vLH4W4XzN8vPPrNIH-NWHiw==",
+			"provider": "yandex", "coordorder": "latlong", "lang": "ru_RU"
+		};
+
+		const GeoCoder = new MultiGeocoder();
 
 		//locationArr = ["Россия, Москва, Вадковский переулок, 3Ас11"];
 		//console.log(locationArr);
 
-		//return GeoCoder.geocode(locationArr,{lang: 'ru-RU', kind: 'locality'})
-		return GeoCoder.geocode(locationArr,{lang: 'ru-RU'})
+		//return GeoCoder.geocode(locationArr,{lang: 'ru_RU', kind: 'locality'})
+		return GeoCoder.geocode(locationArr, geoCoderParams)
 			.then(function (res)
 			{
 				//console.log(res["errors"]);
-				//console.log(res);
 
+				//provider: yandex
 				let features = res["result"]["features"];
 
 				let locationData = [];
@@ -146,9 +151,10 @@ class Location extends Base
 				}
 
 				//console.log(locationData.length +' == '+ locationArr.length);
+				console.log(locationData);
 
-				if (res["errors"].length || locationData.length != locationArr.length)
-					throw new Errors.ValidationError('Не удалось определить указанный населенный пункт');
+				//if (res["errors"].length || !locationData.length || locationData.length != locationArr.length)
+				//	throw new Errors.ValidationError('Не удалось определить указанный населенный пункт');
 
 				return Promise.resolve(locationData);
 			});

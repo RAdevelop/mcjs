@@ -33,7 +33,7 @@
     "moment": "^2.13.0",
     "morgan": "~1.6.1",
     "ms": "^0.7.1",
-    "multi-geocoder": "^0.1.4",
+    "multi-geocoder": "^0.1.6",
     "node-fs": "^0.1.7",
     "nodemailer": "^1.11.0",
     "passport": "^0.3.2",
