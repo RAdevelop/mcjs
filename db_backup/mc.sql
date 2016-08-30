@@ -168,7 +168,7 @@ CREATE TABLE `location` (
 
 LOCK TABLES `location` WRITE;
 /*!40000 ALTER TABLE `location` DISABLE KEYS */;
-INSERT INTO `location` VALUES (1,0,1,25,26,0),(2,0,1,23,24,0),(3,0,1,27,28,0),(4,0,1,21,22,0),(5,0,1,19,20,0),(6,0,1,17,18,0),(7,0,1,15,16,0),(8,0,1,13,14,0),(9,0,1,11,12,0),(10,0,1,9,10,0),(11,0,1,7,8,0),(12,0,1,5,6,0),(13,0,1,3,4,0),(14,0,1,1,2,0);
+INSERT INTO `location` VALUES (1,0,1,17,18,0),(2,0,1,7,8,0),(3,0,1,25,26,0),(4,0,1,21,22,0),(5,0,1,1,2,0),(6,0,1,9,10,0),(7,0,1,5,6,0),(8,0,1,3,4,0),(9,0,1,27,28,0),(10,0,1,11,12,0),(11,0,1,23,24,0),(12,0,1,13,14,0),(13,0,1,19,20,0),(14,0,1,15,16,0);
 /*!40000 ALTER TABLE `location` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -580,7 +580,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1472580195,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1472545170,'RoLex',1);
+INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1472581301,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1472545170,'RoLex',1);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -611,7 +611,7 @@ CREATE TABLE `users_data` (
 
 LOCK TABLES `users_data` WRITE;
 /*!40000 ALTER TABLE `users_data` DISABLE KEYS */;
-INSERT INTO `users_data` VALUES (1,'Алексей','Романов',1,359409600,0,-31.84406444,116.03309287),(11,'','',2,0,2,55.75396000,37.62039300);
+INSERT INTO `users_data` VALUES (1,'Алексей','Романов',1,359409600,0,-34.79500353,139.10438193),(11,'','',2,0,2,55.75396000,37.62039300);
 /*!40000 ALTER TABLE `users_data` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3193,4 +3193,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-08-30 21:09:25
+-- Dump completed on 2016-08-30 21:34:15
