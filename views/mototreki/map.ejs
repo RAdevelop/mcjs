@@ -1,0 +1,131 @@
+<%  if(!isXHR){%><%- layout('layout/default.ejs') %><% } %>
+<%- include toolbar.ejs %>
+<h1><%=menuItem.m_h1%> на карте</h1>
+<div class="row mototrekMapContainer">
+	<div class="col-xs-12 col-md-2">
+		<ul class="mttLocationsNames"><% trekLocations.forEach(function (item)
+		{
+		%><li style="padding-left: <%=item["l_mtt_level"]%>0px;">
+				<% if (item["l_kind"]=='country') {%>
+				<span><%=item["l_name"]%></span>
+				<% } else {%>
+				<a href="javascript:void(0);" data-coords="<%=[item["l_latitude"], item["l_longitude"]]%>" data-kind="<%=item["l_kind"]%>"><%=item["l_name"]%></a>
+				<% } %>
+			</li>
+		<%});%></ul>
+	</div>
+	<div class="col-xs-12 col-md-10 mototrekMap" id="mttMap"></div>
+</div>
+<script src="/js/mcMap.js" type="text/javascript"></script>
+<script type="text/javascript">
+//<!--
+(function($)
+{
+	var mttList = MCJS["mttList"] || [];
+	console.log("mttList", mttList);
+	var mapState = {
+		//controls: ["zoomControl", "searchControl", "typeSelector"]
+		controls: ["zoomControl", "typeSelector"]
+		, zoom: 10
+		, type: 'yandex#hybrid'
+		, behaviors: ["default"]
+	};
+	var mapOptions = {}, mttClusterer, mttGeoObjects = [];
+	var MttMcMap = new McMap('mttMap', {state: mapState, options: mapOptions});
+
+	MttMcMap.init()
+			.then(function (MttMap)
+			{
+				/**
+				 * Создадим кластеризатор, вызвав функцию-конструктор.
+				 * Список всех опций доступен в документации.
+				 * @see https://api.yandex.ru/maps/doc/jsapi/2.1/ref/reference/Clusterer.xml#constructor-summary
+				 */
+				mttClusterer = new ymaps.Clusterer({
+					/**
+					 * Через кластеризатор можно указать только стили кластеров,
+					 * стили для меток нужно назначать каждой метке отдельно.
+					 * @see https://api.yandex.ru/maps/doc/jsapi/2.1/ref/reference/option.presetStorage.xml
+					 */
+					preset: 'islands#invertedBlueClusterIcons',
+					/**
+					 * Ставим true, если хотим кластеризовать только точки с одинаковыми координатами.
+					 */
+					groupByCoordinates: false,
+					/**
+					 * Опции кластеров указываем в кластеризаторе с префиксом "cluster".
+					 * @see https://api.yandex.ru/maps/doc/jsapi/2.1/ref/reference/ClusterPlacemark.xml
+					 */
+					clusterDisableClickZoom: true,
+					clusterHideIconOnBalloonOpen: false,
+					geoObjectHideIconOnBalloonOpen: false
+				});
+
+				var i, item, coords;
+				for(i  = 0; i < mttList.length; i++)
+				{
+					item = mttList[i];
+					coords = [item["mtt_latitude"], item["mtt_longitude"]];
+					mttGeoObjects[i] = new ymaps.Placemark(coords, {
+								/* Свойства*/
+								iconContent: item["mtt_name"]
+								, iconCaption: item["mtt_name"]
+								,	balloonContentHeader: item["mtt_name"]
+								,	balloonContentBody: item["mtt_address"]
+								//,	balloonContentBody: [item["mtt_email"], item["mtt_phones"]].join('<br/>')
+								,	balloonContentFooter: [coords.join(', '), '<a href="<%=menuItem.m_path%>/'+item["mtt_id"]+'/">перейти на страницу трека</a>'].join('<br/>')
+							}
+							,   {
+								/* Опции*/
+								//preset: 'islands#blueStretchyIcon' /* иконка растягивается под контент */
+								preset: 'islands#blueDotIconWithCaption'
+							});
+				}
+
+				//console.log("mttGeoObjects", mttGeoObjects);
+
+				/**
+				 * В кластеризатор можно добавить javascript-массив меток (не геоколлекцию) или одну метку.
+				 * @see https://api.yandex.ru/maps/doc/jsapi/2.1/ref/reference/Clusterer.xml#add
+				 */
+				mttClusterer.add(mttGeoObjects);
+				MttMap.geoObjects.add(mttClusterer);
+
+				MttMap.setBounds(mttClusterer.getBounds(), {
+					checkZoomRange: true
+				})
+				.then(function ()
+				{
+					onClickMttLocationsNames(MttMap);
+				});
+			});
+
+	function onClickMttLocationsNames(MttMap)
+	{
+		$(".mttLocationsNames a").click(function (event)
+		{
+			event.preventDefault();
+			var coords = $(this).attr("data-coords").split(',');
+			var zoom = 10;
+			switch ($(this).attr("data-kind").toLowerCase())
+			{
+				case "country":
+					zoom = 6;
+					break;
+
+				case "province":
+					zoom = 8;
+					break;
+
+				case "locality":
+					zoom = 10;
+					break;
+			}
+			console.log(coords);
+			MttMap.setCenter(coords, zoom);
+			//MttMap.setBounds([coords, coords], {checkZoomRange: true});
+		});
+	}
+})($);
+//-->
+</script>

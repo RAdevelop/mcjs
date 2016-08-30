@@ -1,24 +1,5 @@
 <%  if(!isXHR){%><%- layout('layout/user/index') %><% } %>
-<div class="row">
-	<div class="btn-toolbar padding10" role="toolbar" aria-label="Опции для мототреков">
-		<div class="btn-group btn-group-sm" role="group" aria-label="Опции для мототреков">
-			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fa fa-fw fa-cog"></span> опции <span class="caret"></span></button>
-			<ul class="dropdown-menu ">
-
-				<li><a href="javascript:void(0)" id="btn_album_upload"><span class="fa fa-fw fa-cloud-upload"></span> загрузить фотографии</a></li>
-				<li><a href="javascript:void(0)" id="btn_edit_album_modal"><span class="fa fa-fw fa-edit"></span> изменить описание</a></li>
-				<li role="separator" class="divider"></li>
-
-				<li><a href="<%=menuItem.m_path+'/add/'%>" id="btn_add_album_modal"><span class="fa fa-fw fa-plus-square-o"></span> добавить мототрек</a></li>
-			</ul>
-		</div>
-
-		<div class="btn-group btn-group-sm" role="group" aria-label="список мототреков">
-			<a href="<%=menuItem.m_path+'/'%>" class="btn btn-default"><span class="fa fa-fw fa-list"></span> все мототреки</a>
-		</div>
-
-	</div>
-</div>
+<%- include toolbar.ejs %>
 <h1><%=menuItem.m_h1%></h1>
 
 <% if(_action =='edit' || _action =='add'){ %><%- include edit.ejs %><% } %>

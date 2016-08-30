@@ -154,28 +154,42 @@ class Mototrek extends BaseModel
 			" FROM moto_track" +
 			" WHERE mtt_id = ?";
 
-		return this.constructor.conn().sRow(sql, [mtt_id])
-			.then(function (res)
-			{
-				return Promise.resolve(res);
-			});
+		return this.constructor.conn().sRow(sql, [mtt_id]);
 	}
 
 	/**
 	 * список локаций, к которым привязан трек (включая родительские районы, города, страны..)
+	 *
+	 * @returns {*}
 	 */
 	getLocations()
 	{
-		/*SELECT
-		 l.l_id, l.l_pid, l.l_level, l.l_lk, l.l_rk
-		 , ln.l_kind, ln.l_name, ln.l_full_name
-		 FROM
-		 moto_track_locations AS mtl
-		 JOIN mcjs.location_names AS ln ON(ln.l_id = mtl.l_id AND ln.l_kind IN ('country','province','locality'))
-		 JOIN mcjs.location AS l ON(l.l_id = ln.l_id)
-		 #WHERE
-		 GROUP BY mtl.l_id
-		 ORDER BY l.l_level, ln.l_name, l.l_lk#, l.l_level, ln.l_kind, ln.l_name*/
+		let kinds = ['country','province','locality'];
+		let sql = "SELECT l.l_id, l.l_pid, l.l_level, l.l_lk, l.l_rk" +
+			", ln.l_kind, ln.l_name, ln.l_full_name, ln.l_latitude , ln.l_longitude" +
+			", IF(ln.l_kind = 'country', 0, IF(ln.l_kind = 'province', 1, IF(ln.l_kind = 'locality' AND l.l_level < 3, 1, 2))) AS l_mtt_level" +
+			" FROM moto_track_locations AS mtl" +
+			" JOIN location_names AS ln ON(ln.l_id = mtl.l_id AND ln.l_kind IN ("+(new Array(kinds.length)).fill('?').join(',')+"))" +
+			" JOIN location AS l ON(l.l_id = ln.l_id)" +
+			" GROUP BY mtl.l_id" +
+			" ORDER BY l.l_lk, l.l_level, ln.l_name";//#, l.l_level, ln.l_kind, ln.l_name
+
+		return this.constructor.conn().s(sql, kinds);
+	}
+
+	/**
+	 * список всех треков
+	 *
+	 * @returns {Promise.<TResult>|*}
+	 */
+	getAll()
+	{
+		let sql = "SELECT mtt_id, mtt_name, mtt_website, mtt_address, mtt_descrip, mtt_email, mtt_phones" +
+			", mtt_latitude, mtt_longitude, mtt_location_id" +
+			", mtt_create_ts, mtt_update_ts" +
+			" FROM moto_track;";
+
+		return this.constructor.conn().s(sql);
 	}
 }
 

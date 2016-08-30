@@ -23,6 +23,9 @@ class Mototreki extends Base
 			},
 			"edit": {
 				'^\/?[0-9]+\/?$': ['i_mtt_id']
+			},
+			"map": {
+				'^\/?$': null
 			}
 		}
 	}
@@ -365,6 +368,42 @@ class Mototreki extends Base
 				return cb(null, true);
 			})
 			.catch(function (err)
+			{
+				return cb(err);
+			});
+	}
+
+	mapActionGet(cb)
+	{
+		return Promise.props({
+			trekList: this.getClass("mototrek").getAll(),
+			trekLocations: this.getClass("mototrek").getLocations(),
+			userData: this.getClass("user").getUser(this.getUserId())
+		})
+			.bind(this)
+			.then(function(props)
+			{
+				let tplData = {
+					trekList: props.trekList || [],
+					trekLocations: props.trekLocations || [],
+					userData: props.userData
+				};
+				let tplFile = "mototreki/map.ejs";
+				this.view.setTplData(tplFile, tplData);
+				//this.view.addPartialData("user/left", {user: userData});
+
+				//экспрот данных в JS на клиента
+				this.getRes().expose(props.trekList, 'mttList');
+
+				return cb(null);
+			})
+			.catch(Errors.NotFoundError, function(err)
+			{
+				//self.view.setTplData("home", {});
+				//return cb(null);
+				throw new Errors.HttpStatusError(404, "Not found");
+			})
+			.catch(function(err)
 			{
 				return cb(err);
 			});

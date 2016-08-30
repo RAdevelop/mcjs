@@ -65,6 +65,26 @@ class Mototrek extends Base
 				return Promise.resolve(trek);
 			});
 	}
+
+	/**
+	 * список всех треков
+	 *
+	 * @returns {Promise.<TResult>|*}
+	 */
+	getAll()
+	{
+		return this.model('mototrek').getAll();
+	}
+
+	/**
+	 * список локаций, к которым привязан трек (включая родительские районы, города, страны..)
+	 *
+	 * @returns {*}
+	 */
+	getLocations()
+	{
+		return this.model('mototrek').getLocations();
+	}
 }
 //************************************************************************* module.exports
 //писать после class Name....{}

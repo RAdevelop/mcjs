@@ -764,6 +764,51 @@ nav.pagesNavigation
 }
 /**********  END список страниц (постраничная разбивка) **************/
 
+/**********  мототреки **************/
+.mototrekMapContainer
+{
+
+}
+
+.mototrekMapContainer .mototrekMap
+{
+	height: 600px;
+}
+
+
+@media (min-width: 1200px)
+{
+
+}
+@media (min-width: 992px) and (max-width: 1200px)
+{
+
+}
+@media (max-width: 1024px)
+{
+
+}
+@media (min-width: 768px) and (max-width: 992px)
+{
+
+}
+@media (max-width: 768px)
+{
+	.mototrekMapContainer .mototrekMap
+	{
+		height: 400px;
+	}
+}
+
+@media (min-width: 320px) and (max-width: 480px)
+{
+	.mototrekMapContainer .mototrekMap
+	{
+		height: 320px;
+	}
+}
+/**********  END мототреки **************/
+
 
 
 
