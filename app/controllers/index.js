@@ -53,7 +53,7 @@ const Control = (function()
 			if(!routers || !routers.length)
 			{
 				return;
-				//return Logger().error('Empty routers (call from helpers.loadRouters) in dir %j', {"dir": dir});
+				//return Logger.error('Empty routers (call from helpers.loadRouters) in dir %j', {"dir": dir});
 			}
 
 			routers.forEach(function(item)
@@ -89,8 +89,8 @@ const Control = (function()
 		}
 		catch (err)
 		{
-			//Logger().error('Empty routers (call from helpers.loadRouters) in dir %j', {"dir":dir});
-			Logger().error(err);
+			//Logger.error('Empty routers (call from helpers.loadRouters) in dir %j', {"dir":dir});
+			Logger.error(err);
 			err.message = 'Empty routers (call from helpers.loadRouters) in dir:\n:  ' + dir;
 			err.status = 500;
 			//console.log(err);

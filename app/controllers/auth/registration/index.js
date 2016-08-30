@@ -181,7 +181,7 @@ class Registration extends Base
 					if(err)
 					{
 						let error = new Errors.AppMailError('Ошибка при отправке письма', err);
-						Logger().error(error);
+						Logger.error(error);
 						
 						return reject(error);
 					}

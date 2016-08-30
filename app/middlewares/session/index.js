@@ -12,9 +12,9 @@ module.exports = function(){
 
     const redisClient = new IORedis(Config.redis);
 
-    redisClient.on('error', function(err){
-
-        Logger().error(err);
+    redisClient.on('error', function(err)
+    {
+        Logger.error(err);
 
     });
 

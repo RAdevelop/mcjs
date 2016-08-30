@@ -306,7 +306,7 @@ class Login extends Base
 					if(err)
 					{
 						error = new Errors.AppMailError('Ошибка при отправке письма', err);
-						Logger().error(error);
+						Logger.error(error);
 					}
 					
 					return cb(error);
@@ -478,7 +478,7 @@ class Login extends Base
 					if(err)
 					{
 						error = new Errors.AppMailError('Ошибка при отправке письма', err);
-						Logger().error(error);
+						Logger.error(error);
 					}
 					
 					return cb(error);

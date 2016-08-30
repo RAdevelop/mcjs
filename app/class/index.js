@@ -87,7 +87,7 @@ const Class = (function()
 		catch (err)
 		{
 			//logger.error('Empty routers (call from helpers.loadRouters) in dir %j', {"dir":dir});
-			Logger().error(err);
+			Logger.error(err);
 			err.message = 'Empty routers (call from loadRouters) in dir:\n:  ' + dir;
 			err.status = 500;
 			

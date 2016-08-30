@@ -455,7 +455,7 @@ class ProfilePhoto extends Base
 				return Promise.resolve(tplData);
 			})
 			.catch(Errors.io.FileNotFoundError, function(err){
-				Logger().error(err);
+				Logger.error(err);
 				throw new Errors.HttpStatusError(404, 'Фотография не найдена');
 			});
 	}
@@ -502,7 +502,7 @@ class ProfilePhoto extends Base
 			})
 			.catch(function (err)
 			{
-				Logger().error(err);
+				Logger.error(err);
 				tplData.formError.text = err.message;
 				tplData.formError.error = true;
 				tplData.formError.errorName = err.name;

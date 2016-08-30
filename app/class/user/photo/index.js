@@ -343,7 +343,7 @@ class UserPhoto extends User
 			.catch(function (err)
 			{
 				console.log('class UserPhoto delImage catch');
-				Logger().error(err);
+				Logger.error(err);
 				console.log('\n');
 
 				return this.model('user/photo').delImage(u_id, a_id, ai_id)

@@ -665,7 +665,7 @@ class Profile extends Base
 					{
 						tplData.mailError = true;
 						let error = new Errors.AppMailError('Ошибка при отправке письма', err);
-						Logger().error(error);
+						Logger.error(error);
 						
 						return reject(error);
 					}
@@ -727,7 +727,7 @@ class Profile extends Base
 			})
 			.catch(function (err)
 			{
-				Logger().error(err);
+				Logger.error(err);
 
 				tplData.formError.text = err.message;
 				tplData.formError.error = true;

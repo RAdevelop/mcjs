@@ -64,6 +64,5 @@ module.exports = function(Classes, Control)
 		});
 	});
 
-	
 	return router;
 };

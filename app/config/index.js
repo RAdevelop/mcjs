@@ -29,7 +29,7 @@ var config = {
 		port: 6379,
 		host: 'localhost',
 		showFriendlyErrorStack: true
-		//TODO установить пароль
+		, password: 'RoLexey2381Doberman05FireBlade'
 		/*,
 		reconnectOnError: function (err) {
 			var targetError = 'READONLY';

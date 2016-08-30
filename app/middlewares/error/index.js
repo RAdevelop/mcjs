@@ -7,16 +7,17 @@ const Errors = require('app/lib/errors');
 const Mail = require('app/lib/mail');
 const Template = require('app/lib/template');
 
-module.exports = function(app, Classes)
+//module.exports = function(app, Classes)
+module.exports = function(app)
 {
 	return function(err, req, res, next)
 	{
 		//Classes.modelEnd();
 		/*if(app.get('env') === 'dev')
 		{
-			Logger().debug(err);
+			Logger.debug(err);
 			if((err.status >= 500) == false)
-				Logger().error(err);
+				Logger.error(err);
 		}*/
 
 		err.status = err.status || 500;

@@ -1,53 +1,55 @@
 #!/usr/bin/env node
-
+"use strict";
 /**
  * Module dependencies.
  */
 
-var app = require('../app');
-var config = require('../app/config');
-var debug = require('debug')('mcjs.lo:server');
-var fs = require('fs');
-var path = require('path');
+const app = require('../app');
+const config = require('../app/config');
+//const debug = require('debug')('mcjs.lo:server');
+const debug = require('debug')('localhost:server');
+const fs = require('fs');
+const path = require('path');
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || config.port);
+let port = normalizePort(process.env.PORT || config.port);
 app.set('port', port);
 
 /**
  * Create HTTP(S) server.
  */
-//var http = require('http');
-var https = require('https');
+//const http = require('http');
+const https = require('https');
 	//mc_cert.key  mc_cert.pem
-var server_opt = {
+let server_opt = {
 	key: fs.readFileSync(path.join(__dirname, '../openssl/mc_cert.key')),
 	cert: fs.readFileSync(path.join(__dirname, '../openssl/mc_cert.pem'))
 };
-var server = https.createServer(server_opt, app);
-//var server = http.createServer(app);
+const server = https.createServer(server_opt, app);
+//const server = http.createServer(app);
 
-var io = require('../app/lib/chat');
+const io = require('../app/lib/chat');
 io(server, app);
-
 
 /**
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
+
 server.on('error', onError);
 server.on('listening', onListening);
+server.listen(port);
 
 /**
  * Normalize a port into a number, string, or false.
  */
 
-function normalizePort(val) {
-  var port = parseInt(val, 10);
+function normalizePort(val)
+{
+  let port = parseInt(val, 10);
 
   if (isNaN(port)) {
     // named pipe
@@ -71,7 +73,7 @@ function onError(error) {
     throw error;
   }
 
-  var bind = typeof port === 'string'
+  let bind = typeof port === 'string'
     ? 'Pipe ' + port
     : 'Port ' + port;
 
@@ -94,9 +96,10 @@ function onError(error) {
  * Event listener for HTTP server "listening" event.
  */
 
-function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
+function onListening()
+{
+  let addr = server.address();
+  let bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
@@ -109,8 +112,8 @@ setInterval(function() {
 }, 2000);
 
 function printMem() {
-	var mem = process.memoryUsage();
-	for (var p in mem) {
+	let mem = process.memoryUsage();
+	for (let p in mem) {
 		// convert to MB
 		mem[p] = mem[p] / 1000000;
 	}

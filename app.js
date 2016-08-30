@@ -8,7 +8,7 @@ const express = require('express');
 const engine = require('ejs-mate');
 const path = require('path');
 const favicon = require('serve-favicon');
-//var logger = require('morgan');
+//const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
@@ -94,9 +94,13 @@ app.use(function(req, res, next) {
 // development error handler
 // will print stacktrace
 
-app.use(require('app/middlewares/error')(app, Class));
+//app.use(require('app/middlewares/error')(app, Class));
+app.use(require('app/middlewares/error')(app));
+
+
 //app.use(Errors.middleware.crashProtector(require('app/middlewares/error')(app, Class)));
 
 //после роутеров
 //app.use(Errors.middleware.errorHandler);
+//module.exports = app;
 module.exports = app;
