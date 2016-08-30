@@ -22,8 +22,12 @@ class Location extends Base
 		}
 	 ]
 	 */
-	create(locationData)
+	create(locationData = [])
 	{
+
+		if (locationData.length == 0)
+			throw new Errors.ValidationError('Не удалось определить указанный населенный пункт');
+
 		const self = this;
 
 		for(let i = 0; i < locationData.length; i++)
@@ -49,6 +53,9 @@ class Location extends Base
 			}
 		}
 
+		if (locationData.length == 0)
+			throw new Errors.ValidationError('Не удалось определить указанный населенный пункт');
+		
 		return Promise.reduce(locationData, function(pId, location)
 		{
 			return self.addLocation(pId, location["name"], location["lat"], location["lng"], location["kind"], location["text"])

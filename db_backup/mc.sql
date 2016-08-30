@@ -159,7 +159,7 @@ CREATE TABLE `location` (
   PRIMARY KEY (`l_id`),
   KEY `lr_level` (`l_lk`,`l_rk`,`l_level`),
   KEY `level` (`l_level`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -168,7 +168,7 @@ CREATE TABLE `location` (
 
 LOCK TABLES `location` WRITE;
 /*!40000 ALTER TABLE `location` DISABLE KEYS */;
-INSERT INTO `location` VALUES (1,0,1,7,24,0),(2,1,2,18,23,0),(3,2,3,19,22,0),(4,3,4,20,21,0),(5,1,2,8,17,0),(6,5,3,15,16,0),(7,5,3,9,14,0),(8,7,4,10,13,0),(9,8,5,11,12,0),(10,0,1,1,6,0),(11,10,2,2,5,0),(12,11,3,3,4,0);
+INSERT INTO `location` VALUES (1,0,1,25,26,0),(2,0,1,23,24,0),(3,0,1,27,28,0),(4,0,1,21,22,0),(5,0,1,19,20,0),(6,0,1,17,18,0),(7,0,1,15,16,0),(8,0,1,13,14,0),(9,0,1,11,12,0),(10,0,1,9,10,0),(11,0,1,7,8,0),(12,0,1,5,6,0),(13,0,1,3,4,0),(14,0,1,1,2,0);
 /*!40000 ALTER TABLE `location` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -229,7 +229,7 @@ CREATE TABLE `location_names` (
 
 LOCK TABLES `location_names` WRITE;
 /*!40000 ALTER TABLE `location_names` DISABLE KEYS */;
-INSERT INTO `location_names` VALUES (1,0,'Россия',61.69865300,99.50540500,'country','Россия'),(2,1,'Москва',55.75396000,37.62039300,'locality','Россия, Москва'),(3,2,'Зеленоград',55.99189300,37.21438200,'locality','Россия, Москва, Зеленоград'),(4,3,'район Савёлки',55.98991500,37.23801600,'district','Россия, Москва, Зеленоградский административный округ, район Савёлки'),(5,1,'Московская область',55.81579200,37.38003100,'province','Россия, Московская область'),(6,5,'Подольск',55.43117700,37.54473700,'locality','Россия, Московская область, Подольск'),(7,5,'Раменский район',55.56728000,38.22580400,'area','Россия, Московская область, Раменский район'),(8,7,'Островецкое сельское поселение',55.59190000,37.99351700,'area','Россия, Московская область, Раменский район, Островецкое сельское поселение'),(9,8,'село Верхнее Мячково',55.55066200,37.97962000,'locality','Россия, Московская область, Раменский район, Островецкое сельское поселение, село Верхнее Мячково'),(10,0,'Беларусь',53.53120500,28.03098500,'country','Беларусь'),(11,10,'Брест',52.08951000,23.71202000,'locality','Беларусь, Брест'),(12,11,'Московский район',52.07844100,23.74279600,'district','Беларусь, Брест, Московский район');
+INSERT INTO `location_names` VALUES (1,0,'Россия',61.69865300,99.50540500,'country','Россия'),(2,0,'Беларусь',53.53120500,28.03098500,'country','Беларусь'),(3,0,'Украина',49.02753000,31.48277100,'country','Украина'),(4,0,'Турция',39.91129400,32.85088700,'country','Турция'),(5,0,'Абхазия',42.98918000,40.98346100,'country','Абхазия'),(6,0,'Грузия',41.66484500,43.90444100,'country','Грузия'),(7,0,'Армения',40.29266400,44.93947100,'country','Армения'),(8,0,'Азербайджан',40.35995300,47.65147600,'country','Азербайджан'),(9,0,'Южная Осетия',42.35115300,44.08573900,'country','Южная Осетия'),(10,0,'Казахстан',48.13620700,67.15355000,'country','Казахстан'),(11,0,'Узбекистан',41.76506600,63.15011800,'country','Узбекистан'),(12,0,'Киргизия',41.46435500,74.55521900,'country','Киргизия'),(13,0,'Таджикистан',39.04219700,70.84815000,'country','Таджикистан'),(14,0,'Молдова',47.20235600,28.46609300,'country','Молдова');
 /*!40000 ALTER TABLE `location_names` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -580,7 +580,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1472576459,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1472545170,'RoLex',1);
+INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1472580195,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1472545170,'RoLex',1);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -611,7 +611,7 @@ CREATE TABLE `users_data` (
 
 LOCK TABLES `users_data` WRITE;
 /*!40000 ALTER TABLE `users_data` DISABLE KEYS */;
-INSERT INTO `users_data` VALUES (1,'Алексей','Романов',1,359409600,7,55.64356157,37.67044387),(11,'','',2,0,2,55.75396000,37.62039300);
+INSERT INTO `users_data` VALUES (1,'Алексей','Романов',1,359409600,0,-31.84406444,116.03309287),(11,'','',2,0,2,55.75396000,37.62039300);
 /*!40000 ALTER TABLE `users_data` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3193,4 +3193,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-08-30 20:03:07
+-- Dump completed on 2016-08-30 21:09:25
