@@ -4,13 +4,9 @@
 <div class="row mototrekMapContainer">
 	<div class="col-xs-12 col-md-2">
 		<ul class="mttLocationsNames"><% trekLocations.forEach(function (item)
-		{
-		%><li style="padding-left: <%=item["l_mtt_level"]%>0px;">
-				<% if (item["l_kind"]=='country') {%>
-				<span><%=item["l_name"]%></span>
-				<% } else {%>
-				<a href="javascript:void(0);" data-coords="<%=[item["l_latitude"], item["l_longitude"]]%>" data-kind="<%=item["l_kind"]%>"><%=item["l_name"]%></a>
-				<% } %>
+		{ %><li style="padding-left: <%=item["l_mtt_level"]%>0px;">
+				<% if (item["l_kind"]=='country') {%><span><%=item["l_name"]%></span><% }
+				else {%><a href="javascript:void(0);" data-coords="<%=[item["l_latitude"], item["l_longitude"]]%>" data-location-id="<%=item["l_id"]%>"><%=item["l_name"]%></a><% } %>
 			</li>
 		<%});%></ul>
 	</div>
@@ -21,8 +17,9 @@
 //<!--
 (function($)
 {
-	var mttList = MCJS["mttList"] || [];
-	console.log("mttList", mttList);
+	var trekList = MCJS["trekList"] || [];
+	var trekLocations = MCJS["trekLocations"] || [];
+
 	var mapState = {
 		//controls: ["zoomControl", "searchControl", "typeSelector"]
 		controls: ["zoomControl", "typeSelector"]
@@ -30,101 +27,145 @@
 		, type: 'yandex#hybrid'
 		, behaviors: ["default"]
 	};
-	var mapOptions = {}, mttClusterer, mttGeoObjects = [];
+	var mapOptions = {}, mapCluster = {};
+
+	//ключи - id объекта, значения - гео-коллекция точек
+	var placeMarkLocations = {};
 	var MttMcMap = new McMap('mttMap', {state: mapState, options: mapOptions});
 
 	MttMcMap.init()
 			.then(function (MttMap)
 			{
-				/**
-				 * Создадим кластеризатор, вызвав функцию-конструктор.
-				 * Список всех опций доступен в документации.
-				 * @see https://api.yandex.ru/maps/doc/jsapi/2.1/ref/reference/Clusterer.xml#constructor-summary
-				 */
-				mttClusterer = new ymaps.Clusterer({
-					/**
-					 * Через кластеризатор можно указать только стили кластеров,
-					 * стили для меток нужно назначать каждой метке отдельно.
-					 * @see https://api.yandex.ru/maps/doc/jsapi/2.1/ref/reference/option.presetStorage.xml
-					 */
-					preset: 'islands#invertedBlueClusterIcons',
-					/**
-					 * Ставим true, если хотим кластеризовать только точки с одинаковыми координатами.
-					 */
-					groupByCoordinates: false,
-					/**
-					 * Опции кластеров указываем в кластеризаторе с префиксом "cluster".
-					 * @see https://api.yandex.ru/maps/doc/jsapi/2.1/ref/reference/ClusterPlacemark.xml
-					 */
-					clusterDisableClickZoom: true,
-					clusterHideIconOnBalloonOpen: false,
-					geoObjectHideIconOnBalloonOpen: false
-				});
+				mapCluster = cluster();
 
-				var i, item, coords;
-				for(i  = 0; i < mttList.length; i++)
-				{
-					item = mttList[i];
-					coords = [item["mtt_latitude"], item["mtt_longitude"]];
-					mttGeoObjects[i] = new ymaps.Placemark(coords, {
-								/* Свойства*/
-								iconContent: item["mtt_name"]
-								, iconCaption: item["mtt_name"]
-								,	balloonContentHeader: item["mtt_name"]
-								,	balloonContentBody: item["mtt_address"]
-								//,	balloonContentBody: [item["mtt_email"], item["mtt_phones"]].join('<br/>')
-								,	balloonContentFooter: [coords.join(', '), '<a href="<%=menuItem.m_path%>/'+item["mtt_id"]+'/">перейти на страницу трека</a>'].join('<br/>')
-							}
-							,   {
-								/* Опции*/
-								//preset: 'islands#blueStretchyIcon' /* иконка растягивается под контент */
-								preset: 'islands#blueDotIconWithCaption'
-							});
-				}
+				MttMap.geoObjects.add(mapCluster);
 
-				//console.log("mttGeoObjects", mttGeoObjects);
-
-				/**
-				 * В кластеризатор можно добавить javascript-массив меток (не геоколлекцию) или одну метку.
-				 * @see https://api.yandex.ru/maps/doc/jsapi/2.1/ref/reference/Clusterer.xml#add
-				 */
-				mttClusterer.add(mttGeoObjects);
-				MttMap.geoObjects.add(mttClusterer);
-
-				MttMap.setBounds(mttClusterer.getBounds(), {
-					checkZoomRange: true
-				})
-				.then(function ()
-				{
-					onClickMttLocationsNames(MttMap);
-				});
+				MttMap.setBounds(mapCluster.getBounds(),
+						{
+							checkZoomRange: true
+						})
+						.then(function ()
+						{
+							onClickMttLocationsNames(MttMap);
+						});
 			});
 
+	/**
+	 * создаем гео-точку на основе данных трека
+	 * @param trek - данные по треку
+	 */
+	function makePlacemark(trek)
+	{
+		var coords = [trek["mtt_latitude"], trek["mtt_longitude"]];
+		return new ymaps.Placemark(coords,
+				{
+					iconContent: trek["mtt_name"]
+					, iconCaption: trek["mtt_name"]
+					,	balloonContentHeader: trek["mtt_name"]
+					,	balloonContentBody: trek["mtt_address"]
+					,	balloonContentFooter: [coords.join(', '), '<a href="<%=menuItem.m_path%>/'+trek["mtt_id"]+'/">перейти на страницу трека</a>'].join('<br/>')
+				},
+				{
+					preset: 'islands#blueDotIconWithCaption'
+				}
+		);
+	}
+
+	/**
+	 * создаем объект кластера с предустановленными настройками
+	 */
+	function makeCluster()
+	{
+		/**
+		 * Создадим кластеризатор, вызвав функцию-конструктор.
+		 * Список всех опций доступен в документации.
+		 * @see https://api.yandex.ru/maps/doc/jsapi/2.1/ref/reference/Clusterer.xml#constructor-summary
+		 */
+		return new ymaps.Clusterer({
+			/**
+			 * Через кластеризатор можно указать только стили кластеров,
+			 * стили для меток нужно назначать каждой метке отдельно.
+			 * @see https://api.yandex.ru/maps/doc/jsapi/2.1/ref/reference/option.presetStorage.xml
+			 */
+			preset: 'islands#invertedBlueClusterIcons',
+			/**
+			 * Ставим true, если хотим кластеризовать только точки с одинаковыми координатами.
+			 */
+			groupByCoordinates: false,
+			/**
+			 * Опции кластеров указываем в кластеризаторе с префиксом "cluster".
+			 * @see https://api.yandex.ru/maps/doc/jsapi/2.1/ref/reference/ClusterPlacemark.xml
+			 */
+			clusterDisableClickZoom: true,
+			clusterHideIconOnBalloonOpen: false,
+			geoObjectHideIconOnBalloonOpen: false
+		});
+	}
+
+	function cluster()
+	{
+		var i, tl, placemark, cluster, mtt_location_pids;
+		for(i = 0; i < trekList.length; i++)
+		{
+			placemark = makePlacemark(trekList[i]);
+
+			mtt_location_pids = trekList[i]["mtt_location_pids"].split(',');
+			for(tl=0; tl < trekLocations.length; tl++)
+			{
+				if (mtt_location_pids.indexOf(trekLocations[tl]["l_id"]) != -1)
+				{
+					if (!placeMarkLocations.hasOwnProperty(trekLocations[tl]["l_id"]))
+						placeMarkLocations[trekLocations[tl]["l_id"]] = [];
+
+					placeMarkLocations[trekLocations[tl]["l_id"]].push(placemark);
+				}
+			}
+		}
+
+		cluster = makeCluster();
+
+		for(var l_id in placeMarkLocations)
+			cluster.add(placeMarkLocations[l_id]);
+
+		return cluster;
+	}
+
+	/**
+	 * клики по локации в меню (стране или области или городу .. и тп)
+	 */
 	function onClickMttLocationsNames(MttMap)
 	{
 		$(".mttLocationsNames a").click(function (event)
 		{
 			event.preventDefault();
 			var coords = $(this).attr("data-coords").split(',');
-			var zoom = 10;
-			switch ($(this).attr("data-kind").toLowerCase())
-			{
-				case "country":
-					zoom = 6;
-					break;
+			var l_id = $(this).attr("data-location-id");
+			var bounds =  getLocationPointsCoords(l_id).concat([coords]);
+			var centerAndZoom = ymaps.util.bounds.getCenterAndZoom(bounds, MttMap.container.getSize());
+				bounds =  ymaps.util.bounds.fromPoints(bounds);
 
-				case "province":
-					zoom = 8;
-					break;
-
-				case "locality":
-					zoom = 10;
-					break;
-			}
-			console.log(coords);
-			MttMap.setCenter(coords, zoom);
-			//MttMap.setBounds([coords, coords], {checkZoomRange: true});
+			MttMap.setCenter(centerAndZoom.center, centerAndZoom.zoom, {checkZoomRange: true});
+			MttMap.setBounds(bounds, {checkZoomRange: true});
 		});
+	}
+
+	/**
+	 * получаем массив точек для указанной локации (сатрны, области, города и тп)
+	 * @param l_id
+	 * @returns {Array}
+	 */
+	function getLocationPointsCoords(l_id)
+	{
+		var listOfCoords = [];
+		for (var i in placeMarkLocations[l_id])
+		{
+			if (!placeMarkLocations[l_id].hasOwnProperty(i))
+				continue;
+
+			listOfCoords.push(placeMarkLocations[l_id][i]["geometry"].getCoordinates());
+		}
+
+		return listOfCoords;
 	}
 })($);
 //-->

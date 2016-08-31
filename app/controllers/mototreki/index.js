@@ -375,7 +375,7 @@ class Mototreki extends Base
 
 	/**
 	 * просмот треков на карте
-	 * 
+	 *
 	 * @param cb
 	 * @returns {Promise.<T>}
 	 */
@@ -399,7 +399,8 @@ class Mototreki extends Base
 				//this.view.addPartialData("user/left", {user: userData});
 
 				//экспрот данных в JS на клиента
-				this.getRes().expose(props.trekList, 'mttList');
+				this.getRes().expose(props.trekList, 'trekList');
+				this.getRes().expose(props.trekLocations, 'trekLocations');
 
 				return cb(null);
 			})

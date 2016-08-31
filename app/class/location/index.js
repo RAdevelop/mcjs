@@ -5,6 +5,17 @@ const Promise = require("bluebird");
 const Base = require('app/lib/class');
 const MultiGeocoder = require('multi-geocoder');
 
+/**
+ * настройки для MultiGeocoder и/или MultiGeocoder.geocode
+ * @type {{key: string, provider: string, coordorder: string, lang: string}}
+ */
+let geoCoderParams = {
+	"key":"AHy-CE4BAAAADqsNQAIA3ZriqBuo870Gl1cLkXxrpQAYADIAAAAAAAAAAADcFU_vLH4W4XzN8vPPrNIH-NWHiw==",
+	"provider": "yandex",
+	"coordorder": "latlong",
+	"lang": "ru_RU"
+};
+
 class Location extends Base
 {
 	/**
@@ -107,15 +118,8 @@ class Location extends Base
 		}
 		locationArr = locationArr.reverse();
 
-		let geoCoderParams = {
-			"key":"AHy-CE4BAAAADqsNQAIA3ZriqBuo870Gl1cLkXxrpQAYADIAAAAAAAAAAADcFU_vLH4W4XzN8vPPrNIH-NWHiw==",
-			"provider": "yandex",
-			"coordorder": "latlong",
-			"lang": "ru_RU"
-		};
-
 		const GeoCoder = new MultiGeocoder(geoCoderParams);
-		
+
 		//return GeoCoder.geocode(locationArr,{lang: 'ru_RU', kind: 'locality'})
 		return GeoCoder.geocode(locationArr, geoCoderParams)
 			.then(function (res)

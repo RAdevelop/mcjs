@@ -120,17 +120,22 @@ class Mototrek extends BaseModel
 			})
 			.then(function (res)
 			{
-				let sqlIns = [], sqlData = [i_mtt_id];
+				let sqlIns = [], sqlData = [i_mtt_id], pids = [];
 				res.forEach(function (item)
 				{
 					sqlIns.push("(?, ?)");
 					sqlData.push(i_mtt_id, item["l_id"]);
+					pids.push(item["l_id"]);
 				});
 
-				sql = "DELETE FROM moto_track_locations WHERE mtt_id = ?;" +
-					"INSERT INTO moto_track_locations (mtt_id, l_id) " +
+				sql = "DELETE FROM moto_track_locations WHERE mtt_id = ?;";
+
+				sql += "INSERT INTO moto_track_locations (mtt_id, l_id) " +
 					"VALUES " +sqlIns.join(',')+ "" +
 					" ON DUPLICATE KEY UPDATE l_id=VALUES(l_id);";
+
+				sql += "UPDATE moto_track SET mtt_location_pids = ? WHERE mtt_id = ?;";
+				sqlData.push(pids.join(','), i_mtt_id);
 
 				return this.constructor.conn().multis(sql, sqlData);
 			})
@@ -150,7 +155,7 @@ class Mototrek extends BaseModel
 	{
 		let sql = "SELECT mtt_id, mtt_name, mtt_website, mtt_address, mtt_descrip, mtt_email, mtt_phones" +
 			", mtt_latitude, mtt_longitude, mtt_location_id" +
-			", mtt_create_ts, mtt_update_ts" +
+			", mtt_create_ts, mtt_update_ts, mtt_location_pids" +
 			" FROM moto_track" +
 			" WHERE mtt_id = ?";
 
@@ -165,6 +170,7 @@ class Mototrek extends BaseModel
 	getLocations()
 	{
 		let kinds = ['country','province','locality'];
+
 		let sql = "SELECT l.l_id, l.l_pid, l.l_level, l.l_lk, l.l_rk" +
 			", ln.l_kind, ln.l_name, ln.l_full_name, ln.l_latitude , ln.l_longitude" +
 			", IF(ln.l_kind = 'country', 0, IF(ln.l_kind = 'province', 1, IF(ln.l_kind = 'locality' AND l.l_level < 3, 1, 2))) AS l_mtt_level" +
@@ -185,7 +191,7 @@ class Mototrek extends BaseModel
 	getAll()
 	{
 		let sql = "SELECT mtt_id, mtt_name, mtt_website, mtt_address, mtt_descrip, mtt_email, mtt_phones" +
-			", mtt_latitude, mtt_longitude, mtt_location_id" +
+			", mtt_latitude, mtt_longitude, mtt_location_id, mtt_location_pids" +
 			", mtt_create_ts, mtt_update_ts" +
 			" FROM moto_track;";
 

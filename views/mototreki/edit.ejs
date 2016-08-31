@@ -182,12 +182,7 @@ console.log('click by coords', coords);
 					return McMap.locationByLatLng(coords)
 							.then(function(location)
 							{
-								console.log('location on map click');
-								console.log(location);
-
 								updPlaceMark(MttMap, location.text, location.coords);
-
-								console.log('END location on map click');
 							})
 							.fail(function(err)
 							{
