@@ -767,14 +767,25 @@ nav.pagesNavigation
 /**********  мототреки **************/
 .mototrekMapContainer
 {
-
+	position: relative;
 }
 
 .mototrekMapContainer .mototrekMap
 {
-	height: 600px;
+	height: 550px;
 }
 
+.mototrekMapContainer .mttLocationsNames button.dropdown-toggle
+{
+	display: none;
+}
+
+.mototrekMapContainer .mttLocationsNames,
+.mototrekMapContainer .mttLocationsNames ul.dropdown-menu
+{
+	width: 100%;
+	position: relative;
+}
 
 @media (min-width: 1200px)
 {
@@ -794,6 +805,16 @@ nav.pagesNavigation
 }
 @media (max-width: 768px)
 {
+	.mototrekMapContainer .mttLocationsNames button.dropdown-toggle
+	{
+		display: block;
+		margin: 10px 0px 10px 0px;
+	}
+	.mototrekMapContainer .mttLocationsNames ul.dropdown-menu
+	{
+		position: absolute;
+		display: none;
+	}
 	.mototrekMapContainer .mototrekMap
 	{
 		height: 400px;
@@ -802,6 +823,15 @@ nav.pagesNavigation
 
 @media (min-width: 320px) and (max-width: 480px)
 {
+	.mototrekMapContainer .mttLocationsNames button.dropdown-toggle
+	{
+		display: block;
+	}
+	.mototrekMapContainer .mttLocationsNames ul.dropdown-menu
+	{
+		position: absolute;
+		display: none;
+	}
 	.mototrekMapContainer .mototrekMap
 	{
 		height: 320px;

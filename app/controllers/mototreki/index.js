@@ -37,7 +37,10 @@ class Mototreki extends Base
 	 */
 	indexActionGet(cb)
 	{
-		//TODO здесь вызывать сначала список треков
+		//TODO здесь вызывать сначала список треков или страницу трека по его id
+
+		//throw new Errors.HttpStatusError(404, "Not found");
+
 		this.getClass("user").getUser(this.getUserId())
 			.bind(this)
 			.then(function(userData)
@@ -51,12 +54,6 @@ class Mototreki extends Base
 				//this.view.addPartialData("user/right", {title: 'right_col'});
 
 				return cb(null);
-			})
-			.catch(Errors.NotFoundError, function(err)
-			{
-				//self.view.setTplData("home", {});
-				//return cb(null);
-				throw new Errors.HttpStatusError(404, "Not found");
 			})
 			.catch(function(err)
 			{
@@ -403,12 +400,6 @@ class Mototreki extends Base
 				this.getRes().expose(props.trekLocations, 'trekLocations');
 
 				return cb(null);
-			})
-			.catch(Errors.NotFoundError, function(err)
-			{
-				//self.view.setTplData("home", {});
-				//return cb(null);
-				throw new Errors.HttpStatusError(404, "Not found");
 			})
 			.catch(function(err)
 			{

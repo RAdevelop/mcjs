@@ -1,16 +1,22 @@
 <%  if(!isXHR){%><%- layout('layout/default.ejs') %><% } %>
 <%- include toolbar.ejs %>
 <h1><%=menuItem.m_h1%> на карте</h1>
+
 <div class="row mototrekMapContainer">
-	<div class="col-xs-12 col-md-2">
-		<ul class="mttLocationsNames"><% trekLocations.forEach(function (item)
-		{ %><li style="padding-left: <%=item["l_mtt_level"]%>0px;">
-				<% if (item["l_kind"]=='country') {%><span><%=item["l_name"]%></span><% }
-				else {%><a href="javascript:void(0);" data-coords="<%=[item["l_latitude"], item["l_longitude"]]%>" data-location-id="<%=item["l_id"]%>"><%=item["l_name"]%></a><% } %>
-			</li>
-		<%});%></ul>
+	<div class="col-xs-12 col-md-3">
+		<div class="mttLocationsNames  open">
+			<button class="btn btn-default dropdown-toggle" type="button" id="dropdownLocationsNames"  aria-haspopup="true" aria-expanded="true">Регионы <span class="caret"></span></button>
+			<ul class=" dropdown-menu" aria-labelledby="dropdownLocationsNames"><% trekLocations.forEach(function (item, i, list)
+				{ %><li style="padding-left: <%=item["l_mtt_level"]%>0px;">
+					<a href="javascript:void(0);" data-coords="<%=[item["l_latitude"], item["l_longitude"]]%>" data-location-id="<%=item["l_id"]%>"><%=item["l_name"]%></a>
+				</li><%
+				if (list[i+1] && list[i+1]["l_level"] == 1){
+				%><li role="separator" class="divider"></li><%
+				}
+				});%></ul>
+		</div>
 	</div>
-	<div class="col-xs-12 col-md-10 mototrekMap" id="mttMap"></div>
+	<div class="col-xs-12 col-md-9 mototrekMap" id="mttMap"></div>
 </div>
 <script src="/js/mcMap.js" type="text/javascript"></script>
 <script type="text/javascript">
@@ -140,12 +146,22 @@
 			event.preventDefault();
 			var coords = $(this).attr("data-coords").split(',');
 			var l_id = $(this).attr("data-location-id");
-			var bounds =  getLocationPointsCoords(l_id).concat([coords]);
+
+			var bounds =  getLocationPointsCoords(l_id);
+			var cnt = bounds.length;
+				bounds = bounds.concat([coords]);
+
 			var centerAndZoom = ymaps.util.bounds.getCenterAndZoom(bounds, MttMap.container.getSize());
+			var center = (cnt > 1 ? centerAndZoom.center : bounds[0]);
+
 				bounds =  ymaps.util.bounds.fromPoints(bounds);
 
-			MttMap.setCenter(centerAndZoom.center, centerAndZoom.zoom, {checkZoomRange: true});
-			MttMap.setBounds(bounds, {checkZoomRange: true});
+			MttMap.setCenter(center, centerAndZoom.zoom, {checkZoomRange: true});
+			MttMap.setBounds(bounds, {checkZoomRange: false})
+					.then(function ()
+					{
+						MttMap.setCenter(center, MttMap.getZoom(), {checkZoomRange: false});
+					});
 		});
 	}
 
