@@ -109,14 +109,13 @@ class Location extends Base
 
 		let geoCoderParams = {
 			"key":"AHy-CE4BAAAADqsNQAIA3ZriqBuo870Gl1cLkXxrpQAYADIAAAAAAAAAAADcFU_vLH4W4XzN8vPPrNIH-NWHiw==",
-			"provider": "yandex", "coordorder": "latlong", "lang": "ru_RU"
+			"provider": "yandex",
+			"coordorder": "latlong",
+			"lang": "ru_RU"
 		};
 
-		const GeoCoder = new MultiGeocoder();
-
-		//locationArr = ["Россия, Москва, Вадковский переулок, 3Ас11"];
-		//console.log(locationArr);
-
+		const GeoCoder = new MultiGeocoder(geoCoderParams);
+		
 		//return GeoCoder.geocode(locationArr,{lang: 'ru_RU', kind: 'locality'})
 		return GeoCoder.geocode(locationArr, geoCoderParams)
 			.then(function (res)

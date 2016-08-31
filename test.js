@@ -85,15 +85,15 @@ let locationArr = [
 	,"Россия, Ямало-Ненецкий автономный округ"
 	,"Россия, Ярославская область"];
 
-
 locationArr = locationArr.reverse();
 
-/*
-return Promise.mapSeries(locationArr, function (s_location)
+const self = this;
+
+Promise.mapSeries(locationArr, function (s_location)
 {
 	return self.getClass('location').geoCoder(s_location)
 		.then(function (locationData)
 		{
 			return self.getClass('location').create(locationData);
 		});
-});*/
+});

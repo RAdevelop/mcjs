@@ -373,6 +373,12 @@ class Mototreki extends Base
 			});
 	}
 
+	/**
+	 * просмот треков на карте
+	 * 
+	 * @param cb
+	 * @returns {Promise.<T>}
+	 */
 	mapActionGet(cb)
 	{
 		return Promise.props({
