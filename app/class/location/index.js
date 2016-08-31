@@ -32,18 +32,15 @@ class Location extends Base
 
 		for(let i = 0; i < locationData.length; i++)
 		{
-			//чтобы в таблицах location не сохранять улицы и дома...
-
-			//if (locationData[i]["kind"].toLowerCase() == '' || locationData[i]["kind"].toLowerCase() == '')
-
 			//https://tech.yandex.ru/maps/doc/geocoder/desc/reference/kind-docpage/
 			switch (locationData[i]["kind"].toLowerCase())
 			{
+				//чтобы в таблицах location не сохранять улицы и дома...
 				case 'country':
-				//case 'province':
-				//case 'area':
-				//case 'district':
-					//case 'locality':
+				case 'province':
+				case 'area':
+				case 'district':
+				case 'locality':
 					break;
 				default:
 					//console.log(locationData[i]["kind"]);

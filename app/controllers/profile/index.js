@@ -371,9 +371,9 @@ class Profile extends Base
 			.then(function(tplData)
 			{
 				return self.getClass('location').geoCoder(s_location)
-					.then(function (userLocationData)
+					.then(function (locationData)
 					{
-						return self.getClass('location').create(userLocationData);
+						return self.getClass('location').create(locationData);
 					})
 					.then(function (location_id)
 					{
