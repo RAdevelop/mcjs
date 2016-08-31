@@ -324,7 +324,7 @@ $(function()
 
                 UserMap.events.add('click', function (event)
                 {
-                    return McMap.locationByLatLng(event.get('coords'))
+                    return McMap.locationByLatLng(event.get('coords'), {kind:"locality"})
                             .then(function(location)
                             {
                                 uPlacemark.geometry.setCoordinates(location.coords);
@@ -353,7 +353,7 @@ $(function()
                     var thisPlacemark = e.get('target');
                     var coords = thisPlacemark.geometry.getCoordinates();
 
-                    return McMap.locationByLatLng(coords)
+                    return McMap.locationByLatLng(coords, {kind:"locality"})
                             .then(function (location)
                             {
                                 setLocationOnForm(location.text, location.coords[0], location.coords[1])

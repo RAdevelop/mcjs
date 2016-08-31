@@ -148,10 +148,10 @@ class Location extends Base
 				}
 
 				//console.log(locationData.length +' == '+ locationArr.length);
-				console.log(locationData);
+				//console.log(locationData);
 
-				//if (res["errors"].length || !locationData.length || locationData.length != locationArr.length)
-				//	throw new Errors.ValidationError('Не удалось определить указанный населенный пункт');
+				if (res["errors"].length || !locationData.length || locationData.length != locationArr.length)
+					throw new Errors.ValidationError('Не удалось определить указанный населенный пункт');
 
 				return Promise.resolve(locationData);
 			});
