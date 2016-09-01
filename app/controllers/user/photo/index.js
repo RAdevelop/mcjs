@@ -253,13 +253,9 @@ class UserPhoto extends Base
 				this.view.setTplData(tplFile, tplData);
 				return cb(null, true);
 			})
-			.catch(Errors.ValidationError, Errors.AlreadyInUseError, function(err)
+			.catch(Errors.FormError, function(err)
 			{
-				//такие ошибки не уводят со страницы.
-				tplData.formError.error = true;
-				tplData.formError.errorName = err.name;
-
-				this.view.setTplData(tplFile, tplData);
+				this.view.setTplData(tplFile, err.data);
 
 				return cb(null, true);
 			})
@@ -347,18 +343,7 @@ class UserPhoto extends Base
 			.bind(this)
 			.then(function(errors)
 			{
-				let errKeys = Object.keys(errors);
-
-				if (errKeys.length)
-				{
-					errKeys.forEach(function(f)
-					{
-						tplData.formError.fields[f] = errors[f];
-					});
-
-					tplData.formError.message = 'Ошибка при создании фотоальбома';
-					throw(new Errors.ValidationError(tplData.formError.message));
-				}
+				this.parseFormErrors(tplData, errors, 'Ошибка при создании фотоальбома');
 
 				return Promise.resolve(tplData);
 			})
@@ -395,18 +380,7 @@ class UserPhoto extends Base
 			.bind(this)
 			.then(function(errors)
 			{
-				let errKeys = Object.keys(errors);
-
-				if (errKeys.length)
-				{
-					errKeys.forEach(function(f)
-					{
-						tplData.formError.fields[f] = errors[f];
-					});
-
-					tplData.formError.message = 'Ошибка при редактировании фотоальбома';
-					return Promise.reject(new Errors.ValidationError(tplData.formError.message));
-				}
+				this.parseFormErrors(tplData, errors, 'Ошибка при редактировании фотоальбома');
 
 				return Promise.resolve(tplData);
 			})

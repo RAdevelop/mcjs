@@ -59,7 +59,7 @@ let menu = {
 		
 		m_id: null,m_pid: null,m_level: null,m_lk: null,m_rk: null,c_id: null
 	},
-	"/profile/photo":{
+	/*"/profile/photo":{
 		c_path: '/profile/photo',
 		m_path: '/profile/photo',
 		m_name: 'Фотографии',
@@ -69,7 +69,7 @@ let menu = {
 		m_nbsp: '',
 
 		m_id: null,m_pid: null,m_level: null,m_lk: null,m_rk: null,c_id: null
-	},
+	},*/
 	"/user/photo":{
 		c_path: '/user/photo',
 		m_path: '/user/photo',

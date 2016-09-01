@@ -24,7 +24,7 @@ module.exports = function(app)
 
 		if (err.status >= 500)
 		{
-			Logger().error(err);
+			Logger.error(err);
 
 			const Mailer = new Mail('gmail');
 			let sendParams = {
@@ -39,7 +39,7 @@ module.exports = function(app)
 				if (err)
 				{
 					let error = new Errors.AppMailError('Ошибка при отправке письма', err);
-					Logger().error(error);
+					Logger.error(error);
 				}
 			});
 		}

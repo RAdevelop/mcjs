@@ -148,20 +148,7 @@ class Login extends Base
 		return Promise.resolve(errors)
 		.then(function(errors)
 		{
-			let errKeys = Object.keys(errors);
-			
-			if (errKeys.length)
-			{
-				tplData.formError.message = 'Ошибки при заполнении формы';
-				tplData.formError.error = true;
-				
-				errKeys.forEach(function(f)
-				{
-					tplData.formError.fields[f] = errors[f];
-				});
-				
-				return Promise.reject(new Errors.ValidationError(tplData.formError.message));
-			}
+			self.parseFormErrors(tplData, errors);
 			
 			return Promise.resolve(tplData);
 		})
@@ -200,7 +187,6 @@ class Login extends Base
 		})
 		.catch(function(err)
 		{
-			tplData.formError.errorName = err.name;
 			return cb(err);
 		});
 	}
@@ -227,21 +213,8 @@ class Login extends Base
 		return Promise.resolve(errors)
 		.then(function(errors)
 		{
-			let errKeys = Object.keys(errors);
-			
-			if (errKeys.length)
-			{
-				tplData.s_password = '';
-				tplData.formError.message = 'Ошибки при заполнении формы';
-				
-				errKeys.forEach(function(f)
-				{
-					tplData.formError.fields[f] = errors[f];
-				});
+			self.parseFormErrors(tplData, errors);
 
-				return Promise.reject(new Errors.ValidationError(tplData.formError.message));
-			}
-			
 			return Promise.resolve(tplData);
 		})
 		.then(function(tplData)
@@ -267,6 +240,7 @@ class Login extends Base
 		})
 		.catch(Errors.ValidationError, Errors.NotFoundError, function(err)
 		{
+			tplData.s_password = '';
 			tplData.formError.error = true;
 			tplData.formError.errorName = err.name;
 			self.view.setTplData("auth/login", tplData);
@@ -350,19 +324,7 @@ class Login extends Base
 
 		return Promise.resolve(errors).then(function(errors)
 		{
-			let errKeys = Object.keys(errors);
-			if (errKeys.length)
-			{
-				tplData.s_password = '';
-				tplData.formError.message = 'Ошибки при заполнении формы';
-				
-				errKeys.forEach(function(f)
-				{
-					tplData.formError.fields[f] = errors[f];
-				});
-
-				return Promise.reject(new Errors.ValidationError(tplData.formError.message));
-			}
+			self.parseFormErrors(tplData, errors);
 			
 			return Promise.resolve(tplData);
 		})

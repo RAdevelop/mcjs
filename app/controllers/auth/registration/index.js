@@ -121,19 +121,7 @@ class Registration extends Base
 		return Promise.resolve(errors)
 		.then(function(errors)
 		{
-			let errKeys = Object.keys(errors);
-			
-			if (errKeys.length)
-			{
-				tplData.formError.message = 'Ошибки при заполнении формы';
-				
-				errKeys.forEach(function(f)
-				{
-					tplData.formError.fields[f] = errors[f];
-				});
-				
-				return Promise.reject(new Errors.ValidationError(tplData.formError.message));
-			}
+			self.parseFormErrors(tplData, errors);
 			
 			return Promise.resolve(tplData);
 		})

@@ -147,7 +147,7 @@ class Profile extends Base
 			this.view.setTplData(tplFile, tplData);
 			return cb(null);
 		})
-		.catch(Errors.ValidationError, Errors.AlreadyInUseError, function(err)
+		.catch(Errors.FormError, Errors.AlreadyInUseError, function(err)
 		{
 			//такие ошибки не уводят со страницы.
 			tplData.formError.error = true;
@@ -299,18 +299,7 @@ class Profile extends Base
 			.bind(this)
 			.then(function(errors)
 			{
-				let errKeys = Object.keys(errors);
-
-				if (errKeys.length)
-				{
-					errKeys.forEach(function(f)
-					{
-						tplData.formError.fields[f] = errors[f];
-					});
-
-					tplData.formError.message = 'Ошибка при кадрировании фотографии';
-					return Promise.reject(new Errors.ValidationError(tplData.formError.message));
-				}
+				this.parseFormErrors(tplData, errors, 'Ошибка при кадрировании фотографии');
 
 				return Promise.resolve(tplData);
 			})
@@ -349,23 +338,12 @@ class Profile extends Base
 			errors["s_location"] = "Укажите свой населенный пункт";
 		
 		const self = this;
-		
+
 		return Promise.resolve(errors)
 			.then(function(errors)
 			{
-				let errKeys = Object.keys(errors);
-				
-				if (errKeys.length)
-				{
-					errKeys.forEach(function(f)
-					{
-						tplData.formError.fields[f] = errors[f];
-					});
+				self.parseFormErrors(tplData, errors);
 
-					tplData.formError.message = 'Ошибки при заполнении формы';
-					return Promise.reject(new Errors.ValidationError(tplData.formError.message));
-				}
-				
 				return Promise.resolve(tplData);
 			})
 			.then(function(tplData)
@@ -418,17 +396,8 @@ class Profile extends Base
 		return Promise.resolve(errors)
 		.then(function(errors)
 		{
-			let errKeys = Object.keys(errors);
-			
-			if (errKeys.length)
-			{
-				errKeys.forEach(function(f)
-				{
-					tplData.formError.fields[f] = errors[f];
-				});
-				tplData.formError.message = 'Ошибки при заполнении формы';
-				return Promise.reject(new Errors.ValidationError(tplData.formError.message));
-			}
+			self.parseFormErrors(tplData, errors);
+
 			return Promise.resolve(tplData);
 		})
 		.then(function(tplData)
@@ -479,20 +448,8 @@ class Profile extends Base
 		return Promise.resolve(errors)
 		.then(function(errors)
 		{
-			let errKeys = Object.keys(errors);
-			
-			if (errKeys.length)
-			{
-				errKeys.forEach(function(f)
-				{
-					tplData.formError.fields[f] = errors[f];
-				});
+			self.parseFormErrors(tplData, errors);
 
-				tplData.formError.message = 'Ошибки при заполнении формы';
-
-				return Promise.reject(new Errors.ValidationError(tplData.formError.message));
-			}
-			
 			return Promise.resolve(tplData);
 		})
 		.then(function(tplData)
@@ -539,25 +496,13 @@ class Profile extends Base
 		
 		if (!tplData["i_sex"] || (tplData["i_sex"] != 0 && tplData["i_sex"] != 1))
 			errors["i_sex"] = "неверно указан пол";
-		
-		let errKeys = Object.keys(errors);
-		
+
 		const self = this;
 		
-		return Promise.resolve(errKeys)
+		return Promise.resolve(errors)
 		.then(function(errKeys)
 		{
-			if (errKeys.length)
-			{
-				errKeys.forEach(function(f)
-				{
-					tplData.formError.fields[f] = errors[f];
-				});
-
-				tplData.formError.message = 'Ошибки при заполнении формы';
-
-				return Promise.reject(new Errors.ValidationError(tplData.formError.message));
-			}
+			self.parseFormErrors(tplData, errors);
 			
 			return Promise.resolve(tplData);
 			
@@ -596,22 +541,10 @@ class Profile extends Base
 		
 		const self = this;
 		
-		return Promise.resolve(errors).then(function(errors)
+		return Promise.resolve(errors)
+			.then(function(errors)
 		{
-			let errKeys = Object.keys(errors);
-			
-			if (errKeys.length)
-			{
-				tplData.s_password = '';
-				
-				errKeys.forEach(function(f)
-				{
-					tplData.formError.fields[f] = errors[f];
-				});
-				tplData.formError.message = 'Ошибки при заполнении формы';
-
-				return Promise.reject(new Errors.ValidationError(tplData.formError.message));
-			}
+			self.parseFormErrors(tplData, errors);
 			
 			return Promise.resolve(tplData);
 		})

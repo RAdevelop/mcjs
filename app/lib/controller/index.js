@@ -360,7 +360,7 @@ class Base
 	 * @returns {{formError: {message: string, error: boolean, fields: {}}}}
 	 * @throws FormError
 	 */
-	parseFormErrors(tplData, errors, message, text = '')
+	parseFormErrors(tplData, errors, message = 'Ошибки при заполнении формы', text = '')
 	{
 		let errKeys = Object.keys(errors);
 		let data = {

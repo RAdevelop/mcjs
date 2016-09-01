@@ -1,3 +1,4 @@
+/*
 "use strict";
 
 const Pages = require("app/lib/pages");
@@ -25,11 +26,11 @@ class ProfilePhoto extends Base
 		}
 	}
 
-	/**
+	/!**
 	 * показываем страницу пользователя (свою, или выбранного)
 	 * @param cb
 	 * @returns {*}
-	 */
+	 *!/
 	indexActionGet(cb)
 	{
 		if (!this.isAuthorized())
@@ -70,14 +71,14 @@ class ProfilePhoto extends Base
 			});
 	}
 	
-	/**
+	/!**
 	 * список фотоальбомов пользователя
 	 *
 	 * @param cb
 	 * @param tplData
 	 * @param isAjax
 	 * @returns {Promise.<TResult>}
-	 */
+	 *!/
 	albumList(cb, tplData, isAjax = false)
 	{
 		let {i_page=1} = this.routeArgs;
@@ -127,13 +128,13 @@ class ProfilePhoto extends Base
 			});
 	}
 
-	/**
+	/!**
 	 * просмотр фотоальбома
 	 *
 	 * @param cb
 	 * @param tplData
 	 * @param isAjax
-	 */
+	 *!/
 	album(cb, tplData, isAjax = false)
 	{
 		let {i_a_id, i_page=1} = this.routeArgs;
@@ -259,12 +260,12 @@ class ProfilePhoto extends Base
 			});
 	}
 
-	/**
+	/!**
 	 * обработка POST событий над формами
 	 *
 	 * @param tplData
 	 * @returns {*}
-	 */
+	 *!/
 	albumPostActions(tplData)
 	{
 		switch(tplData["btn_save_album"])
@@ -298,11 +299,11 @@ class ProfilePhoto extends Base
 		}
 	}
 
-	/**
+	/!**
 	 * сорхранение позиций фотографий после их сортировке на клиенте
 	 *
 	 * @param tplData
-	 */
+	 *!/
 	sortImg(tplData)
 	{
 		if (!tplData["i_a_id"] || !tplData.hasOwnProperty("ai_pos") || !tplData["ai_pos"].length)
@@ -315,12 +316,12 @@ class ProfilePhoto extends Base
 			});
 	}
 
-	/**
+	/!**
 	 * создание фотоальбома
 	 *
 	 * @param tplData
 	 * @returns {Promise.<TResult>}
-	 */
+	 *!/
 	addNamedAlbum(tplData)
 	{
 		let errors = {};
@@ -360,12 +361,12 @@ class ProfilePhoto extends Base
 			});
 	}
 
-	/**
+	/!**
 	 * радактирование названия и описания фотоальбома
 	 *
 	 * @param tplData
 	 * @returns {*}
-	 */
+	 *!/
 	editAlbum(tplData)
 	{
 		let errors = {};
@@ -416,12 +417,12 @@ class ProfilePhoto extends Base
 			});
 	}
 
-	/**
+	/!**
 	 * обновляем описание фотографии
 	 *
 	 * @param tplData
 	 * @returns {*}
-	 */
+	 *!/
 	updImgText(tplData)
 	{
 		if (!tplData["i_a_id"] || !tplData["i_ai_id"] || !tplData.hasOwnProperty("s_ai_text"))
@@ -436,12 +437,12 @@ class ProfilePhoto extends Base
 			});
 	}
 
-	/**
+	/!**
 	 * удаление фотографии пользователем
 	 *
 	 * @param tplData
 	 * @returns {*}
-	 */
+	 *!/
 	delImg(tplData)
 	{
 		if (!tplData["i_a_id"] || !tplData["i_ai_id"])
@@ -460,12 +461,12 @@ class ProfilePhoto extends Base
 			});
 	}
 
-	/**
+	/!**
 	 * загружаем новую фотографю в альбом
 	 *
 	 * @param cb
 	 * @returns {*}
-	 */
+	 *!/
 	uploadActionPost(cb)
 	{
 		let self = this;
@@ -513,6 +514,6 @@ class ProfilePhoto extends Base
 			});
 	}
 }
-//************************************************************************* module.exports
+//!************************************************************************* module.exports
 //писать после class Name....{}
-module.exports = ProfilePhoto;
+module.exports = ProfilePhoto;*/

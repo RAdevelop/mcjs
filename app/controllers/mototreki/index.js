@@ -199,7 +199,7 @@ class Mototreki extends Base
 
 				return cb(null, true);
 			})
-			.catch(Errors.FormError, function (err)//такие ошибки не уводят со страницы.
+			.catch(Errors.ValidationError, function (err)//такие ошибки не уводят со страницы.
 			{
 				this.view.setTplData(tplFile, err.data);
 
@@ -351,7 +351,7 @@ class Mototreki extends Base
 
 				return cb(null, true);
 			})
-			.catch(Errors.FormError, function (err) //такие ошибки не уводят со страницы
+			.catch(Errors.ValidationError, function (err) //такие ошибки не уводят со страницы
 			{
 				this.view.setTplData(tplFile, err.data);
 
