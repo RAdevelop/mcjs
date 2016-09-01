@@ -212,6 +212,42 @@
 		});
 	};
 
+	/**
+	 * переводим координаты в градусы минуты секунды...
+	 *
+	 * @param coords
+	 * @returns {{lat: string, lng: string}}
+	 */
+	McMap.coordConvert = function (coords)
+	{
+		var lat = coords[0];
+		var lng = coords[1];
+
+		var latG, latMin, latSec, lngG, lngMin, lngSec;
+
+		var latArr = lat.toString().split('.');
+
+		latG = latArr[0];
+		latArr = (getDecimal(lat)*60);
+
+		latSec = Math.round(getDecimal(latArr)*60);
+		latMin = latArr.toString().split('.')[0];
+
+
+		var lngArr = lng.toString().split('.');
+
+		lngG = lngArr[0];
+		lngArr = (getDecimal(lng)*60);
+
+		lngSec = Math.round(getDecimal(lngArr)*60);
+		lngMin = lngArr.toString().split('.')[0];
+
+		var NS = (latG < 0 ? 'S' : 'N');
+		var EW = (latG < 0 ? 'W' : 'E');
+
+		return {lat: Math.abs(latG) + '&deg; '+ latMin + '&prime;' + latSec + '&Prime;'+NS, lng: Math.abs(lngG) + '&deg; '+ lngMin + '&prime;' + lngSec + '&Prime;'+EW};
+	};
+
 
 	/**
 	 * список ошибок, которые потом можно обработать

@@ -25,7 +25,9 @@ class Mototrek extends Base
 	 */
 	add(s_mtt_name, t_mtt_descrip = '', s_mtt_website = '', m_mtt_email = '', s_mtt_phones = '', s_mtt_address, f_mtt_lat, f_mtt_lng, location_id)
 	{
-		return this.model('mototrek').add(s_mtt_name, t_mtt_descrip, s_mtt_website, m_mtt_email, s_mtt_phones, s_mtt_address, f_mtt_lat, f_mtt_lng, location_id);
+		let {gps_lat, gps_lng} = this.getClass('location').coordConvert(f_mtt_lat, f_mtt_lng);
+
+		return this.model('mototrek').add(s_mtt_name, t_mtt_descrip, s_mtt_website, m_mtt_email, s_mtt_phones, s_mtt_address, f_mtt_lat, f_mtt_lng, location_id, gps_lat, gps_lng);
 	}
 
 	/**
@@ -45,7 +47,9 @@ class Mototrek extends Base
 	 */
 	edit(i_mtt_id, s_mtt_name, t_mtt_descrip = '', s_mtt_website = '', m_mtt_email = '', s_mtt_phones = '', s_mtt_address, f_mtt_lat, f_mtt_lng, location_id)
 	{
-		return this.model('mototrek').edit(i_mtt_id, s_mtt_name, t_mtt_descrip, s_mtt_website, m_mtt_email, s_mtt_phones, s_mtt_address, f_mtt_lat, f_mtt_lng, location_id);
+		let {gps_lat, gps_lng} = this.getClass('location').coordConvert(f_mtt_lat, f_mtt_lng);
+
+		return this.model('mototrek').edit(i_mtt_id, s_mtt_name, t_mtt_descrip, s_mtt_website, m_mtt_email, s_mtt_phones, s_mtt_address, f_mtt_lat, f_mtt_lng, location_id, gps_lat, gps_lng);
 	}
 
 	/**
@@ -57,11 +61,12 @@ class Mototrek extends Base
 	get(mtt_id)
 	{
 		return this.model('mototrek').getById(mtt_id)
+			.bind(this)
 			.then(function (trek)
 			{
 				if (!trek)
 					throw new Errors.HttpStatusError(404, "Not found");
-
+				
 				return Promise.resolve(trek);
 			});
 	}

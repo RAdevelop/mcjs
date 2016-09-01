@@ -159,6 +159,45 @@ class Location extends Base
 				return Promise.resolve(locationData);
 			});
 	}
+
+	/**
+	 * прообразуем координаты в строку: градусы минуты секунды
+	 *
+	 * 55.560469 -> 55° 33′38″N
+	 *
+	 * @param lat
+	 * @param lng
+	 *
+	 * @use mixin from Helpers
+	 *
+	 * @returns {{lat: string, lng: string}}
+	 */
+	coordConvert(lat, lng)
+	{
+		let latG, latMin, latSec, lngG, lngMin, lngSec;
+
+		let latArr = lat.toString().split('.');
+
+		latG = latArr[0];
+		latArr = (this.getDecimal(lat)*60);
+
+		latSec = Math.round(this.getDecimal(latArr)*60);
+		latMin = latArr.toString().split('.')[0];
+
+
+		let lngArr = lng.toString().split('.');
+
+		lngG = lngArr[0];
+		lngArr = (this.getDecimal(lng)*60);
+
+		lngSec = Math.round(this.getDecimal(lngArr)*60);
+		lngMin = lngArr.toString().split('.')[0];
+
+		let NS = (latG < 0 ? 'S' : 'N');
+		let EW = (latG < 0 ? 'W' : 'E');
+
+		return {gps_lat: Math.abs(latG) + '&deg; '+ latMin + '&prime;' + latSec + '&Prime;'+NS, gps_lng: Math.abs(lngG) + '&deg; '+ lngMin + '&prime;' + lngSec + '&Prime;'+EW};
+	}
 }
 //************************************************************************* module.exports
 //писать после class Name....{}

@@ -19,17 +19,22 @@ class Mototrek extends BaseModel
 	 * @param s_mtt_address
 	 * @param f_mtt_lat
 	 * @param f_mtt_lng
+	 * @param gps_lat,
+	 * @param gps_lng
 	 * @returns {*}
 	 */
-	add(s_mtt_name, t_mtt_descrip, s_mtt_website, m_mtt_email, s_mtt_phones, s_mtt_address, f_mtt_lat, f_mtt_lng, location_id)
+	add(s_mtt_name, t_mtt_descrip, s_mtt_website, m_mtt_email, s_mtt_phones, s_mtt_address, f_mtt_lat, f_mtt_lng, location_id, gps_lat, gps_lng)
 	{
 		let sql = "INSERT INTO moto_track (mtt_name, mtt_website, mtt_address, mtt_descrip, mtt_email, mtt_phones" +
 			", mtt_latitude, mtt_longitude, mtt_location_id" +
-			", mtt_create_ts, mtt_update_ts) " +
-			" VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			", mtt_create_ts, mtt_update_ts" +
+			", mtt_gps_lat, mtt_gps_lng" +
+			") " +
+			" VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 		let now_ts = Moment().unix();
-		let sqlData = [s_mtt_name, s_mtt_website, s_mtt_address, t_mtt_descrip, m_mtt_email, s_mtt_phones, f_mtt_lat, f_mtt_lng, location_id, now_ts, now_ts];
+		let sqlData = [s_mtt_name, s_mtt_website, s_mtt_address, t_mtt_descrip, m_mtt_email, s_mtt_phones,
+			f_mtt_lat, f_mtt_lng, location_id, now_ts, now_ts, gps_lat, gps_lng];
 		let i_mtt_id;
 
 		return this.constructor.conn().ins(sql, sqlData)
@@ -51,17 +56,22 @@ class Mototrek extends BaseModel
 			})
 			.then(function (res)
 			{
-				let sqlIns = [], sqlData = [i_mtt_id];
+				let sqlIns = [], sqlData = [i_mtt_id], pids = [];
 				res.forEach(function (item)
 				{
 					sqlIns.push("(?, ?)");
 					sqlData.push(i_mtt_id, item["l_id"]);
+					pids.push(item["l_id"]);
 				});
 
-				sql = "DELETE FROM moto_track_locations WHERE mtt_id = ?;" +
-					"INSERT INTO moto_track_locations (mtt_id, l_id) " +
+				sql = "DELETE FROM moto_track_locations WHERE mtt_id = ?;";
+
+				sql += "INSERT INTO moto_track_locations (mtt_id, l_id) " +
 					"VALUES " +sqlIns.join(',')+ "" +
 					" ON DUPLICATE KEY UPDATE l_id=VALUES(l_id);";
+
+				sql += "UPDATE moto_track SET mtt_location_pids = ? WHERE mtt_id = ?;";
+				sqlData.push(pids.join(','), i_mtt_id);
 
 				return this.constructor.conn().multis(sql, sqlData);
 			})
@@ -83,9 +93,11 @@ class Mototrek extends BaseModel
 	 * @param s_mtt_address
 	 * @param f_mtt_lat
 	 * @param f_mtt_lng
+	 * @param gps_lat
+	 * @param gps_lng
 	 * @returns {*} i_mtt_id
 	 */
-	edit(i_mtt_id, s_mtt_name, t_mtt_descrip, s_mtt_website, m_mtt_email, s_mtt_phones, s_mtt_address, f_mtt_lat, f_mtt_lng, location_id)
+	edit(i_mtt_id, s_mtt_name, t_mtt_descrip, s_mtt_website, m_mtt_email, s_mtt_phones, s_mtt_address, f_mtt_lat, f_mtt_lng, location_id, gps_lat, gps_lng)
 	{
 		let sql = "UPDATE moto_track SET " +
 			"mtt_name = ?, " +
@@ -97,11 +109,14 @@ class Mototrek extends BaseModel
 			"mtt_latitude = ?, " +
 			"mtt_longitude = ?, " +
 			"mtt_location_id = ?," +
-			"mtt_update_ts = ? " +
+			"mtt_update_ts = ?, " +
+			"mtt_gps_lat = ?, " +
+			"mtt_gps_lng = ? " +
 			" WHERE mtt_id = ?";
 
 		let now_ts = Moment().unix();
-		let sqlData = [s_mtt_name, s_mtt_website, s_mtt_address, t_mtt_descrip, m_mtt_email, s_mtt_phones, f_mtt_lat, f_mtt_lng, location_id, now_ts, i_mtt_id];
+		let sqlData = [s_mtt_name, s_mtt_website, s_mtt_address, t_mtt_descrip, m_mtt_email, s_mtt_phones, f_mtt_lat, f_mtt_lng, location_id,
+			now_ts, gps_lat, gps_lng, i_mtt_id];
 
 		return this.constructor.conn().upd(sql, sqlData)
 			.bind(this)
@@ -155,7 +170,7 @@ class Mototrek extends BaseModel
 	{
 		let sql = "SELECT mtt_id, mtt_name, mtt_website, mtt_address, mtt_descrip, mtt_email, mtt_phones" +
 			", mtt_latitude, mtt_longitude, mtt_location_id" +
-			", mtt_create_ts, mtt_update_ts, mtt_location_pids" +
+			", mtt_create_ts, mtt_update_ts, mtt_location_pids, mtt_gps_lat, mtt_gps_lng" +
 			" FROM moto_track" +
 			" WHERE mtt_id = ?";
 
@@ -192,7 +207,7 @@ class Mototrek extends BaseModel
 	{
 		let sql = "SELECT mtt_id, mtt_name, mtt_website, mtt_address, mtt_descrip, mtt_email, mtt_phones" +
 			", mtt_latitude, mtt_longitude, mtt_location_id, mtt_location_pids" +
-			", mtt_create_ts, mtt_update_ts" +
+			", mtt_create_ts, mtt_update_ts, mtt_gps_lat, mtt_gps_lng" +
 			" FROM moto_track;";
 
 		return this.constructor.conn().s(sql);

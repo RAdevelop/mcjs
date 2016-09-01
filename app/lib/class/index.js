@@ -3,6 +3,7 @@
  * Created by Asus on 07.04.2016.
  */
 
+const Helpers = require("app/helpers");
 
 class Base
 {
@@ -40,5 +41,11 @@ class Base
 		return this;
 	}*/
 }
+
+/**
+ * примешиваем методы хелпера
+ */
+for(var key in Helpers)
+	Base.prototype[key] = Helpers[key];
 
 module.exports = Base;

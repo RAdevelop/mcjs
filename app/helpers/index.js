@@ -190,5 +190,22 @@ function varsValidate(pData)
 	return postData;
 }
 
+function roundNumber(rnum, rlength)
+{
+	var newnumber = Math.round(rnum * Math.pow(10, rlength)) / Math.pow(10, rlength);
+	return newnumber;
+}
+
+function getDecimal(num)
+{
+	var str = "" + num;
+	var zeroPos = str.indexOf(".");
+	if (zeroPos == -1) return 0;
+	str = str.slice(zeroPos);
+	return +str;
+}
+
 module.exports.loadRouters = loadRouters;
 module.exports.varsValidate = varsValidate;
+module.exports.roundNumber = roundNumber;
+module.exports.getDecimal = getDecimal;

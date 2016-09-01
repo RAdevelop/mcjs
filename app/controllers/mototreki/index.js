@@ -70,9 +70,15 @@ class Mototreki extends Base
 				tplData.trek = trek;
 
 				let tplFile = "mototreki";
-				this.view.setPageTitle(trek.mtt_name)
-					//.setPageDescription(trek.mtt_descrip)
-					.setTplData(tplFile, tplData);
+				if (trek)
+				{
+					this.getRes().expose(trek, 'trek');
+
+					this.view.setPageTitle(trek.mtt_name);
+					//this.view.setPageDescription(trek.mtt_descrip);
+				}
+
+				this.view.setTplData(tplFile, tplData);
 				this.view.addPartialData("user/left", {user: userData});
 				//this.view.addPartialData("user/right", {title: 'right_col'});
 
@@ -380,6 +386,7 @@ class Mototreki extends Base
 			.then(function(props)
 			{
 				let tplData = {
+					trek: null,
 					trekList: props.trekList || [],
 					trekLocations: props.trekLocations || [],
 					userData: props.userData

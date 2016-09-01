@@ -1,13 +1,22 @@
-<div class="row trek">
+<div class="row singleTrek">
 	<div class="col-xs-12 col-md-12">
 		<%-trek.mtt_descrip%>
-		<p>контакты:</p>
+	</div>
+	<div class="col-xs-12 col-md-6">
+		<p><strong>контакты:</strong></p>
 		<ul>
-			<li>адрес: <%=trek.mtt_address%></li>
-			<% if (trek.mtt_phones) {%><li>телефон: <%=trek.mtt_phones%></li><% }%>
-			<% if (trek.mtt_website) {%><li>сайт: <a href="http://<%=trek.mtt_website%>" target="_blank"><%=trek.mtt_website%></a> </li><% }%>
-			<% if (trek.mtt_email) {%><li>e-mail: <%=trek.mtt_email%></li><% }%>
+			<li><strong>адрес:</strong> <%=trek.mtt_address%></li>
+			<li class="trekCoords"><strong>координаты:</strong><br/>
+				широта: <%-trek.mtt_latitude + " (" + trek.mtt_gps_lat + ")"%><br/>
+				долгота: <%-trek.mtt_longitude + " (" + trek.mtt_gps_lng + ")"%>
+			</li>
+			<% if (trek.mtt_phones)		{%><li><strong>телефон:</strong> <%=trek.mtt_phones%></li><% }%>
+			<% if (trek.mtt_website)	{%><li><strong>сайт:</strong> <a href="http://<%=trek.mtt_website%>" target="_blank"><%=trek.mtt_website%></a></li><% }%>
+			<% if (trek.mtt_email)		{%><li><strong>e-mail:</strong> <%=trek.mtt_email%></li><% }%>
 		</ul>
+	</div>
+	<div class="col-xs-12 col-md-6 singleTrekMap">
+		<div id="mttMap"></div>
 	</div>
 </div>
 
@@ -16,22 +25,44 @@
 //<!--
 (function($)
 {
-
-	return;
-
+	var trek = MCJS["trek"] || {};
 	var mapState = {
-		 controls: ["zoomControl", "searchControl", "typeSelector"]
+		 controls: ["typeSelector"]
+		, center: [trek["mtt_latitude"], trek["mtt_longitude"]]
 		, zoom: 15
 		, type: 'yandex#hybrid'
-		, behaviors: ["default"]
+		//, behaviors: ["default"]
 	};
 	var mapOptions = {};
 	var MttMcMap = new McMap('mttMap', {state: mapState, options: mapOptions});
-	//var mttPlacemark;
+
 	MttMcMap.init()
 			.then(function (MttMap)
 			{
+				MttMap.behaviors.disable('drag');
+				MttMap.behaviors.disable('scrollZoom');
+				MttMap.behaviors.disable('scrollZoom');
 
+				var coords = [roundNumber(MttMap.getCenter()[0], 6) + ' (' +trek.mtt_gps_lat+')',  roundNumber(MttMap.getCenter()[1], 6) + ' (' +trek.mtt_gps_lng+')'].join('<br/>');
+
+				var contentBody = '<ul><li>'+ ['<strong>адрес:</strong> '+trek.mtt_address, '<strong>телефон:</strong> '+trek.mtt_phones, '<strong>координаты:</strong><br/>'+coords ].join('</li><li>') + '</li></ul>';
+
+				var mttPlacemark = new ymaps.Placemark(
+						MttMap.getCenter()
+						,	{
+							/* Свойства*/
+							iconContent: trek.mtt_name
+							, iconCaption: trek.mtt_name
+							,	balloonContentHeader: trek.mtt_name
+							,	balloonContentBody: contentBody
+							,	balloonContentFooter: ''
+						}
+						,   {
+							/* Опции*/
+							preset: 'islands#blueDotIconWithCaption'
+							,	draggable: false
+						});
+				MttMap.geoObjects.add(mttPlacemark);
 
 				return ymaps.vow.resolve(MttMap);
 			})

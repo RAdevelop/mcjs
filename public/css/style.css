@@ -861,6 +861,21 @@ nav.pagesNavigation
 		height: 320px;
 	}
 }
+
+.singleTrek
+{
+
+}
+
+.singleTrek .singleTrekMap
+{
+	height: 350px;
+}
+
+.singleTrek .singleTrekMap #mttMap
+{
+	height: 100%;
+}
 /**********  END мототреки **************/
 
 

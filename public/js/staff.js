@@ -17,6 +17,22 @@ function preloadImages(imgs)
 	});
 }
 
+function roundNumber(rnum, rlength)
+{
+	var newnumber = Math.round(rnum * Math.pow(10, rlength)) / Math.pow(10, rlength);
+	return newnumber;
+}
+
+
+function getDecimal(num)
+{
+	var str = "" + num;
+	var zeroPos = str.indexOf(".");
+	if (zeroPos == -1) return 0;
+	str = str.slice(zeroPos);
+	return +str;
+}
+
 function getRandomMinMax(min, max)
 {
 	return Math.random() * (max - min) + min;

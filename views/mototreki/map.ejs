@@ -65,13 +65,22 @@
 	function makePlacemark(trek)
 	{
 		var coords = [trek["mtt_latitude"], trek["mtt_longitude"]];
+
+		var balloonContentBody = [
+			trek["mtt_address"],
+			trek.mtt_latitude + " (" + trek.mtt_gps_lat + ")",
+			trek.mtt_longitude + " (" + trek.mtt_gps_lng + ")"
+		];
+
+
+
 		return new ymaps.Placemark(coords,
 				{
 					iconContent: trek["mtt_name"]
 					, iconCaption: trek["mtt_name"]
 					,	balloonContentHeader: trek["mtt_name"]
-					,	balloonContentBody: trek["mtt_address"]
-					,	balloonContentFooter: [coords.join(', '), '<a href="<%=menuItem.m_path%>/'+trek["mtt_id"]+'/">перейти на страницу трека</a>'].join('<br/>')
+					,	balloonContentBody: balloonContentBody.join('<br/>')
+					,	balloonContentFooter: '<a href="<%=menuItem.m_path%>/'+trek["mtt_id"]+'/">перейти на страницу трека</a>'
 				},
 				{
 					preset: 'islands#blueDotIconWithCaption'
