@@ -16,7 +16,7 @@ class Mototreki extends Base
 	{
 		return {
 			"index": {
-				'^\/?$': null
+				'^\/?[0-9]*\/?$': ['i_mtt_id']
 			},
 			"add": {
 				'^\/?$': null
@@ -31,6 +31,7 @@ class Mototreki extends Base
 	}
 
 	/**
+	 * главная страница
 	 *
 	 * @param cb
 	 * @returns {*}
@@ -41,15 +42,37 @@ class Mototreki extends Base
 
 		//throw new Errors.HttpStatusError(404, "Not found");
 
+		let {i_mtt_id} = this.routeArgs;
+		let tplData = {
+			trek: null
+		};
+
 		this.getClass("user").getUser(this.getUserId())
 			.bind(this)
-			.then(function(userData)
+			.then(function (userData)
 			{
-				let tplData = {
-					trek: null
-				};
+				if (i_mtt_id)
+				{
+					return this.getClass('mototrek').get(i_mtt_id)
+						.then(function (trek)
+						{
+							if (!trek)
+								throw new Errors.HttpStatusError(404, "Not found");
+
+							return Promise.resolve([userData, trek]);
+						});
+				}
+
+				return Promise.resolve([userData, null]);
+			})
+			.spread(function(userData, trek)
+			{
+				tplData.trek = trek;
+
 				let tplFile = "mototreki";
-				this.view.setTplData(tplFile, tplData);
+				this.view.setPageTitle(trek.mtt_name)
+					//.setPageDescription(trek.mtt_descrip)
+					.setTplData(tplFile, tplData);
 				this.view.addPartialData("user/left", {user: userData});
 				//this.view.addPartialData("user/right", {title: 'right_col'});
 
@@ -132,17 +155,7 @@ class Mototreki extends Base
 			.bind(this)
 			.then(function(errors)
 			{
-				let errKeys = Object.keys(errors);
-
-				if (errKeys.length)
-				{
-					errKeys.forEach(function(f)
-					{
-						tplData.formError.fields[f] = errors[f];
-					});
-
-					throw new Errors.ValidationError('Ошибки при заполнении формы');
-				}
+				this.parseFormErrors(tplData, errors, 'Ошибки при заполнении формы');
 
 				return Promise.resolve(tplData);
 			})
@@ -186,14 +199,9 @@ class Mototreki extends Base
 
 				return cb(null, true);
 			})
-			.catch(Errors.ValidationError, function (err)
+			.catch(Errors.FormError, function (err)//такие ошибки не уводят со страницы.
 			{
-				//такие ошибки не уводят со страницы.
-				tplData.formError.error = true;
-				tplData.formError.message = err.message;
-				tplData.formError.errorName = err.name;
-
-				this.view.setTplData(tplFile, tplData);
+				this.view.setTplData(tplFile, err.data);
 
 				return cb(null, true);
 			})
@@ -249,7 +257,7 @@ class Mototreki extends Base
 	}
 
 	/**
-	 * добавляем новый трек
+	 * редактируем трек по его id
 	 *
 	 * @param cb
 	 * @returns {Promise.<TResult>}
@@ -288,17 +296,7 @@ class Mototreki extends Base
 			.bind(this)
 			.then(function(errors)
 			{
-				let errKeys = Object.keys(errors);
-
-				if (errKeys.length)
-				{
-					errKeys.forEach(function(f)
-					{
-						tplData.formError.fields[f] = errors[f];
-					});
-
-					throw new Errors.ValidationError('Ошибки при заполнении формы');
-				}
+				this.parseFormErrors(tplData, errors, 'Ошибки при заполнении формы');
 
 				return Promise.resolve(tplData);
 			})
@@ -353,14 +351,9 @@ class Mototreki extends Base
 
 				return cb(null, true);
 			})
-			.catch(Errors.ValidationError, function (err)
+			.catch(Errors.FormError, function (err) //такие ошибки не уводят со страницы
 			{
-				//такие ошибки не уводят со страницы.
-				tplData.formError.error = true;
-				tplData.formError.message = err.message;
-				tplData.formError.errorName = err.name;
-
-				this.view.setTplData(tplFile, tplData);
+				this.view.setTplData(tplFile, err.data);
 
 				return cb(null, true);
 			})
@@ -371,7 +364,7 @@ class Mototreki extends Base
 	}
 
 	/**
-	 * просмот треков на карте
+	 * просмотр треков на карте
 	 *
 	 * @param cb
 	 * @returns {Promise.<T>}

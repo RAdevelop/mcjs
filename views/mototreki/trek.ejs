@@ -1,0 +1,44 @@
+<div class="row trek">
+	<div class="col-xs-12 col-md-12">
+		<%-trek.mtt_descrip%>
+		<p>контакты:</p>
+		<ul>
+			<li>адрес: <%=trek.mtt_address%></li>
+			<% if (trek.mtt_phones) {%><li>телефон: <%=trek.mtt_phones%></li><% }%>
+			<% if (trek.mtt_website) {%><li>сайт: <a href="http://<%=trek.mtt_website%>" target="_blank"><%=trek.mtt_website%></a> </li><% }%>
+			<% if (trek.mtt_email) {%><li>e-mail: <%=trek.mtt_email%></li><% }%>
+		</ul>
+	</div>
+</div>
+
+<script src="/js/mcMap.js" type="text/javascript"></script>
+<script type="text/javascript">
+//<!--
+(function($)
+{
+
+	return;
+
+	var mapState = {
+		 controls: ["zoomControl", "searchControl", "typeSelector"]
+		, zoom: 15
+		, type: 'yandex#hybrid'
+		, behaviors: ["default"]
+	};
+	var mapOptions = {};
+	var MttMcMap = new McMap('mttMap', {state: mapState, options: mapOptions});
+	//var mttPlacemark;
+	MttMcMap.init()
+			.then(function (MttMap)
+			{
+
+
+				return ymaps.vow.resolve(MttMap);
+			})
+			.fail(function (err)
+			{
+				console.log(err);
+			});
+})($);
+//-->
+</script>

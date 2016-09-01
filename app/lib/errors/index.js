@@ -52,4 +52,13 @@ errors.AppSqlError = errors.helpers.generateClass("AppSqlError", {
 	}
 });
 
+errors.FormError = errors.helpers.generateClass("FormError", {
+	extends: errors.ValidationError,
+	globalize: true,
+	args: ['message', 'data', 'inner_error'],
+	generateMessage: function(){
+		return this.message;
+	}
+});
+
 module.exports = errors;

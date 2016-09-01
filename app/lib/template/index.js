@@ -26,11 +26,13 @@ function Template(req, res, next, Controller = null)
 			message: '',
 			text: '',
 			error: false,
+			errorName: '',
 			fields: {}
 		},
-		title: (res.locals.menuItem && res.locals.menuItem.m_title ? res.locals.menuItem.m_title : ''),
-		h1: (res.locals.menuItem && res.locals.menuItem.m_h1 ? res.locals.menuItem.m_h1 : ''),
-		description:(res.locals.menuItem && res.locals.menuItem.m_desc ? res.locals.menuItem.m_desc : ''),
+		_pageTitle: (res.locals.menuItem && res.locals.menuItem.m_title ? res.locals.menuItem.m_title : ''),
+		_pageH1: (res.locals.menuItem && res.locals.menuItem.m_h1 ? res.locals.menuItem.m_h1 : ''),
+		_pageDescription:(res.locals.menuItem && res.locals.menuItem.m_desc ? res.locals.menuItem.m_desc : ''),
+		_pageOgImage: '',
 		back: back //ссылка "назад" для редиректов "Обрабтно",
 	};
 
@@ -52,6 +54,28 @@ function Template(req, res, next, Controller = null)
 Template.getTemplate = function (Controller)
 {
 	return new Template(Controller.getReq(), Controller.getRes(), Controller.next, Controller);
+};
+
+Template.prototype.setPageTitle = function(title, concatMenuTitle = true)
+{
+	this.data._pageTitle = (concatMenuTitle ? this.data._pageTitle + ' ' + title : title);
+	return this;
+};
+Template.prototype.setPageH1 = function(h1)
+{
+	this.data._pageH1 = h1;
+	return this;
+};
+Template.prototype.setPageDescription = function(description)
+{
+	this.data._pageDescription = description;
+	return this;
+};
+
+Template.prototype.setPageOgImage = function(src)
+{
+	this.data._pageOgImage = src;
+	return this;
 };
 
 Template.prototype.controller = function()

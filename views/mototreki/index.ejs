@@ -1,21 +1,13 @@
 <%  if(!isXHR){%><%- layout('layout/user/index') %><% } %>
 <%- include toolbar.ejs %>
-<h1><%=menuItem.m_h1%></h1>
+<h1><%=[menuItem.m_h1, (trek ? trek.mtt_name : '')].join(': ')%></h1>
 
-<% if(_action =='edit' || _action =='add'){ %><%- include edit.ejs %><% } %>
+<% if((_action =='edit' || _action =='add') && trek){ %><%- include edit.ejs %><% }
+else if (trek){%><%- include trek.ejs %><%}%>
 
 
 <p>данные по треку:</p>
-<p>даты создания и обновления в БД</p>
-<p>функционирует да или нет</p>
-<p>название</p>
-<p>адрес: страна. населенный пункт, улица, дом...</p>
 <p>адрес: долгота, широта</p>
-<p>контакты: веб-сайт</p>
-<p>контакты: емейл</p>
-<p>контакты: телефон</p>
-<p>контакты: режим работы?!</p>
-<p>описание</p>
 <p>тип покрытия: асфальт, грунт...</p>
 <p>фотографии?! (добавить в конфиг uploads)</p>
 <script src="/js/mcMap.js" type="text/javascript"></script>

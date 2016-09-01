@@ -23,6 +23,7 @@
 //<!--
 (function($)
 {
+	var $dropdownLocationsNames = $('#dropdownLocationsNames');
 	var trekList = MCJS["trekList"] || [];
 	var trekLocations = MCJS["trekLocations"] || [];
 
@@ -52,6 +53,7 @@
 						})
 						.then(function ()
 						{
+							onClickDropdownLocationsNames();
 							onClickMttLocationsNames(MttMap);
 						});
 			});
@@ -161,6 +163,7 @@
 					.then(function ()
 					{
 						MttMap.setCenter(center, MttMap.getZoom(), {checkZoomRange: false});
+						$dropdownLocationsNames.click();
 					});
 		});
 	}
@@ -182,6 +185,16 @@
 		}
 
 		return listOfCoords;
+	}
+
+	function onClickDropdownLocationsNames()
+	{
+		$dropdownLocationsNames.click(function (event)
+		{
+			event.preventDefault();
+			$(this).parent().find('.dropdown-menu').toggle();
+			console.log(this);
+		});
 	}
 })($);
 //-->

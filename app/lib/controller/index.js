@@ -349,6 +349,53 @@ class Base
 			}
 		};
 	}
+
+	/**
+	 * если есть ошибки при сабмите формы..
+	 *
+	 * @param tplData
+	 * @param errors
+	 * @param message
+	 * @param text
+	 * @returns {{formError: {message: string, error: boolean, fields: {}}}}
+	 * @throws FormError
+	 */
+	parseFormErrors(tplData, errors, message, text = '')
+	{
+		let errKeys = Object.keys(errors);
+		let data = {
+			formError: {
+				message: '',
+				text: '',
+				error: false,
+				errorName: '',
+				fields: {}
+			}
+		};
+
+		Object.assign(data, tplData.formError);
+
+		if (errKeys.length)
+		{
+			errKeys.forEach(function(f)
+			{
+				data.formError.fields[f] = errors[f];
+			});
+
+			if (text)
+			data.formError.text = text;
+
+			data.formError.message = message;
+			data.formError.error = true;
+			data.formError.errorName = 'FormError';
+
+			Object.assign(tplData, data);
+
+			throw new Errors.FormError(message, tplData);
+		}
+
+		return tplData;
+	}
 	
 	/**
 	 * проверяем, является ли указанный метод "действием в контроллере"

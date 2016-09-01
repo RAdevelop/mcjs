@@ -778,22 +778,39 @@ nav.pagesNavigation
 .mototrekMapContainer .mttLocationsNames button.dropdown-toggle
 {
 	display: none;
+	margin: 10px 0px 10px 0px;
 }
 
 .mototrekMapContainer .mttLocationsNames,
-.mototrekMapContainer .mttLocationsNames ul.dropdown-menu
+.mototrekMapContainer .mttLocationsNames .dropdown-menu
 {
 	width: 100%;
 	position: relative;
 }
 
+.mototrekMapContainer .mttLocationsNames .dropdown-menu
+{
+	display: block;
+	z-index: 1;
+}
+.mototrekMapContainer .mttLocationsNames .dropdown-menu a
+{
+	white-space: normal;
+}
+
 @media (min-width: 1200px)
 {
-
+	.mototrekMapContainer .mttLocationsNames .dropdown-menu
+	{
+		display: block !important;
+	}
 }
 @media (min-width: 992px) and (max-width: 1200px)
 {
-
+	.mototrekMapContainer .mttLocationsNames .dropdown-menu
+	{
+		display: block !important;
+	}
 }
 @media (max-width: 1024px)
 {
@@ -801,16 +818,23 @@ nav.pagesNavigation
 }
 @media (min-width: 768px) and (max-width: 992px)
 {
-
+	.mototrekMapContainer .mttLocationsNames button.dropdown-toggle
+	{
+		display: block;
+	}
+	.mototrekMapContainer .mttLocationsNames .dropdown-menu
+	{
+		position: absolute;
+		display: none;
+	}
 }
 @media (max-width: 768px)
 {
 	.mototrekMapContainer .mttLocationsNames button.dropdown-toggle
 	{
 		display: block;
-		margin: 10px 0px 10px 0px;
 	}
-	.mototrekMapContainer .mttLocationsNames ul.dropdown-menu
+	.mototrekMapContainer .mttLocationsNames .dropdown-menu
 	{
 		position: absolute;
 		display: none;
@@ -827,7 +851,7 @@ nav.pagesNavigation
 	{
 		display: block;
 	}
-	.mototrekMapContainer .mttLocationsNames ul.dropdown-menu
+	.mototrekMapContainer .mttLocationsNames .dropdown-menu
 	{
 		position: absolute;
 		display: none;
