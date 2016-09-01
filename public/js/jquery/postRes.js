@@ -11,7 +11,8 @@
 			onFail: function($dialog, respData){return true},
 			onSuccess: function($dialog, respData){return true},
 			onOpen: function onOpen($self){},
-			onClose: function onClose($self){}
+			onClose: function onClose($self){},
+			beforeSubmit: function () {}
 		};
 		var self = this;
 		var options = $.extend({}, defaults, params);
@@ -31,6 +32,8 @@
 			$btnSaveBase.on('click', function (event)
 			{
 				console.log("$btnSaveBase.on('click', function (event)");
+
+				options.beforeSubmit();
 
 				if (this.type == 'submit') return;
 

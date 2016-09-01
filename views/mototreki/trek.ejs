@@ -19,7 +19,6 @@
 		<div id="mttMap"></div>
 	</div>
 </div>
-
 <script src="/js/mcMap.js" type="text/javascript"></script>
 <script type="text/javascript">
 //<!--
@@ -43,7 +42,10 @@
 				MttMap.behaviors.disable('scrollZoom');
 				MttMap.behaviors.disable('scrollZoom');
 
-				var coords = [roundNumber(MttMap.getCenter()[0], 6) + ' (' +trek.mtt_gps_lat+')',  roundNumber(MttMap.getCenter()[1], 6) + ' (' +trek.mtt_gps_lng+')'].join('<br/>');
+				var coords = [
+					"широта: " + roundNumber(MttMap.getCenter()[0], 6) + ' (' +trek.mtt_gps_lat+')',
+					"долгота: " + 	roundNumber(MttMap.getCenter()[1], 6) + ' (' +trek.mtt_gps_lng+')'
+				].join('<br/>');
 
 				var contentBody = '<ul><li>'+ ['<strong>адрес:</strong> '+trek.mtt_address, '<strong>телефон:</strong> '+trek.mtt_phones, '<strong>координаты:</strong><br/>'+coords ].join('</li><li>') + '</li></ul>';
 

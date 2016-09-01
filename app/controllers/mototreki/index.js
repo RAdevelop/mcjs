@@ -43,6 +43,7 @@ class Mototreki extends Base
 		//throw new Errors.HttpStatusError(404, "Not found");
 
 		let {i_mtt_id} = this.routeArgs;
+
 		let tplData = {
 			trek: null
 		};
