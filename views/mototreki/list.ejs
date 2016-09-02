@@ -1,0 +1,24 @@
+<ul><% trekLocations.forEach(function (locItem) {
+		let trekInLoc = "";
+%>
+	<li style="padding-left: <%=locItem["l_mtt_level"]%>0px;"><%=locItem["l_name"]%><%
+		trekList.forEach(function (trekItem)
+		{
+			let pids = (trekItem["mtt_location_pids"]).split(',');
+
+			if (trekItem["mtt_location_id"] == locItem["l_id"] || (locItem["l_kind"] == 'locality' && pids.indexOf(locItem["l_id"]) == pids.length-1 || pids.indexOf(locItem["l_id"]) == pids.length-2 ) )
+			{
+				trekInLoc += '<li><a href="'+_reqBaseUrl+'/'+trekItem["mtt_id"]+'/">'+trekItem["mtt_name"]+'</a></li>';
+			}
+		});
+			trekInLoc = (trekInLoc != '' ? "<ul>"+trekInLoc+"</ul>" : '');
+		%><%-trekInLoc%></li>
+<% })%></ul>
+<script type="text/javascript">
+//<!--
+(function($)
+{
+
+})(jQuery);
+//-->
+</script>

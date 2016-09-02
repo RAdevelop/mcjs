@@ -190,7 +190,7 @@ class Mototrek extends BaseModel
 			", ln.l_kind, ln.l_name, ln.l_full_name, ln.l_latitude , ln.l_longitude" +
 			", IF(ln.l_kind = 'country', 0, IF(ln.l_kind = 'province', 1, IF(ln.l_kind = 'locality' AND l.l_level < 3, 1, 2))) AS l_mtt_level" +
 			" FROM moto_track_locations AS mtl" +
-			" JOIN location_names AS ln ON(ln.l_id = mtl.l_id AND ln.l_kind IN ("+(new Array(kinds.length)).fill('?').join(',')+"))" +
+			" JOIN location_names AS ln ON(mtl.l_id = ln.l_id  AND ln.l_kind IN ("+(new Array(kinds.length)).fill('?').join(',')+"))" +
 			" JOIN location AS l ON(l.l_id = ln.l_id)" +
 			" GROUP BY mtl.l_id" +
 			" ORDER BY l.l_lk";//, ln.l_name
@@ -205,7 +205,7 @@ class Mototrek extends BaseModel
 	 */
 	getAll()
 	{
-		let sql = "SELECT mtt_id, mtt_name, mtt_website, mtt_address, mtt_descrip, mtt_email, mtt_phones" +
+		let sql = "SELECT mtt_id, mtt_name, mtt_website, mtt_address, mtt_email, mtt_phones" +
 			", mtt_latitude, mtt_longitude, mtt_location_id, mtt_location_pids" +
 			", mtt_create_ts, mtt_update_ts, mtt_gps_lat, mtt_gps_lng" +
 			" FROM moto_track;";

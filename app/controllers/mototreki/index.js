@@ -45,7 +45,8 @@ class Mototreki extends Base
 		let {i_mtt_id} = this.routeArgs;
 
 		let tplData = {
-			trek: null
+			trek: null,
+			trekList: null
 		};
 
 		this.getClass("user").getUser(this.getUserId())
@@ -60,15 +61,26 @@ class Mototreki extends Base
 							if (!trek)
 								throw new Errors.HttpStatusError(404, "Not found");
 
-							return Promise.resolve([userData, trek]);
+							return Promise.resolve([userData, trek, null]);
 						});
 				}
 
-				return Promise.resolve([userData, null]);
+				let trekList = [];
+
+				return Promise.props({
+					trekList: this.getClass("mototrek").getAll(),
+					trekLocations: this.getClass("mototrek").getLocations()
+				})
+					.then(function (proprs)
+					{
+						return Promise.resolve([userData, null, proprs.trekList, proprs.trekLocations]);
+					});
 			})
-			.spread(function(userData, trek)
+			.spread(function(userData, trek, trekList, trekLocations)
 			{
 				tplData.trek = trek;
+				tplData.trekList = trekList;
+				tplData.trekLocations = trekLocations;
 
 				let tplFile = "mototreki";
 				if (trek)
@@ -77,6 +89,11 @@ class Mototreki extends Base
 
 					this.view.setPageTitle(trek.mtt_name);
 					//this.view.setPageDescription(trek.mtt_descrip);
+				}
+				else
+				{
+					this.getRes().expose(trekList, 'trekList');
+					this.getRes().expose(trekLocations, 'trekLocations');
 				}
 
 				this.view.setTplData(tplFile, tplData);

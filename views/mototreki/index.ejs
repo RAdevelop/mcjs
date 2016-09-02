@@ -3,18 +3,10 @@
 <h1><%=[menuItem.m_h1, (trek ? trek.mtt_name : '')].join(': ')%></h1>
 
 <% if((_action =='edit' || _action =='add') && trek){ %><%- include edit.ejs %><% }
-else if (trek){%><%- include trek.ejs %><%}%>
+else if (trek){%><%- include trek.ejs %><%}
+else if (trekList){%><%- include list.ejs %><%}%>
 
 
 <p>данные по треку:</p>
 <p>тип покрытия: асфальт, грунт...</p>
 <p>фотографии?! (добавить в конфиг uploads)</p>
-<script src="/js/mcMap.js" type="text/javascript"></script>
-<script type="text/javascript">
-//<!--
-(function($)
-{
-
-})($);
-//-->
-</script>
