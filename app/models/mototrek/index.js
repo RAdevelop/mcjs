@@ -193,7 +193,7 @@ class Mototrek extends BaseModel
 			" JOIN location_names AS ln ON(ln.l_id = mtl.l_id AND ln.l_kind IN ("+(new Array(kinds.length)).fill('?').join(',')+"))" +
 			" JOIN location AS l ON(l.l_id = ln.l_id)" +
 			" GROUP BY mtl.l_id" +
-			" ORDER BY l.l_lk, ln.l_name";//l.l_lk, l.l_level, ln.l_name
+			" ORDER BY l.l_lk";//, ln.l_name
 
 		return this.constructor.conn().s(sql, kinds);
 	}
