@@ -2,6 +2,7 @@ body {
     /*min-height: 2000px;*/
     padding-top: 80px;
 	font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	font-size: 14px;
 }
 
 /******************************** SITE MENU */
@@ -875,6 +876,51 @@ nav.pagesNavigation
 .singleTrek .singleTrekMap #mttMap
 {
 	height: 100%;
+}
+
+.mototrekListContainer
+{
+
+}
+
+.mototrekListContainer .trekCol
+{
+	border: 1px solid red;
+	float: left;
+	list-style-type: none;
+}
+
+.mototrekListContainer .trekCol ul
+{
+	display: none;
+}
+
+.mototrekListContainer .trekCol ul,
+.mototrekListContainer .trekCol li
+{
+	padding: 0;
+	margin: 0;
+	list-style-type: none;
+}
+
+.mototrekListContainer .trekCol > li:first-child
+{
+	font-size: 18px;
+}
+
+.mototrekListContainer .trekCol .hasTreks
+{
+	cursor: pointer;
+	padding-left: 10px;
+}
+.mototrekListContainer .trekCol .hasTreks:hover
+{
+	background-color: #e2e2e2;
+}
+
+.mototrekListContainer .trekCol .hasTreks ul li
+{
+	padding-left: 10px;
 }
 /**********  END мототреки **************/
 

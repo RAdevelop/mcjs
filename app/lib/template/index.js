@@ -151,7 +151,9 @@ Template.prototype.render = function(json = false)
 			{
 				self.setController(null);
 
-				if(err) return Promise.reject(err);
+				//if(err) return Promise.reject(err);
+				if(err) return self.next(err);
+				//if(err) throw err;
 
 				ajaxData["html"] = html;
 
@@ -171,7 +173,7 @@ Template.prototype.render = function(json = false)
 	console.log(renderData);
 	console.log('==========END renderData==============');*/
 
-	self.partialRender(renderData["partial"])
+	return self.partialRender(renderData["partial"])
 		.then(function (partialsHtml)
 		{
 			/*console.log('--------partialsHtml----------');
@@ -189,7 +191,7 @@ Template.prototype.render = function(json = false)
 
 			self.res.render(tplFile, self.getData(), function(err, html)
 			{
-				if(err) return Promise.reject(err);
+				if(err) throw err;
 
 				self.setController(null);
 				return self.res.send(html);

@@ -44,11 +44,6 @@ class Mototreki extends Base
 
 		let {i_mtt_id} = this.routeArgs;
 
-		let tplData = {
-			trek: null,
-			trekList: null
-		};
-
 		this.getClass("user").getUser(this.getUserId())
 			.bind(this)
 			.then(function (userData)
@@ -65,22 +60,66 @@ class Mototreki extends Base
 						});
 				}
 
-				let trekList = [];
-
 				return Promise.props({
 					trekList: this.getClass("mototrek").getAll(),
 					trekLocations: this.getClass("mototrek").getLocations()
 				})
 					.then(function (proprs)
 					{
-						return Promise.resolve([userData, null, proprs.trekList, proprs.trekLocations]);
+						let trekList = [];
+						//let parent = {};
+						let pIndex, pids = [];
+						proprs.trekLocations.forEach(function (locItem, locIndex, locNames)
+						{
+							if (locItem["l_mtt_level"] <= 1)
+							{
+								if (locItem["l_mtt_level"] == 1)
+								{
+									pIndex = locIndex;
+
+									if (!locNames[pIndex].hasOwnProperty("child"))
+										locNames[pIndex]["child"] = [];
+								}
+
+								trekList.push(locItem);
+							}
+							else
+							{
+								locNames[pIndex]["child"].push(locItem);
+							}
+
+
+							proprs.trekList.forEach(function (trekItem, tIndex, tList)
+							{
+								pids = (trekItem["mtt_location_pids"]).split(',');
+
+								if (
+									trekItem["mtt_location_id"] == locItem["l_id"]
+									|| (trekItem["mtt_location_id"] != locItem["l_id"] && locItem["l_kind"] == 'locality'
+									&& (pids.indexOf(locItem["l_id"]) == pids.length-1 || pids.indexOf(locItem["l_id"]) == pids.length-2))
+								)
+								{
+									if (!locItem.hasOwnProperty("treks"))
+										locItem["treks"] = [];
+
+									locItem["treks"].push(trekItem);
+
+									tList.splice(tIndex, 1);
+								}
+							});
+						});
+
+						proprs = null;
+
+						return Promise.resolve([userData, null, trekList]);
 					});
 			})
-			.spread(function(userData, trek, trekList, trekLocations)
+			.spread(function(userData, trek, trekList)
 			{
-				tplData.trek = trek;
-				tplData.trekList = trekList;
-				tplData.trekLocations = trekLocations;
+				let tplData = {};
+
+				tplData.trek = trek || null;
+				tplData.trekList = trekList || null;
 
 				let tplFile = "mototreki";
 				if (trek)
@@ -93,7 +132,7 @@ class Mototreki extends Base
 				else
 				{
 					this.getRes().expose(trekList, 'trekList');
-					this.getRes().expose(trekLocations, 'trekLocations');
+					//this.getRes().expose(trekLocations, 'trekLocations');
 				}
 
 				this.view.setTplData(tplFile, tplData);

@@ -1,24 +1,35 @@
-<ul><% trekLocations.forEach(function (locItem) {
-		let trekInLoc = "";
-%>
-	<li style="padding-left: <%=locItem["l_mtt_level"]%>0px;"><%=locItem["l_name"]%><%
-		trekList.forEach(function (trekItem)
+<div class="row mototrekListContainer">
+	<ul class="trekCol col-xs-12 col-md-3">
+<% trekList.forEach(function (locItem, locIndex, locNames)
+{
+	let hasTreks = (locItem.hasOwnProperty("child") || locItem.hasOwnProperty("treks") ? "hasTreks" : "");
+%><li class="<%=hasTreks%>"><%=locItem["l_name"]%><% if (locItem.hasOwnProperty("treks")) { %><ul><% locItem["treks"].forEach(function (trek) {%><li><a href="<%=(_reqBaseUrl+'/'+trek["mtt_id"]+'/')%>"><%=trek["mtt_name"]%></a></li><%}); %></ul><%}
+		if (locItem.hasOwnProperty("child"))
 		{
-			let pids = (trekItem["mtt_location_pids"]).split(',');
-
-			if (trekItem["mtt_location_id"] == locItem["l_id"] || (locItem["l_kind"] == 'locality' && pids.indexOf(locItem["l_id"]) == pids.length-1 || pids.indexOf(locItem["l_id"]) == pids.length-2 ) )
-			{
-				trekInLoc += '<li><a href="'+_reqBaseUrl+'/'+trekItem["mtt_id"]+'/">'+trekItem["mtt_name"]+'</a></li>';
-			}
-		});
-			trekInLoc = (trekInLoc != '' ? "<ul>"+trekInLoc+"</ul>" : '');
-		%><%-trekInLoc%></li>
+			%><ul><%
+			locItem["child"].forEach(function (lItem)
+			{ %><li><%=lItem["l_name"]%><% if (lItem.hasOwnProperty("treks")) { %><ul><%
+						lItem["treks"].forEach(function (trek)
+						{%><li><a href="<%=(_reqBaseUrl+'/'+trek["mtt_id"]+'/')%>"><%=trek["mtt_name"]%></a></li><%}); %></ul><%}%></li><%
+			}); %></ul><%} %></li><%
+	if (locNames.hasOwnProperty(locIndex+1) && locNames[locIndex+1]["l_level"] == 1)
+	{ %></ul><ul class="trekCol col-xs-12 col-md-3"><% } %>
 <% })%></ul>
+</div>
 <script type="text/javascript">
 //<!--
 (function($)
 {
+	var $trekCols = $('.mototrekListContainer .trekCol');
+	var $hasTrek = $trekCols.find('.hasTreks');
+	$hasTrek.click(function (event)
+	{
+		event.preventDefault();
 
+		$hasTrek.find('ul').hide();
+
+		$(this).find('ul').show();
+	});
 })(jQuery);
 //-->
 </script>

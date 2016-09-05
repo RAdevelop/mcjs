@@ -7,11 +7,9 @@
 {
 	if (window["McTinymce"]) return;
 
-	function McTinymce(params)
-	{
-		var vers = params.vers || McTinymce.vers;
 
-		var defaultsOptions = {
+	var skins = {
+		default: {
 			language: "ru_RU"
 			, themes: "modern"
 			, setup: function (editor) {
@@ -20,11 +18,11 @@
 					tinymce.triggerSave();
 				});
 			}/*,
-			plugins: [
-				'lists link charmap preview',
-				'searchreplace wordcount visualblocks visualchars code fullscreen',
-				'table contextmenu paste'
-			]*/
+			 plugins: [
+			 'lists link charmap preview',
+			 'searchreplace wordcount visualblocks visualchars code fullscreen',
+			 'table contextmenu paste'
+			 ]*/
 			,plugins: [
 				'link charmap preview code wordcount',
 				//'searchreplace  visualblocks visualchars  fullscreen',
@@ -34,9 +32,21 @@
 			, paste_data_images: false
 			, toolbar1: 'code | undo redo | bold italic | bullist numlist outdent indent | link unlink'
 			, toolbar2: 'paste | removeformat preview'
-		};
+		}
+	};
+
+	function McTinymce(params, skin, vers)
+	{
+		params = params || {};
+
+		if (!skins[skin])
+			skin = 'default';
+
+		vers = vers || McTinymce.vers;
+
 //https://www.tinymce.com/docs/demo/classic/
-		var options = $.extend({}, defaultsOptions, params);
+		
+		var options = $.extend({}, skins[skin], params);
 
 		return McTinymce.load(vers)
 			.then(function (tinymce)

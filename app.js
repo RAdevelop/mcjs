@@ -22,9 +22,9 @@ const Session = require('app/middlewares/session');
 
 const app = express();
 
-/*const LRU = require('lru-cache');
-engine.cache = LRU(100);
-app.disable('view cache');*/
+//const LRU = require('lru-cache');
+//engine.cache = LRU(100);
+//app.disable('view cache');
 
 app.engine('ejs', engine);
 
@@ -42,8 +42,11 @@ app.set('state namespace', 'MCJS');//для экспорта данных в б�
 при JSON ответе удаляем ключи (приватные), которые начинаются с _
 например, {_id: value}
  */
-if (app.get('env') === 'prod') {
-	app.set('json replacer', function(key, value){
+console.log("app.get('env') ", app.get('env'));
+if (app.get('env') === 'prod' || app.get('env') === 'production')
+{
+	app.set('json replacer', function(key, value)
+	{
 		if('_' == key[0]) return;
 		return value;
 	});
@@ -56,7 +59,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(methodOverride(function(req, res){
+app.use(methodOverride(function(req, res)
+{
 	if (req.body && typeof req.body === 'object' && '_method' in req.body) {
 		// look in urlencoded POST bodies and delete it
 		var method = req.body._method;
