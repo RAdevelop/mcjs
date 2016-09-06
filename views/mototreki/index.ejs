@@ -1,8 +1,8 @@
-<%  if(!isXHR){%><%- layout('layout/user/index') %><% } %>
+<%  if(!_isXHR){%><%- layout('layout/user/index') %><% } %>
 <%- include toolbar.ejs %>
 <h1><%=[menuItem.m_h1, (trek ? trek.mtt_name : '')].join(': ')%></h1>
 
-<% if((_action =='edit' || _action =='add') && trek){ %><%- include edit.ejs %><% }
+<% if(trek && (_action =='edit' || _action =='add')){ %><%- include edit.ejs %><% }
 else if (trek){%><%- include trek.ejs %><%}
 else if (trekList){%><%- include list.ejs %><%}%>
 

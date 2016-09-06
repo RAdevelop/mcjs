@@ -42,7 +42,7 @@ function Template(req, res, Controller = null)
 	//this.next = next;
 
 	this.res.locals._reqQuery       = req.query;
-	this.res.locals.isXHR           = req.xhr;
+	this.res.locals._isXHR           = req.xhr;
 	this.res.locals._reqOriginalUrl = req.originalUrl;
 	this.res.locals._reqBaseUrl     = (this.controller() ? this.controller().getBaseUrl() : req.baseUrl);
 	//this.res.locals._reqPath        = req.path;

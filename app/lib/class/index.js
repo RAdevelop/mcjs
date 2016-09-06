@@ -35,6 +35,10 @@ class Base
 		return this._classes.getSession();
 	}
 
+	get helpers()
+	{
+		return Helpers;
+	}
 	/*_setModels(models)
 	{
 		this._models = models;
@@ -45,7 +49,9 @@ class Base
 /**
  * примешиваем методы хелпера
  */
+/*
 for(var key in Helpers)
 	Base.prototype[key] = Helpers[key];
+*/
 
 module.exports = Base;

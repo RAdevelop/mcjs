@@ -2,8 +2,6 @@
 const _ = require('lodash');
 const Async = require('async');
 const Errors = require('app/lib/errors');
-const ValidatorJs = require('validatorjs');
-ValidatorJs.useLang('ru');
 
 const Template = require('app/lib/template');
 const Models = require('app/models');

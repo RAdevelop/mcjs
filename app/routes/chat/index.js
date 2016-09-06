@@ -21,7 +21,7 @@ router.get('/', function(req, res, next) {
 			h1: 'value of h1 for header'
 		}
 	};
-	const View = new Template(req, res, next);
+	const View = new Template(req, res);
 
 	View.setTplData('chat/chat.ejs', tplData);
 	View.render();
