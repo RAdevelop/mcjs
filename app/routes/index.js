@@ -41,7 +41,7 @@ module.exports = function(Classes, Control)
 		let cName = (res.locals.menuItem.c_path[0] == '/') ? res.locals.menuItem.c_path.substr(1) : res.locals.menuItem.c_path;
 		console.log('cName = ' + cName);
 
-		let C = new (Control.get(cName))(req, res, next, Classes);
+		let C = new (Control.get(cName))(req, res, Classes);
 
 		C.callAction(function(err, json = false)
 		{
@@ -60,7 +60,11 @@ module.exports = function(Classes, Control)
 				return next(err);
 			}
 
-			return C.view.render(json);
+			return C.view.render(json)
+				.catch(function (err)
+				{
+					return next(err);
+				});
 		});
 	});
 

@@ -65,7 +65,7 @@ class User extends Base
 				/*console.log('props');
 				console.log(props);
 				console.log('props\n');*/
-				return Promise.resolve(Object.assign(props.userAva, props.userLocation, props.userData, props.user));
+				return Promise.resolve(Object.assign({}, props.userAva, props.userLocation, props.userData, props.user));
 			});
 	}
 
@@ -103,13 +103,12 @@ class User extends Base
 					.bind(this)
 					.spread(function (users, users_ids)//собираем аватарки
 					{
-
 						return this.getClass('user/photo/profile').getUsersAva(users_ids)
 							.then(function (usersAva)
 							{
-								users.forEach(function (user)
+								users.forEach(function (user, uI, users)
 								{
-									Object.assign(user, usersAva[user["u_id"]]);
+									users[uI] = Object.assign({}, user, usersAva[user["u_id"]]);
 								});
 
 								return [users, users_ids];
@@ -120,9 +119,9 @@ class User extends Base
 						return this.getClass('user').getUsersLocation(users_ids)
 							.then(function (usersLocation)
 							{
-								users.forEach(function (user)
+								users.forEach(function (user, uI, users)
 								{
-									Object.assign(user, usersLocation[user["u_id"]]);
+									users[uI] = Object.assign({}, user, usersLocation[user["u_id"]]);
 								});
 
 								return [users, users_ids];

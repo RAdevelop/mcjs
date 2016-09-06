@@ -6,7 +6,7 @@
 const Promise = require('bluebird');
 const _ = require("lodash");
 
-function Template(req, res, next, Controller = null)
+function Template(req, res, Controller = null)
 {
 	this.setController(Controller);
 
@@ -39,7 +39,7 @@ function Template(req, res, next, Controller = null)
 	this.ajaxData = {};
 	this.req = req;
 	this.res = res;
-	this.next = next;
+	//this.next = next;
 
 	this.res.locals._reqQuery       = req.query;
 	this.res.locals.isXHR           = req.xhr;
@@ -53,7 +53,7 @@ function Template(req, res, next, Controller = null)
 
 Template.getTemplate = function (Controller)
 {
-	return new Template(Controller.getReq(), Controller.getRes(), Controller.next, Controller);
+	return new Template(Controller.getReq(), Controller.getRes(), Controller);
 };
 
 Template.prototype.setPageTitle = function(title, concatMenuTitle = true)
@@ -133,9 +133,8 @@ Template.prototype.render = function(json = false)
 	let renderData = self.getPageData(json);
 
 	if (!_.isObject(renderData))
-		return self.next(new Error("Template: renderData is not object"));
-
-
+		throw new Error("Template: renderData is not object");
+		//return self.next(new Error("Template: renderData is not object"));
 
 	if (json)//то renderData - должен быть Объектом {}
 	{
@@ -143,30 +142,42 @@ Template.prototype.render = function(json = false)
 
 		let ajaxData = self.getAjaxData();
 
-		if (self.ajaxWithHtml())
+		return new Promise(function (resolve, reject)
 		{
-			let tplFile = renderData["tpl"];
+			if (self.res.headersSent)
+				return resolve(true);
 
-			return self.res.render(tplFile, ajaxData, function(err, html)
+			if (self.ajaxWithHtml())
 			{
+				let tplFile = renderData["tpl"];
+
+				return self.res.render(tplFile, ajaxData, function(err, html)
+				{
+					self.setController(null);
+
+					reject(err);
+
+					ajaxData["html"] = html;
+
+					return resolve(self.res.json(ajaxData));
+
+					//return self.res.json(ajaxData);
+				});
+			}
+			else
+			{
+				//if (!self.req.xhr)
+				self.res.set('Content-Type', 'application/json');
+
 				self.setController(null);
+				ajaxData["html"] = '';
 
-				//if(err) return Promise.reject(err);
-				if(err) return self.next(err);
-				//if(err) throw err;
+				return resolve(self.res.json(ajaxData));
 
-				ajaxData["html"] = html;
-
-				return self.res.json(ajaxData);
-			});
-		}
-		else
-		{
-			self.res.set('Content-Type', 'application/json');
-			self.setController(null);
-			ajaxData["html"] = '';
-			return self.res.json(ajaxData);
-		}
+				//self.res.json(ajaxData);
+				//return resolve(true);
+			}
+		});
 	}
 
 	/*console.log('==========renderData==============');
@@ -189,18 +200,22 @@ Template.prototype.render = function(json = false)
 
 			self.setData(renderData["tpl"][tplFile]);
 
-			self.res.render(tplFile, self.getData(), function(err, html)
+			return new Promise(function (resolve, reject)
 			{
-				if(err) throw err;
+				self.res.render(tplFile, self.getData(), function(err, html)
+				{
+					if(err) return reject(err);
 
-				self.setController(null);
-				return self.res.send(html);
+					self.setController(null);
+					return resolve(self.res.send(html));
+					//return self.res.send(html);
+				});
 			});
 		})
 		.catch(function (err)
 		{
 			self.setController(null);
-			return self.next(err);
+			throw err;
 		});
 };
 

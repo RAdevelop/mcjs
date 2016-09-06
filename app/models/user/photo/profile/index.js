@@ -34,7 +34,7 @@ class UserPhotoProfile extends UserPhoto
 			.then(function (res)
 			{
 				if (res)
-					ava = Object.assign(ava, res);
+					Object.assign(ava, res);
 
 				return Promise.resolve(ava);
 			});
@@ -54,7 +54,8 @@ class UserPhotoProfile extends UserPhoto
 			" JOIN album AS a ON (t.a_type_id = a.a_type_id)" +
 			" JOIN album_image AS ai ON (ai.a_id = a.a_id AND ai.u_id IN ("+(new Array(user_ids.length)).fill('?').join(',')+") AND ai.ai_profile = ?);";
 
-		let sqlData = user_ids;
+		let sqlData = [];
+		sqlData = sqlData.concat(user_ids);
 		sqlData.unshift(this.constructor.albumProfile);
 		sqlData.push(1);
 
@@ -78,8 +79,8 @@ class UserPhotoProfile extends UserPhoto
 					{
 						res.forEach(function (item)
 						{
-							//if (item.u_id == u_id)
-							Object.assign(avaList[u_id], item);
+							if (item.u_id == ava["u_id"])
+							avaList[u_id] = Object.assign({}, avaList[u_id], item);
 						});
 					}
 				});

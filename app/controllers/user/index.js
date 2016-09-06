@@ -9,7 +9,7 @@ const Promise = require("bluebird");
 
 const Base = require('app/lib/controller');
 
-let limit_per_page = 1;
+let limit_per_page = 20;
 
 class User extends Base 
 {

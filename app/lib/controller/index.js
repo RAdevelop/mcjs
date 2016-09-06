@@ -14,13 +14,12 @@ const _ = require('lodash');
 let defAction = 'index';
 class Base
 {
-	constructor(req, res, next, Classes)
+	constructor(req, res, Classes)
 	{
 		this.setReq(req);
 		this.setRes(res);
 
 		this._setClasses(Classes);
-		this.next = next;
 
 		//this.setControls(Controls);
 
@@ -68,16 +67,6 @@ class Base
 	get view()
 	{
 		return this._view;
-	}
-
-	set next(next)
-	{
-		this._next = next;
-	}
-
-	get next()
-	{
-		return this._next;
 	}
 
 	getClass(className)
@@ -329,7 +318,7 @@ class Base
 
 		this._getClasses().setSession(this.getReq().session);
 
-		//this.view = new Template(this.getReq(), this.getRes(), this.next, this);
+		//this.view = new Template(this.getReq(), this.getRes(), this);
 		this.view = Template.getTemplate(this);
 
 		this[this.getAction()](cb);

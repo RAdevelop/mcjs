@@ -55,8 +55,12 @@ module.exports = function(app)
 
 		res.status(err.status || 500);
 
-		const View = new Template(req, res, next);
+		const View = new Template(req, res);
 		View.setTplData("error", tplData);
-		View.render(false);
+		View.render(false)
+			.catch(function (err)
+			{
+				Logger.error(err);
+			});
 	}
 };

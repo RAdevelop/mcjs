@@ -58,7 +58,7 @@ class User extends BaseModel
 
 			if (userData)
 			{
-				user = Object.assign(user, userData);
+				Object.assign(user, userData);
 				return cb(null, user);
 			}
 			
@@ -143,7 +143,7 @@ class User extends BaseModel
 					return Promise.resolve(userData);
 
 				if (res['u_id'])
-				userData = Object.assign(userData, res);
+				Object.assign(userData, res);
 
 				if (userData['u_birthday'] > 0)
 				{
@@ -193,7 +193,7 @@ class User extends BaseModel
 			.then(function (res)
 			{
 				if (res)
-					userData = Object.assign(userData, res);
+					Object.assign(userData, res);
 
 				return Promise.resolve(userData);
 			});
@@ -207,7 +207,7 @@ class User extends BaseModel
 	 */
 	getUsersLocation(user_ids = [])
 	{
-		let sql = "SELECT ud.u_location_id, ud.u_latitude, ud.u_longitude, uln.l_pid, uln.l_name, uln.l_latitude, uln.l_longitude, uln.l_kind, uln.l_full_name, ul.l_level, ul.l_lk, ul.l_rk " +
+		let sql = "SELECT ud.u_id, ud.u_location_id, ud.u_latitude, ud.u_longitude, uln.l_pid, uln.l_name, uln.l_latitude, uln.l_longitude, uln.l_kind, uln.l_full_name, ul.l_level, ul.l_lk, ul.l_rk " +
 			"FROM `users_data` AS ud " +
 			"JOIN `location_names` AS uln ON (uln.l_id = ud.u_location_id) " +
 			"JOIN `location` AS ul ON (ul.l_id = ud.u_location_id) " +
@@ -232,7 +232,8 @@ class User extends BaseModel
 					{
 						res.forEach(function (item)
 						{
-							Object.assign(usersLocation[u_id], item);
+							if (item.u_id == u_id)
+							usersLocation[u_id] = Object.assign({}, usersLocation[u_id], item);
 						});
 					}
 				});
@@ -329,6 +330,7 @@ class User extends BaseModel
 					u_id:null, u_mail:null, u_date_reg:null, u_date_visit:null, u_login:null, u_reg:null, u_name:null, u_surname:null, u_sex:null,
 					u_birthday:null, u_location_id:null, u_latitude:null, u_longitude:null
 				};
+
 				let users_ids = [];
 				let users = [];
 
@@ -336,9 +338,11 @@ class User extends BaseModel
 				{
 					res.forEach(function (u)
 					{
-						users_ids.push(u.u_id);
-
-						users.push(Object.assign(user, u));
+						if (u.hasOwnProperty("u_id"))
+						{
+							users_ids.push(u.u_id);
+							users.push(Object.assign({}, user, u));
+						}
 					});
 				}
 
