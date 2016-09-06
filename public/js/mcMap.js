@@ -45,6 +45,8 @@
 		return this;
 	};
 
+	McMap.loadingInfo = '<i class="fa fa-spinner fa-spin fa-fw"></i>&nbsp;<span>Загрузка карты...</span>';
+
 	/**
 	 * инициализация карты
 	 *
@@ -68,9 +70,11 @@
 		var options = $.extend({}, defaultsOptions, this.options);
 		var self = this;
 
+		$('#'+self.mapId).html(McMap.loadingInfo);
+
 		function init()
 		{
-			$('#'+self.mapId).attr('data-map-init', 'true');
+			$('#'+self.mapId).attr('data-map-init', 'true').html('');
 			self.map = new ymaps.Map(self.mapId, state, options);
 		}
 

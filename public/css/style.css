@@ -5,6 +5,14 @@ body {
 	font-size: 14px;
 }
 
+
+/******************************** TinyMCE редактор */
+body.mce-content-body
+{
+	padding: 0;
+}
+/******************************** END TinyMCE редактор */
+
 /******************************** SITE MENU */
 .navbar.navbar-default.navbar-fixed-top
 {
@@ -938,6 +946,16 @@ nav.pagesNavigation
 	padding-left: 10px;
 }
 		/**********  END главная страница мототреков **************/
+
+.trekToolbar
+{
+	padding: 10px;
+}
+
+.trekToolbar .trekToolbarBtn
+{
+	min-width: 89px;
+}
 /**********  END мототреки **************/
 
 

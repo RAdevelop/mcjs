@@ -227,7 +227,7 @@ class UserPhoto extends Base
 				this.getRes().expose(allPreviews, 'albumPreviews');
 				this.getRes().expose(tplData["pages"], 'pages');
 
-				return cb(null);
+				return cb(null, isAjax);
 			})
 	}
 

@@ -47,7 +47,14 @@
 					"долгота: " + 	roundNumber(MttMap.getCenter()[1], 6) + ' (' +trek.mtt_gps_lng+')'
 				].join('<br/>');
 
-				var contentBody = '<ul><li>'+ ['<strong>адрес:</strong> '+trek.mtt_address, '<strong>телефон:</strong> '+trek.mtt_phones, '<strong>координаты:</strong><br/>'+coords ].join('</li><li>') + '</li></ul>';
+				var contentBody = ['<strong>адрес:</strong> '+trek.mtt_address];
+
+				if (trek.mtt_phones)
+					contentBody.push('<strong>телефон:</strong> '+trek.mtt_phones);
+
+				contentBody.push('<strong>координаты:</strong><br/>'+coords);
+
+				contentBody = '<ul><li>'+ contentBody.join('</li><li>') + '</li></ul>';
 
 				var mttPlacemark = new ymaps.Placemark(
 						MttMap.getCenter()

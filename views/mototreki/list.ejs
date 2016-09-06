@@ -3,14 +3,14 @@
 <% trekList.forEach(function (locItem, locIndex, locNames)
 {
 	let hasTreks = (locItem.hasOwnProperty("child") || locItem.hasOwnProperty("treks") ? "hasTreks" : "");
-%><li class="<%=hasTreks%>"><%=locItem["l_name"]%><% if (locItem.hasOwnProperty("treks")) { %><ul><% locItem["treks"].forEach(function (trek) {%><li><span class="fa fa-motorcycle fa-fw"></span>&nbsp;<a href="<%=(_reqBaseUrl+'/'+trek["mtt_id"]+'/')%>" title="<%=trek["mtt_name"]%>"><%=trek["mtt_name"]%></a></li><%}); %></ul><%}
+%><li class="<%=hasTreks%>"><%=locItem["l_name"]%><% if (locItem.hasOwnProperty("treks")) { %><ul><% locItem["treks"].forEach(function (trek) {%><li><a href="<%=(_reqBaseUrl+'/'+trek["mtt_id"]+'/')%>" title="<%=trek["mtt_name"]%>"><%=trek["mtt_name"]%></a></li><%}); %></ul><%}
 		if (locItem.hasOwnProperty("child"))
 		{
 			%><ul><%
 			locItem["child"].forEach(function (lItem)
 			{ %><li><%=lItem["l_name"]%><% if (lItem.hasOwnProperty("treks")) { %><ul><%
 						lItem["treks"].forEach(function (trek)
-						{%><li><span class="fa fa-motorcycle fa-fw"></span>&nbsp;<a href="<%=(_reqBaseUrl+'/'+trek["mtt_id"]+'/')%>"><%=trek["mtt_name"]%></a></li><%}); %></ul><%}%></li><%
+						{%><li><a href="<%=(_reqBaseUrl+'/'+trek["mtt_id"]+'/')%>"><%=trek["mtt_name"]%></a></li><%}); %></ul><%}%></li><%
 			}); %></ul><%} %></li><%
 	if (locNames.hasOwnProperty(locIndex+1) && locNames[locIndex+1]["l_level"] == 1)
 	{ %></ul><ul class="trekCol col-xs-12 col-md-3"><% } %>
@@ -28,9 +28,7 @@
 			return;
 
 		event.preventDefault();
-
 		$hasTrek.find('ul').hide();
-
 		$(this).find('ul').show();
 	});
 })(jQuery);

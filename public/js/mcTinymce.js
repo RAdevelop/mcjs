@@ -11,10 +11,18 @@
 	var skins = {
 		default: {
 			language: "ru_RU"
+			, content_css: "/css/style.css"
 			, themes: "modern"
 			, setup: function (editor) {
-				editor.on('change', function () {
+				editor.on('change', function ()
+				{
 					//console.log('tinymce.triggerSave()');
+					tinymce.triggerSave();
+				});
+
+				//сабмит формы
+				editor.on('submit', function ()
+				{
 					tinymce.triggerSave();
 				});
 			}/*,
@@ -24,12 +32,13 @@
 			 'table contextmenu paste'
 			 ]*/
 			,plugins: [
-				'link charmap preview code wordcount',
+				'link charmap preview code wordcount paste',
 				//'searchreplace  visualblocks visualchars  fullscreen',
 				//'table contextmenu paste'
 			]
 			, menubar:false
 			, paste_data_images: false
+			, paste_as_text: true
 			, toolbar1: 'code | undo redo | bold italic | bullist numlist outdent indent | link unlink'
 			, toolbar2: 'paste | removeformat preview'
 		}

@@ -1,7 +1,7 @@
 <div class="row">
-	<div class="btn-toolbar padding10" role="toolbar" aria-label="Опции для мототреков">
+	<div class="btn-toolbar trekToolbar" role="toolbar" aria-label="Опции для мототреков">
 		<div class="btn-group btn-group-sm" role="group" aria-label="Опции для мототреков">
-			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fa fa-fw fa-cog"></span> опции <span class="caret"></span></button>
+			<button type="button" class="btn btn-default dropdown-toggle trekToolbarBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fa fa-fw fa-cog"></span> опции <span class="caret"></span></button>
 			<ul class="dropdown-menu ">
 
 				<li><a href="javascript:void(0)" id=""><span class="fa fa-fw fa-cloud-upload"></span> загрузить фотографии</a></li>
@@ -14,10 +14,10 @@
 			</ul>
 		</div>
 		<div class="btn-group btn-group-sm" role="group" aria-label="список мототреков">
-			<a href="<%=menuItem.m_path+'/'%>" class="btn btn-default"><span class="fa fa-fw fa-list"></span> все мототреки</a>
+			<a href="<%=menuItem.m_path+'/'%>" class="btn btn-default trekToolbarBtn"><span class="fa fa-fw fa-list"></span> все мототреки</a>
 		</div>
 		<div class="btn-group btn-group-sm" role="group" aria-label="список мототреков на карте">
-			<a href="<%=menuItem.m_path+'/map/'%>" class="btn btn-default"><span class="fa fa-fw fa-map-marker"></span> на карте</a>
+			<a href="<%=menuItem.m_path+'/map/'%>" class="btn btn-default trekToolbarBtn"><span class="fa fa-fw fa-map-marker"></span> на карте</a>
 		</div>
 	</div>
 </div>

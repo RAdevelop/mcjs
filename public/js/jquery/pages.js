@@ -29,6 +29,7 @@
 		var strPages = md5(Pagination.sPages(Pagination.pages));
 
 		var page = Pagination.pages.page;
+		var pagesUri = Pagination.pages.uri;
 		var ts = (new Date()).getTime();
 
 		Pagination.btnNextPage().click(function (event)
@@ -53,8 +54,8 @@
 			}
 
 			var sendData = {};
-			var uri = Pagination.pages.uri + '/page/'+next+'/';
-
+			var uri = pagesUri+'/page/'+next+'/';
+			
 			$self.button('loading');
 
 			$.ajax({
