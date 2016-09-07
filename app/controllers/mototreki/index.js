@@ -66,52 +66,65 @@ class Mototreki extends Base
 				})
 					.then(function (proprs)
 					{
-						let trekList = [];
-						//let parent = {};
-						let pIndex, pids = [];
-						proprs.trekLocations.forEach(function (locItem, locIndex, locNames)
+						proprs.trekLocations = proprs.trekLocations.reverse();
+						proprs.trekList = proprs.trekList.reverse();
+
+						let length = proprs.trekList.length;
+
+						for(let t = 0; t < length; t++)
 						{
-							if (locItem["l_mtt_level"] <= 1)
+							for(let l = 0; l < proprs.trekLocations.length; l++)
 							{
-								if (locItem["l_mtt_level"] == 1)
-								{
-									pIndex = locIndex;
-
-									if (!locNames[pIndex].hasOwnProperty("child"))
-										locNames[pIndex]["child"] = [];
-								}
-
-								trekList.push(locItem);
-							}
-							else
-							{
-								locNames[pIndex]["child"].push(locItem);
-							}
-
-
-							proprs.trekList.forEach(function (trekItem, tIndex, tList)
-							{
-								pids = (trekItem["mtt_location_pids"]).split(',');
-
 								if (
-									trekItem["mtt_location_id"] == locItem["l_id"]
-									|| (trekItem["mtt_location_id"] != locItem["l_id"] && locItem["l_kind"] == 'locality'
-									&& (pids.indexOf(locItem["l_id"]) == pids.length-1 || pids.indexOf(locItem["l_id"]) == pids.length-2))
+									proprs.trekList.hasOwnProperty(t)
+								&&	proprs.trekList[t]["mtt_location_id"] == proprs.trekLocations[l]["l_id"]
 								)
 								{
-									if (!locItem.hasOwnProperty("treks"))
-										locItem["treks"] = [];
+									if (!proprs.trekLocations[l].hasOwnProperty("treks"))
+										proprs.trekLocations[l]["treks"] = [];
 
-									locItem["treks"].push(trekItem);
+									proprs.trekLocations[l]["treks"].push(proprs.trekList[t]);
 
-									tList.splice(tIndex, 1);
+									proprs.trekList.splice(t, 1);
+
+									length--;
+									t--;
 								}
-							});
-						});
+							}
+						}
 
-						proprs = null;
+						length = proprs.trekList.length;
 
-						return Promise.resolve([userData, null, trekList]);
+						for(let t = 0; t < length; t++)
+						{
+							let pids = (proprs.trekList[t]["mtt_location_pids"]).split(',');
+
+							for(let l = 0; l < proprs.trekLocations.length; l++)
+							{
+
+								let last = pids.lastIndexOf(proprs.trekLocations[l]["l_id"]);
+
+								if (last == -1)
+									continue;
+
+								if (!proprs.trekLocations[l].hasOwnProperty("treks"))
+									proprs.trekLocations[l]["treks"] = [];
+
+								proprs.trekLocations[l]["treks"].push(proprs.trekList[t]);
+
+								proprs.trekList.splice(t, 1);
+
+								length--;
+								t--;
+
+								break;
+							}
+						}
+
+						proprs.trekLocations = proprs.trekLocations.reverse();
+						proprs.trekList = null;
+
+						return Promise.resolve([userData, null, proprs.trekLocations]);
 					});
 			})
 			.spread(function(userData, trek, trekList)

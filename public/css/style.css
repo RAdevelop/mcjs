@@ -885,7 +885,7 @@ nav.pagesNavigation
 {
 	height: 100%;
 }
-
+		/**********  главная страница мототреков**************/
 .mototrekListContainer
 {
 
@@ -899,16 +899,14 @@ nav.pagesNavigation
 
 .mototrekListContainer .trekCol ul
 {
-	display: none;
+	/*display: none;*/
 }
-
-		/**********  главная страница мототреков**************/
 
 .mototrekListContainer .trekCol ul,
 .mototrekListContainer .trekCol li
 {
-	padding: 0;
-	margin: 0;
+	/*padding: 0;
+	margin: 0;*/
 	list-style-type: none;
 }
 .mototrekListContainer .trekCol > li

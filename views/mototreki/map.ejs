@@ -159,13 +159,11 @@
 			var l_id = $(this).attr("data-location-id");
 
 			var bounds =  getLocationPointsCoords(l_id);
-			var cnt = bounds.length;
 				bounds = bounds.concat([coords]);
 
 			var centerAndZoom = ymaps.util.bounds.getCenterAndZoom(bounds, MttMap.container.getSize());
-			var center = (cnt > 1 ? centerAndZoom.center : bounds[0]);
-
 				bounds =  ymaps.util.bounds.fromPoints(bounds);
+			var center = ymaps.util.bounds.getCenter(bounds);
 
 			MttMap.setCenter(center, centerAndZoom.zoom, {checkZoomRange: true});
 			MttMap.setBounds(bounds, {checkZoomRange: false})
@@ -202,7 +200,7 @@
 		{
 			event.preventDefault();
 			$(this).parent().find('.dropdown-menu').toggle();
-			console.log(this);
+			//console.log(this);
 		});
 	}
 })(jQuery);
