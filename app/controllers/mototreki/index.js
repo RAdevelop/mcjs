@@ -122,9 +122,33 @@ class Mototreki extends Base
 						}
 
 						proprs.trekLocations = proprs.trekLocations.reverse();
-						proprs.trekList = null;
 
-						return Promise.resolve([userData, null, proprs.trekLocations]);
+
+						let pIndex, trekList = [];
+						proprs.trekLocations.forEach(function (locItem, locIndex, locNames)
+						{
+							if (locItem["l_mtt_level"] <= 1)
+							{
+								if (locItem["l_mtt_level"] == 1)
+								{
+									pIndex = locIndex;
+
+									if (!locNames[pIndex].hasOwnProperty("child"))
+										locNames[pIndex]["child"] = [];
+								}
+
+								trekList.push(locItem);
+							}
+							else
+							{
+								locNames[pIndex]["child"].push(locItem);
+							}
+
+						});
+//console.log(trekList);
+						proprs = null;
+
+						return Promise.resolve([userData, null, trekList]);
 					});
 			})
 			.spread(function(userData, trek, trekList)

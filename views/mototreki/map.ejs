@@ -159,11 +159,13 @@
 			var l_id = $(this).attr("data-location-id");
 
 			var bounds =  getLocationPointsCoords(l_id);
+			var cnt = bounds.length;
 				bounds = bounds.concat([coords]);
 
 			var centerAndZoom = ymaps.util.bounds.getCenterAndZoom(bounds, MttMap.container.getSize());
 				bounds =  ymaps.util.bounds.fromPoints(bounds);
-			var center = ymaps.util.bounds.getCenter(bounds);
+			//var center = ymaps.util.bounds.getCenter(bounds);
+			var center = (cnt > 1 ? ymaps.util.bounds.getCenter(bounds) : bounds[0]);
 
 			MttMap.setCenter(center, centerAndZoom.zoom, {checkZoomRange: true});
 			MttMap.setBounds(bounds, {checkZoomRange: false})
