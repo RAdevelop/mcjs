@@ -1,13 +1,14 @@
 <%  if(!_isXHR){%><%- layout('layout/default.ejs') %><% } %>
 <%- include toolbar.ejs %>
 <h1><%=menuItem.m_h1%> на карте</h1>
-
 <div class="row mototrekMapContainer">
 	<div class="col-xs-12 col-md-3">
 		<div class="mttLocationsNames  open">
 			<button class="btn btn-default dropdown-toggle" type="button" id="dropdownLocationsNames"  aria-haspopup="true" aria-expanded="true">Регионы <span class="caret"></span></button>
 			<ul class=" dropdown-menu" aria-labelledby="dropdownLocationsNames"><% trekLocations.forEach(function (item, i, list)
-				{ %><li style="padding-left: <%=item["l_mtt_level"]%>0px;">
+				{
+				let cssLevel = 'locLevel'+item["l_mtt_level"];
+				%><li class="<%=cssLevel%>">
 					<a href="javascript:void(0);" data-coords="<%=[item["l_latitude"], item["l_longitude"]]%>" data-location-id="<%=item["l_id"]%>"><%=item["l_name"]%></a>
 				</li><%
 				if (list[i+1] && list[i+1]["l_level"] == 1){

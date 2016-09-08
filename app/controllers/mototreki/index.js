@@ -145,7 +145,7 @@ class Mototreki extends Base
 							}
 
 						});
-//console.log(trekList);
+
 						proprs = null;
 
 						return Promise.resolve([userData, null, trekList]);

@@ -3,10 +3,6 @@
 		<div class="btn-group btn-group-sm" role="group" aria-label="Опции для мототреков">
 			<button type="button" class="btn btn-default dropdown-toggle trekToolbarBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fa fa-fw fa-cog"></span> опции <span class="caret"></span></button>
 			<ul class="dropdown-menu ">
-
-				<li><a href="javascript:void(0)" id=""><span class="fa fa-fw fa-cloud-upload"></span> загрузить фотографии</a></li>
-				<li role="separator" class="divider"></li>
-
 				<li><a href="<%=menuItem.m_path+'/add/'%>" ><span class="fa fa-fw fa-plus-square-o"></span> добавить мототрек</a></li>
 				<% if (trek && trek.mtt_id) {%>
 				<li><a href="<%=menuItem.m_path+'/edit/'+trek.mtt_id%>/"><span class="fa fa-fw fa-edit"></span> редактировать мототрек</a></li>

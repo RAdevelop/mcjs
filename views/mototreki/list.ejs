@@ -10,7 +10,7 @@
 				locItem["child"].forEach(function (lItem)
 				{ %><li><%=lItem["l_name"]%><% if (lItem.hasOwnProperty("treks")) { %><ul><%
 						lItem["treks"].forEach(function (trek)
-						{%><li><a href="<%=(_reqBaseUrl+'/'+trek["mtt_id"]+'/')%>"><%=trek["mtt_name"]%></a></li><%}); %></ul><%}%></li><%
+						{%><li><a href="<%=(_reqBaseUrl+'/'+trek["mtt_id"]+'/')%>" title="<%=trek["mtt_name"]%>"><%=trek["mtt_name"]%></a></li><%}); %></ul><%}%></li><%
 				}); %></ul><%} %></li><%
 		if (locNames.hasOwnProperty(locIndex+1) && locNames[locIndex+1]["l_level"] == 1)
 		{ %></ul><ul class="trekCol col-xs-12 col-md-3"><% } %>
