@@ -13,16 +13,22 @@
 			language: "ru_RU"
 			, content_css: "/css/style.css"
 			, themes: "modern"
-			, setup: function (editor) {
+			, setup: function (editor)
+			{
 				editor.on('change', function ()
 				{
 					//console.log('tinymce.triggerSave()');
+
+					this.setContent(McTinymce.cleanTagEvents(this.getContent()));
+
 					tinymce.triggerSave();
 				});
 
 				//сабмит формы
 				editor.on('submit', function ()
 				{
+					this.setContent(McTinymce.cleanTagEvents(this.getContent()));
+
 					tinymce.triggerSave();
 				});
 			}/*,
@@ -32,7 +38,7 @@
 			 'table contextmenu paste'
 			 ]*/
 			,plugins: [
-				'link charmap preview code wordcount paste',
+				'link charmap preview code wordcount paste template',
 				//'searchreplace  visualblocks visualchars  fullscreen',
 				//'table contextmenu paste'
 			]
@@ -40,7 +46,13 @@
 			, paste_data_images: false
 			, paste_as_text: true
 			, toolbar1: 'code | undo redo | bold italic | bullist numlist outdent indent | link unlink'
-			, toolbar2: 'paste | removeformat preview'
+			, toolbar2: 'paste | removeformat preview template'
+			//, valid_elements: '*[*]' //TODO закомментировать! разрешает все теги и все атрибуты у них
+			, templates: [
+				//TODO использовать в блогах, новостях... в plugins добавить template
+				{title: 'заголовок шаблона 1', description: 'описание шаблона 1', content: '<div>пример контента из шаблона</div>'},
+				{title: 'заголовок шаблона 2', description: 'описание шаблона 2', url: 'development.html'}
+			]
 		}
 	};
 
@@ -119,6 +131,96 @@
 				console.log(err);
 				return Bluebird.reject(err);
 			});
+	};
+
+	McTinymce.tagEventList = function ()
+	{
+		var eventList = [
+			'click',
+			'contextmenu',
+			'dblclick',
+			'mousedown',
+			'mouseenter',
+			'mouseleave',
+			'mousemove',
+			'mouseover',
+			'mouseout',
+			'mouseup',
+
+
+			'keydown',
+			'keypress',
+			'keyup',
+
+
+			'abort',
+			'beforeunload',
+			'error',
+			'hashchange',
+			'load',
+			'pageshow',
+			'pagehide',
+			'resize',
+			'scroll',
+			'unload',
+
+
+			'blur',
+			'change',
+			'focus',
+			'focusin',
+			'focusout',
+			'input',
+			'invalid',
+			'reset',
+			'search',
+			'select',
+			'submit',
+
+
+			'drag',
+			'dragend',
+			'dragenter',
+			'dragleave',
+			'dragover',
+			'dragstart',
+			'drop',
+
+
+			'copy',
+			'cut',
+			'paste'
+		];
+
+		eventList = eventList.map(function (elem)
+		{
+			return 'on'+elem;
+		}).concat(eventList);
+
+		return eventList;
+	};
+
+
+	/**
+	 * читстим html теги от атрибутов-событий (типа: click, onclick....)
+	 * @param html
+	 * @returns html
+	 */
+	McTinymce.cleanTagEvents = function (html)
+	{
+		var eventList = McTinymce.tagEventList();
+		let events = '['+eventList.join('],[')+']';
+		return $('<wrap>'+html+'</wrap>')
+			.find(events)
+			.each(function (i, elem)
+			{
+				eventList.forEach(function (attr)
+				{
+					if ( $(elem).has('['+attr+']'))
+						$(elem).removeAttr(attr);
+				});
+			})
+			.end().html();
 	};
 
 	window.McTinymce = McTinymce;

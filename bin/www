@@ -104,16 +104,18 @@ function onListening()
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
-/**
+
+/*
 setInterval(function() {
 	//todo замер памяти
-	console.log('from '+__dirname);
 	printMem();
-}, 2000);
+}, 3000);
 
-function printMem() {
+function printMem()
+{
 	let mem = process.memoryUsage();
-	for (let p in mem) {
+	for (let p in mem)
+    {
 		// convert to MB
 		mem[p] = mem[p] / 1000000;
 	}

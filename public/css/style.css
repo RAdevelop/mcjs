@@ -1,13 +1,17 @@
 body {
     /*min-height: 2000px;*/
-    padding-top: 80px;
+
 	font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	font-size: 14px;
 }
-
+body.mc-project
+{
+	padding-top: 80px;
+}
 
 /******************************** TinyMCE редактор */
-body.mce-content-body
+body.mce-content-body,
+.mce-container-body body
 {
 	padding: 0;
 }
