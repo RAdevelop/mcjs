@@ -97,7 +97,7 @@ Template.prototype.getData = function()
 Template.prototype.setData = function(data)
 {
 	if(_.isPlainObject(data))
-	this.data = Object.assign(this.data, data);
+	Object.assign(this.data, data);
 
 	return this;
 };
@@ -111,7 +111,16 @@ Template.prototype.getAjaxData = function()
 Template.prototype.setAjaxData = function(data)
 {
 	if(_.isPlainObject(data))
-		this.ajaxData = Object.assign(data,this.ajaxData);
+		Object.assign(this.ajaxData, data);
+
+	return this;
+};
+
+Template.prototype.setDataNull = function()
+{
+	this.data = null;
+	this.ajaxData = null;
+	
 	return this;
 };
 

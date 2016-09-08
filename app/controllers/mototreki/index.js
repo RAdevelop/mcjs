@@ -335,9 +335,6 @@ class Mototreki extends Base
 			})
 			.spread(function (trek, userData)
 			{
-				//console.log("\ntrek");
-				//console.log(trek);
-				
 				let tplFile = "mototreki";
 				let tplData = {
 					trek: trek

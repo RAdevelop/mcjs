@@ -4,17 +4,17 @@
 <div class="row mototrekMapContainer">
 	<div class="col-xs-12 col-md-3">
 		<div class="mttLocationsNames  open">
-			<button class="btn btn-default dropdown-toggle" type="button" id="dropdownLocationsNames"  aria-haspopup="true" aria-expanded="true">Регионы <span class="caret"></span></button>
-			<ul class=" dropdown-menu" aria-labelledby="dropdownLocationsNames"><% trekLocations.forEach(function (item, i, list)
-				{
+			<button class="btn btn-default dropdown-toggle" type="button" id="dropdownLocationsNames"  aria-haspopup="true" aria-expanded="true"><span class="btnText">Регионы</span> <span class="caret"></span></button>
+			<ul class=" dropdown-menu" aria-labelledby="dropdownLocationsNames"><% trekLocations.forEach(function (item, i, list) {
 				let cssLevel = 'locLevel'+item["l_mtt_level"];
-				%><li class="<%=cssLevel%>">
-					<a href="javascript:void(0);" data-coords="<%=[item["l_latitude"], item["l_longitude"]]%>" data-location-id="<%=item["l_id"]%>"><%=item["l_name"]%></a>
-				</li><%
-				if (list[i+1] && list[i+1]["l_level"] == 1){
-				%><li role="separator" class="divider"></li><%
-				}
-				});%></ul>
+				%><li class="<%=cssLevel%>"><% if (item["l_mtt_level"]==1) {%><i class="fa fa-caret-down" aria-hidden="true"></i><% }%>
+					<a href="javascript:void(0);" data-coords="<%=[item["l_latitude"], item["l_longitude"]]%>" data-location-id="<%=item["l_id"]%>"><%=item["l_name"]%></a><%
+
+				if (list[i+1] && list[i+1]["l_mtt_level"] == 2 && item["l_mtt_level"] == 1){%><ul><% }
+				if (list[i+1] && list[i+1]["l_mtt_level"] == 1 && item["l_mtt_level"] == 2){%></ul><% }
+				   %></li><%
+				if (list[i+1] && list[i+1]["l_level"] == 1){ %><li role="separator" class="divider"></li><%}
+		});%></ul>
 		</div>
 	</div>
 	<div class="col-xs-12 col-md-9 mototrekMap" id="mttMap"></div>
@@ -24,7 +24,10 @@
 //<!--
 (function($)
 {
-	var $dropdownLocationsNames = $('#dropdownLocationsNames');
+	var $locNamesBtn = $('#dropdownLocationsNames');
+		$locNamesBtn.attr("title", $locNamesBtn.text());
+	var $locNamesBtnText =	$locNamesBtn.find(".btnText");
+
 	var trekList = MCJS["trekList"] || [];
 	var trekLocations = MCJS["trekLocations"] || [];
 
@@ -56,6 +59,8 @@
 						{
 							onClickDropdownLocationsNames();
 							onClickMttLocationsNames(MttMap);
+
+							$(".mttLocationsNames").show();
 						});
 			});
 
@@ -153,9 +158,34 @@
 	 */
 	function onClickMttLocationsNames(MttMap)
 	{
-		$(".mttLocationsNames a").click(function (event)
+		var $mttLocationsNames = $(".mttLocationsNames");
+		var caret = ".fa-caret-down";
+		var $caret = $mttLocationsNames.find(".locLevel1 "+caret);
+
+		$caret.on('click', function (event)
 		{
 			event.preventDefault();
+			event.stopPropagation();
+
+			var $ul = $(this).parent().find("ul");
+
+			$mttLocationsNames.find(".locLevel1 ul").not($ul).hide();
+
+			$ul.toggle();
+
+		});
+
+		var $linkName = $mttLocationsNames.find("a");
+
+		$linkName.on('click', function (event)
+		{
+			event.preventDefault();
+			var self = this;
+
+			$linkName.removeClass('selected');
+
+			$(self).parents('.locLevel1').find('> a').addClass('selected');
+
 			var coords = $(this).attr("data-coords").split(',');
 			var l_id = $(this).attr("data-location-id");
 
@@ -173,9 +203,12 @@
 					.then(function ()
 					{
 						MttMap.setCenter(center, MttMap.getZoom(), {checkZoomRange: false});
-						$dropdownLocationsNames.click();
+						$locNamesBtn.click();
+						$locNamesBtnText.text($(self).text());
+						$(self).parent().find(caret).click();
 					});
 		});
+
 	}
 
 	/**
@@ -199,7 +232,7 @@
 
 	function onClickDropdownLocationsNames()
 	{
-		$dropdownLocationsNames.click(function (event)
+		$locNamesBtn.click(function (event)
 		{
 			event.preventDefault();
 			$(this).parent().find('.dropdown-menu').toggle();

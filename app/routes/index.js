@@ -61,8 +61,14 @@ module.exports = function(Classes, Control)
 			}
 
 			return C.view.render(json)
+				.then(function ()
+				{
+					//C.view = null;
+					C = null;
+				})
 				.catch(function (err)
 				{
+					C = null;
 					return next(err);
 				});
 		});
