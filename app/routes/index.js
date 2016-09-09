@@ -38,6 +38,8 @@ module.exports = function(Classes, Control)
 	
 	router.all('*', function(req, res, next)
 	{
+		//let start = new Date();
+
 		let cName = (res.locals.menuItem.c_path[0] == '/') ? res.locals.menuItem.c_path.substr(1) : res.locals.menuItem.c_path;
 		console.log('cName = ' + cName);
 
@@ -65,6 +67,9 @@ module.exports = function(Classes, Control)
 				{
 					//C.view = null;
 					C = null;
+
+					//let end = new Date();
+					//console.log("response time: ", end.getTime() - start.getTime() + " ms");
 				})
 				.catch(function (err)
 				{

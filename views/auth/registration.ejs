@@ -22,7 +22,7 @@
 $(function()
 {
     var $formReg = $('#registrationForm');
-    $formReg.postRes({btnId: 'btn_reg', prefix:'auth_registration',
+    $formReg.postRes({btnId: 'btn_reg',
         onSuccess: function($dialog)
         {
             $formReg.find("#s_password").val('');
@@ -38,7 +38,7 @@ $(function()
         buttons: [
             {
                 title: 'Ok',
-                name: 'close',
+                name: 'btnClose',
                 cssClass: 'btn-primary',
                 func:
                 {

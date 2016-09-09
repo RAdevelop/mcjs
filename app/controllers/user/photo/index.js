@@ -334,19 +334,7 @@ class UserPhoto extends Base
 		if (!tplData["i_u_id"] || tplData["i_u_id"] != this.getUserId())
 			return Promise.reject(new Errors.HttpStatusError(400, 'Bad request'));
 
-		const cheerio = this.getClass('user/photo').cheerio;
-
-		Object.keys(tplData).forEach(function (key)
-		{
-			switch (key)
-			{
-				case "s_album_name":
-				case "t_album_text":
-					tplData[key] = (tplData[key] || '');
-					tplData[key] = cheerio(tplData[key]).text().trim();
-					break;
-			}
-		});
+		tplData = this.stripTags(tplData, ["s_album_name", "t_album_text"]);
 
 		if (tplData["s_album_name"] == '')
 			errors["s_album_name"] = 'Укажите название альбома';
@@ -380,19 +368,7 @@ class UserPhoto extends Base
 	{
 		let errors = {};
 
-		const cheerio = this.getClass('user/photo').cheerio;
-
-		Object.keys(tplData).forEach(function (key)
-		{
-			switch (key)
-			{
-				case "s_album_name":
-				case "t_album_text":
-					tplData[key] = (tplData[key] || '');
-					tplData[key] = cheerio(tplData[key]).text().trim();
-					break;
-			}
-		});
+		tplData = this.stripTags(tplData, ["s_album_name", "t_album_text"]);
 		
 		if (!tplData["i_a_id"] || !tplData.hasOwnProperty("s_album_name") || !tplData.hasOwnProperty("t_album_text"))
 			return Promise.reject(new Errors.HttpStatusError(400, 'Bad request'));
@@ -438,19 +414,8 @@ class UserPhoto extends Base
 		if (!tplData["i_a_id"] || !tplData["i_ai_id"] || !tplData.hasOwnProperty("t_ai_text"))
 			return new Errors.HttpStatusError(400, 'Bad request');
 
-		const cheerio = this.getClass('user/photo').cheerio;
+		tplData = this.stripTags(tplData, ["t_ai_text"]);
 
-		Object.keys(tplData).forEach(function (key)
-		{
-			switch (key)
-			{
-				case "t_ai_text":
-					tplData[key] = (tplData[key] || '');
-					tplData[key] = cheerio(tplData[key]).text().trim();
-					break;
-			}
-		});
-		
 		return this.getClass('user/photo').updImgText(this.getUserId(), tplData["i_a_id"], tplData["i_ai_id"], tplData["t_ai_text"])
 			.then(function ()
 			{

@@ -87,8 +87,6 @@
 				//загружаем api-maps.yandex.ru
 				return new Bluebird(function(resolve, reject)
 				{
-					return reject(new ErrorMcMap("test RA"));
-
 					$.cachedScriptLoad("\/\/api-maps.yandex.ru\/2.1\/?lang=ru_RU")
 						.done(function(script, textStatus)
 						{
@@ -203,8 +201,8 @@
 
 			var info = res.geoObjects.get(0).properties.get('metaDataProperty')["GeocoderMetaData"];
 			var coords = res.geoObjects.position;
-			console.log( info );
-			console.log( coords );
+			//console.log( info );
+			//console.log( coords );
 
 			var location = {
 				coords: coords,

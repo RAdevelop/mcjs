@@ -2,6 +2,7 @@
 
 //const Helpers = require("app/helpers");
 const Errors = require('app/lib/errors');
+const Cheerio = require("app/lib/cheerio");
 const Template = require('app/lib/template');
 const _ = require('lodash');
 
@@ -67,6 +68,34 @@ class Base
 	get view()
 	{
 		return this._view;
+	}
+
+	get cheerio()
+	{
+		return Cheerio;
+	}
+
+	/**
+	 * удаляем html теги для указанных полей (fields)
+	 * @param formData
+	 * @param fields
+	 * @returns {*}
+	 */
+	stripTags(formData, fields = [])
+	{
+		const cheerio = this.cheerio;
+
+		Object.keys(formData).forEach(function (key)
+		{
+			if (fields.indexOf(key) == -1)
+				return;
+
+			formData[key] = (formData[key] || '');
+			formData[key] = cheerio(formData[key]).text().trim();
+
+		});
+
+		return formData;
 	}
 
 	getClass(className)
