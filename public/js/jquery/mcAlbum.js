@@ -40,8 +40,9 @@
 
 		function formAddAlbum(options)
 		{
-			options.aName = options.aName || '';
-			options.aText = options.aText || '';
+			options.aName = options.aName.encodeHtml(options.aName) || '';
+			options.aText = options.aText.encodeHtml(options.aText) || '';
+
 			var a_id = (options.album && options.album.a_id  && options.album.a_is_owner ? options.album.a_id : null);
 
 			var html = '<form class="form-horizontal" action="'+options.uri+'" method="post" id="formAddAlbum">' +
@@ -53,9 +54,9 @@
 				'<input type="text" class="form-control" id="s_album_name" name="s_album_name" value="'+options.aName+'" placeholder="название альбома *" required maxlength="100"/>' +
 				'</div>' +
 				'</div>' +
-				'<div class="form-group s_album_text">' +
+				'<div class="form-group t_album_text">' +
 				'<div class="col-sm-12">' +
-				'<textarea class="form-control" id="s_album_text" name="s_album_text" placeholder="укажите описание альбома" maxlength="255">'+options.aText+'</textarea>' +
+				'<textarea class="form-control" id="t_album_text" name="t_album_text" placeholder="укажите описание альбома" maxlength="255">'+options.aText+'</textarea>' +
 				'</div>' +
 				'</div>' +
 				'</form>';
@@ -89,6 +90,7 @@
 			var imgSrc = (img["previews"] && img["previews"]["1024_768"] ? img["previews"]["1024_768"] : '/_0.gif');
 			var origSrc = (img["previews"] && img["previews"]["orig"] ? img["previews"]["orig"] : null);
 
+			var ai_text = img["ai_text"].encodeHtml(img["ai_text"]);
 
 			var htmlDialog = '';
 			htmlDialog += '<div class="modal " id="'+options.id+'" tabindex="-1" role="dialog" aria-labelledby="'+options.id+'">';
@@ -133,7 +135,7 @@
 					htmlDialog += '<h5>'+$albumName.text()+'</h5>';
 			if (options.is_owner)
 			{
-				htmlDialog += '<textarea id="imageText" placeholder="укажите описание фотографии">'+img["ai_text"]+'</textarea>';
+				htmlDialog += '<textarea id="imageText" placeholder="укажите описание фотографии">'+ai_text+'</textarea>';
 			}
 			else
 			{
@@ -153,11 +155,11 @@
 			return htmlDialog;
 		}
 
-		function onChangeImgText(imgData, options, text)
+		function onChangeImgText(imgData, options, $text)
 		{
 			var postData = {
 				"btn_save_album": "upd_img_text"
-				,"s_ai_text": text
+				,"t_ai_text": $text.val()
 				,"i_ai_id": imgData["ai_id"]
 				,"i_a_id": imgData["a_id"]
 			};
@@ -171,7 +173,11 @@
 				.done(function(resData)
 				{
 					if (!resData["formError"] || !resData["formError"]["error"])
+					{
+						var text = resData["t_ai_text"];
 						updImg(imgData["ai_id"], {"ai_text": text});
+						$text.val( text);
+					}
 				})
 				.fail(function(resData)
 				{
@@ -425,7 +431,7 @@
 			});
 			$modalBody.on('change', '.imageModalContent textarea#imageText', function ()
 			{
-				onChangeImgText(img, options, $(this).val());
+				onChangeImgText(img, options, $(this));
 			});
 
 			$modal.find('#btn_img_map').attr('disabled',  true);
@@ -673,8 +679,12 @@
 						btnId: $dialog.find('#btn_edit_album'),
 						onSuccess: function($respDialog, resp)
 						{
+							//$albumName.text(resp["s_album_name"].encodeHtml(resp["s_album_name"]));
+							//$albumText.text(resp["t_album_text"].encodeHtml(resp["t_album_text"]));
+
 							$albumName.text(resp["s_album_name"]);
-							$albumText.text(resp["s_album_text"]);
+							$albumText.text(resp["t_album_text"]);
+
 							//не показать диалог
 							$dialog.modal('hide');
 							return false;

@@ -4,6 +4,7 @@
  */
 
 const Helpers = require("app/helpers");
+const Cheerio = require("app/lib/cheerio");
 
 class Base
 {
@@ -38,6 +39,11 @@ class Base
 	get helpers()
 	{
 		return Helpers;
+	}
+	
+	get cheerio()
+	{
+		return Cheerio;
 	}
 	/*_setModels(models)
 	{

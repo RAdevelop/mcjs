@@ -235,6 +235,23 @@ class Mototreki extends Base
 
 		let errors = {};
 
+		const cheerio = this.getClass('user/photo').cheerio;
+
+		Object.keys(tplData).forEach(function (key)
+		{
+			switch (key)
+			{
+				case "s_mtt_name":
+				case "m_mtt_email":
+				case "s_mtt_address":
+				case "s_mtt_website":
+				case "s_mtt_phones":
+					tplData[key] = (tplData[key] || '');
+					tplData[key] = cheerio(tplData[key]).text().trim();
+					break;
+			}
+		});
+
 		if (!tplData["s_mtt_name"])
 			errors["s_mtt_name"] = "Укажите название трека";
 
@@ -367,6 +384,23 @@ class Mototreki extends Base
 		/*console.log(formData);
 		console.log('-----');
 		console.log(tplData);*/
+
+		const cheerio = this.getClass('user/photo').cheerio;
+
+		Object.keys(tplData).forEach(function (key)
+		{
+			switch (key)
+			{
+				case "s_mtt_name":
+				case "m_mtt_email":
+				case "s_mtt_address":
+				case "s_mtt_website":
+				case "s_mtt_phones":
+					tplData[key] = (tplData[key] || '');
+					tplData[key] = cheerio(tplData[key]).text().trim();
+					break;
+			}
+		});
 
 		let errors = {};
 

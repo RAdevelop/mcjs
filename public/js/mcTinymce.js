@@ -209,7 +209,8 @@
 	McTinymce.cleanTagEvents = function (html)
 	{
 		var eventList = McTinymce.tagEventList();
-		let events = '['+eventList.join('],[')+']';
+		var events = '['+eventList.join('],[')+']';
+
 		return $('<wrap>'+html+'</wrap>')
 			.find(events)
 			.each(function (i, elem)

@@ -49,6 +49,15 @@ function updAvaProfileSrc($jq, src)
 	$jq.attr("src", src +'?ts='+(new Date()).getTime());
 }
 
+if (!String.prototype.encodeHtml) {
+	String.prototype.encodeHtml = function (r)
+	{
+		if (!r) return '';
+		return r.replace(/[\x26\x0A\<>'"]/g,function(r){return"&#"+r.charCodeAt(0)+";"})
+	};
+}
+
+
 function nl2br(str, is_xhtml) {
     //  discuss at: http://phpjs.org/functions/nl2br/
     // original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
