@@ -62,6 +62,10 @@
 
 							$(".mttLocationsNames").show();
 						});
+			})
+			.fail(function (err)
+			{
+				console.log(err);
 			});
 
 	/**
@@ -77,8 +81,6 @@
 			"широта: " + trek.mtt_latitude + " (" + trek.mtt_gps_lat + ")",
 			"долгота: " + trek.mtt_longitude + " (" + trek.mtt_gps_lng + ")"
 		];
-
-
 
 		return new ymaps.Placemark(coords,
 				{

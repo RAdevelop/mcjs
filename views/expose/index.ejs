@@ -20,9 +20,15 @@ $.cachedScriptLoad = function( url, options )
 };
 
 var Bluebird = Promise.noConflict();
-Bluebird.prototype.fail = function(err)
+
+Bluebird.prototype.fail = function (fn)
 {
-	return this.caught(err);
+	return this.caught(fn);
+};
+
+Bluebird.fail = function (fn) {
+	var ret = new Bluebird();
+	return ret.caught(fn);
 };
 
 <%-(typeof exported_to_js === 'undefined' ? "" : exported_to_js) %>

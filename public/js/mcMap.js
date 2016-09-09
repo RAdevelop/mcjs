@@ -87,6 +87,8 @@
 				//загружаем api-maps.yandex.ru
 				return new Bluebird(function(resolve, reject)
 				{
+					return reject(new ErrorMcMap("test RA"));
+
 					$.cachedScriptLoad("\/\/api-maps.yandex.ru\/2.1\/?lang=ru_RU")
 						.done(function(script, textStatus)
 						{
@@ -110,7 +112,7 @@
 			.fail(function (err)
 			{
 				console.log(err);
-				return Bluebird.reject(err);
+				throw err;
 			});
 	};
 
