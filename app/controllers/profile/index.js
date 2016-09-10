@@ -42,25 +42,24 @@ class Profile extends Base
 	{
 		if (!this.isAuthorized())
 			return cb(new Errors.HttpStatusError(401, "Unauthorized"));
-		
-		const self = this;
-		let tplFile = 'user/profile/index.ejs';
-		let tplData = self.getUser();
-		
-		self.getClass("user").getUser(self.getUserId())
-		.then(function(userData)
-		{
-			tplData = Object.assign(tplData, userData);
 
-			self.view.setTplData(tplFile, tplData);
-			self.view.addPartialData('user/left', {user: userData});
+		return this.getUser(this.getUserId())
+			.bind(this)
+			.then(function(userData)
+			{
+				let tplFile = 'user/profile/index.ejs';
+				let tplData = {};
+				Object.assign(tplData, userData);
 
-			return cb(null);
-		})
-		.catch(function(err)
-		{
-			return cb(err);
-		});
+				this.view.setTplData(tplFile, tplData);
+				this.view.addPartialData('user/left', {user: userData});
+
+				return cb(null);
+			})
+			.catch(function(err)
+			{
+				return cb(err);
+			});
 	}
 	
 	/**
@@ -94,7 +93,7 @@ class Profile extends Base
 	}*/
 	
 	/**
-	 * проифль пользователя. формы редактирования данных
+	 * профиль пользователя. формы редактирования данных
 	 * 
 	 * @param cb
 	 * @returns {*}
@@ -105,13 +104,13 @@ class Profile extends Base
 		return cb(new Errors.HttpStatusError(401, "Unauthorized"));
 
 		let tplFile = 'user/profile/edit.ejs';
-		let tplData = this.getUser();
 
-		this.getClass("user").getUser(this.getUserId())
+		return this.getUser(this.getUserId())
 			.bind(this)
 			.then(function(userData)
 			{
-				tplData = Object.assign(tplData, userData, FileUpload.createToken('user_ava', {"u_id": userData["u_id"]}) );
+				let tplData = {};
+				Object.assign(tplData, userData, FileUpload.createToken('user_ava', {"u_id": userData["u_id"]}) );
 
 				this.view.setTplData(tplFile, tplData);
 				this.view.addPartialData('user/left', {user: userData});

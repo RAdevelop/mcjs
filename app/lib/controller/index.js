@@ -1,6 +1,7 @@
 "use strict";
 
 //const Helpers = require("app/helpers");
+const Promise = require("bluebird");
 const Errors = require('app/lib/errors');
 const Cheerio = require("app/lib/cheerio");
 const Template = require('app/lib/template');
@@ -458,15 +459,59 @@ class Base
 		return (this.getUserId() == u_id);
 	}
 	
-	getUser()
+	getUser(u_id)
 	{
-		//return this.getReq()._user;
-		return (this.getReq()._user ? this.getReq()._user : {u_id: null});
+		/*
+		{ a_id: '1',
+			u_id: '1',
+			ai_id: '21',
+			ai_dir: '/user/photo/0/1/21/4c56ff4ce4aaf9573aa5dff913df997a',
+			previews:
+			{ '1280_853': '/user/photo/0/1/21/4c56ff4ce4aaf9573aa5dff913df997a/1280_853.jpg',
+				'1024_768': '/user/photo/0/1/21/4c56ff4ce4aaf9573aa5dff913df997a/1024_768.jpg',
+				'512_384': '/user/photo/0/1/21/4c56ff4ce4aaf9573aa5dff913df997a/512_384.jpg',
+				'256_192': '/user/photo/0/1/21/4c56ff4ce4aaf9573aa5dff913df997a/256_192.jpg',
+				'180_180': '/user/photo/0/1/21/4c56ff4ce4aaf9573aa5dff913df997a/180_180.jpg',
+				'100_100': '/user/photo/0/1/21/4c56ff4ce4aaf9573aa5dff913df997a/100_100.jpg',
+				'50_50': '/user/photo/0/1/21/4c56ff4ce4aaf9573aa5dff913df997a/50_50.jpg' },
+			u_location_id: '298',
+				u_latitude: '55.67572974',
+			u_longitude: '37.89160590',
+			l_pid: '258',
+			l_name: 'Люберцы',
+			l_latitude: '55.67649400',
+			l_longitude: '37.89811600',
+			l_kind: 'locality',
+			l_full_name: 'Россия, Московская область, Люберцы',
+			l_level: '3',
+			l_lk: '383',
+			l_rk: '384',
+			u_name: 'Алексей',
+			u_surname: 'Романов',
+			u_sex: '1',
+			u_sex_name: 'мужской',
+			u_birthday: '359409600',
+			bd_birthday: '23-05-1981',
+			u_mail: 'roalexey@yandex.ru',
+			u_date_visit: '1473530081',
+			u_login: 'MotoCommunity',
+			u_reg: '1' }
+		*/
+		if (u_id == this.getUserId())
+		{
+			let user = {};
+			user = (this.getReq()._user ? this.getReq()._user : {u_id: null});
+			//return user;
+			return Promise.resolve(user);
+		}
+
+		return this.getClass("user").getUser(u_id);
 	}
 
 	getUserId()
 	{
-		return this.getUser()["u_id"];
+		//return this.getUser()["u_id"];
+		return (this.getReq()._user ? this.getReq()._user["u_id"] : {u_id: null});
 	}
 
 	getHost()

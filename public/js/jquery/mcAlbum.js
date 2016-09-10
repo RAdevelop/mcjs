@@ -40,8 +40,8 @@
 
 		function formAddAlbum(options)
 		{
-			options.aName = options.aName.encodeHtml(options.aName) || '';
-			options.aText = options.aText.encodeHtml(options.aText) || '';
+			options.aName = options.aName.htmlspecialchars(options.aName) || '';
+			options.aText = options.aText.htmlspecialchars(options.aText) || '';
 
 			var a_id = (options.album && options.album.a_id  && options.album.a_is_owner ? options.album.a_id : null);
 
@@ -90,7 +90,7 @@
 			var imgSrc = (img["previews"] && img["previews"]["1024_768"] ? img["previews"]["1024_768"] : '/_0.gif');
 			var origSrc = (img["previews"] && img["previews"]["orig"] ? img["previews"]["orig"] : null);
 
-			var ai_text = img["ai_text"].encodeHtml(img["ai_text"]);
+			var ai_text = img["ai_text"].htmlspecialchars(img["ai_text"]);
 
 			var htmlDialog = '';
 			htmlDialog += '<div class="modal " id="'+options.id+'" tabindex="-1" role="dialog" aria-labelledby="'+options.id+'">';
@@ -679,8 +679,8 @@
 						btnId: $dialog.find('#btn_edit_album'),
 						onSuccess: function($respDialog, resp)
 						{
-							//$albumName.text(resp["s_album_name"].encodeHtml(resp["s_album_name"]));
-							//$albumText.text(resp["t_album_text"].encodeHtml(resp["t_album_text"]));
+							//$albumName.text(resp["s_album_name"].htmlspecialchars(resp["s_album_name"]));
+							//$albumText.text(resp["t_album_text"].htmlspecialchars(resp["t_album_text"]));
 
 							$albumName.text(resp["s_album_name"]);
 							$albumText.text(resp["t_album_text"]);

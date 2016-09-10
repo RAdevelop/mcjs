@@ -15,7 +15,7 @@ class Home extends Base
 	 */
 	indexActionGet(cb)
 	{
-		this.getClass("user").getUser(this.getUserId())
+		return this.getUser(this.getUserId())
 			.bind(this)
 			.then(function(userData)
 			{

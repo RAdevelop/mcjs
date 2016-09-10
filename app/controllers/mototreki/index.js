@@ -44,7 +44,7 @@ class Mototreki extends Base
 
 		let {i_mtt_id} = this.routeArgs;
 
-		this.getClass("user").getUser(this.getUserId())
+		return this.getUser(this.getUserId())
 			.bind(this)
 			.then(function (userData)
 			{
@@ -191,7 +191,7 @@ class Mototreki extends Base
 	 */
 	addActionGet(cb)
 	{
-		this.getClass("user").getUser(this.getUserId())
+		return this.getUser(this.getUserId())
 			.bind(this)
 			.then(function(userData)
 			{
@@ -329,7 +329,7 @@ class Mototreki extends Base
 			.bind(this)
 			.then(function (trek)
 			{
-				return this.getClass("user").getUser(this.getUserId())
+				return this.getUser(this.getUserId())
 					.then(function(userData)
 					{
 						return Promise.resolve([trek, userData]);
@@ -475,7 +475,7 @@ class Mototreki extends Base
 		return Promise.props({
 			trekList: this.getClass("mototrek").getAll(),
 			trekLocations: this.getClass("mototrek").getLocations(),
-			userData: this.getClass("user").getUser(this.getUserId())
+			userData: this.getUser(this.getUserId())
 		})
 			.bind(this)
 			.then(function(props)

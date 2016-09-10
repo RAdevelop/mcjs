@@ -49,7 +49,7 @@ class User extends BaseModel
 		if (!uId)
 			return cb(new Errors.NotFoundError(msg), user);
 		
-		var sql = "SELECT u_id, u_mail, u_date_visit, u_login, u_reg FROM `users` WHERE u_id = ?;";
+		let sql = "SELECT u_id, u_mail, u_date_visit, u_login, u_reg FROM `users` WHERE u_id = ?;";
 
 		this.constructor.conn().psRow(sql, [uId], function (err, userData)
 		{

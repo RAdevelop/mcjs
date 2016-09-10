@@ -24,7 +24,66 @@ module.exports = function(Classes)
 				{
 					if (!rtid) return asyncCb(null, null);
 					
-					Classes.model('user').getById(rtid, function (err, userData)
+					Classes.getClass("user").getUser(rtid)
+						.then(function (userData)
+						{
+							if (req.session.rtid)
+							{
+								if (req.signedCookies.rtid)
+									Cookie.setUserId(res, userData.u_id);
+
+								return asyncCb(null, userData);
+							}
+
+							//если пришли/авторизовались с кукой
+							//console.log('если пришли/авторизовались с кукой');
+							req.session.regenerate(function (err)
+							{
+								if (err)
+								{
+									req.session.destroy(function (err)
+									{
+										delete req.session;
+									});
+
+									if (req.signedCookies.rtid)
+										Cookie.clearUserId(req, res);
+
+									return asyncCb(err, null);
+								}
+
+								req.session.rtid = userData.u_id;
+
+								Cookie.setUserId(res, userData.u_id)
+
+								return asyncCb(null, userData);
+							});
+						})
+						.catch(function (err)
+						{
+							switch (err.name)
+							{
+								default:
+									return asyncCb(err, null);
+									break;
+								case 'NotFoundError':
+								case 'TypeError':
+
+									req.session.destroy(function (err)
+									{
+										delete req.session;
+									});
+
+									if (req.signedCookies.rtid)
+										Cookie.clearUserId(req, res);
+
+									return asyncCb(null, null);
+									break;
+							}
+						});
+					
+					
+					/*Classes.model('user').getById(rtid, function (err, userData)
 					{
 						if (err)
 						{
@@ -80,7 +139,7 @@ module.exports = function(Classes)
 							
 							return asyncCb(null, userData);
 						});
-					});
+					});*/
 				},
 				function (userData, asyncCb)//обновим время посещения...
 				{

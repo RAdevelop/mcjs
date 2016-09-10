@@ -52,7 +52,7 @@ class User extends Base
 	 */
 	userProfile(cb, u_id)
 	{
-		return this.getClass("user").getUser(u_id)
+		return this.getUser(u_id)
 			.bind(this)
 			.then(function (userData)
 			{
@@ -95,7 +95,7 @@ class User extends Base
 		let {i_page} = this.routeArgs;
 
 		return Promise.props({
-			user: this.getClass("user").getUser(this.getUserId()),
+			user: this.getUser(this.getUserId()),
 			users: this.getClass("user").getUsers(new Pages(i_page, limit_per_page)) //{users:users, users_cnt:users_cnt, Pages:Pages}
 		})
 			.bind(this)

@@ -44,10 +44,7 @@ class UserPhoto extends Base
 			.bind(this)
 			.then(function (xhr)
 			{
-				//if (xhr)
-				//	return Promise.resolve({});
-
-				return this.getClass("user").getUser(i_u_id)
+				return this.getUser(i_u_id)
 					.bind(this)
 					.then(function (userData)
 					{

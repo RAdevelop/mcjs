@@ -110,9 +110,16 @@
 				</li>
 			</ul>-->
             <% if(_user) {%>
-			<form class="navbar-form navbar-right" action="/logout" method="post">
-				<button type="submit" class="btn btn-danger">выйти</button>
-			</form>
+			<div class="navbar-right">
+				<form class="navbar-form" action="/logout" method="post">
+					<button type="submit" class="btn btn-danger">выйти</button>
+				</form>
+			</div>
+			<% if(_user["previews"] && _user["previews"]["50_50"]) {%>
+			<a class="navbar-right" href="/profile/">
+				<img src="<%=(_user["previews"]["50_50"])%>" />
+			</a>
+			<% } %>
             <% } else {%>
             <div class="navbar-form navbar-right">
             <a class="btn btn-default" href="/login" role="button">Войти</a>
