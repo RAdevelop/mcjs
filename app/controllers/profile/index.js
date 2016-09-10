@@ -138,29 +138,29 @@ class Profile extends Base
 		let tplFile = 'user/profile/edit.ejs';
 		let tplData = this.getParsedBody();
 
-		this._formProfileValidation(tplData)
+		return this._formProfileValidation(tplData)
 			.bind(this)
-		.then(function(tplData) //если валидация успешна
-		{
-			//tplData.formError.error = false;
-			this.view.setTplData(tplFile, tplData);
-			return cb(null);
-		})
-		.catch(Errors.FormError, Errors.AlreadyInUseError, function(err)
-		{
-			//такие ошибки не уводят со страницы.
-			tplData.formError.error = true;
-			tplData.formError.errorName = err.name;
+			.then(function(tplData) //если валидация успешна
+			{
+				//tplData.formError.error = false;
+				this.view.setTplData(tplFile, tplData);
+				return cb(null);
+			})
+			.catch(Errors.FormError, Errors.AlreadyInUseError, function(err)
+			{
+				//такие ошибки не уводят со страницы.
+				tplData.formError.error = true;
+				tplData.formError.errorName = err.name;
 
-			this.view.setTplData(tplFile, tplData);
+				this.view.setTplData(tplFile, tplData);
 
-			//this.getRes().expose();
-			return cb(null);
-		})
-		.catch(function(err)
-		{
-			return cb(err);
-		});
+				//this.getRes().expose();
+				return cb(null);
+			})
+			.catch(function(err)
+			{
+				return cb(err);
+			});
 	}
 	
 	/**
@@ -240,7 +240,7 @@ class Profile extends Base
 		if (!tplData["btn_save_profile"])
 			return Promise.reject(new Errors.HttpStatusError(400, "Bad request"));
 
-		console.log(tplData);
+		//console.log(tplData);
 
 		switch(tplData["btn_save_profile"])
 		{
@@ -499,7 +499,7 @@ class Profile extends Base
 		const self = this;
 		
 		return Promise.resolve(errors)
-		.then(function(errKeys)
+		.then(function(errors)
 		{
 			self.parseFormErrors(tplData, errors);
 			

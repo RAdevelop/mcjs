@@ -463,7 +463,7 @@ class UserPhoto extends Base
 			return self.getClass('user/photo').delImage(file["u_id"], file["a_id"], file["ai_id"], file);
 		});
 
-		self.getClass('user/photo')
+		return self.getClass('user/photo')
 			.uploadImage(this.getUserId(), this.getReq(), this.getRes())
 			.then(function (file)
 			{

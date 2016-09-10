@@ -70,7 +70,7 @@ class Registration extends Base
 
 		const self = this;
 		
-		self._formRegValidation(tplData)
+		return self._formRegValidation(tplData)
 		.then(function(tplData) //если регистрация успешна
 		{
 			self.view.setTplData(tplFile, tplData);
@@ -223,7 +223,7 @@ class Registration extends Base
 			});
 		}
 
-		confirmed(u_id, s_key)
+		return confirmed(u_id, s_key)
 		.then(function(tplData)
 		{
 			self.view.setTplData('auth/confirm', tplData);
