@@ -8,7 +8,7 @@ const Errors = require('app/lib/errors');
 const FileUpload = require('app/lib/file/upload');
 const Base = require('app/lib/controller');
 
-let limit_per_page = 4;
+let limit_per_page = 20;
 
 class UserPhoto extends Base
 {
@@ -216,9 +216,16 @@ class UserPhoto extends Base
 				{
 					tplFile = 'user/profile/photo/albums.ejs';
 					this.view.addPartialData('user/left', {user: tplData["user"]});
+
+					this.view.setPageTitle(tplData["album"]["a_name"]);
+					this.view.setPageDescription(this.cheerio(tplData["album"]["a_text"]).text());
+
+					if (tplData["album"]["images"] && tplData["album"]["images"][0] && tplData["album"]["images"][0]["previews"]["512_384"])
+					this.view.setPageOgImage(tplData["album"]["images"][0]["previews"]["512_384"]);
 				}
 
 				this.view.setTplData(tplFile, tplData, isAjax);
+
 				this.getRes().expose(tplData["album"], 'album');
 				this.getRes().expose(tplData["album"]["images"], exposeAlbumImages);
 				this.getRes().expose(allPreviews, 'albumPreviews');

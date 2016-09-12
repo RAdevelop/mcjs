@@ -80,6 +80,13 @@
             <a class="social fa fa-facebook fa-fw" href="https://www.facebook.com/groups/MotoCommunityRu/" target="_blank" rel="nofollow" title="MotoСommunity в FaceBook"></a>
             <a class="social fa fa-twitter fa-fw" href="https://twitter.com/#!/MotoCommunityRu" target="_blank" rel="nofollow" title="MotoСommunity в Twitter"></a>
             <a class="social fa fa-google-plus fa-fw" href="https://plus.google.com/+MotocommunityRu/" target="_blank" rel="nofollow" title="MotoСommunity в Google+"></a>
+
+		<% if(_user && _user["previews"] && _user["previews"]["50_50"]) {%>
+		<a class="userProfileTop" href="/profile/">
+			<img src="<%=(_user["previews"]["50_50"])%>" />
+		</a>
+		<% }%>
+
     </div>
 	<div class="container-fluid">
 		<div class="navbar-header">
@@ -115,11 +122,6 @@
 					<button type="submit" class="btn btn-danger">выйти</button>
 				</form>
 			</div>
-			<% if(_user["previews"] && _user["previews"]["50_50"]) {%>
-			<a class="navbar-right" href="/profile/">
-				<img src="<%=(_user["previews"]["50_50"])%>" />
-			</a>
-			<% } %>
             <% } else {%>
             <div class="navbar-form navbar-right">
             <a class="btn btn-default" href="/login" role="button">Войти</a>

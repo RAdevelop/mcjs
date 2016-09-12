@@ -38,118 +38,17 @@ class Mototreki extends Base
 	 */
 	indexActionGet(cb)
 	{
-		//TODO здесь вызывать сначала список треков или страницу трека по его id
-
-		//throw new Errors.HttpStatusError(404, "Not found");
-
 		let {i_mtt_id} = this.routeArgs;
 
-		return this.getUser(this.getUserId())
+		return this.trekData(i_mtt_id)
 			.bind(this)
-			.then(function (userData)
+			.spread(function (trek, trekList)
 			{
-				if (i_mtt_id)
-				{
-					return this.getClass('mototrek').get(i_mtt_id)
-						.then(function (trek)
-						{
-							if (!trek)
-								throw new Errors.HttpStatusError(404, "Not found");
-
-							return Promise.resolve([userData, trek, null]);
-						});
-				}
-
-				return Promise.props({
-					trekList: this.getClass("mototrek").getAll(),
-					trekLocations: this.getClass("mototrek").getLocations()
-				})
-					.then(function (proprs)
+				return this.getUser(this.getUserId())
+					.then(function (userData)
 					{
-						proprs.trekLocations = proprs.trekLocations.reverse();
-						proprs.trekList = proprs.trekList.reverse();
-
-						let length = proprs.trekList.length;
-
-						for(let t = 0; t < length; t++)
-						{
-							for(let l = 0; l < proprs.trekLocations.length; l++)
-							{
-								if (
-									proprs.trekList.hasOwnProperty(t)
-								&&	proprs.trekList[t]["mtt_location_id"] == proprs.trekLocations[l]["l_id"]
-								)
-								{
-									if (!proprs.trekLocations[l].hasOwnProperty("treks"))
-										proprs.trekLocations[l]["treks"] = [];
-
-									proprs.trekLocations[l]["treks"].push(proprs.trekList[t]);
-
-									proprs.trekList.splice(t, 1);
-
-									length--;
-									t--;
-								}
-							}
-						}
-
-						length = proprs.trekList.length;
-
-						for(let t = 0; t < length; t++)
-						{
-							let pids = (proprs.trekList[t]["mtt_location_pids"]).split(',');
-
-							for(let l = 0; l < proprs.trekLocations.length; l++)
-							{
-
-								let last = pids.lastIndexOf(proprs.trekLocations[l]["l_id"]);
-
-								if (last == -1)
-									continue;
-
-								if (!proprs.trekLocations[l].hasOwnProperty("treks"))
-									proprs.trekLocations[l]["treks"] = [];
-
-								proprs.trekLocations[l]["treks"].push(proprs.trekList[t]);
-
-								proprs.trekList.splice(t, 1);
-
-								length--;
-								t--;
-
-								break;
-							}
-						}
-
-						proprs.trekLocations = proprs.trekLocations.reverse();
-
-
-						let pIndex, trekList = [];
-						proprs.trekLocations.forEach(function (locItem, locIndex, locNames)
-						{
-							if (locItem["l_mtt_level"] <= 1)
-							{
-								if (locItem["l_mtt_level"] == 1)
-								{
-									pIndex = locIndex;
-
-									if (!locNames[pIndex].hasOwnProperty("child"))
-										locNames[pIndex]["child"] = [];
-								}
-
-								trekList.push(locItem);
-							}
-							else
-							{
-								locNames[pIndex]["child"].push(locItem);
-							}
-
-						});
-
-						proprs = null;
-
-						return Promise.resolve([userData, null, trekList]);
-					});
+						return Promise.resolve([userData, trek, trekList]);
+					})
 			})
 			.spread(function(userData, trek, trekList)
 			{
@@ -163,8 +62,8 @@ class Mototreki extends Base
 				{
 					this.getRes().expose(trek, 'trek');
 
-					this.view.setPageTitle(trek.mtt_name);
-					//this.view.setPageDescription(trek.mtt_descrip);
+					this.view.setPageTitle(trek["mtt_name"]);
+					this.view.setPageDescription(this.cheerio(trek["mtt_descrip"]).text());
 				}
 				else
 				{
@@ -181,6 +80,138 @@ class Mototreki extends Base
 			.catch(function(err)
 			{
 				return cb(err);
+			});
+	}
+
+	/**
+	 * что показывать - указанный трек, или список треков...
+	 * 
+	 * @param i_mtt_id
+	 * @returns {Promise}
+	 */
+	trekData(i_mtt_id)
+	{
+		if (i_mtt_id)
+			return this.trek(i_mtt_id);
+
+		return this.trekList();
+	}
+
+	/**
+	 * выбранный трек
+	 *
+	 * @param i_mtt_id
+	 * @returns Promise spread data [trek, trekList]
+	 * @throws Errors.HttpStatusError
+	 */
+	trek(i_mtt_id)
+	{
+		return this.getClass('mototrek').get(i_mtt_id)
+			.then(function (trek)
+			{
+				if (!trek)
+					throw new Errors.HttpStatusError(404, "Not found");
+
+				return Promise.resolve([trek, null]);
+			});
+	}
+
+	/**
+	 * список треков
+	 *
+	 * @returns Promise spread data [trek, trekList]
+	 */
+	trekList()
+	{
+		return Promise.props({
+			trekList: this.getClass("mototrek").getAll(),
+			trekLocations: this.getClass("mototrek").getLocations()
+		})
+			.then(function (proprs)
+			{
+				proprs.trekLocations = proprs.trekLocations.reverse();
+				proprs.trekList = proprs.trekList.reverse();
+
+				let length = proprs.trekList.length;
+
+				for(let t = 0; t < length; t++)
+				{
+					for(let l = 0; l < proprs.trekLocations.length; l++)
+					{
+						if (
+							proprs.trekList.hasOwnProperty(t)
+							&&	proprs.trekList[t]["mtt_location_id"] == proprs.trekLocations[l]["l_id"]
+						)
+						{
+							if (!proprs.trekLocations[l].hasOwnProperty("treks"))
+								proprs.trekLocations[l]["treks"] = [];
+
+							proprs.trekLocations[l]["treks"].push(proprs.trekList[t]);
+
+							proprs.trekList.splice(t, 1);
+
+							length--;
+							t--;
+						}
+					}
+				}
+
+				length = proprs.trekList.length;
+
+				for(let t = 0; t < length; t++)
+				{
+					let pids = (proprs.trekList[t]["mtt_location_pids"]).split(',');
+
+					for(let l = 0; l < proprs.trekLocations.length; l++)
+					{
+
+						let last = pids.lastIndexOf(proprs.trekLocations[l]["l_id"]);
+
+						if (last == -1)
+							continue;
+
+						if (!proprs.trekLocations[l].hasOwnProperty("treks"))
+							proprs.trekLocations[l]["treks"] = [];
+
+						proprs.trekLocations[l]["treks"].push(proprs.trekList[t]);
+
+						proprs.trekList.splice(t, 1);
+
+						length--;
+						t--;
+
+						break;
+					}
+				}
+
+				proprs.trekLocations = proprs.trekLocations.reverse();
+
+
+				let pIndex, trekList = [];
+				proprs.trekLocations.forEach(function (locItem, locIndex, locNames)
+				{
+					if (locItem["l_mtt_level"] <= 1)
+					{
+						if (locItem["l_mtt_level"] == 1)
+						{
+							pIndex = locIndex;
+
+							if (!locNames[pIndex].hasOwnProperty("child"))
+								locNames[pIndex]["child"] = [];
+						}
+
+						trekList.push(locItem);
+					}
+					else
+					{
+						locNames[pIndex]["child"].push(locItem);
+					}
+
+				});
+
+				proprs = null;
+
+				return Promise.resolve([null, trekList]);
 			});
 	}
 

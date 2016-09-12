@@ -57,8 +57,19 @@ body.mce-content-body,
 {
 	background-color: #fff;
 	color: #000;
-	min-height: 30px;
-	line-height: 30px;
+	min-height: 50px;
+	line-height: 50px;
+}
+
+.userProfileTop
+{
+	display: inline-block;
+	float: right;
+}
+
+.userProfileTop img
+{
+	height: 50px;
 }
 
 /* ipad */
@@ -81,14 +92,16 @@ body.mce-content-body,
 		float: none!important;
 		margin: 7.5px -15px;
 	}
-	.navbar-nav>li {
+	.navbar-nav>li
+	{
 		float: none;
 	}
 	.navbar-nav>li>a {
 		padding-top: 10px;
 		padding-bottom: 10px;
 	}
-	.navbar-text {
+	.navbar-text
+	{
 		float: none;
 		margin: 15px 0;
 	}
@@ -108,6 +121,11 @@ body.mce-content-body,
 	{
 		max-height: 211px;
 	}
+}
+
+.breadcrumb
+{
+	margin-bottom: 10px;
 }
 
 /******************************** SITE MENU */
@@ -387,7 +405,7 @@ a.social:hover
 
 .album-list-toolbar
 {
-	margin: 10px 0 0 0;
+	margin: 10px 0 10px 0;
 }
 
 .album-list-toolbar .dropdown-menu>li>a
