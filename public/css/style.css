@@ -6,7 +6,7 @@ body {
 }
 body.mc-project
 {
-	padding-top: 80px;
+	padding-top: 100px;
 }
 
 /******************************** TinyMCE редактор */
@@ -70,6 +70,12 @@ body.mce-content-body,
 .userProfileTop img
 {
 	height: 50px;
+}
+
+.userProfileTop .fa
+{
+	font-size: 35px;
+	vertical-align: middle;
 }
 
 /* ipad */

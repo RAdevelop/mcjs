@@ -3,7 +3,6 @@
 const Logger = require('app/lib/logger');
 const Promise = require("bluebird");
 const FileErrors = require('app/lib/file/errors');
-const Errors = require('app/lib/errors');
 const FileUpload = require('app/lib/file/upload');
 const Crypto = require('crypto');
 const Path = require('path');
@@ -33,7 +32,9 @@ class UserPhoto extends User
 	 */
 	addNamedAlbum(u_id, a_name, a_text)
 	{
-		return this.model('user/photo').createAlbumNamed(u_id, a_name, a_text);
+		let a_alias = this.helpers.translit(a_name);
+			a_alias = this.helpers.clearSymbol(a_alias, '-');
+		return this.model('user/photo').createAlbumNamed(u_id, a_name, a_alias, a_text);
 	}
 
 	/**
@@ -47,7 +48,10 @@ class UserPhoto extends User
 	 */
 	editAlbumNamed(u_id, a_id, a_name, a_text)
 	{
-		return this.model('user/photo').editAlbumNamed(u_id, a_id, a_name, a_text);
+		let a_alias = this.helpers.translit(a_name);
+			a_alias = this.helpers.clearSymbol(a_alias, '-');
+
+		return this.model('user/photo').editAlbumNamed(u_id, a_id, a_name, a_alias, a_text);
 	}
 
 	/**

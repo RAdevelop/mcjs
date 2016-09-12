@@ -1,6 +1,5 @@
 "use strict";
 
-//var _ = require('lodash');
 const Errors = require('app/lib/errors');
 const Moment = require('moment');
 const Promise = require("bluebird");
@@ -57,7 +56,8 @@ class Photo extends User
 			.catch(Errors.NotFoundError, function ()
 			{
 				let a_name = 'Фотографии профиля';
-				return this._insAlbum(u_id, a_type_id, a_name, a_name, a_name);
+				let a_alias = 'fotografii-profilya';
+				return this._insAlbum(u_id, a_type_id, a_name, a_alias, a_name);
 			});
 	}
 
@@ -97,7 +97,7 @@ class Photo extends User
 		this.constructor.albumUploaded;
 	}
 
-	createAlbumNamed(u_id, a_name, a_text)
+	createAlbumNamed(u_id, a_name, a_alias, a_text)
 	{
 		let a_type_id;
 		let sql = 'SELECT a_type_id FROM album_type WHERE a_type_alias = ?';
@@ -107,7 +107,7 @@ class Photo extends User
 			.then(function (res)
 			{
 				a_type_id = res["a_type_id"];
-				return this._insAlbum(u_id, a_type_id, a_name, a_name, a_text);
+				return this._insAlbum(u_id, a_type_id, a_name, a_alias, a_text);
 			});
 	}
 
@@ -117,10 +117,11 @@ class Photo extends User
 	 * @param u_id
 	 * @param a_id
 	 * @param a_name
+	 * @param a_alias
 	 * @param a_text
 	 * @returns {*}
 	 */
-	editAlbumNamed(u_id, a_id, a_name, a_text)
+	editAlbumNamed(u_id, a_id, a_name, a_alias, a_text)
 	{
 		let a_type_id;
 		let sql = 'SELECT a_type_id FROM album_type WHERE a_type_alias = ?';
@@ -131,7 +132,7 @@ class Photo extends User
 			{
 				a_type_id = res["a_type_id"];
 				
-				return this._updAlbum(u_id, a_type_id, a_id, a_name, a_name, a_text);
+				return this._updAlbum(u_id, a_type_id, a_id, a_name, a_alias, a_text);
 			});
 	}
 

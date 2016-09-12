@@ -1,7 +1,6 @@
 <div class="row singleTrek">
-	<div class="col-xs-12 col-md-12">
-		<%-trek.mtt_descrip%>
-	</div>
+	<% let hasDescrip  = (trek.mtt_descrip != '')%>
+	<% if(hasDescrip){%><div class="col-xs-12 col-md-6"><%-trek.mtt_descrip%></div><%}%>
 	<div class="col-xs-12 col-md-6">
 		<p><strong>контакты:</strong></p>
 		<ul>
@@ -15,7 +14,7 @@
 			<% if (trek.mtt_email)		{%><li><strong>e-mail:</strong> <%=trek.mtt_email%></li><% }%>
 		</ul>
 	</div>
-	<div class="col-xs-12 col-md-6 singleTrekMap">
+	<div class="col-xs-12 col-md-<%=(hasDescrip ? 6 : 12)%> singleTrekMap">
 		<div id="mttMap"></div>
 	</div>
 </div>

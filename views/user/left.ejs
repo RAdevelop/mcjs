@@ -1,6 +1,11 @@
+<%
+let pPath = (!_user || !user.u_id? '/registration/' : '');
+pPath = (_user && user && user.u_id && _user.u_id == user.u_id ? '/profile/' : pPath);
+pPath = (_user && user && user.u_id && _user.u_id != user.u_id ? '/user/'+user.u_id+'/' : pPath);
+%>
 <div class="logo">&nbsp;</div>
 <div id="profile-ava" class="col-xs-12 col-sm-12 col-md-12">
-    <a href="<%=(_user && _user.u_id == user.u_id ? '/profile/' : '/user/'+user.u_id+'/')%>">
+    <a href="<%=pPath%>">
         <% if (user.previews["180_180"]) {%>
         <img class="img-circle img-responsive" src="<%=user.previews["180_180"]%>" />
         <% } else {%>

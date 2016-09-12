@@ -511,7 +511,7 @@ class Base
 	getUserId()
 	{
 		//return this.getUser()["u_id"];
-		return (this.getReq()._user ? this.getReq()._user["u_id"] : {u_id: null});
+		return (this.getReq()._user && this.getReq()._user["u_id"] ? this.getReq()._user["u_id"] : null);
 	}
 
 	getHost()

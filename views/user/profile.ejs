@@ -1,4 +1,8 @@
 <%  if(!_isXHR){%><%- layout('layout/user/index') %><% } %>
+<ol class="breadcrumb">
+	<li><a href="<%=menuItem.m_path%>/"><%=menuItem.m_name%></a></li>
+	<li><a href="<%=(menuItem.m_path+'/'+user.u_id+'/')%>"><%=(user.u_login ? user.u_login : (user.u_name || user.u_surname ? [user.u_name, user.u_surname].join(' ') : ''))%></a></li>
+</ol>
 <div class="userProfile">
 <p>логин <%=user.u_login%></p>
 <p>фи <%=[user.u_name, user.u_surname].join(' ')%></p>

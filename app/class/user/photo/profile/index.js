@@ -3,7 +3,7 @@
 //const Errors = require('app/lib/errors');
 const Promise = require("bluebird");
 const FileUpload = require('app/lib/file/upload');
-const Path = require('path');
+//const Path = require('path');
 
 const UserPhoto = require('app/class/user/photo');
 

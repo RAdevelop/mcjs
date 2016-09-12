@@ -80,13 +80,7 @@
             <a class="social fa fa-facebook fa-fw" href="https://www.facebook.com/groups/MotoCommunityRu/" target="_blank" rel="nofollow" title="MotoСommunity в FaceBook"></a>
             <a class="social fa fa-twitter fa-fw" href="https://twitter.com/#!/MotoCommunityRu" target="_blank" rel="nofollow" title="MotoСommunity в Twitter"></a>
             <a class="social fa fa-google-plus fa-fw" href="https://plus.google.com/+MotocommunityRu/" target="_blank" rel="nofollow" title="MotoСommunity в Google+"></a>
-
-		<% if(_user && _user["previews"] && _user["previews"]["50_50"]) {%>
-		<a class="userProfileTop" href="/profile/">
-			<img src="<%=(_user["previews"]["50_50"])%>" />
-		</a>
-		<% }%>
-
+		<% if(_user) {%><a class="userProfileTop" href="/profile/"><% if (_user["previews"]["50_50"]) {%><img class="img-circle img-responsive" src="<%=_user["previews"]["50_50"]%>" /><% } else {%><span class="fa fa-user"></span><% } %></a><% }%>
     </div>
 	<div class="container-fluid">
 		<div class="navbar-header">

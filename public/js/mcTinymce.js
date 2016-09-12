@@ -7,6 +7,21 @@
 {
 	if (window["McTinymce"]) return;
 
+	function editorOnChange()
+	{
+		console.log('editorOnChange');
+
+		this.setContent(McTinymce.cleanTagEvents(this.getContent()));
+
+		tinymce.triggerSave();
+	}
+
+	function editorOnSubmit()
+	{
+		this.setContent(McTinymce.cleanTagEvents(this.getContent()));
+
+		tinymce.triggerSave();
+	}
 
 	var skins = {
 		default: {
@@ -15,22 +30,10 @@
 			, themes: "modern"
 			, setup: function (editor)
 			{
-				editor.on('change', function ()
-				{
-					//console.log('tinymce.triggerSave()');
-
-					this.setContent(McTinymce.cleanTagEvents(this.getContent()));
-
-					tinymce.triggerSave();
-				});
+				editor.on('change', editorOnChange);
 
 				//сабмит формы
-				editor.on('submit', function ()
-				{
-					this.setContent(McTinymce.cleanTagEvents(this.getContent()));
-
-					tinymce.triggerSave();
-				});
+				editor.on('submit', editorOnSubmit);
 			}/*,
 			 plugins: [
 			 'lists link charmap preview',
