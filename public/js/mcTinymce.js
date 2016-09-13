@@ -23,40 +23,48 @@
 		tinymce.triggerSave();
 	}
 
-	var skins = {
-		default: {
-			language: "ru_RU"
+	var defaultSkin =  {
+		language: "ru_RU"
 			, content_css: "/css/style.css"
 			, themes: "modern"
 			, setup: function (editor)
-			{
-				editor.on('change', editorOnChange);
+		{
+			editor.on('change', editorOnChange);
 
-				//сабмит формы
-				editor.on('submit', editorOnSubmit);
-			}/*,
-			 plugins: [
-			 'lists link charmap preview',
-			 'searchreplace wordcount visualblocks visualchars code fullscreen',
-			 'table contextmenu paste'
-			 ]*/
-			,plugins: [
-				'link charmap preview code wordcount paste template',
-				//'searchreplace  visualblocks visualchars  fullscreen',
-				//'table contextmenu paste'
-			]
-			, menubar:false
-			, paste_data_images: false
-			, paste_as_text: true
-			, toolbar1: 'code | undo redo | bold italic | bullist numlist outdent indent | link unlink'
-			, toolbar2: 'paste | removeformat preview template'
-			//, valid_elements: '*[*]' //TODO закомментировать! разрешает все теги и все атрибуты у них
-			, templates: [
-				//TODO использовать в блогах, новостях... в plugins добавить template
-				{title: 'заголовок шаблона 1', description: 'описание шаблона 1', content: '<div>пример контента из шаблона</div>'},
-				{title: 'заголовок шаблона 2', description: 'описание шаблона 2', url: 'development.html'}
-			]
-		}
+			//сабмит формы
+			editor.on('submit', editorOnSubmit);
+		}/*,
+		 plugins: [
+		 'lists link charmap preview',
+		 'searchreplace wordcount visualblocks visualchars code fullscreen',
+		 'table contextmenu paste'
+		 ]*/
+	,   plugins: [
+			'link charmap preview code wordcount paste',
+			//'searchreplace  visualblocks visualchars  fullscreen',
+			//'table contextmenu paste'
+		]
+		, menubar:false
+		, paste_data_images: false
+		, paste_as_text: true
+		, toolbar1: 'code | undo redo | bold italic | bullist numlist outdent indent | link unlink'
+		, toolbar2: 'paste | removeformat preview template'
+		//, valid_elements: '*[*]' //TODO закомментировать! разрешает все теги и все атрибуты у них
+	};
+
+	var skins = {
+			default: defaultSkin
+		,   templates: $.extend({}, defaultSkin, {
+				visualblocks_default_state: true
+			,   plugins: [
+				'link charmap preview code wordcount paste template visualblocks',
+				]
+			,   templates: [
+					//TODO использовать в блогах, новостях... в plugins добавить template
+					{title: 'заголовок шаблона 1', description: 'описание шаблона 1', content: '<p>пример контента из шаблона</p>'},
+					{title: 'заголовок шаблона 2', description: 'описание шаблона 2', url: 'development.html'}
+				]
+			})
 	};
 
 	function McTinymce(params, skin, vers)

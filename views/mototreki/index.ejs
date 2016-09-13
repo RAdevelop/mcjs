@@ -1,7 +1,15 @@
+<% if(trek && (_action =='edit' || _action =='add')){ %>
+<%  if(!_isXHR){%><%- layout('layout/default') %><% } %>
+<%- include toolbar.ejs %><h1><%=_pageH1%></h1>
+<%- include edit.ejs %><%
+}
+else if (trek){%>
 <%  if(!_isXHR){%><%- layout('layout/user/index') %><% } %>
-<%- include toolbar.ejs %>
-<h1><%=[menuItem.m_h1, (trek ? trek.mtt_name : '')].join(': ')%></h1>
-
-<% if(trek && (_action =='edit' || _action =='add')){ %><%- include edit.ejs %><% }
-else if (trek){%><%- include trek.ejs %><%}
-else if (trekList){%><%- include list.ejs %><%}%>
+<%- include toolbar.ejs %><h1><%=_pageH1%></h1>
+<%- include trek.ejs %>
+<%}
+else if (trekList){%>
+<%  if(!_isXHR){%><%- layout('layout/user/index') %><% } %>
+<%- include toolbar.ejs %><h1><%=_pageH1%></h1>
+<%- include list.ejs %>
+<%}%>

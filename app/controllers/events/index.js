@@ -221,32 +221,33 @@ class Events extends Base
 	 */
 	addActionGet(cb)
 	{
-		return this.getUser(this.getUserId())
+		let tplData = {
+			event: {
+				e_id: '',
+				e_create_ts: '',
+				e_update_ts: '',
+				dd_start_ts: '',
+				dd_end_ts: '',
+				e_title: '',
+				e_notice: '',
+				e_text: '',
+				e_address: '',
+				e_location_id: '',
+				e_latitude: '',
+				e_longitude: '',
+				e_gps_lat: '',
+				e_gps_lng: '',
+				u_id: ''
+			}
+		};
+
+		return Promise.resolve(tplData)
 			.bind(this)
-			.then(function(userData)
+			.then(function(tplData)
 			{
 				let tplFile = "events";
-				let tplData = {
-					event: {
-						e_id: '',
-						e_create_ts: '',
-						e_update_ts: '',
-						dd_start_ts: '',
-						dd_end_ts: '',
-						e_title: '',
-						e_notice: '',
-						e_text: '',
-						e_address: '',
-						e_location_id: '',
-						e_latitude: '',
-						e_longitude: '',
-						e_gps_lat: '',
-						e_gps_lng: '',
-						u_id: ''
-					}
-				};
+
 				this.view.setTplData(tplFile, tplData);
-				this.view.addPartialData("user/left", {user: userData});
 
 				return cb(null);
 			})
@@ -294,7 +295,7 @@ class Events extends Base
 		if (!tplData["f_e_lat"] || !tplData["f_e_lng"])
 			errors["s_e_address"] = "Укажите адрес события";
 
-		let tplFile = "events";
+		let tplFile = "events/edit.ejs";
 
 		return Promise.resolve(errors)
 			.bind(this)
@@ -373,7 +374,7 @@ class Events extends Base
 	}
 
 	/**
-	 * форма редактирования трека
+	 * форма редактирования события
 	 *
 	 * @param cb
 	 */
@@ -391,18 +392,13 @@ class Events extends Base
 				if (!event)
 					throw new Errors.HttpStatusError(404, "Not found");
 
-				return this.getUser(this.getUserId())
-					.then(function(userData)
-					{
-						return Promise.resolve([event, userData]);
-					});
+				return Promise.resolve(event);
 			})
-			.spread(function (event, userData)
+			.then(function (event)
 			{
 				let tplFile = "events";
 				let tplData = { event: event };
 				this.view.setTplData(tplFile, tplData);
-				this.view.addPartialData("user/left", {user: userData});
 
 				this.view.setPageTitle(event.e_title);
 				this.view.setPageH1(event.e_title);
@@ -425,65 +421,59 @@ class Events extends Base
 	 */
 	editActionPost(cb)
 	{
+		let tplFile = "events/edit.ejs";
+
 		//let formData = this.getReqBody();
 		let tplData = this.getParsedBody();
 
 		if (!tplData["i_event_id"])
 			throw new Errors.HttpStatusError(404, "Not found");
 
-		/*console.log(formData);
-		 console.log('-----');
-		 console.log(tplData);*/
-
-		let errors = {};
-
-		tplData["t_e_text"] = '<p onclick="alert(\'RA\')">ad <span onclick="alert(\'RA\')">ad</span></p>';
-
-		tplData = this.stripTags(tplData, ["dd_start_ts", "dd_end_ts", "s_e_title","t_e_notice", "s_e_address"]);
-
-		tplData["t_e_text"] = this.cheerio(tplData["t_e_text"]).root().cleanTagEvents().html();
-
-		if (!tplData["dd_start_ts"])
-			errors["dd_start_ts"] = "Укажите дату начала события";
-
-		if (!tplData["dd_end_ts"])
-			errors["dd_end_ts"] = "Укажите дату завершения события";
-
-		if (!tplData["s_e_title"])
-			errors["s_e_title"] = "Укажите название события";
-
-		if (!tplData["t_e_notice"])
-			errors["t_e_notice"] = "Укажите анонс события";
-
-		if (!tplData["t_e_text"])
-			errors["t_e_text"] = "Укажите описание события";
-
-		if (!tplData["s_e_address"])
-			errors["s_e_address"] = "Укажите адрес события";
-
-		if (!tplData["f_e_lat"] || !tplData["f_e_lng"])
-			errors["s_e_address"] = "Укажите адрес события";
-
-		let tplFile = "events";
-
-		return Promise.resolve(errors)
+		return this.getClass('events').get(tplData["i_event_id"])
 			.bind(this)
-			.then(function(errors)
+			.then(function (event)
+			{
+				if (!event)
+					throw new Errors.HttpStatusError(404, "Not found");
+
+				return Promise.resolve();
+			})
+			.then(function ()
+			{
+				let errors = {};
+
+				tplData = this.stripTags(tplData, ["dd_start_ts", "dd_end_ts", "s_e_title","t_e_notice", "s_e_address"]);
+
+				tplData["t_e_text"] = this.cheerio(tplData["t_e_text"]).root().cleanTagEvents().html();
+
+				if (!tplData["dd_start_ts"])
+					errors["dd_start_ts"] = "Укажите дату начала события";
+
+				if (!tplData["dd_end_ts"])
+					errors["dd_end_ts"] = "Укажите дату завершения события";
+
+				if (!tplData["s_e_title"])
+					errors["s_e_title"] = "Укажите название события";
+
+				if (!tplData["t_e_notice"])
+					errors["t_e_notice"] = "Укажите анонс события";
+
+				if (!tplData["t_e_text"])
+					errors["t_e_text"] = "Укажите описание события";
+
+				if (!tplData["s_e_address"])
+					errors["s_e_address"] = "Укажите адрес события";
+
+				if (!tplData["f_e_lat"] || !tplData["f_e_lng"])
+					errors["s_e_address"] = "Укажите адрес события";
+
+				return Promise.resolve([errors, tplData]);
+			})
+			.spread(function(errors, tplData)
 			{
 				this.parseFormErrors(tplData, errors, 'Ошибки при заполнении формы');
 
 				return Promise.resolve(tplData);
-			})
-			.then(function (tplData)
-			{
-				return this.getClass('events').get(tplData["i_event_id"])
-					.then(function (trek)
-					{
-						if (!trek)
-							throw new Errors.HttpStatusError(404, "Not found");
-
-						return Promise.resolve(tplData);
-					})
 			})
 			.then(function (tplData)
 			{
@@ -508,8 +498,7 @@ class Events extends Base
 					tplData["s_e_title"], tplData["t_e_notice"], tplData["t_e_text"], tplData["s_e_address"],
 					tplData["f_e_lat"], tplData["f_e_lng"], tplData["i_location_id"], tplData["dd_start_ts"], tplData["dd_end_ts"]
 				)
-					.bind(this)
-					.then(function (i_event_id)
+					.then(function ()
 					{
 						return Promise.resolve(tplData);
 					});
@@ -542,8 +531,7 @@ class Events extends Base
 	{
 		return Promise.props({
 			eventList: this.getClass("events").getAll(),
-			eventLocations: this.getClass("events").getLocations(),
-			userData: this.getUser(this.getUserId())
+			eventLocations: this.getClass("events").getLocations()
 		})
 			.bind(this)
 			.then(function(props)
@@ -551,8 +539,7 @@ class Events extends Base
 				let tplData = {
 					trek: null,
 					eventList: props.eventList || [],
-					eventLocations: props.eventLocations || [],
-					userData: props.userData
+					eventLocations: props.eventLocations || []
 				};
 				let tplFile = "mototreki/map.ejs";
 				this.view.setTplData(tplFile, tplData);

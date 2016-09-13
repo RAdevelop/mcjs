@@ -2,9 +2,6 @@
 
 const Errors = require('app/lib/errors');
 const Promise = require("bluebird");
-//const FileUpload = require('app/lib/file/upload');
-//const Path = require('path');
-
 const Base = require('app/lib/class');
 
 class Mototrek extends Base
@@ -60,15 +57,7 @@ class Mototrek extends Base
 	 */
 	get(mtt_id)
 	{
-		return this.model('mototrek').getById(mtt_id)
-			.bind(this)
-			.then(function (trek)
-			{
-				if (!trek)
-					throw new Errors.HttpStatusError(404, "Not found");
-				
-				return Promise.resolve(trek);
-			});
+		return this.model('mototrek').getById(mtt_id);
 	}
 
 	/**

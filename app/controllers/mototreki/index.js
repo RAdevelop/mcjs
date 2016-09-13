@@ -222,26 +222,27 @@ class Mototreki extends Base
 	 */
 	addActionGet(cb)
 	{
-		return this.getUser(this.getUserId())
+		let tplData = {
+			trek: {
+				mtt_name: '',
+				mtt_website: '',
+				mtt_address: '',
+				mtt_descrip: '',
+				mtt_email: '',
+				mtt_phones: '',
+				mtt_latitude: '',
+				mtt_longitude: '',
+				mtt_location_id: ''
+			}
+		};
+
+		return Promise.resolve(tplData)
 			.bind(this)
-			.then(function(userData)
+			.then(function(tplData)
 			{
 				let tplFile = "mototreki";
-				let tplData = {
-					trek: {
-						mtt_name: '',
-						mtt_website: '',
-						mtt_address: '',
-						mtt_descrip: '',
-						mtt_email: '',
-						mtt_phones: '',
-						mtt_latitude: '',
-						mtt_longitude: '',
-						mtt_location_id: ''
-					}
-				};
+
 				this.view.setTplData(tplFile, tplData);
-				this.view.addPartialData("user/left", {user: userData});
 
 				return cb(null);
 			})
@@ -298,9 +299,9 @@ class Mototreki extends Base
 				const self = this;
 
 				return this.getClass('location').geoCoder(tplData["s_mtt_address"])
-					.then(function (userLocationData)
+					.then(function (locationData)
 					{
-						return self.getClass('location').create(userLocationData);
+						return self.getClass('location').create(locationData);
 					})
 					.then(function (location_id)
 					{
@@ -361,20 +362,14 @@ class Mototreki extends Base
 			.bind(this)
 			.then(function (trek)
 			{
-				return this.getUser(this.getUserId())
-					.then(function(userData)
-					{
-						return Promise.resolve([trek, userData]);
-					});
-			})
-			.spread(function (trek, userData)
-			{
+				if (!trek)
+					throw new Errors.HttpStatusError(404, "Not found");
+
 				let tplFile = "mototreki";
 				let tplData = {
 					trek: trek
 				};
 				this.view.setTplData(tplFile, tplData);
-				this.view.addPartialData("user/left", {user: userData});
 
 				//экспрот данных в JS на клиента
 				this.getRes().expose(tplData["trek"], 'trek');
@@ -395,40 +390,43 @@ class Mototreki extends Base
 	 */
 	editActionPost(cb)
 	{
+		let tplFile = "mototreki/edit.ejs";
 		let formData = this.getReqBody();
 		let tplData = this.getParsedBody();
 
-		/*console.log(formData);
-		console.log('-----');
-		console.log(tplData);*/
-		
-		tplData = this.stripTags(tplData, ["s_mtt_name", "m_mtt_email", "s_mtt_address", "s_mtt_website", "s_mtt_phones"]);
-		tplData["t_mtt_descrip"] = this.cheerio(tplData["t_mtt_descrip"]).root().cleanTagEvents().html();
-
-		let errors = {};
-
 		if (!tplData["i_mtt_id"])
-			errors["s_mtt_name"] = "Укажите название трека";
+			throw new Errors.HttpStatusError(404, "Not found");
 
-		if (!tplData["s_mtt_name"])
-			errors["s_mtt_name"] = "Укажите название трека";
 
-		if (formData["m_mtt_email"] && !tplData["m_mtt_email"])
-			errors["m_mtt_email"] = "E-mail указан не верно";
-		else
-			tplData["m_mtt_email"] = formData["m_mtt_email"];
-
-		if (!tplData["s_mtt_address"])
-			errors["s_mtt_address"] = "Укажите адрес трека";
-
-		if (!tplData["f_mtt_lat"] || !tplData["f_mtt_lng"])
-			errors["s_mtt_address"] = "Укажите адрес трека";
-
-		let tplFile = "mototreki/edit.ejs";
-
-		return Promise.resolve(errors)
+		return this.getClass('mototrek').get(tplData["i_mtt_id"])
 			.bind(this)
-			.then(function(errors)
+			.then(function (trek)
+			{
+				if (!trek)
+					throw new Errors.HttpStatusError(404, "Not found");
+
+				tplData = this.stripTags(tplData, ["s_mtt_name", "m_mtt_email", "s_mtt_address", "s_mtt_website", "s_mtt_phones"]);
+				tplData["t_mtt_descrip"] = this.cheerio(tplData["t_mtt_descrip"]).root().cleanTagEvents().html();
+
+				let errors = {};
+
+				if (!tplData["s_mtt_name"])
+					errors["s_mtt_name"] = "Укажите название трека";
+
+				if (formData["m_mtt_email"] && !tplData["m_mtt_email"])
+					errors["m_mtt_email"] = "E-mail указан не верно";
+				else
+					tplData["m_mtt_email"] = formData["m_mtt_email"];
+
+				if (!tplData["s_mtt_address"])
+					errors["s_mtt_address"] = "Укажите адрес трека";
+
+				if (!tplData["f_mtt_lat"] || !tplData["f_mtt_lng"])
+					errors["s_mtt_address"] = "Укажите адрес трека";
+
+				return Promise.resolve([errors, tplData]);
+			})
+			.spread(function(errors, tplData)
 			{
 				this.parseFormErrors(tplData, errors, 'Ошибки при заполнении формы');
 
@@ -436,23 +434,12 @@ class Mototreki extends Base
 			})
 			.then(function (tplData)
 			{
-				return this.getClass('mototrek').get(tplData["i_mtt_id"])
-					.then(function (trek)
-					{
-						if (!trek)
-							throw new Errors.HttpStatusError(404, "Not found");
-
-						return Promise.resolve(tplData);
-					})
-			})
-			.then(function (tplData)
-			{
 				const self = this;
 
 				return this.getClass('location').geoCoder(tplData["s_mtt_address"])
-					.then(function (userLocationData)
+					.then(function (locationData)
 					{
-						return self.getClass('location').create(userLocationData);
+						return self.getClass('location').create(locationData);
 					})
 					.then(function (location_id)
 					{
@@ -507,8 +494,7 @@ class Mototreki extends Base
 	{
 		return Promise.props({
 			trekList: this.getClass("mototrek").getAll(),
-			trekLocations: this.getClass("mototrek").getLocations(),
-			userData: this.getUser(this.getUserId())
+			trekLocations: this.getClass("mototrek").getLocations()
 		})
 			.bind(this)
 			.then(function(props)
@@ -516,12 +502,10 @@ class Mototreki extends Base
 				let tplData = {
 					trek: null,
 					trekList: props.trekList || [],
-					trekLocations: props.trekLocations || [],
-					userData: props.userData
+					trekLocations: props.trekLocations || []
 				};
 				let tplFile = "mototreki/map.ejs";
 				this.view.setTplData(tplFile, tplData);
-				//this.view.addPartialData("user/left", {user: userData});
 
 				//экспрот данных в JS на клиента
 				this.getRes().expose(props.trekList, 'trekList');
