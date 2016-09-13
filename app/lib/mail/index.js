@@ -61,7 +61,7 @@ Mailer.prototype.send = function (params, callback){
 	return callback(new errors.ArgumentError('params'));
 
 	params = _.assign({
-		to:'',
+		to:this.mailFrom,
 		subject: '',
 		tplName:'',
 		tplData: {}

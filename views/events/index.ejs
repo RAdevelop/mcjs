@@ -1,0 +1,8 @@
+<%  if(!_isXHR){%><%- layout('layout/user/index') %><% } %>
+<%- include toolbar.ejs %>
+<h1><%=_pageH1%></h1>
+
+<% if(event && ['edit', 'add'].indexOf(_action) != -1){ %><%- include edit.ejs %><% }
+else if (event){%><%- include event.ejs %><%}
+else if (eventList){%><%- include list.ejs %><%}
+%>

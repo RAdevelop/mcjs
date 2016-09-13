@@ -144,8 +144,24 @@ var config = {
 			maxFileSize: 10,//Mb
 			sizeParams: [],
 			tokenFields: ['i_time', 'u_id'],
+		},
+		events: {
+			pathUpload: "events",
+			fileTypes: ['gif', 'png', 'jpg', 'jpeg'],
+			fileMediaType: 'image',
+			multiUpload: true,
+			maxFileSize: 6,//Mb
+			tokenFields: ['i_time'],
+			sizeParams: [
+				{w: 1280, h: 853},
+				{w: 1024, h: 768},
+				{w: 512, h: 384},
+				{w: 256, h: 192},
+				{w: 50, h: 50}
+			],
+			cropSize: []
 		}
-	},
+	}
 };
 
 module.exports = config;

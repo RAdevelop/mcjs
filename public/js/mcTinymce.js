@@ -11,7 +11,7 @@
 	{
 		console.log('editorOnChange');
 
-		this.setContent(McTinymce.cleanTagEvents(this.getContent()));
+		//this.setContent(McTinymce.cleanTagEvents(this.getContent()));
 
 		tinymce.triggerSave();
 	}

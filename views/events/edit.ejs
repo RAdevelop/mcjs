@@ -1,0 +1,256 @@
+<h4><%=(event.e_title ? 'редактирование' : 'добавление')%> события</h4>
+<ul class="nav nav-pills nav-justified" role="tablist">
+	<li class="active" role="presentation"><a href="#base" aria-controls="base" role="tab" data-toggle="tab"><span class="fa fa-cog"></span> Основное</a></li>
+	<li role="presentation"><a href="#locations" aria-controls="locations" role="tab" data-toggle="tab"><span class="fa fa-map-marker "></span> Адрес</a></li>
+</ul>
+<!-- Tab panes -->
+<form class="form-horizontal" action="<%=menuItem.m_path+'/'+_action%>/" method="post" id="formEvent">
+	<input type="hidden" id="i_event_id" name="i_event_id" value="<%=event.e_id%>" />
+	<div class="panel panel-default">
+		<div class="panel-body tab-content">
+			<div role="tabpanel" class="tab-pane active" id="base">
+				<div class="form-group dd_start_ts dd_end_ts">
+					<label for="s_e_title" class="col-sm-2 control-label">даты проведения *</label>
+					<div class="col-sm-5">
+						<input type="text" class="form-control" id="dd_start_ts" name="dd_start_ts" value="<%=event.dd_start_ts%>" placeholder="дата начала события" required="required" maxlength="10" />
+						<span class="help-block">дата начала события</span>
+					</div>
+					<div class="col-sm-5">
+						<input type="text" class="form-control" id="dd_end_ts" name="dd_end_ts" value="<%=event.dd_end_ts%>" placeholder="дата завершения события" required="required" maxlength="10" />
+						<span class="help-block">дата завершения события</span>
+					</div>
+				</div>
+				<div class="form-group s_e_title">
+					<label for="s_e_title" class="col-sm-2 control-label">название *</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="s_e_title" name="s_e_title" value="<%=event.e_title%>" placeholder="название события" required="required" />
+					</div>
+				</div>
+				<div class="form-group t_e_notice">
+					<label for="t_e_notice" class="col-sm-2 control-label">анонс *</label>
+					<div class="col-sm-10">
+						<textarea class="form-control" style="height: 100px;" id="t_e_notice" name="t_e_notice" placeholder="анонс события" required="required" ><%=event.e_notice%></textarea>
+					</div>
+				</div>
+				<div class="form-group t_e_text">
+					<label for="t_e_text" class="col-sm-2 control-label">описание *</label>
+					<div class="col-sm-10">
+						<textarea class="form-control" style="height: 250px;" id="t_e_text" name="t_e_text" placeholder="описание события" required="required" ><%=event.e_text%></textarea>
+					</div>
+				</div>
+			</div>
+			<div role="tabpanel" class="tab-pane" id="locations">
+				<div class="form-group s_e_address">
+					<label for="m_mail" class="col-sm-1 control-label">адрес *</label>
+					<div class="col-sm-11">
+						<input type="text" class="form-control" id="s_e_address" name="s_e_address" value="<%=event.e_address%>" placeholder="адрес" required="required" data-toggle="tooltip" data-container="body" data-placement="auto" title="<%=event.e_address%>">
+						<span class="help-block">укажите адрес с помощью карты: через поиск адреса, или по клику на карте.</span>
+						<input type="text" id="f_e_lat" name="f_e_lat" value="<%=event.e_latitude%>" readonly="readonly" maxlength="20" required="required"  />
+						<input type="text" id="f_e_lng" name="f_e_lng" value="<%=event.e_longitude%>" readonly="readonly" maxlength="20" required="required"  />
+					</div>
+				</div>
+				<div class="form-group" >
+					<div class="col-sm-12" id="eventMap" style="border: 0px solid red; height: 400px;"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-xs-offset-5 col-sm-offset-5 ">
+			<input type="hidden" name="btn_save_event" value="main"/>
+			<button type="submit" class="btn btn-primary" id="btn_edit_event" value="1" data-loading-text="сохраняю..." autocomplete="off">сохранить</button>
+		</div>
+	</div>
+</form>
+<script src="/js/mcMap.js" type="text/javascript"></script>
+<script src="/js/jquery/postRes.js" type="text/javascript" ></script>
+<script src="/js/mcTinymce.js" type="text/javascript" ></script>
+<script type="text/javascript">
+	//<!--
+	(function($)
+	{
+		$("#dd_start_ts").datepicker({ dateFormat: 'dd-mm-yy' });
+		$("#dd_end_ts").datepicker({ dateFormat: 'dd-mm-yy' });
+
+		var eTextTinymce = McTinymce({
+			selector: '#t_e_text'
+		}, "default");
+
+		$('#formEvent').postRes({btnId: 'btn_edit_event',
+			beforeSubmit: function ()
+			{
+				eTextTinymce.then(function (editor)
+				{
+					//console.log(editor[0]);
+					console.log('McTinymce.tinymce.triggerSave()');
+					McTinymce.tinymce.triggerSave();
+				});
+			},
+			onSuccess: function($dialog, respData)
+			{
+				if (respData["i_event_id"])
+					window.location.href = "<%=menuItem.m_path%>/edit/" +respData["i_event_id"] +'/';
+
+				return false;
+			}
+		});
+
+		var mapState = {
+			controls: ["zoomControl", "searchControl", "typeSelector"]
+			, zoom: 15
+			, type: 'yandex#hybrid'
+			, behaviors: ["default"]
+		};
+		var mapOptions = {};
+		var EventMcMap = new McMap('eventMap', {state: mapState, options: mapOptions});
+		var ePlacemark;
+		EventMcMap.init()
+				.then(function (EventMap)
+				{
+					EventMap.behaviors.disable('multiTouch');
+					//EventMap.behaviors.disable('scrollZoom');
+
+					EventMap.geoObjects.removeAll();
+
+					addPlaceMark(EventMap);
+
+					var searchControl = EventMap.controls.get("searchControl");
+					searchControl.options.set("float", "right");
+
+					searchControl.events.add('submit', function ()
+					{
+
+						//console.log('request: ' + searchControl.getRequestString());
+
+					}, this);
+					searchControl.events.add('resultselect', function (res)
+					{
+						/*res.stopPropagation();
+						 res.preventDefault();
+						 res.stopImmediatePropagation();
+						 */
+						searchControl.hideResult();
+						searchControl.getResult(res.get('index'))
+								.then(function (result)
+								{
+									//console.log('result = ', result);
+									//console.log('result.geometry.getCoordinates() = ', result.geometry.getCoordinates());
+									//console.log("result.properties.get('name') = ", result.properties.get('name'));
+									//console.log("result.properties.get('text') = ", result.properties.get('text'));
+
+									var text = result.properties.get('text') || result.properties.get('geocoderMetaData.text');
+
+									updPlaceMark(EventMap, text, result.geometry.getCoordinates());
+								})
+								.fail(function (err)
+								{
+									updPlaceMark(EventMap, err.message, [], err);
+								});
+					}, this);
+
+					/* когда кликаем по карте */
+					EventMap.events.add('click', function (event)
+					{
+						var coords = event.get('coords');
+						console.log('click by coords', coords);
+						//return McMap.locationByLatLng(coords[0], coords[1], 'house')
+						return McMap.locationByLatLng(coords)
+								.then(function(location)
+								{
+									updPlaceMark(EventMap, location.text, location.coords);
+								})
+								.fail(function(err)
+								{
+									updPlaceMark(EventMap, err.message, coords, err);
+								});
+					});
+
+					return ymaps.vow.resolve(EventMap);
+				})
+				.fail(function (err)
+				{
+					console.log(err);
+				});
+
+		function addPlaceMark(EventMap)
+		{
+			var address = (MCJS["event"] && MCJS["event"]["e_address"] ? MCJS["event"]["e_address"] : '');
+			var center = [];
+			if (MCJS["event"] && MCJS["event"]["e_latitude"] && MCJS["event"]["e_longitude"])
+				center = [MCJS["event"]["e_latitude"], MCJS["event"]["e_longitude"]];
+			else
+				center = EventMap.getCenter();
+
+			var iconContent = (MCJS["event"] && MCJS["event"]["e_title"] ? MCJS["event"]["e_title"] : 'Событие на карте');
+			var contentHeader = iconContent;
+			var contentBody =   '<p>Чтобы указать место расположения объекта, найдите его с помощью поисковой строки, ' +
+					'или кликните мышкой по карте.</p>';
+
+			var contentFooter = '<p><strong>Сейчас указан:</strong><br/>';
+			contentFooter += (address ? address+'<br/>' : '');
+			contentFooter += center.join(', ') + '</p>';
+
+			ePlacemark = new ymaps.Placemark(
+					center
+					,	{
+						/* Свойства*/
+						iconContent: 				iconContent
+						, 	iconCaption: 			iconContent
+						,	balloonContentHeader:	contentHeader
+						,	balloonContentBody:		contentBody
+						,	balloonContentFooter:	contentFooter
+					}
+					,   {
+						/* Опции*/
+						//preset: 'islands#blueStretchyIcon' /* иконка растягивается под контент */
+						//preset: 'islands#blueBicycle2Icon
+						preset: 'islands#blueDotIconWithCaption'
+						,	draggable: true
+					});
+
+			/* когда двигаем метку */
+			ePlacemark.events.add('dragend', function (e)
+			{
+				var thisPlacemark = e.get('target');
+				var coords = thisPlacemark.geometry.getCoordinates();
+
+				return McMap.locationByLatLng(coords)
+						.then(function (location)
+						{
+							updPlaceMark(EventMap, location.text, location.coords);
+						})
+						.fail(function(err)
+						{
+							updPlaceMark(EventMap, err.message, coords, err);
+						});
+			});
+
+			EventMap.geoObjects.add(ePlacemark);
+			EventMap.setCenter(center);
+		}
+
+		function updPlaceMark(EventMap, text, coords, err)
+		{
+			var contentFooter = '<p><strong>Сейчас указан:</strong><br/>' + text + '<br/>' + coords.join(', ') + '</p>';
+
+			ePlacemark.properties.set('balloonContentFooter', contentFooter);
+			ePlacemark.geometry.setCoordinates(coords);
+
+			if (err)
+			{
+				$('#s_e_address').val('');
+				$('#f_e_lat').val('');
+				$('#f_e_lng').val('');
+
+				return;
+			}
+
+			$('#s_e_address').val(text);
+			$('#s_e_address').attr('data-original-title', text);
+			$('#f_e_lat').val(coords[0]);
+			$('#f_e_lng').val(coords[1]);
+		}
+
+	})(jQuery);
+	//-->
+</script>

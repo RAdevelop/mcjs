@@ -146,9 +146,7 @@ class User extends BaseModel
 				Object.assign(userData, res);
 
 				if (userData['u_birthday'] > 0)
-				{
 					userData['bd_birthday'] = Moment.unix(userData['u_birthday']).format("DD-MM-YYYY");
-				}
 
 				switch (userData.u_sex)
 				{

@@ -267,6 +267,7 @@ class Mototreki extends Base
 		let errors = {};
 
 		tplData = this.stripTags(tplData, ["s_mtt_name", "m_mtt_email", "s_mtt_address", "s_mtt_website", "s_mtt_phones"]);
+		tplData["t_mtt_descrip"] = this.cheerio(tplData["t_mtt_descrip"]).root().cleanTagEvents().html();
 
 		if (!tplData["s_mtt_name"])
 			errors["s_mtt_name"] = "Укажите название трека";
@@ -402,6 +403,7 @@ class Mototreki extends Base
 		console.log(tplData);*/
 		
 		tplData = this.stripTags(tplData, ["s_mtt_name", "m_mtt_email", "s_mtt_address", "s_mtt_website", "s_mtt_phones"]);
+		tplData["t_mtt_descrip"] = this.cheerio(tplData["t_mtt_descrip"]).root().cleanTagEvents().html();
 
 		let errors = {};
 

@@ -134,6 +134,16 @@ body.mce-content-body,
 	margin-bottom: 10px;
 }
 
+.btnsToolbar
+{
+	padding: 10px;
+}
+
+.btnsToolbar .toolbarBtn
+{
+	min-width: 89px;
+}
+
 /******************************** SITE MENU */
 
 .form-signin {

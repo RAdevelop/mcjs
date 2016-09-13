@@ -176,7 +176,8 @@ class Helpers
 					break;
 	
 				case 'bd': //дата дня рождения вида дд-мм-гггг
-	
+				case 'dd': //дата вида дд-мм-гггг
+
 					if(!Helpers.is_date(pValue)) pValue = null;
 	
 					break;

@@ -1,0 +1,83 @@
+<div class="row singleTrek">
+	<% let hasDescrip  = (trek.mtt_descrip != '')%>
+	<% if(hasDescrip){%><div class="col-xs-12 col-md-6"><%-trek.mtt_descrip%></div><%}%>
+	<div class="col-xs-12 col-md-6">
+		<p><strong>контакты:</strong></p>
+		<ul>
+			<li><strong>адрес:</strong> <%=trek.mtt_address%></li>
+			<li class="trekCoords"><strong>координаты:</strong><br/>
+				широта: <%-trek.mtt_latitude + " (" + trek.mtt_gps_lat + ")"%><br/>
+				долгота: <%-trek.mtt_longitude + " (" + trek.mtt_gps_lng + ")"%>
+			</li>
+			<% if (trek.mtt_phones)		{%><li><strong>телефон:</strong> <%=trek.mtt_phones%></li><% }%>
+			<% if (trek.mtt_website)	{%><li><strong>сайт:</strong> <a href="http://<%=trek.mtt_website%>" target="_blank"><%=trek.mtt_website%></a></li><% }%>
+			<% if (trek.mtt_email)		{%><li><strong>e-mail:</strong> <%=trek.mtt_email%></li><% }%>
+		</ul>
+	</div>
+	<div class="col-xs-12 col-md-<%=(hasDescrip ? 6 : 12)%> singleTrekMap">
+		<div id="mttMap"></div>
+	</div>
+</div>
+<script src="/js/mcMap.js" type="text/javascript"></script>
+<script type="text/javascript">
+//<!--
+(function($)
+{
+	var trek = MCJS["trek"] || {};
+	var mapState = {
+		 controls: ["typeSelector"]
+		, center: [trek["mtt_latitude"], trek["mtt_longitude"]]
+		, zoom: 15
+		, type: 'yandex#hybrid'
+		//, behaviors: ["default"]
+	};
+	var mapOptions = {};
+	var MttMcMap = new McMap('mttMap', {state: mapState, options: mapOptions});
+
+	MttMcMap.init()
+			.then(function (MttMap)
+			{
+				MttMap.behaviors.disable('drag');
+				MttMap.behaviors.disable('scrollZoom');
+				MttMap.behaviors.disable('scrollZoom');
+
+				var coords = [
+					"широта: " + roundNumber(MttMap.getCenter()[0], 6) + ' (' +trek.mtt_gps_lat+')',
+					"долгота: " + 	roundNumber(MttMap.getCenter()[1], 6) + ' (' +trek.mtt_gps_lng+')'
+				].join('<br/>');
+
+				var contentBody = ['<strong>адрес:</strong> '+trek.mtt_address];
+
+				if (trek.mtt_phones)
+					contentBody.push('<strong>телефон:</strong> '+trek.mtt_phones);
+
+				contentBody.push('<strong>координаты:</strong><br/>'+coords);
+
+				contentBody = '<ul><li>'+ contentBody.join('</li><li>') + '</li></ul>';
+
+				var mttPlacemark = new ymaps.Placemark(
+						MttMap.getCenter()
+						,	{
+							/* Свойства*/
+							iconContent: trek.mtt_name
+							, iconCaption: trek.mtt_name
+							,	balloonContentHeader: trek.mtt_name
+							,	balloonContentBody: contentBody
+							,	balloonContentFooter: ''
+						}
+						,   {
+							/* Опции*/
+							preset: 'islands#blueDotIconWithCaption'
+							,	draggable: false
+						});
+				MttMap.geoObjects.add(mttPlacemark);
+
+				return ymaps.vow.resolve(MttMap);
+			})
+			.fail(function (err)
+			{
+				console.log(err);
+			});
+})(jQuery);
+//-->
+</script>
