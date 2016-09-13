@@ -213,6 +213,8 @@ class File
 			return self.resizeImage(file, size.w, size.h);
 		});
 
+		file["previews"] = {};
+
 		return Promise.all(images.map(function(promise)
 		{
 			return promise.reflect();

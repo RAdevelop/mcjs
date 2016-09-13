@@ -258,6 +258,7 @@ class UserPhoto extends User
 			})
 			.catch(function (err)
 			{
+				Logger.error(err);
 				return self.getClass('user/photo').delImage(u_id, a_id, ai_id, file)
 					.catch(function (delErr)
 					{
