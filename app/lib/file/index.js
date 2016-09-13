@@ -213,36 +213,25 @@ class File
 			return self.resizeImage(file, size.w, size.h);
 		});
 
-		//return Promise.all(images)
-		return Promise.settle(images)
-			.then(function(urls)
+		return Promise.all(images.map(function(promise)
+		{
+			return promise.reflect();
+		}))
+			.each(function(inspection)
 			{
-				file["previews"] = {};
-
-				//console.log(urls);
-
-				urls.forEach(function(val)
+				if (inspection.isFulfilled())
 				{
-					//если используем Promise.settle
-					// console.log(val.value());
-					if (val.isFulfilled())
-					{
-						let key = Object.keys(val.value()).shift();
-						file["previews"][key] = val.value()[key];
-					}
-
-					/*для Promise.all
-					let key = Object.keys(val).shift();
-					file["previews"][key] = val[key];*/
-
-				});
-
+					let key = Object.keys(inspection.value()).shift();
+					file["previews"][key] = inspection.value()[key];
+				}
+			})
+			.then(function ()
+			{
 				return Promise.resolve(file);
 			})
 			.catch(function(err)
 			{
 				throw err;
-				//return Promise.reject(urls);
 			});
 	}
 
@@ -293,43 +282,33 @@ class File
 	static cropImage(file, uploadConfType, crop_x, crop_y, crop_width, crop_height)
 	{
 		let sizeParams = File.getUploadConfig(uploadConfType).cropSize;
-		//const self = this;
 		
 		let images = sizeParams.map(function(size)
 		{
 			return File.cropImg(file, size.w, size.h, crop_x, crop_y, crop_width, crop_height);
 		});
 
-		//return Promise.all(images)
-		return Promise.settle(images)
-			.then(function(urls)
+		file["previews"] = {};
+
+		return Promise.all(images.map(function(promise)
+		{
+			return promise.reflect();
+		}))
+			.each(function(inspection)
 			{
-				file["previews"] = {};
-
-				//console.log(urls);
-
-				urls.forEach(function(val)
+				if (inspection.isFulfilled())
 				{
-					//если используем Promise.settle
-					// console.log(val.value());
-					if (val.isFulfilled())
-					{
-						let key = Object.keys(val.value()).shift();
-						file["previews"][key] = val.value()[key];
-					}
-
-					/*для Promise.all
-					 let key = Object.keys(val).shift();
-					 file["previews"][key] = val[key];*/
-
-				});
-
+					let key = Object.keys(inspection.value()).shift();
+					file["previews"][key] = inspection.value()[key];
+				}
+			})
+			.then(function ()
+			{
 				return Promise.resolve(file);
 			})
 			.catch(function(err)
 			{
 				throw err;
-				//return Promise.reject(urls);
 			});
 	}
 
