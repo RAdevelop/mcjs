@@ -117,7 +117,7 @@ class Profile extends Base
 
 				//экспрот данных в JS на клиента
 				this.getRes().expose(userData, 'userLocation');
-				this.getRes().expose(FileUpload.exposeUploadOptions(FileUpload.getUploadConfig('user_photo')), 'avaUploadOpts');
+				this.getRes().expose(FileUpload.exposeUploadOptions('user_ava'), 'avaUploadOpts');
 
 				return cb(null);
 			})

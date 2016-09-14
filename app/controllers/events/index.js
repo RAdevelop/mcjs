@@ -399,7 +399,7 @@ class Events extends Base
 			{
 				Object.assign(event, FileUpload.createToken('events', {"e_id": event.e_id}) );
 
-				this.getRes().expose(FileUpload.exposeUploadOptions(FileUpload.getUploadConfig('events')), 'eventsUploadOpts');
+				this.getRes().expose(FileUpload.exposeUploadOptions('events'), 'eventsUploadOpts');
 
 				let tplFile = "events";
 				let tplData = { event: event };

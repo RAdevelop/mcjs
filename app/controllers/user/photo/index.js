@@ -184,7 +184,7 @@ class UserPhoto extends Base
 				{
 					tplData = Object.assign(tplData, FileUpload.createToken('user_photo', {"a_id": i_a_id}) );
 
-					this.getRes().expose(FileUpload.exposeUploadOptions(FileUpload.getUploadConfig('user_photo')), 'albumUploadOpts');
+					this.getRes().expose(FileUpload.exposeUploadOptions('user_photo'), 'albumUploadOpts');
 				}
 
 				let exposeAlbumImages = 'albumImages';

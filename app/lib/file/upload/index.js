@@ -26,6 +26,7 @@ class UploadFile extends File
 		//opts = opts || {};
 		let opts = UploadFile.getUploadConfig(type);
 
+		this.fileSizeLimit      = opts.fileSizeLimit || '';
 		this.multiUpload      = opts.multiUpload || '';
 		this.pathUpload      = opts.pathUpload || '';
 		this.uploadDir      = opts.uploadDir || '';
@@ -58,14 +59,21 @@ class UploadFile extends File
 		return opts;
 	}
 
-	static exposeUploadOptions(uploadConfig)
+	/**
+	 * на клиентскую часть
+	 * @params uploadType  - название типа загрзуки файлов в конфиге
+	 * @returns {}
+	 */
+	static exposeUploadOptions(uploadType)
 	{
+		let conf = UploadFile.getUploadConfig(uploadType);
+
 		return {
-			"fileMediaType":    uploadConfig["fileMediaType"]
-			,"fileSizeLimit":   uploadConfig["fileSizeLimit"]
-			,"fileTypes":       uploadConfig["fileTypes"]
-			,"maxFileSize":     uploadConfig["maxFileSize"]
-			,"multiUpload":     uploadConfig["multiUpload"]
+			"fileMediaType":    conf.fileMediaType
+			,"fileSizeLimit":   conf.fileSizeLimit
+			,"fileTypes":       conf.fileTypes
+			,"maxFileSize":     conf.maxFileSize
+			,"multiUpload":     conf.multiUpload
 		};
 	}
 	
