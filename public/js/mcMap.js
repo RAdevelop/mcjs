@@ -78,14 +78,14 @@
 			self.map = new ymaps.Map(self.mapId, state, options);
 		}
 
-		return Bluebird.resolve(typeof ymaps != 'undefined')
+		return Promise.resolve(typeof ymaps != 'undefined')
 			.then(function (is_ymaps)
 			{
 				if (is_ymaps)
-					return Bluebird.resolve(true);
+					return Promise.resolve(true);
 
 				//загружаем api-maps.yandex.ru
-				return new Bluebird(function(resolve, reject)
+				return new Promise(function(resolve, reject)
 				{
 					$.cachedScriptLoad("\/\/api-maps.yandex.ru\/2.1\/?lang=ru_RU")
 						.done(function(script, textStatus)

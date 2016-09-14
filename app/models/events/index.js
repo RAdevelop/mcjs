@@ -226,10 +226,9 @@ class Events extends BaseModel
 	 */
 	getAll()
 	{
-		let sql = "SELECT e_id, mtt_name, mtt_website, mtt_address, mtt_email, mtt_phones" +
-			", mtt_latitude, mtt_longitude, mtt_location_id, mtt_location_pids" +
-			", mtt_create_ts, mtt_update_ts, mtt_gps_lat, mtt_gps_lng" +
-			" FROM moto_track;";
+		let sql = "SELECT e_id, e_create_ts, e_update_ts, e_start_ts, e_end_ts, e_title, e_notice, e_text, e_address, " +
+			"e_location_id, e_latitude, e_longitude, e_gps_lat, e_gps_lng, e_location_pids, u_id" +
+			" FROM `events`";
 
 		return this.constructor.conn().s(sql);
 	}

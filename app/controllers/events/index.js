@@ -139,7 +139,7 @@ class Events extends Base
 					{
 						if (
 							proprs.eventList.hasOwnProperty(t)
-							&&	proprs.eventList[t]["mtt_location_id"] == proprs.eventLocations[l]["l_id"]
+							&&	proprs.eventList[t]["e_location_id"] == proprs.eventLocations[l]["l_id"]
 						)
 						{
 							if (!proprs.eventLocations[l].hasOwnProperty("treks"))
@@ -159,7 +159,7 @@ class Events extends Base
 
 				for(let t = 0; t < length; t++)
 				{
-					let pids = (proprs.eventList[t]["mtt_location_pids"]).split(',');
+					let pids = (proprs.eventList[t]["e_location_pids"]).split(',');
 
 					for(let l = 0; l < proprs.eventLocations.length; l++)
 					{
@@ -189,9 +189,9 @@ class Events extends Base
 				let pIndex, eventList = [];
 				proprs.eventLocations.forEach(function (locItem, locIndex, locNames)
 				{
-					if (locItem["l_mtt_level"] <= 1)
+					if (locItem["l_e_level"] <= 1)
 					{
-						if (locItem["l_mtt_level"] == 1)
+						if (locItem["l_e_level"] == 1)
 						{
 							pIndex = locIndex;
 

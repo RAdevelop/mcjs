@@ -19,15 +19,15 @@ $.cachedScriptLoad = function( url, options )
 	return $.ajax( options );
 };
 
-var Bluebird = Promise.noConflict();
+var Promise = Promise.noConflict();
 
-Bluebird.prototype.fail = function (fn)
+Promise.prototype.fail = function (fn)
 {
 	return this.caught(fn);
 };
 
-Bluebird.fail = function (fn) {
-	var ret = new Bluebird();
+Promise.fail = function (fn) {
+	var ret = new Promise();
 	return ret.caught(fn);
 };
 

@@ -41,6 +41,7 @@
 		 ]*/
 	,   plugins: [
 			'link charmap preview code wordcount paste',
+			//'template',
 			//'searchreplace  visualblocks visualchars  fullscreen',
 			//'table contextmenu paste'
 		]
@@ -50,20 +51,19 @@
 		, toolbar1: 'code | undo redo | bold italic | bullist numlist outdent indent | link unlink'
 		, toolbar2: 'paste | removeformat preview template'
 		//, valid_elements: '*[*]' //TODO закомментировать! разрешает все теги и все атрибуты у них
+		/*,   templates: [
+			//TODO использовать в блогах, новостях... в plugins добавить template
+			{title: 'заголовок шаблона 1', description: 'описание шаблона 1', content: '<p>пример контента из шаблона</p>'},
+			{title: 'заголовок шаблона 2', description: 'описание шаблона 2', url: 'development.html'}
+		]*/
 	};
 
 	var skins = {
 			default: defaultSkin
-		,   templates: $.extend({}, defaultSkin, {
+		,   visualblocks: $.extend({}, defaultSkin, {
 				visualblocks_default_state: true
-			,   plugins: [
-				'link charmap preview code wordcount paste template visualblocks',
-				]
-			,   templates: [
-					//TODO использовать в блогах, новостях... в plugins добавить template
-					{title: 'заголовок шаблона 1', description: 'описание шаблона 1', content: '<p>пример контента из шаблона</p>'},
-					{title: 'заголовок шаблона 2', description: 'описание шаблона 2', url: 'development.html'}
-				]
+			,   end_container_on_empty_block: true
+			,   plugins: ['link charmap preview code wordcount paste visualblocks']
 			})
 	};
 
@@ -84,9 +84,12 @@
 			.then(function (tinymce)
 			{
 				McTinymce.tinymce = tinymce;
-				return tinymce.init(options);
+				return Promise.resolve(tinymce.init(options));
+			})
+			.then(function (editor)
+			{
+				return editor[0];
 			});
-
 	}
 
 	McTinymce.tinymce = null;
@@ -99,6 +102,7 @@
 	{
 		return "/js/tinymce/"+vers+"/tinymce.min.js";
 	};
+	
 	/**
 	 * загрузка при необходимости Tinymce
 	 *
@@ -106,13 +110,13 @@
 	 */
 	McTinymce.load = function (vers)
 	{
-		return Bluebird.resolve(typeof tinymce != 'undefined')
+		return Promise.resolve(typeof tinymce != 'undefined')
 			.then(function (isInit)
 			{
 				if (isInit)
-					return Bluebird.resolve(true);
+					return Promise.resolve(true);
 
-				return new Bluebird(function(resolve, reject)
+				return new Promise(function(resolve, reject)
 				{
 					$('head').append('<script src="'+McTinymce.pathTo(vers)+'" type="text/javascript" ></script>');
 					return resolve(true);
@@ -135,12 +139,12 @@
 			{
 				tinymce.baseURL = McTinymce.baseURL(vers);
 				tinymce.documentBaseURL = '/';
-				return Bluebird.resolve(tinymce);
+				return Promise.resolve(tinymce);
 			})
 			.fail(function (err)
 			{
 				console.log(err);
-				return Bluebird.reject(err);
+				return Promise.reject(err);
 			});
 	};
 
