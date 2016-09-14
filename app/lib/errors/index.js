@@ -61,4 +61,13 @@ errors.FormError = errors.helpers.generateClass("FormError", {
 	}
 });
 
+errors.LimitExceeded = errors.helpers.generateClass("LimitExceeded", {
+	//extends: Error,
+	globalize: true,
+	args: ['message', 'inner_error'],
+	generateMessage: function(){
+		return 'Превышен лимит.'+ (this.message ? ' '+ this.message : '');
+	}
+});
+
 module.exports = errors;

@@ -78,7 +78,7 @@ class UserPhoto extends User
 							album["a_profile"]  = (album["a_profile"]   == 1);
 							album["a_named"]    = (album["a_named"]     == 1);
 
-							album = Object.assign(album, FileUpload.previews(sizeParams, album, "ai_dir")["obj"]);
+							album = Object.assign(album, FileUpload.getPreviews(sizeParams, album, "ai_dir")["obj"]);
 						});
 						
 						albums["a_cnt"] = a_cnt;
@@ -139,7 +139,7 @@ class UserPhoto extends User
 					images[indx]["previews"] = {};
 					if (image["ai_dir"])
 					{
-						let obj = FileUpload.previews(sizeParams, image, "ai_dir", true);
+						let obj = FileUpload.getPreviews(sizeParams, image, "ai_dir", true);
 						image = obj["obj"];
 
 						allPreviews = allPreviews.concat(obj["previews"]);
@@ -165,18 +165,20 @@ class UserPhoto extends User
 		const self = this;
 		let uploadConf = 'user_photo';
 		let ai_id, a_id;
-		let file = {};
+		let ufile = {};
 		
 		const UploadFile = new FileUpload(uploadConf, req, res);
 
 		return UploadFile.upload()
 			.then(function(file)
 			{
+				ufile = file;
 				a_id = file.a_id;
 				return self.model('user/photo')
 					.addPhoto(u_id, file)
 					.then(function (file)
 					{
+						ufile = file;
 						ai_id = file.ai_id;
 
 						file["moveToDir"] = FileUpload.getImageUri(file.a_id, file.ai_id);
@@ -211,6 +213,7 @@ class UserPhoto extends User
 					.updImage(u_id, file.a_id, file.ai_id, file.latitude, file.longitude, '', file.webDirPath, file.name, true)
 					.then(function ()
 					{
+						ufile = null;
 						file["ai_name"] = file.name;
 						file["ai_text"] = '';
 						return Promise.resolve(file);
@@ -219,7 +222,7 @@ class UserPhoto extends User
 			.catch(function (err)
 			{
 				Logger.error(err);
-				return self.getClass('user/photo').delImage(u_id, a_id, ai_id, file)
+				return self.delImage(u_id, a_id, ai_id, ufile)
 					.catch(function (delErr)
 					{
 						switch (err.name)
@@ -259,7 +262,7 @@ class UserPhoto extends User
 				image["previews"] = {};
 				if (image["ai_dir"])
 				{
-					image = FileUpload.previews(sizeParams, image, "ai_dir", false)["obj"];
+					image = FileUpload.getPreviews(sizeParams, image, "ai_dir", false)["obj"];
 				}
 				return Promise.resolve(image);
 			});
@@ -276,8 +279,12 @@ class UserPhoto extends User
 	 */
 	delImage(u_id, a_id, ai_id, file = {})
 	{
-		return this.getImage(u_id, u_id, ai_id)
+		return FileUpload.deleteFile(file.path || '')
 			.bind(this)
+			.then(function ()
+			{
+				return this.getImage(u_id, u_id, ai_id);
+			})
 			.then(function (image)
 			{
 				if (!image || image["a_id"] != a_id || !image["ai_is_owner"])

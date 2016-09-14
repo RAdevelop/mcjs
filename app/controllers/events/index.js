@@ -397,18 +397,28 @@ class Events extends Base
 			})
 			.then(function (event)
 			{
+				return this.getClass('events').getImageList(event.e_id)
+					.spread(function (images, allPreviews)
+					{
+						return Promise.resolve([event, images, allPreviews]);
+					});
+			})
+			.spread(function (event, images, allPreviews)
+			{
 				Object.assign(event, FileUpload.createToken('events', {"e_id": event.e_id}) );
 
 				this.getRes().expose(FileUpload.exposeUploadOptions('events'), 'eventsUploadOpts');
 
 				let tplFile = "events";
-				let tplData = { event: event };
+				let tplData = { event: event, eventImages: images };
 				this.view.setTplData(tplFile, tplData);
 
 				this.view.setPageTitle(event.e_title);
 				this.view.setPageH1(event.e_title);
 				//экспрот данных в JS на клиента
-				this.getRes().expose(tplData["event"], 'event');
+				this.getRes().expose(tplData["event"], 'eventData');
+				this.getRes().expose(tplData["eventImages"], 'eventImages');
+				this.getRes().expose(allPreviews, 'eventImagesPreviews');
 
 				return cb(null);
 			})
@@ -571,7 +581,7 @@ class Events extends Base
 	uploadActionPost(cb)
 	{
 		let self = this;
-		let tplFile = 'events/edit_images.ejs';
+		let tplFile = 'events/event_images.ejs';
 		let tplData = self.getParsedBody();
 
 		this.getRes().on('cancelUploadedFile', function(file)

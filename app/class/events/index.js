@@ -1,6 +1,5 @@
 "use strict";
 const Logger = require('app/lib/logger');
-const Errors = require('app/lib/errors');
 const Promise = require("bluebird");
 const FileUpload = require('app/lib/file/upload');
 const FileErrors = require('app/lib/file/errors');
@@ -99,14 +98,27 @@ class Events extends Base
 		const self = this;
 		let uploadConf = 'events';
 		let ei_id, e_id;
-		let file = {};
+		let ufile = {};
 
 		const UploadFile = new FileUpload(uploadConf, req, res);
 
 		return UploadFile.upload()
 			.then(function(file)
 			{
+				ufile = file;
 				e_id = file.e_id;
+				
+				return self.get(e_id)
+					.then(function (event)
+					{
+						if (event["e_img_cnt"] >= 5)
+							throw new FileErrors.LimitExceeded('Можно добавить не более 5 файлов.');
+
+						return Promise.resolve(ufile);
+					});
+			})
+			.then(function(file)
+			{
 				return self.model('events')
 					.addPhoto(u_id, file)
 					.then(function (file)
@@ -145,14 +157,16 @@ class Events extends Base
 					.updImage(file.e_id, file.ei_id, file.latitude, file.longitude, file.webDirPath, file.name, true)
 					.then(function ()
 					{
+						ufile = null;
 						file["ei_name"] = file.name;
 						return Promise.resolve(file);
 					});
 			})
 			.catch(function (err)
 			{
+				//console.log(ufile);
 				Logger.error(err);
-				return self.getClass('events').delImage(u_id, e_id, ei_id, file)
+				return self.delImage(u_id, e_id, ei_id, ufile)
 					.catch(function (delErr)
 					{
 						switch (err.name)
@@ -160,6 +174,7 @@ class Events extends Base
 							case 'FileTooBig':
 							case 'FileType':
 							case 'FileTokenError':
+							case 'LimitExceeded':
 								throw err;
 								break;
 
@@ -183,15 +198,50 @@ class Events extends Base
 			.then(function (image)
 			{
 				if (!image)
-					throw new FileErrors.io.FileNotFoundError("фотография не найдена: UserPhoto.getImage(ei_id="+ei_id+")");
+					throw new FileErrors.io.FileNotFoundError("фотография не найдена: EVents.getImage(ei_id="+ei_id+")");
 				
 				let sizeParams = FileUpload.getUploadConfig('events').sizeParams;
 				image["previews"] = {};
 				if (image["ei_dir"])
 				{
-					image = FileUpload.previews(sizeParams, image, "ei_dir", false)["obj"];
+					image = FileUpload.getPreviews(sizeParams, image, "ei_dir", false)["obj"];
 				}
 				return Promise.resolve(image);
+			});
+	}
+
+	/***
+	 * получаем фотографии для указанного события
+	 *
+	 * @param e_id
+	 * @return [images, allPreviews]
+	 */
+	getImageList(e_id)
+	{
+		return this.model('events').getImageList(e_id)
+			.then(function (images)
+			{
+				if (!images)
+					return [[], []];
+
+				let sizeParams = FileUpload.getUploadConfig('events').sizeParams;
+
+				let allPreviews = [];
+				images.forEach(function (image, indx)
+				{
+					images[indx]["previews"] = {};
+					if (image["ei_dir"])
+					{
+						let obj = FileUpload.getPreviews(sizeParams, image, "ei_dir", true);
+						image = obj["obj"];
+
+						allPreviews = allPreviews.concat(obj["previews"]);
+
+						image["previews"]['orig'] = image["ei_dir"] + '/orig/' + image["ei_name"];
+					}
+				});
+
+				return [images, allPreviews];
 			});
 	}
 	
@@ -206,8 +256,14 @@ class Events extends Base
 	 */
 	delImage(u_id, e_id, ei_id, file = {})
 	{
-		return this.getImage(ei_id)
+		//console.log(file);
+
+		return FileUpload.deleteFile(file.path || '')
 			.bind(this)
+			.then(function ()
+			{
+				return this.getImage(ei_id);
+			})
 			.then(function (image)
 			{
 				if (!image || image["e_id"] != e_id)

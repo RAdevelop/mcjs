@@ -180,7 +180,7 @@ class Events extends BaseModel
 	getById(e_id)
 	{
 		let sql = "SELECT e_id, e_create_ts, e_update_ts, e_start_ts, e_end_ts, e_title, e_notice, e_text, e_address, " +
-			"e_location_id, e_latitude, e_longitude, e_gps_lat, e_gps_lng, e_location_pids, u_id" +
+			"e_location_id, e_latitude, e_longitude, e_gps_lat, e_gps_lng, e_location_pids, u_id, e_img_cnt" +
 			" FROM `events`" +
 			" WHERE e_id = ?";
 
@@ -316,18 +316,35 @@ class Events extends BaseModel
 	}
 
 	/***
-	 * получаем данные для указанной фотографии пользователя
+	 * получаем данные для указанной фотографии
 	 *
-	 * @param ai_id
+	 * @param ei_id
 	 */
 	getImage(ei_id)
 	{
-		let sql = "SELECT * " +
-			" FROM events_image AS ei" +
-			" JOIN `events` AS e ON (e.e_id = ei.e_id)" +
-			" WHERE ei.ei_id = ?";
+		let sql = `SELECT ei_id, e_id, ei_create_ts, ei_update_ts, ei_latitude, ei_longitude, ei_dir, ei_pos, ei_name
+			FROM events_image AS ei
+			JOIN 'events' AS e ON (e.e_id = ei.e_id)
+			WHERE ei.ei_id = ?`;
 
 		return this.constructor.conn().sRow(sql, [ei_id]);
+	}
+
+	/***
+	 * получаем фотографии для указанного события
+	 *
+	 * @param e_id
+	 */
+	getImageList(e_id)
+	{
+		let sql = `SELECT ei.ei_id, ei.e_id, ei.ei_create_ts, ei.ei_update_ts, ei.ei_latitude, ei.ei_longitude, 
+			ei.ei_dir, ei.ei_pos, ei.ei_name
+			FROM events_image AS ei
+			WHERE ei.e_id = ?
+			GROUP BY ei.ei_pos
+			ORDER BY ei.ei_pos`;
+
+		return this.constructor.conn().s(sql, [e_id]);
 	}
 }
 

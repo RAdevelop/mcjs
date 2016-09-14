@@ -4,7 +4,7 @@
 	<li role="presentation"><a href="#locations" aria-controls="locations" role="tab" data-toggle="tab"><span class="fa fa-map-marker "></span> Адрес</a></li>
 </ul>
 <!-- Tab panes -->
-<form class="form-horizontal" action="<%=menuItem.m_path+'/'+_action%>/" method="post" id="formEvent">
+<form class="form-horizontal eventData" action="<%=menuItem.m_path+'/'+_action%>/" method="post" id="formEvent">
 	<input type="hidden" id="i_event_id" name="i_event_id" value="<%=event.e_id%>" />
 	<div class="panel panel-default">
 		<div class="panel-body tab-content">
@@ -67,12 +67,10 @@
 <fieldset class="col-xs-12 eventImagesWrapper">
 	<legend>Изображения <a href="javascript:void(0);" id="uploadEventImages"><i class="fa fa-cloud-upload" aria-hidden="true"></i> загрузить</a></legend>
 	<div class="eventImagesContainer">
-		<%- include edit_images.ejs %>
+		<%- include event_images.ejs %>
 	</div>
 </fieldset>
 <%}%>
-
-<a href="javascript:void(0);" id="insToEditor">click</a>
 <script src="/js/mcMap.js" type="text/javascript"></script>
 <script src="/js/jquery/postRes.js" type="text/javascript" ></script>
 <script src="/js/mcTinymce.js" type="text/javascript" ></script>
@@ -83,14 +81,22 @@
 //<!--
 (function($)
 {
+	var eventData = MCJS["eventData"] || null;
+	var eventImages = MCJS["eventImages"] || [];
+	var eventImagesPreviews = MCJS["eventImagesPreviews"] || [];
+
+	if(eventImagesPreviews.length)
+		preloadImages(eventImagesPreviews);
+
 	$("#dd_start_ts").datepicker({ dateFormat: 'dd-mm-yy' });
 	$("#dd_end_ts").datepicker({ dateFormat: 'dd-mm-yy' });
 
 	function onTinymceInsImage(editor)
 	{
-		$(document).on('click','#insToEditor', function (event)
+		$(document).on('click','.eventImagesWrapper .eventImagesContainer img', function (event)
 		{
-			editor.insertContent('<p>alexey</p>');
+			//console.log($(this));
+			editor.insertContent(this.outerHTML);
 		});
 	}
 
@@ -99,6 +105,8 @@
 			{
 				//console.log(editor);
 				//console.log(editor.getContent());
+
+				editor.dom.addClass(editor.dom.select('body'), 'eventData');
 
 				onTinymceInsImage(editor);
 				return Promise.resolve(editor);
@@ -210,14 +218,14 @@
 
 	function addPlaceMark(EventMap)
 	{
-		var address = (MCJS["event"] && MCJS["event"]["e_address"] ? MCJS["event"]["e_address"] : '');
+		var address = (eventData && eventData["e_address"] ? eventData["e_address"] : '');
 		var center = [];
-		if (MCJS["event"] && MCJS["event"]["e_latitude"] && MCJS["event"]["e_longitude"])
-			center = [MCJS["event"]["e_latitude"], MCJS["event"]["e_longitude"]];
+		if (eventData && eventData["e_latitude"] && eventData["e_longitude"])
+			center = [eventData["e_latitude"], eventData["e_longitude"]];
 		else
 			center = EventMap.getCenter();
 
-		var iconContent = (MCJS["event"] && MCJS["event"]["e_title"] ? MCJS["event"]["e_title"] : 'Событие на карте');
+		var iconContent = (eventData && eventData["e_title"] ? eventData["e_title"] : 'Событие на карте');
 		var contentHeader = iconContent;
 		var contentBody =   '<p>Чтобы указать место расположения объекта, найдите его с помощью поисковой строки, ' +
 				'или кликните мышкой по карте.</p>';
@@ -307,8 +315,7 @@
 				html = '<div class="image"><img src="'+imgSrc+'" alt="" data-img-id="'+image["ei_id"]+'"/></div>';
 
 				$eventImagesContainer.prepend(html);
-
-				//MCJS["albumImages"].unshift(image); TODO
+				eventImages.unshift(image);
 			}
 		}
 

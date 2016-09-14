@@ -112,6 +112,15 @@
 			mcDialog('Одновременно можно загружать не более '+settings.queueSizeLimit+' файлов.', true);
 		}
 
+		function onLimitExceeded(file, text)
+		{
+			file["reason"] = file["name"]+' '+text;
+
+			saveNotUploadedFile(file);
+			removeFileFromQueueData(file);
+			//mcDialog(text, true);
+		}
+
 		function mcDialogSelector()
 		{
 			var s = '_'+$fileUpload.selector.replace(/\s+/gi, '');
@@ -426,6 +435,10 @@
 
 						case "FileType":
 							onForbiddenFileType(file);
+							break;
+
+						case "LimitExceeded":
+							onLimitExceeded(file, data["formError"]["text"]);
 							break;
 
 						default:

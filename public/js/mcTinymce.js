@@ -46,6 +46,7 @@
 			//'table contextmenu paste'
 		]
 		, menubar:false
+		, relative_urls : false
 		, paste_data_images: false
 		, paste_as_text: true
 		, toolbar1: 'code | undo redo | bold italic | bullist numlist outdent indent | link unlink'

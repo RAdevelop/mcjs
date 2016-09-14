@@ -420,6 +420,27 @@ class File
 		return false;
 	}
 
+	static deleteFile(path)
+	{
+		return new Promise(function (resolve, reject)
+		{
+			if (!path)
+				return resolve(true);
+
+			if (File.isForbiddenDir(path))
+				return reject(new FileErrors.ForbiddenDirectory(path));
+
+			FS.unlink(path, function (err)
+			{
+				//если ошибка не связана с директории или файла, которых хотим удалить
+				if (err && err.code != 'ENOENT')
+					return reject(err);
+
+				return resolve(true);
+			});
+		});
+	}
+
 	/**
 	 * удаляем указанную директорию
 	 * 
@@ -579,7 +600,7 @@ class File
 	 * @param spread
 	 * @returns {*}
 	 */
-	static previews(sizeParams, obj, obj_dir, spread = false)
+	static getPreviews(sizeParams, obj, obj_dir, spread = false)
 	{
 		let previews = [];
 		//if (!obj["previews"]) obj["previews"] = {};

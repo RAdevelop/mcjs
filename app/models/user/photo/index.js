@@ -353,15 +353,16 @@ class Photo extends User
 		/*console.log('limit = ', limit);
 		console.log('offset = ', offset);*/
 
-		let sql = "SELECT a.a_id, a.u_id, ai.ai_id, ai.ai_create_ts, ai.ai_update_ts, ai.ai_name, ai.ai_text, ai.ai_pos," +
-			"ai.ai_latitude, ai.ai_longitude, ai.ai_dir" +
-			" FROM (SELECT NULL) AS z" +
-			" JOIN album AS a ON (a.a_id = ? AND a.u_id = ?)" +
-			" JOIN album_type AS t ON (t.a_type_id = a.a_type_id)" +
-			" JOIN album_image AS ai ON (ai.a_id = a.a_id)" +
-			" ORDER BY ai.ai_pos" +
-			" LIMIT "+limit+" OFFSET "+offset+";";
+		let sql = `SELECT a.a_id, a.u_id, ai.ai_id, ai.ai_create_ts, ai.ai_update_ts, ai.ai_name, ai.ai_text, ai.ai_pos,
+			ai.ai_latitude, ai.ai_longitude, ai.ai_dir
+			 FROM (SELECT NULL) AS z
+			 JOIN album AS a ON (a.a_id = ? AND a.u_id = ?)
+			 JOIN album_type AS t ON (t.a_type_id = a.a_type_id)
+			 JOIN album_image AS ai ON (ai.a_id = a.a_id)
+			 ORDER BY ai.ai_pos
+			 LIMIT ${limit} OFFSET ${offset};`;
 
+		//console.log(sql);
 		return this.constructor.conn().s(sql, [a_id, u_id]);
 	}
 

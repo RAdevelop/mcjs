@@ -1,6 +1,7 @@
 "use strict";
 
-const errors = require('common-errors');
+//const errors = require('common-errors');
+const errors = require('app/lib/errors');
 
 errors.FileNotUploaded = errors.helpers.generateClass("FileNotUploaded", {
 	extends: errors.Error,

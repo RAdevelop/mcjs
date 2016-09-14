@@ -1065,6 +1065,14 @@ nav.pagesNavigation
 /**********  END мототреки **************/
 
 /**********  СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ  **************/
+.eventData
+{
+
+}
+.eventData.mce-content-body p
+{
+	overflow: hidden;
+}
 .eventImagesWrapper
 {
 
@@ -1081,6 +1089,22 @@ nav.pagesNavigation
 {
 	border: 1px solid red;
 	overflow: hidden;
+}
+.eventImagesWrapper .eventImagesContainer .eventImage,
+.eventImage
+{
+	cursor: move;
+	float: left;
+	overflow: hidden;
+	margin: 0 10px 10px 0;
+	max-width: 216px;
+	max-height: 162px;
+}
+.eventImagesWrapper .eventImagesContainer img.eventImage,
+img.eventImage
+{
+	cursor: move;
+	width: calc(100%);
 }
 /**********  END СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ **************/
 

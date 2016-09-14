@@ -233,6 +233,7 @@ $(function()
 
             preloadImages(previews);
             updAvaProfileSrc($('#profile-ava img'), previews["180_180"]);
+            updAvaProfileSrc($('#navbarFixedTop .userProfileTop img'), previews["50_50"]);
 
             $avaProfileCrop.replaceSrc(previews["1024_768"]);
         }
@@ -247,6 +248,7 @@ $(function()
         onSuccess: function($dialog)
         {
             updAvaProfileSrc($('#profile-ava img'));
+            updAvaProfileSrc($('#navbarFixedTop .userProfileTop img'));
             //показать диалог
             return true;
         }

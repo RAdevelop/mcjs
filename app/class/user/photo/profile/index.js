@@ -23,17 +23,21 @@ class UserPhotoProfile extends UserPhoto
 		const self = this;
 		let uploadConf = 'user_ava';
 		let ai_id, a_id;
-		let file = {};
+		let ufile = {};
 
 		const UploadFile = new FileUpload(uploadConf, req, res);
 
 		return UploadFile.upload()
 			.then(function(file)
 			{
+				ufile = file;
+
 				return self.model('user/photo')
 					.addProfilePhoto(u_id, file)
 					.then(function (file)
 					{
+						ufile = file;
+
 						ai_id = file.ai_id;
 						a_id = file.a_id;
 
@@ -69,12 +73,13 @@ class UserPhotoProfile extends UserPhoto
 					.updImage(u_id, file.a_id, file.ai_id, file.latitude, file.longitude, '', file.webDirPath, file.name, true, 1)
 					.then(function ()
 					{
+						ufile = null;
 						return Promise.resolve(file);
 					});
 			})
 			.catch(function (err)
 			{
-				return self.getClass('user/photo').delImage(u_id, a_id, ai_id, file)
+				return self.getClass('user/photo').delImage(u_id, a_id, ai_id, ufile)
 					.catch(function (delErr)
 					{
 						switch (err.name)
@@ -110,7 +115,7 @@ class UserPhotoProfile extends UserPhoto
 
 				let sizeParams = FileUpload.getUploadConfig('user_ava').sizeParams;
 
-				ava = Object.assign(ava, FileUpload.previews(sizeParams, ava, "ai_dir")["obj"]);
+				ava = Object.assign(ava, FileUpload.getPreviews(sizeParams, ava, "ai_dir")["obj"]);
 
 				return Promise.resolve(ava);
 			});
@@ -131,7 +136,7 @@ class UserPhotoProfile extends UserPhoto
 
 				Object.keys(ava).forEach(function (i, item)
 				{
-					ava[i] = Object.assign(ava[i], FileUpload.previews(sizeParams, ava[i], "ai_dir")["obj"]);
+					ava[i] = Object.assign(ava[i], FileUpload.getPreviews(sizeParams, ava[i], "ai_dir")["obj"]);
 				});
 
 				return Promise.resolve(ava);
