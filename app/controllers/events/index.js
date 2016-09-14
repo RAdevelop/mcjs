@@ -4,6 +4,7 @@ const Errors = require('app/lib/errors');
 const Promise = require("bluebird");
 const Base = require('app/lib/controller');
 const Mail = require('app/lib/mail');
+const FileUpload = require('app/lib/file/upload');
 
 class Events extends Base
 {
@@ -396,6 +397,10 @@ class Events extends Base
 			})
 			.then(function (event)
 			{
+				Object.assign(event, FileUpload.createToken('events', {"e_id": event.e_id}) );
+
+				this.getRes().expose(FileUpload.exposeUploadOptions(FileUpload.getUploadConfig('events')), 'eventsUploadOpts');
+
 				let tplFile = "events";
 				let tplData = { event: event };
 				this.view.setTplData(tplFile, tplData);
@@ -554,6 +559,58 @@ class Events extends Base
 			.catch(function(err)
 			{
 				return cb(err);
+			});
+	}
+
+	/**
+	 * добавляем фотографи к событию
+	 *
+	 * @param cb
+	 * @returns {*}
+	 */
+	uploadActionPost(cb)
+	{
+		let self = this;
+		let tplFile = 'events/edit_images.ejs';
+		let tplData = self.getParsedBody();
+
+		this.getRes().on('cancelUploadedFile', function(file)
+		{
+			if (file["u_id"] && file["e_id"] && file["ei_id"])
+				return self.getClass('events').delImage(file["u_id"], file["e_id"], file["ei_id"], file);
+		});
+
+		return self.getClass('events')
+			.uploadImage(this.getUserId(), this.getReq(), this.getRes())
+			.then(function (file)
+			{
+				//console.log(file);
+				tplData = {
+					e_id: file.e_id,
+					ei_id: file.ei_id,
+					ei_pos: file.ei_pos,
+					ei_name: file.ei_name,
+					ei_latitude: file.latitude,
+					ei_longitude: file.longitude,
+					u_id: file.u_id,
+					name: file.name,
+					size: file.size,
+					previews: file.previews
+				};
+				self.view.setTplData(tplFile, tplData);
+
+				return cb(null, true);
+			})
+			.catch(function (err)
+			{
+				Logger.error(err);
+				tplData.formError.text = err.message;
+				tplData.formError.error = true;
+				tplData.formError.errorName = err.name;
+
+				self.view.setTplData(tplFile, tplData);
+
+				return cb(null, true);
 			});
 	}
 }

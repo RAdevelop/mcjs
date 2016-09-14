@@ -750,7 +750,7 @@
 					return;
 
 				$('__upload_album_dialog__').mcDialog({
-					title: 'Загрузить новый фотографии в альбом'
+					title: 'Загрузить новые фотографии в альбом'
 					, body: formAlbumUpload(options)
 					, onOpen: function ($dialog)
 					{

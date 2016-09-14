@@ -1064,6 +1064,26 @@ nav.pagesNavigation
 }
 /**********  END мототреки **************/
 
+/**********  СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ  **************/
+.eventImagesWrapper
+{
+
+}
+.eventImagesWrapper legend
+{
+
+}
+.eventImagesWrapper legend a:hover
+{
+	cursor: pointer;
+}
+.eventImagesWrapper .eventImagesContainer
+{
+	border: 1px solid red;
+	overflow: hidden;
+}
+/**********  END СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ **************/
+
 
 
 

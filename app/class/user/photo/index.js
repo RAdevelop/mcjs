@@ -4,23 +4,12 @@ const Logger = require('app/lib/logger');
 const Promise = require("bluebird");
 const FileErrors = require('app/lib/file/errors');
 const FileUpload = require('app/lib/file/upload');
-const Crypto = require('crypto');
 const Path = require('path');
 const User = require('app/class/user');
 
 class UserPhoto extends User
 {
-	getAlbumUri(a_id)
-	{
-		return Math.floor(Math.abs(a_id)/20000) + '/' + a_id;
-		//return 'part_' + Math.floor(Math.abs(a_id)/20000) + '/' + a_id;
-	}
 
-	getImageUri(a_id, ai_id)
-	{
-		return this.getAlbumUri(a_id) + '/' + ai_id + '/' + Crypto.createHash('md5').update(a_id+''+ai_id).digest("hex");
-		//return 'part_' + Math.floor(Math.abs(a_id)/20000) + '/' + a_id;
-	}
 
 	/**
 	 * создаем именованный фотоальбом пользователю
@@ -54,36 +43,7 @@ class UserPhoto extends User
 		return this.model('user/photo').editAlbumNamed(u_id, a_id, a_name, a_alias, a_text);
 	}
 
-	/**
-	 * формируем проевьюхи для объекта obj (льбом или картинка в альбоме)
-	 *
-	 * @param sizeParams
-	 * @param obj
-	 * @param spread
-	 * @returns {*}
-	 */
-	static previews(sizeParams, obj, spread = false)
-	{
-		let previews = [];
-		//if (!obj["previews"]) obj["previews"] = {};
-
-		if (!obj["previews"])
-		obj["previews"] = {};
-
-		if (obj["ai_dir"])
-		{
-			sizeParams.forEach(function (size)
-			{
-				obj["previews"][size.w+'_'+size.h] = obj["ai_dir"] + '/' + size.w+'_'+size.h +'.jpg';
-
-				if (spread)
-					previews.push(obj["previews"][size.w+'_'+size.h]);
-			});
-		}
-
-
-		return {obj: obj, previews: previews};
-	}
+	
 
 	/**
 	 * список фотоальбомов пользователя
@@ -118,7 +78,7 @@ class UserPhoto extends User
 							album["a_profile"]  = (album["a_profile"]   == 1);
 							album["a_named"]    = (album["a_named"]     == 1);
 
-							album = Object.assign(album, UserPhoto.previews(sizeParams, album)["obj"]);
+							album = Object.assign(album, FileUpload.previews(sizeParams, album, "ai_dir")["obj"]);
 						});
 						
 						albums["a_cnt"] = a_cnt;
@@ -179,7 +139,7 @@ class UserPhoto extends User
 					images[indx]["previews"] = {};
 					if (image["ai_dir"])
 					{
-						let obj = UserPhoto.previews(sizeParams, image, true);
+						let obj = FileUpload.previews(sizeParams, image, "ai_dir", true);
 						image = obj["obj"];
 
 						allPreviews = allPreviews.concat(obj["previews"]);
@@ -219,7 +179,7 @@ class UserPhoto extends User
 					{
 						ai_id = file.ai_id;
 
-						file["moveToDir"] = self.getImageUri(file.a_id, file.ai_id);
+						file["moveToDir"] = FileUpload.getImageUri(file.a_id, file.ai_id);
 
 						return new Promise(function (resolve, reject)
 						{
@@ -299,7 +259,7 @@ class UserPhoto extends User
 				image["previews"] = {};
 				if (image["ai_dir"])
 				{
-					image = UserPhoto.previews(sizeParams, image, false)["obj"];
+					image = FileUpload.previews(sizeParams, image, "ai_dir", false)["obj"];
 				}
 				return Promise.resolve(image);
 			});

@@ -58,6 +58,16 @@ class UploadFile extends File
 		return opts;
 	}
 
+	static exposeUploadOptions(uploadConfig)
+	{
+		return {
+			"fileMediaType":    uploadConfig["fileMediaType"]
+			,"fileSizeLimit":   uploadConfig["fileSizeLimit"]
+			,"fileTypes":       uploadConfig["fileTypes"]
+			,"maxFileSize":     uploadConfig["maxFileSize"]
+			,"multiUpload":     uploadConfig["multiUpload"]
+		};
+	}
 	
 	isAllowedFileType(fileType)
 	{

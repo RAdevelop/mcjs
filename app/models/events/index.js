@@ -232,6 +232,103 @@ class Events extends BaseModel
 
 		return this.constructor.conn().s(sql);
 	}
+
+	/**
+	 * вставка записи о фто в БД
+	 *
+	 * @private
+	 *
+	 * @param e_id
+	 * @returns {Promise.<TResult>}
+	 * @private
+	 */
+	_insImage(e_id)
+	{
+		let now_ts = Moment().unix();
+		let sql = 'INSERT INTO events_image (e_id, ei_create_ts, ei_update_ts)' +
+			'VALUES (?, ?, ?);';
+
+		return this.constructor.conn().ins(sql, [e_id, now_ts, now_ts]);
+	}
+
+	/**
+	 * добавление фото в БД
+	 *
+	 * @param u_id
+	 * @param fileData
+	 * @returns {Promise.<TResult>|*}
+	 */
+	addPhoto(u_id, fileData)
+	{
+		return this._insImage(fileData["e_id"])
+			.then(function (res)
+			{
+				fileData["u_id"] = u_id;
+				fileData["ei_pos"] = "0";
+				fileData["ei_id"] = res['insertId'];
+				return Promise.resolve(fileData);
+			});
+	}
+
+	/**
+	 * обновление данных о фото после его загрузки на сервер
+	 *
+	 * @param e_id
+	 * @param ei_id
+	 * @param ei_latitude
+	 * @param ei_longitude
+	 * @param ei_dir
+	 * @param ei_name
+	 * @param posUpd
+	 * @returns {Promise.<TResult>|*}
+	 */
+	updImage(e_id, ei_id, ei_latitude, ei_longitude, ei_dir, ei_name, posUpd = true)
+	{
+		posUpd = (posUpd ? 1 : 0);
+		let sql = "CALL events_image_update(?, ?, ?, ?, ?, ?, ?)";
+		let sqlData = [e_id, ei_id, ei_latitude, ei_longitude, ei_dir, ei_name, posUpd];
+
+		return this.constructor.conn().call(sql, sqlData)
+			.then(function ()
+			{
+				return Promise.resolve(ei_id);
+			});
+	}
+
+	/**
+	 * удаление фото из БД
+	 *
+	 * @param e_id
+	 * @param ei_id
+	 * @returns {Promise.<TResult>}
+	 */
+	delImage(e_id, ei_id)
+	{
+		let sql = "CALL events_image_delete(?, ?, @is_del); SELECT @is_del AS is_del FROM DUAL;";
+
+		return this.constructor.conn().multis(sql, [e_id, ei_id])
+			.then(function (res)
+			{
+				let is_del = (res[1] && res[1]["is_del"] ? res[1]["is_del"] : 0);
+
+				return Promise.resolve(is_del);
+			});
+	}
+
+	/***
+	 * получаем данные для указанной фотографии пользователя
+	 *
+	 * @param ai_id
+	 */
+	getImage(ei_id)
+	{
+		let sql = "SELECT * " +
+			" FROM events_image AS ei" +
+			" JOIN `events` AS e ON (e.e_id = ei.e_id)" +
+			" WHERE ei.ei_id = ?";
+
+		return this.constructor.conn().sRow(sql, [ei_id]);
+	}
 }
 
 //************************************************************************* module.exports

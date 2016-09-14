@@ -62,10 +62,23 @@
 		</div>
 	</div>
 </form>
+
+<% if (_action == 'edit'){%>
+<fieldset class="col-xs-12 eventImagesWrapper">
+	<legend>Изображения <a href="javascript:void(0);" id="uploadEventImages"><i class="fa fa-cloud-upload" aria-hidden="true"></i> загрузить</a></legend>
+	<div class="eventImagesContainer">
+		<%- include edit_images.ejs %>
+	</div>
+</fieldset>
+<%}%>
+
 <a href="javascript:void(0);" id="insToEditor">click</a>
 <script src="/js/mcMap.js" type="text/javascript"></script>
 <script src="/js/jquery/postRes.js" type="text/javascript" ></script>
 <script src="/js/mcTinymce.js" type="text/javascript" ></script>
+<script src="/js/uploadify/jquery.uploadify.min.js" type="text/javascript" ></script>
+<script src="/js/uploadify/jquery.uploadifive.min.js" type="text/javascript" ></script>
+<script src="/js/uploadify/jquery.fileUpload.js" type="text/javascript"></script>
 <script type="text/javascript">
 //<!--
 (function($)
@@ -75,7 +88,7 @@
 
 	function onTinymceInsImage(editor)
 	{
-		$('#insToEditor').on('click', function (event)
+		$(document).on('click','#insToEditor', function (event)
 		{
 			editor.insertContent('<p>alexey</p>');
 		});
@@ -272,6 +285,80 @@
 		$('#s_e_address').attr('data-original-title', text);
 		$('#f_e_lat').val(coords[0]);
 		$('#f_e_lng').val(coords[1]);
+	}
+
+	var eventsUploadOpts = MCJS["eventsUploadOpts"] || null;
+
+	if (eventsUploadOpts)
+	{
+		var $eventImagesWrapper = $('.eventImagesWrapper');
+
+		function prependImgToEvent(filesUploaded, $eventImagesContainer)
+		{
+			if (!filesUploaded || !filesUploaded.length)
+				return;
+
+			var i, image, html, imgSrc;
+
+			for(i = 0; i < filesUploaded.length; i++)
+			{
+				image = filesUploaded[i];
+				imgSrc = (image["previews"] && image["previews"]["256_192"] ? image["previews"]["256_192"] : '/_0.gif');
+				html = '<div class="image"><img src="'+imgSrc+'" alt="" data-img-id="'+image["ei_id"]+'"/></div>';
+
+				$eventImagesContainer.prepend(html);
+
+				//MCJS["albumImages"].unshift(image); TODO
+			}
+		}
+
+		eventsUploadOpts.onEnd = function()
+		{
+			var filesUploaded = ($(this).data('uploadFileData') ? $(this).data('uploadFileData') : null);
+
+			$(this).parents('.modal').find('.modal-footer').show();
+
+			prependImgToEvent(filesUploaded, $eventImagesWrapper.find('.eventImagesContainer'));
+
+		};
+
+		eventsUploadOpts.onStart = function()
+		{
+			$(this).parents('.modal').find('.modal-footer').hide();
+		};
+
+		var formEventsUpload = '<form class="form-horizontal text-center" action="<%=menuItem.m_path%>/upload"  enctype="multipart/form-data" method="post" target="null_frame" id="formEventsUpload"><input type="hidden" name="btn_save_event" value="event_image_upload"/><input type="hidden" name="s_token" value="<%=event.s_token%>"/><input type="hidden" name="i_time" value="<%=event.i_time%>"/><input type="hidden" name="e_id" value="<%=event.e_id%>"/><div class="form-group uploadWrapper"><input type="file" name="event_image_upload" id="event_image_upload" style="display: none;"/></div></form>';
+
+		$(document).on('click', '#uploadEventImages', function(event)
+		{
+			event.preventDefault();
+			event.stopPropagation();
+
+			$('__uploadEventImages__').mcDialog({
+				title: 'Загрузить изображения'
+				, body: formEventsUpload
+				, onOpen: function ($dialog)
+				{
+					$dialog.find('#event_image_upload').fileUpload(eventsUploadOpts);
+				}
+				, buttons: [
+					{
+						title: 'закрыть'
+						,name: 'btn_upload_event_close'
+						,cssClass: 'btn-danger'
+						,func:
+					{
+						"click": function(event)
+						{
+							$(event.data[0]).modal('hide');
+						}
+					}
+					}
+				]
+			});
+		});
+		//var $formEventsUpload = $('#formEventsUpload');
+		//$formEventsUpload.find('#event_image_upload').fileUpload(eventsUploadOpts);
 	}
 
 })(jQuery);

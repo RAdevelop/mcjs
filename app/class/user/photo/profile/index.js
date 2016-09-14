@@ -37,7 +37,7 @@ class UserPhotoProfile extends UserPhoto
 						ai_id = file.ai_id;
 						a_id = file.a_id;
 
-						file["moveToDir"] = self.getImageUri(file.a_id, file.ai_id);
+						file["moveToDir"] = FileUpload.getImageUri(file.a_id, file.ai_id);
 
 						return new Promise(function (resolve, reject)
 						{
@@ -110,7 +110,7 @@ class UserPhotoProfile extends UserPhoto
 
 				let sizeParams = FileUpload.getUploadConfig('user_ava').sizeParams;
 
-				ava = Object.assign(ava, UserPhotoProfile.previews(sizeParams, ava)["obj"]);
+				ava = Object.assign(ava, FileUpload.previews(sizeParams, ava, "ai_dir")["obj"]);
 
 				return Promise.resolve(ava);
 			});
@@ -131,7 +131,7 @@ class UserPhotoProfile extends UserPhoto
 
 				Object.keys(ava).forEach(function (i, item)
 				{
-					ava[i] = Object.assign(ava[i], UserPhotoProfile.previews(sizeParams, ava[i])["obj"]);
+					ava[i] = Object.assign(ava[i], FileUpload.previews(sizeParams, ava[i], "ai_dir")["obj"]);
 				});
 
 				return Promise.resolve(ava);

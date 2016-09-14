@@ -2,7 +2,7 @@
 
 const AppConfig = require('app/config');
 const FS = require('node-fs');
-
+const Crypto = require('crypto');
 const Mime = require('mime');
 const Path = require('path');
 const Promise = require("bluebird");
@@ -568,6 +568,49 @@ class File
 			}
 			throw err;
 		});
+	}
+
+	/**
+	 * формируем проевьюхи для объекта obj (альбом или картинка в альбоме)
+	 *
+	 * @param sizeParams
+	 * @param obj
+	 * @param obj_dir
+	 * @param spread
+	 * @returns {*}
+	 */
+	static previews(sizeParams, obj, obj_dir, spread = false)
+	{
+		let previews = [];
+		//if (!obj["previews"]) obj["previews"] = {};
+
+		if (!obj["previews"])
+			obj["previews"] = {};
+
+		if (obj[obj_dir])
+		{
+			sizeParams.forEach(function (size)
+			{
+				obj["previews"][size.w+'_'+size.h] = obj[obj_dir] + '/' + size.w+'_'+size.h +'.jpg';
+
+				if (spread)
+					previews.push(obj["previews"][size.w+'_'+size.h]);
+			});
+		}
+
+		return {obj: obj, previews: previews};
+	}
+
+	static getAlbumUri(a_id)
+	{
+		return Math.floor(Math.abs(a_id)/20000) + '/' + a_id;
+		//return 'part_' + Math.floor(Math.abs(a_id)/20000) + '/' + a_id;
+	}
+
+	static getImageUri(a_id, ai_id)
+	{
+		return this.getAlbumUri(a_id) + '/' + ai_id + '/' + Crypto.createHash('md5').update(a_id+''+ai_id).digest("hex");
+		//return 'part_' + Math.floor(Math.abs(a_id)/20000) + '/' + a_id;
 	}
 }
 

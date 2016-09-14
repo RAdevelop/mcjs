@@ -1,9 +1,10 @@
 "use strict";
-
+const Logger = require('app/lib/logger');
 const Errors = require('app/lib/errors');
 const Promise = require("bluebird");
-//const FileUpload = require('app/lib/file/upload');
-//const Path = require('path');
+const FileUpload = require('app/lib/file/upload');
+const FileErrors = require('app/lib/file/errors');
+const Path = require('path');
 
 const Base = require('app/lib/class');
 
@@ -83,6 +84,169 @@ class Events extends Base
 	getLocations()
 	{
 		return this.model('events').getLocations();
+	}
+
+	/**
+	 * добавляем фотографию к событию
+	 *
+	 * @param u_id
+	 * @param req
+	 * @param res
+	 * @returns {Promise.<TResult>}
+	 */
+	uploadImage(u_id, req, res)
+	{
+		const self = this;
+		let uploadConf = 'events';
+		let ei_id, e_id;
+		let file = {};
+
+		const UploadFile = new FileUpload(uploadConf, req, res);
+
+		return UploadFile.upload()
+			.then(function(file)
+			{
+				e_id = file.e_id;
+				return self.model('events')
+					.addPhoto(u_id, file)
+					.then(function (file)
+					{
+						ei_id = file.ei_id;
+
+						file["moveToDir"] = FileUpload.getImageUri(file.e_id, file.ei_id);
+
+						return new Promise(function (resolve, reject)
+						{
+							UploadFile.moveUploadedFile(file, file["moveToDir"], function (err, file)
+							{
+								if (err) return reject(err);
+
+								return resolve(file);
+							});
+						});
+					});
+			})
+			.then(function(file)
+			{
+				if (file.type != 'image')
+					return Promise.resolve(file);
+
+				return UploadFile.setImageGeo(file)
+					.then(function (file)
+					{
+						return UploadFile.resize(file, uploadConf);
+					});
+			})
+			.then(function (file)
+			{
+				//console.log(file);
+
+				return self.model('events')
+					.updImage(file.e_id, file.ei_id, file.latitude, file.longitude, file.webDirPath, file.name, true)
+					.then(function ()
+					{
+						file["ei_name"] = file.name;
+						return Promise.resolve(file);
+					});
+			})
+			.catch(function (err)
+			{
+				Logger.error(err);
+				return self.getClass('events').delImage(u_id, e_id, ei_id, file)
+					.catch(function (delErr)
+					{
+						switch (err.name)
+						{
+							case 'FileTooBig':
+							case 'FileType':
+							case 'FileTokenError':
+								throw err;
+								break;
+
+							default:
+								throw delErr;
+								break;
+						}
+					});
+			});
+	}
+	
+	/**
+	 * получаем данные для указанной фотографии
+	 *
+	 * @param ei_id
+	 * @returns {*}
+	 */
+	getImage(ei_id)
+	{
+		return this.model('events').getImage(ei_id)
+			.then(function (image)
+			{
+				if (!image)
+					throw new FileErrors.io.FileNotFoundError("фотография не найдена: UserPhoto.getImage(ei_id="+ei_id+")");
+				
+				let sizeParams = FileUpload.getUploadConfig('events').sizeParams;
+				image["previews"] = {};
+				if (image["ei_dir"])
+				{
+					image = FileUpload.previews(sizeParams, image, "ei_dir", false)["obj"];
+				}
+				return Promise.resolve(image);
+			});
+	}
+	
+	/**
+	 * удаление фотографии
+	 *
+	 * @param u_id
+	 * @param e_id
+	 * @param ei_id
+	 * @param file
+	 * @returns {*}
+	 */
+	delImage(u_id, e_id, ei_id, file = {})
+	{
+		return this.getImage(ei_id)
+			.bind(this)
+			.then(function (image)
+			{
+				if (!image || image["e_id"] != e_id)
+					throw new FileErrors.io.FileNotFoundError();
+
+				return Promise.resolve(image);
+			})
+			.then(function (image)
+			{
+				let dir = (image["ei_dir"] ? image["ei_dir"] : (file["webDirPath"] ? file["webDirPath"] : null));
+
+				if (!dir)
+					return Promise.reject(new FileErrors.io.DirectoryNotFoundError());
+
+				dir = Path.dirname(Path.join(FileUpload.getDocumentRoot, dir));
+
+				return FileUpload.deleteDir(dir, true)
+					.bind(this)
+					.then(function ()
+					{
+						return this.model('events').delImage(e_id, ei_id);
+					})
+					.then(function ()
+					{
+						return Promise.resolve(image);
+					});
+			})
+			.catch(function (err)
+			{
+				console.log('class Events delImage catch');
+				Logger.error(err);
+				console.log('\n');
+
+				return this.model('events').delImage(e_id, ei_id)
+					.then(function ()
+					{
+						throw err;
+					});
+			});
 	}
 }
 //************************************************************************* module.exports
