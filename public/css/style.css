@@ -1073,6 +1073,23 @@ nav.pagesNavigation
 {
 	overflow: hidden;
 }
+
+.eventData.mce-content-body ul.eventImages
+{
+	overflow: hidden;
+	padding: 0;
+	margin: 0;
+	width: calc(100%);
+	text-align: center;
+}
+
+.eventData.mce-content-body ul.eventImages li
+{
+	overflow: hidden;
+	list-style-type: none;
+	display: inline-block;
+}
+
 .eventImagesWrapper
 {
 

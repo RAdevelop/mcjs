@@ -66,9 +66,7 @@
 <% if (_action == 'edit'){%>
 <fieldset class="col-xs-12 eventImagesWrapper">
 	<legend>Изображения <a href="javascript:void(0);" id="uploadEventImages"><i class="fa fa-cloud-upload" aria-hidden="true"></i> загрузить</a></legend>
-	<div class="eventImagesContainer">
-		<%- include event_images.ejs %>
-	</div>
+	<div class="eventImagesContainer"><%- include event_images.ejs %></div>
 </fieldset>
 <%}%>
 <script src="/js/mcMap.js" type="text/javascript"></script>
@@ -96,17 +94,17 @@
 		$(document).on('click','.eventImagesWrapper .eventImagesContainer img', function (event)
 		{
 			//console.log($(this));
-			editor.insertContent(this.outerHTML);
+			var html = '<li>'+this.outerHTML+'</li>';
+			editor.insertContent(html);
+			$(editor.getBody()).find('img.eventImage').closest('ul').addClass('eventImages');
 		});
 	}
 
-	var eTextTinymce = McTinymce({selector: '#t_e_text'}, "visualblocks")
+	var eTextTinymce = McTinymce({selector: '#t_e_text', body_class:"eventData"}, "visualblocks")
 			.then(function(editor)
 			{
-				//console.log(editor);
+				//editor.dom.addClass(editor.dom.select('body'), 'eventData');
 				//console.log(editor.getContent());
-
-				editor.dom.addClass(editor.dom.select('body'), 'eventData');
 
 				onTinymceInsImage(editor);
 				return Promise.resolve(editor);
@@ -119,21 +117,22 @@
 	$('#formEvent').postRes({btnId: 'btn_edit_event',
 		beforeSubmit: function ()
 		{
-			eTextTinymce.then(function (editor)
+			console.log('START postRes.beforeSubmit');
+
+			return eTextTinymce.then(function (editor)
 			{
-				//console.log(editor);
-				console.log('McTinymce.tinymce.triggerSave()');
-				McTinymce.tinymce.triggerSave();
-			})
-			.fail(function (err)
-			{
-				console.log(err);
+				return new Promise(function(resolve, reject)
+				{
+					McTinymce.save(editor, function(){
+						console.log('END postRes.beforeSubmit');
+						return resolve(true);
+					});
+				});
 			});
 		},
 		onSuccess: function($dialog, respData)
 		{
-			if (respData["i_event_id"])
-				window.location.href = "<%=menuItem.m_path%>/edit/" +respData["i_event_id"] +'/';
+			if (respData["i_event_id"]) window.location.href = "<%=_reqBaseUrl%>/" +respData["i_event_id"] +'/';
 
 			return false;
 		}

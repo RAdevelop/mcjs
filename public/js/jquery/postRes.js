@@ -12,7 +12,28 @@
 			onSuccess: function($dialog, respData){return true},
 			onOpen: function onOpen($self){},
 			onClose: function onClose($self){},
-			beforeSubmit: function () {}
+			beforeSubmit: function () {
+				if (Promise && Promise.resolve)
+				{
+					return Promise.resolve(true);
+				}
+				else
+				{
+					return {
+						then: function(thenCb)
+						{
+							if (thenCb && typeof thenCb == 'function')
+							{
+								thenCb.apply(this, arguments);
+							}
+							return {
+								then: function(thenCb2){if (thenCb2 && typeof thenCb2 == 'function') thenCb2.apply(this, arguments);},
+								fail: function(failCb){if (failCb && typeof failCb == 'function') failCb.apply(this, arguments);}
+							}
+						}
+					};
+				}
+			}
 		};
 		var self = this;
 		var options = $.extend({}, defaults, params);
@@ -31,12 +52,11 @@
 		{
 			$btnSaveBase.on('click', function (event)
 			{
-				console.log("$btnSaveBase.on('click', function (event)");
+				console.log("postRes.js: $btnSaveBase.on('click', function (event)");
+				var btn = this;
 
-				options.beforeSubmit();
-
-				if (this.type == 'submit') return;
-
+				if (btn.type == 'submit')
+					return;
 				$formBase.submit();
 			});
 		}
@@ -44,99 +64,109 @@
 		{
 			event.preventDefault();
 			event.stopPropagation();
+			
+			options.beforeSubmit()//Promise
+				.then(function()
+				{
 
-			if ($btnSaveBase)
-			$btnSaveBase.button('loading');
-			
-			var _formData = $formBase.serialize();
-			
-			$.ajax({
-				url: $formBase.attr('action'),
-				method: "POST",
-				data: _formData,
-				dataType: "json"
-			})
-			.done(function(data)
-			{
-				//console.log(data);
-				
-				var formError = 
-				{
-					message: '',
-					text:'',
-					error: null,
-					errorName: '',
-					fields: []
-				};
-				
-				if (data[options.prefix])
-				formError = $.extend({}, formError, data[options.prefix].formError);
-				else
-				formError = $.extend({}, formError, data.formError);
-				
-				//if(formError || formError.error == false)
-				
-				var text = formError.text.trim() || '';
-				var title = formError.message.trim();
-				
-				if (title == '') title = 'Данные успешно сохранены';
-				
-				$formBase.find('.form-group').removeClass("has-error");
-				
-				if(formError && formError.error == true)
-				{
-					$.each(formError.fields,  function(fId, fV)
-					{
-						if(fV)
+					if ($btnSaveBase)
+						$btnSaveBase.button('loading');
+
+					var _formData = $formBase.serialize();
+
+					$.ajax({
+						url: $formBase.attr('action'),
+						method: "POST",
+						data: _formData,
+						dataType: "json"
+					})
+						.done(function(data)
 						{
-							text += '<li>' + fV + '</li>';
-							$formBase.find('.' + fId).addClass("has-error");
-						}
-					});
-					
-					if (text != '') text = '<ul>'+text+'</ul>';
-				}
+							//console.log(data);
 
-				if ($btnSaveBase)
-				$btnSaveBase.button('reset');
+							var formError =
+							{
+								message: '',
+								text:'',
+								error: null,
+								errorName: '',
+								fields: []
+							};
 
-				var showDialog = true;
+							if (data[options.prefix])
+								formError = $.extend({}, formError, data[options.prefix].formError);
+							else
+								formError = $.extend({}, formError, data.formError);
 
-				var sel = '#mcDialog_'+self.selector.replace('#', '').replace(/\s+\./, '_');
+							//if(formError || formError.error == false)
 
-				if(formError && formError.error == true)
-					showDialog = options.onFail($(sel), data);
-				else
-					showDialog = options.onSuccess($(sel), data);
-				
-				if (showDialog)
-					_postResDialogBase(self.selector, title, text, options, !formError.error);
-				
-				//console.log('mcDialog_'+self.selector.replace('#', ''));
-			})
-			.fail(function(data)
-			{
-				console.log(data);
-				
-				var text = '';
-				
-				switch (data.status)
+							var text = formError.text.trim() || '';
+							var title = formError.message.trim();
+
+							if (title == '') title = 'Данные успешно сохранены';
+
+							$formBase.find('.form-group').removeClass("has-error");
+
+							if(formError && formError.error == true)
+							{
+								$.each(formError.fields,  function(fId, fV)
+								{
+									if(fV)
+									{
+										text += '<li>' + fV + '</li>';
+										$formBase.find('.' + fId).addClass("has-error");
+									}
+								});
+
+								if (text != '') text = '<ul>'+text+'</ul>';
+							}
+
+							if ($btnSaveBase)
+								$btnSaveBase.button('reset');
+
+							var showDialog = true;
+
+							var sel = '#mcDialog_'+self.selector.replace('#', '').replace(/\s+\./, '_');
+
+							if(formError && formError.error == true)
+								showDialog = options.onFail($(sel), data);
+							else
+								showDialog = options.onSuccess($(sel), data);
+
+							if (showDialog)
+								_postResDialogBase(self.selector, title, text, options, !formError.error);
+
+							//console.log('mcDialog_'+self.selector.replace('#', ''));
+						})
+						.fail(function(data)
+						{
+							console.log(data);
+
+							var text = '';
+
+							switch (data.status)
+							{
+								default:
+									text = 'Невозможно выполнить операцию';
+									break;
+								case 401:
+									text = 'Требуется авторизация';
+									break;
+								case 403:
+									text = 'Доступ запрещен для выполнения этой операции';
+									break;
+							}
+							_postResDialogBase(self.selector, 'Ошибка', text, options, false);
+
+							if ($btnSaveBase)
+								$btnSaveBase.button('reset');
+						});
+				})
+				.fail(function (err)
 				{
-					default:
-						text = 'Невозможно выполнить операцию';
-						break;
-					case 401:
-						text = 'Требуется авторизация';
-						break;
-					case 403:
-						text = 'Доступ запрещен для выполнения этой операции';
-						break;
-				}
-				_postResDialogBase(self.selector, 'Ошибка', text, options, false);
-
-				if ($btnSaveBase)
-				$btnSaveBase.button('reset');
-			});
+					if (err && err.message)
+						console.log(err);
+				});
 			
 			return false;
 		});

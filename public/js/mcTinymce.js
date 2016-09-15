@@ -7,27 +7,28 @@
 {
 	if (window["McTinymce"]) return;
 
+
 	function editorOnChange()
 	{
-		console.log('editorOnChange');
+		//console.log('editorOnChange');
 
 		//this.setContent(McTinymce.cleanTagEvents(this.getContent()));
 
-		tinymce.triggerSave();
+		//domTreeWalker(this, McTinymce.tinymce);
+
+		//McTinymce.tinymce.triggerSave();
 	}
 
 	function editorOnSubmit()
 	{
-		this.setContent(McTinymce.cleanTagEvents(this.getContent()));
-
-		tinymce.triggerSave();
+		//McTinymce.save(this);
 	}
 
 	var defaultSkin =  {
 		language: "ru_RU"
-			, content_css: "/css/style.css"
-			, themes: "modern"
-			, setup: function (editor)
+	,   content_css: "/css/style.css"
+	,   themes: "modern"
+	,   setup: function (editor)
 		{
 			editor.on('change', editorOnChange);
 
@@ -52,6 +53,7 @@
 		, toolbar1: 'code | undo redo | bold italic | bullist numlist outdent indent | link unlink'
 		, toolbar2: 'paste | removeformat preview template'
 		//, valid_elements: '*[*]' //TODO закомментировать! разрешает все теги и все атрибуты у них
+		//, extended_valid_elements: '*[*]' //TODO закомментировать! разрешает все теги и все атрибуты у них
 		/*,   templates: [
 			//TODO использовать в блогах, новостях... в plugins добавить template
 			{title: 'заголовок шаблона 1', description: 'описание шаблона 1', content: '<p>пример контента из шаблона</p>'},
@@ -239,6 +241,58 @@
 			})
 			.end().html();
 	};
+
+	McTinymce.save = function(editor, cb)
+	{
+		console.log("start McTinymce.save");
+		console.log("");
+
+		McTinymce.tinymce.triggerSave();
+		editor.setContent(McTinymce.cleanTagEvents(editor.getContent()));
+
+		clearEmptyTags(editor, McTinymce.tinymce);
+
+		editor.setContent(editor.getContent());
+		//$('#'+editor.id).val(editor.getContent());
+		McTinymce.tinymce.triggerSave();
+
+		console.log("");
+		console.log("end McTinymce.save");
+
+		if (cb && typeof cb == 'function') return cb();
+		//return editor;
+	};
+
+	function clearEmptyTags(editor, tinymce)
+	{
+		var first = editor.getBody();
+		var walker = new tinymce.dom.TreeWalker(first.firstChild, editor.getBody());
+
+		var tagNamesFilter = ['img'];
+		var regExp, indx;
+		//var reEmpty = /^(&nbsp;)+|(\<br\s*\/?\s*\>)+|\s+$/ig;
+		var reEmpty = /^((&nbsp;)*(\<br\s*\/?\s*\>)*(\s)*)+$/ig;
+
+		do
+		{
+			if (walker.current().nodeType != 1 || tagNamesFilter.indexOf(walker.current().nodeName.toLowerCase()) != -1)
+				continue;
+			
+			if(reEmpty.test(walker.current().innerHTML))
+			{
+				//console.log(indx, walker.current());
+				regExp = new RegExp('('+walker.current().outerHTML+')+', 'ig');
+				editor.getBody().innerHTML = editor.getBody().innerHTML.replace(regExp, '');
+			}
+
+		} while (walker.next());
+
+		regExp = null;
+
+		editor.setContent(editor.getContent());
+
+		tinymce.triggerSave();
+	}
 
 	window.McTinymce = McTinymce;
 
