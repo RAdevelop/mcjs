@@ -244,23 +244,18 @@
 
 	McTinymce.save = function(editor, cb)
 	{
-		console.log("start McTinymce.save");
-		console.log("");
-
 		McTinymce.tinymce.triggerSave();
 		editor.setContent(McTinymce.cleanTagEvents(editor.getContent()));
 
 		clearEmptyTags(editor, McTinymce.tinymce);
 
 		editor.setContent(editor.getContent());
-		//$('#'+editor.id).val(editor.getContent());
 		McTinymce.tinymce.triggerSave();
 
-		console.log("");
-		console.log("end McTinymce.save");
+		if (cb && typeof cb == 'function')
+			return cb(editor);
 
-		if (cb && typeof cb == 'function') return cb();
-		//return editor;
+		return editor;
 	};
 
 	function clearEmptyTags(editor, tinymce)
@@ -268,9 +263,9 @@
 		var first = editor.getBody();
 		var walker = new tinymce.dom.TreeWalker(first.firstChild, editor.getBody());
 
-		var tagNamesFilter = ['img'];
-		var regExp, indx;
-		//var reEmpty = /^(&nbsp;)+|(\<br\s*\/?\s*\>)+|\s+$/ig;
+		var tagNamesFilter = ['area', 'base', 'br', 'col', 'command', 'doctype', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'source', 'track', 'wbr'];
+		//var tagNamesFilter = ['img','hr'];
+		var regExp;
 		var reEmpty = /^((&nbsp;)*(\<br\s*\/?\s*\>)*(\s)*)+$/ig;
 
 		do

@@ -9,10 +9,8 @@
 				let cssLevel = 'locLevel'+item["l_mtt_level"];
 				%><li class="<%=cssLevel%>"><% if (item["l_mtt_level"]==1) {%><i class="fa fa-caret-down" aria-hidden="true"></i><% }%>
 					<a href="javascript:void(0);" data-coords="<%=[item["l_latitude"], item["l_longitude"]]%>" data-location-id="<%=item["l_id"]%>"><%=item["l_name"]%></a><%
-
-				if (list[i+1] && list[i+1]["l_mtt_level"] == 2 && item["l_mtt_level"] == 1){%><ul><% }
-				if (list[i+1] && list[i+1]["l_mtt_level"] == 1 && item["l_mtt_level"] == 2){%></ul><% }
-				   %></li><%
+				if (list[i+1] && list[i+1]["l_mtt_level"] == 2 && item["l_mtt_level"] == 1){%><ul><% } else{%></li><% }
+				if (list[i+1] && list[i+1]["l_mtt_level"] == 1 && item["l_mtt_level"] == 2){%></ul></li><% } %><%
 				if (list[i+1] && list[i+1]["l_level"] == 1){ %><li role="separator" class="divider"></li><%}
 		});%></ul>
 		</div>

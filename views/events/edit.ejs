@@ -89,7 +89,7 @@
 	$("#dd_start_ts").datepicker({ dateFormat: 'dd-mm-yy' });
 	$("#dd_end_ts").datepicker({ dateFormat: 'dd-mm-yy' });
 
-	function onTinymceInsImage(editor)
+	function addImageToTinymce(editor)
 	{
 		$(document).on('click','.eventImagesWrapper .eventImagesContainer img', function (event)
 		{
@@ -100,13 +100,23 @@
 		});
 	}
 
-	var eTextTinymce = McTinymce({selector: '#t_e_text', body_class:"eventData"}, "visualblocks")
+	var eTextTinymce = McTinymce(
+			{
+				selector: '#t_e_text',
+				body_class:"eventData",
+				//разрешенные теги
+				valid_elements:"p,img[class|src|data-img-id|alt],ul[class],li,strong/b,a[href|class|title|target]",
+				//расширение для разрешенных тегов (-p - пустой абсац удалится)
+				extended_valid_elements:"-p",
+				//запрещенные теги, удаляться потом сами
+				invalid_elements: "div"
+			}, "visualblocks")
 			.then(function(editor)
 			{
 				//editor.dom.addClass(editor.dom.select('body'), 'eventData');
 				//console.log(editor.getContent());
 
-				onTinymceInsImage(editor);
+				addImageToTinymce(editor);
 				return Promise.resolve(editor);
 			})
 			.fail(function (err)
@@ -117,14 +127,12 @@
 	$('#formEvent').postRes({btnId: 'btn_edit_event',
 		beforeSubmit: function ()
 		{
-			console.log('START postRes.beforeSubmit');
-
 			return eTextTinymce.then(function (editor)
 			{
 				return new Promise(function(resolve, reject)
 				{
-					McTinymce.save(editor, function(){
-						console.log('END postRes.beforeSubmit');
+					McTinymce.save(editor, function(editor){
+
 						return resolve(true);
 					});
 				});

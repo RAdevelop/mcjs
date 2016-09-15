@@ -16,7 +16,11 @@ class Events extends Base
 	{
 		return {
 			"index": {
-				'^\/?[0-9]*\/?$': ['i_event_id']
+				'^\/?[0-9]{4,4}\/[0-9]+\/[0-9]+\/?$': ['i_yy','i_mm','i_dd'],
+				'^\/?[0-9]{4,4}\/[0-9]+\/?$': ['i_yy','i_mm'],
+				'^\/?[0-9]{4,4}\/?$': ['i_yy'],
+				'^\/?[0-9]+\/\\S+\/?$': ['i_event_id','s_event_alias'],
+				'^\/?$': null
 			},
 			"add": {
 				'^\/?$': null
@@ -98,28 +102,28 @@ class Events extends Base
 	}
 
 	/**
-	 * выбранный трек
+	 * выбранное событие
 	 *
 	 * @param i_event_id
-	 * @returns Promise spread data [trek, eventList]
+	 * @returns Promise spread data [event, eventList]
 	 * @throws Errors.HttpStatusError
 	 */
 	event(i_event_id)
 	{
 		return this.getClass('events').get(i_event_id)
-			.then(function (trek)
+			.then(function (event)
 			{
-				if (!trek)
+				if (!event)
 					throw new Errors.HttpStatusError(404, "Not found");
 
-				return Promise.resolve([trek, null]);
+				return Promise.resolve([event, null]);
 			});
 	}
 
 	/**
-	 * список треков
+	 * список событий
 	 *
-	 * @returns Promise spread data [trek, eventList]
+	 * @returns Promise spread data [event, eventList]
 	 */
 	eventList()
 	{
@@ -216,7 +220,7 @@ class Events extends Base
 	}
 
 	/**
-	 * форма добавления трека
+	 * форма добавления события
 	 *
 	 * @param cb
 	 */
@@ -242,20 +246,11 @@ class Events extends Base
 			}
 		};
 
-		return Promise.resolve(tplData)
-			.bind(this)
-			.then(function(tplData)
-			{
-				let tplFile = "events";
+		let tplFile = "events";
 
-				this.view.setTplData(tplFile, tplData);
+		this.view.setTplData(tplFile, tplData);
 
-				return cb(null);
-			})
-			.catch(function(err)
-			{
-				return cb(err);
-			});
+		return cb(null);
 	}
 
 	/**
