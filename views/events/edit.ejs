@@ -65,7 +65,15 @@
 
 <% if (_action == 'edit'){%>
 <fieldset class="col-xs-12 eventImagesWrapper">
-	<legend>Изображения <a href="javascript:void(0);" id="uploadEventImages"><i class="fa fa-cloud-upload" aria-hidden="true"></i> загрузить</a></legend>
+	<legend><a href="javascript:void(0);" id="uploadEventImages"><i class="fa fa-cloud-upload" aria-hidden="true"></i> загрузить</a> Изображения [<span class="popoverHelp " id="eventHelpImages">Как добавить изображения в "описание"</span>]</legend>
+	<div class="popoverContent" data-popover-for="#eventHelpImages">
+		<ol>
+			<li>загрузите изображения (максимум 5 файлов)</li>
+			<li>установите (кликните) курсор в нужном месте "описания"</li>
+			<li>кликните по нужному изображению, после чего оно добавится в "описание"</li>
+			<li>в любом случае, все изображения будут показаны под описанием на странице события</li>
+		</ol>
+	</div>
 	<div class="eventImagesContainer"><%- include event_images.ejs %></div>
 </fieldset>
 <%}%>
@@ -102,20 +110,17 @@
 
 	var eTextTinymce = McTinymce(
 			{
-				selector: '#t_e_text',
-				body_class:"eventData",
-				//разрешенные теги
-				valid_elements:"p,img[class|src|data-img-id|alt],ul[class],li,strong/b,a[href|class|title|target]",
+				selector: '#t_e_text'
+				,body_class:"eventData"
+				//разрешенные теги (с указанными атрибутами)
+				,valid_elements:"h1,h2,h3,h4,h5,h6,p,em,i,ol,img[class|src|data-img-id|alt],ul[class],li,strong/b,a[href|class|title|target]"
 				//расширение для разрешенных тегов (-p - пустой абсац удалится)
-				extended_valid_elements:"-p",
+				,extended_valid_elements:"-p"
 				//запрещенные теги, удаляться потом сами
-				invalid_elements: "div"
+				//,invalid_elements: "div"
 			}, "visualblocks")
 			.then(function(editor)
 			{
-				//editor.dom.addClass(editor.dom.select('body'), 'eventData');
-				//console.log(editor.getContent());
-
 				addImageToTinymce(editor);
 				return Promise.resolve(editor);
 			})
@@ -319,7 +324,7 @@
 			{
 				image = filesUploaded[i];
 				imgSrc = (image["previews"] && image["previews"]["256_192"] ? image["previews"]["256_192"] : '/_0.gif');
-				html = '<div class="image"><img src="'+imgSrc+'" alt="" data-img-id="'+image["ei_id"]+'"/></div>';
+				html = '<div class="image"><img src="'+imgSrc+'" alt="" class="eventImage" data-img-id="'+image["ei_id"]+'"/></div>';
 
 				$eventImagesContainer.prepend(html);
 				eventImages.unshift(image);
@@ -371,8 +376,6 @@
 				]
 			});
 		});
-		//var $formEventsUpload = $('#formEventsUpload');
-		//$formEventsUpload.find('#event_image_upload').fileUpload(eventsUploadOpts);
 	}
 
 })(jQuery);

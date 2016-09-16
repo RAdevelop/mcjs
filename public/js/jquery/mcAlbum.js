@@ -266,19 +266,15 @@
 				height: $mcMap.parent().css('max-height')
 			});
 
+			$mcMap.toggle();
+			$img.toggle();
+
 			if (ImgMcMap.isInit())
-			{
-				$mcMap.toggle();
-				$img.toggle();
 				return;
-			}
 
 			ImgMcMap.init()
 				.then(function (imgMcMap)
 				{
-					$mcMap.toggle();
-					$img.toggle();
-
 					imgMcMap.behaviors.disable('multiTouch');
 					imgMcMap.behaviors.disable('scrollZoom');
 
@@ -537,7 +533,7 @@
 				})
 				.on('shown.bs.modal', function (event)
 				{
-					Helpers.initTooltip();
+					//Helpers.initTooltip();
 					console.log("$mcDialog.on('shown.bs.modal', function (event)");
 				})
 				.on('hidden.bs.modal', function (event)
