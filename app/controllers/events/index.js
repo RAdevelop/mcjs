@@ -42,9 +42,7 @@ class Events extends Base
 	 */
 	indexActionGet(cb)
 	{
-		let {i_event_id} = this.routeArgs;
-
-		return this.eventData(i_event_id)
+		return this.eventData(this.routeArgs)
 			.bind(this)
 			.spread(function (event, eventList)
 			{
@@ -64,10 +62,17 @@ class Events extends Base
 				let tplFile = "events";
 				if (event)
 				{
+					tplData["eventImages"] = event["eventImages"];
+					
 					this.getRes().expose(event, 'event');
-
 					this.view.setPageTitle(event["e_title"]);
 					this.view.setPageDescription(this.cheerio(event["e_notice"]).text());
+
+					this.view.setPageH1(event.e_title);
+					//экспрот данных в JS на клиента
+					this.getRes().expose(tplData["event"], 'eventData');
+					//this.getRes().expose(event["eventImages"], 'eventImages');
+					//this.getRes().expose(event["eventImagesPreviews"], 'eventImagesPreviews');
 				}
 				else
 				{
@@ -90,13 +95,15 @@ class Events extends Base
 	/**
 	 * что показывать - указанный трек, или список треков...
 	 *
-	 * @param i_event_id
+	 * @param routeArgs - json данные параметров запроса
 	 * @returns {Promise}
 	 */
-	eventData(i_event_id)
+	eventData(routeArgs)
 	{
+		let {i_event_id=null, s_event_alias=null, i_yy=null, i_mm=null, i_dd=null} = routeArgs;
+
 		if (i_event_id)
-			return this.event(i_event_id);
+			return this.event(i_event_id, s_event_alias);
 
 		return this.eventList();
 	}
@@ -105,16 +112,33 @@ class Events extends Base
 	 * выбранное событие
 	 *
 	 * @param i_event_id
+	 * @param s_alias
 	 * @returns Promise spread data [event, eventList]
 	 * @throws Errors.HttpStatusError
 	 */
-	event(i_event_id)
+	event(i_event_id, s_alias)
 	{
 		return this.getClass('events').get(i_event_id)
+			.bind(this)
 			.then(function (event)
 			{
-				if (!event)
+				if (!event || event["e_alias"] != s_alias)
 					throw new Errors.HttpStatusError(404, "Not found");
+
+				return Promise.resolve(event);
+			})
+			.then(function (event)
+			{
+				return this.getClass('events').getImageList(event.e_id)
+					.spread(function (images, allPreviews)
+					{
+						return Promise.resolve([event, images, allPreviews]);
+					});
+			})
+			.spread(function (event, images, allPreviews)
+			{
+				event["eventImages"] = images;
+				event["eventImagesPreviews"] = allPreviews;
 
 				return Promise.resolve([event, null]);
 			});

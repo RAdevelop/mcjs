@@ -1111,12 +1111,12 @@ nav.pagesNavigation
 {
 
 }
-.eventData.mce-content-body p
+.eventData p
 {
 	overflow: hidden;
 }
 
-.eventData.mce-content-body ul.eventImages
+.eventData ul.eventImages
 {
 	overflow: hidden;
 	padding: 0;
@@ -1125,7 +1125,7 @@ nav.pagesNavigation
 	text-align: center;
 }
 
-.eventData.mce-content-body ul.eventImages li
+.eventData ul.eventImages li
 {
 	overflow: hidden;
 	list-style-type: none;
@@ -1152,18 +1152,37 @@ nav.pagesNavigation
 .eventImagesWrapper .eventImagesContainer .eventImage,
 .eventImage
 {
-	cursor: move;
 	float: left;
 	overflow: hidden;
 	margin: 0 10px 10px 0;
 	max-width: 216px;
 	max-height: 162px;
 }
+
+.eventImagesWrapper .eventImagesContainer .eventImage
+{
+	cursor: move;
+}
+
 .eventImagesWrapper .eventImagesContainer img.eventImage,
 img.eventImage
 {
 	cursor: move;
 	width: calc(100%);
+}
+
+.eventData img.eventImage
+{
+	cursor: auto;
+}
+.eventData .eventMap
+{
+	height: 350px;
+}
+
+.eventData .eventMap #eventMap
+{
+	height: 100%;
 }
 /**********  END СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ **************/
 

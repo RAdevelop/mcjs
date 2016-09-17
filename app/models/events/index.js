@@ -13,6 +13,7 @@ class Events extends BaseModel
 	 *
 	 * @param i_u_id
 	 * @param s_e_title
+	 * @param e_alias
 	 * @param t_e_notice
 	 * @param t_e_text
 	 * @param s_e_address
@@ -25,7 +26,7 @@ class Events extends BaseModel
 	 * @param dd_end_ts
 	 * @returns {Promise.<TResult>}
 	 */
-	add(i_u_id, s_e_title, t_e_notice, t_e_text, s_e_address, f_e_lat, f_e_lng, i_location_id, gps_lat, gps_lng, dd_start_ts, dd_end_ts)
+	add(i_u_id, s_e_title, e_alias, t_e_notice, t_e_text, s_e_address, f_e_lat, f_e_lng, i_location_id, gps_lat, gps_lng, dd_start_ts, dd_end_ts)
 	{
 		let e_start_ts  = Moment(dd_start_ts, "DD-MM-YYYY").unix();
 		let e_end_ts    = Moment(dd_end_ts, "DD-MM-YYYY").unix();
@@ -35,12 +36,10 @@ class Events extends BaseModel
 
 		let i_e_id;
 
-		let sql = "INSERT INTO `events` (u_id, e_title, e_notice, e_text, e_address" +
-			", e_latitude, e_longitude, e_location_id" +
-			", e_create_ts, e_update_ts, e_start_ts, e_end_ts" +
-			", e_gps_lat, e_gps_lng" +
-			") " +
-			" VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		let sql =
+			`INSERT INTO events (u_id, e_title, e_alias, e_notice, e_text, e_address, e_latitude, e_longitude, e_location_id
+			, e_create_ts, e_update_ts, e_start_ts, e_end_ts, e_gps_lat, e_gps_lng) 
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
 		return this.constructor.conn().ins(sql, sqlData)
 			.bind(this)
@@ -48,7 +47,7 @@ class Events extends BaseModel
 			{
 				i_e_id = res["insertId"];
 
-				sql = "SELECT l_lk, l_rk FROM location WHERE l_id = ?;";
+				sql = `SELECT l_lk, l_rk FROM location WHERE l_id = ?;`;
 
 				return this.constructor.conn().sRow(sql, [i_location_id]);
 			})
@@ -56,7 +55,7 @@ class Events extends BaseModel
 			{
 				let {l_lk, l_rk} = res;
 
-				sql = "SELECT l_id FROM location WHERE l_lk <= ? AND l_rk >= ? ORDER BY l_lk;";
+				sql = `SELECT l_id FROM location WHERE l_lk <= ? AND l_rk >= ? ORDER BY l_lk;`;
 				return this.constructor.conn().s(sql, [l_lk, l_rk]);
 			})
 			.then(function (res)
@@ -69,13 +68,12 @@ class Events extends BaseModel
 					pids.push(item["l_id"]);
 				});
 
-				sql = "DELETE FROM `events_locations` WHERE e_id = ?;";
-
-				sql += "INSERT INTO `events_locations` (e_id, l_id) " +
-					"VALUES " +sqlIns.join(',')+ "" +
-					" ON DUPLICATE KEY UPDATE l_id=VALUES(l_id);";
-
-				sql += "UPDATE `events` SET e_location_pids = ? WHERE e_id = ?;";
+				sql =
+					`DELETE FROM events_locations WHERE e_id = ?;
+					INSERT INTO events_locations (e_id, l_id)
+					VALUES ${sqlIns.join(',')}
+					ON DUPLICATE KEY UPDATE l_id=VALUES(l_id);
+					UPDATE events SET e_location_pids = ? WHERE e_id = ?;`;
 				sqlData.push(pids.join(','), i_e_id);
 
 				return this.constructor.conn().multis(sql, sqlData);
@@ -92,6 +90,7 @@ class Events extends BaseModel
 	 * @param i_e_id
 	 * @param i_u_id
 	 * @param s_e_title
+	 * @param e_alias
 	 * @param t_e_notice
 	 * @param t_e_text
 	 * @param s_e_address
@@ -104,36 +103,26 @@ class Events extends BaseModel
 	 * @param dd_end_ts
 	 * @returns {Promise.<TResult>}
 	 */
-	edit(i_e_id, i_u_id, s_e_title, t_e_notice, t_e_text, s_e_address, f_e_lat, f_e_lng, i_location_id, gps_lat, gps_lng, dd_start_ts, dd_end_ts)
+	edit(i_e_id, i_u_id, s_e_title, e_alias, t_e_notice, t_e_text, s_e_address, f_e_lat, f_e_lng, i_location_id, gps_lat, gps_lng, dd_start_ts, dd_end_ts)
 	{
-		let sql = "UPDATE `events` SET " +
-			"e_update_ts = ?, " +
-			"e_start_ts = ?, " +
-			"e_end_ts = ?, " +
-			"e_title = ?, " +
-			"e_notice = ?, " +
-			"e_text = ?, " +
-			"e_address = ?, " +
-			"e_location_id = ?, " +
-			"e_latitude = ?," +
-			"e_longitude = ?, " +
-			"e_gps_lat = ?, " +
-			"e_gps_lng = ?, " +
-			"u_id = ? " +
-			" WHERE e_id = ?";
+		let sql =
+			`UPDATE events SET e_update_ts = ?, e_start_ts = ?, e_end_ts = ?, e_title = ?, e_alias = ?, 
+			e_notice = ?, e_text = ?, e_address = ?, e_location_id = ?, e_latitude = ?, e_longitude = ?, e_gps_lat = ?, 
+			e_gps_lng = ?, u_id = ? 
+			WHERE e_id = ?`;
 
 		let e_start_ts  = Moment(dd_start_ts, "DD-MM-YYYY").unix();
 		let e_end_ts    = Moment(dd_end_ts, "DD-MM-YYYY").unix();
 
 		let now_ts = Moment().unix();
-		let sqlData = [now_ts, e_start_ts, e_end_ts, s_e_title, t_e_notice, t_e_text, s_e_address, i_location_id, f_e_lat, f_e_lng
+		let sqlData = [now_ts, e_start_ts, e_end_ts, s_e_title, e_alias, t_e_notice, t_e_text, s_e_address, i_location_id, f_e_lat, f_e_lng
 			, gps_lat, gps_lng, i_u_id, i_e_id];
 
 		return this.constructor.conn().upd(sql, sqlData)
 			.bind(this)
 			.then(function ()
 			{
-				sql = "SELECT l_lk, l_rk FROM location WHERE l_id = ?;";
+				sql = `SELECT l_lk, l_rk FROM location WHERE l_id = ?;`;
 
 				return this.constructor.conn().sRow(sql, [i_location_id]);
 			})
@@ -141,7 +130,7 @@ class Events extends BaseModel
 			{
 				let {l_lk, l_rk} = res;
 
-				sql = "SELECT l_id FROM location WHERE l_lk <= ? AND l_rk >= ? ORDER BY l_lk;";
+				sql = `SELECT l_id FROM location WHERE l_lk <= ? AND l_rk >= ? ORDER BY l_lk;`;
 				return this.constructor.conn().s(sql, [l_lk, l_rk]);
 			})
 			.then(function (res)
@@ -154,13 +143,11 @@ class Events extends BaseModel
 					pids.push(item["l_id"]);
 				});
 
-				sql = "DELETE FROM events_locations WHERE e_id = ?;";
-
-				sql += "INSERT INTO events_locations (e_id, l_id) " +
-					"VALUES " +sqlIns.join(',')+ "" +
-					" ON DUPLICATE KEY UPDATE l_id=VALUES(l_id);";
-
-				sql += "UPDATE `events` SET e_location_pids = ? WHERE e_id = ?;";
+				sql =
+					`DELETE FROM events_locations WHERE e_id = ?;
+					INSERT INTO events_locations (e_id, l_id) 
+					VALUES ${sqlIns.join(',')} ON DUPLICATE KEY UPDATE l_id=VALUES(l_id);
+					UPDATE events SET e_location_pids = ? WHERE e_id = ?;`;
 				sqlData.push(pids.join(','), i_e_id);
 
 				return this.constructor.conn().multis(sql, sqlData);
@@ -179,10 +166,11 @@ class Events extends BaseModel
 	 */
 	getById(e_id)
 	{
-		let sql = "SELECT e_id, e_create_ts, e_update_ts, e_start_ts, e_end_ts, e_title, e_notice, e_text, e_address, " +
-			"e_location_id, e_latitude, e_longitude, e_gps_lat, e_gps_lng, e_location_pids, u_id, e_img_cnt" +
-			" FROM `events`" +
-			" WHERE e_id = ?";
+		let sql =
+			`SELECT e_id, e_create_ts, e_update_ts, e_start_ts, e_end_ts, e_title, e_alias, e_notice, e_text, e_address, 
+			e_location_id, e_latitude, e_longitude, e_gps_lat, e_gps_lng, e_location_pids, u_id, e_img_cnt
+			FROM events
+			WHERE e_id = ?`;
 
 		return this.constructor.conn().sRow(sql, [e_id])
 			.then(function (event)
@@ -206,15 +194,16 @@ class Events extends BaseModel
 	{
 		let kinds = ['country','province','locality'];
 
-		let sql = "SELECT l.l_id, l.l_pid, l.l_level, l.l_lk, l.l_rk" +
-			", ln.l_kind, ln.l_name, ln.l_full_name, ln.l_latitude , ln.l_longitude" +
-			", IF(l.l_rk - l.l_lk = 0, 0, 1) AS l_has_child" +
-			", IF(ln.l_kind = 'country', 0, IF(ln.l_kind = 'province', 1, IF(ln.l_kind = 'locality' AND l.l_level < 3, 1, 2))) AS l_e_level" +
-			" FROM events_locations AS el" +
-			" JOIN location_names AS ln ON(el.l_id = ln.l_id  AND ln.l_kind IN ("+(new Array(kinds.length)).fill('?').join(',')+"))" +
-			" JOIN location AS l ON(l.l_id = ln.l_id)" +
-			" GROUP BY el.l_id" +
-			" ORDER BY l.l_lk";//, ln.l_name
+		let sql =
+			`SELECT l.l_id, l.l_pid, l.l_level, l.l_lk, l.l_rk
+			, ln.l_kind, ln.l_name, ln.l_full_name, ln.l_latitude , ln.l_longitude
+			, IF(l.l_rk - l.l_lk = 0, 0, 1) AS l_has_child
+			, IF(ln.l_kind = 'country', 0, IF(ln.l_kind = 'province', 1, IF(ln.l_kind = 'locality' AND l.l_level < 3, 1, 2))) AS l_e_level
+			 FROM events_locations AS el
+			 JOIN location_names AS ln ON(el.l_id = ln.l_id  AND ln.l_kind IN (${(new Array(kinds.length)).fill('?').join(',')}))
+			 JOIN location AS l ON(l.l_id = ln.l_id)
+			 GROUP BY el.l_id
+			 ORDER BY l.l_lk`;//, ln.l_name
 
 		return this.constructor.conn().s(sql, kinds);
 	}
@@ -226,9 +215,10 @@ class Events extends BaseModel
 	 */
 	getAll()
 	{
-		let sql = "SELECT e_id, e_create_ts, e_update_ts, e_start_ts, e_end_ts, e_title, e_notice, e_text, e_address, " +
-			"e_location_id, e_latitude, e_longitude, e_gps_lat, e_gps_lng, e_location_pids, u_id" +
-			" FROM `events`";
+		let sql =
+			`SELECT e_id, e_create_ts, e_update_ts, e_start_ts, e_end_ts, e_title, e_alias, e_notice, e_text, e_address, 
+			e_location_id, e_latitude, e_longitude, e_gps_lat, e_gps_lng, e_location_pids, u_id 
+			FROM events`;
 
 		return this.constructor.conn().s(sql);
 	}
@@ -245,8 +235,9 @@ class Events extends BaseModel
 	_insImage(e_id)
 	{
 		let now_ts = Moment().unix();
-		let sql = 'INSERT INTO events_image (e_id, ei_create_ts, ei_update_ts)' +
-			'VALUES (?, ?, ?);';
+		let sql =
+			`INSERT INTO events_image (e_id, ei_create_ts, ei_update_ts)
+			VALUES (?, ?, ?);`;
 
 		return this.constructor.conn().ins(sql, [e_id, now_ts, now_ts]);
 	}

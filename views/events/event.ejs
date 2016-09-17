@@ -1,67 +1,62 @@
-<div class="row singleTrek">
-	<% let hasDescrip  = (trek.mtt_descrip != '')%>
-	<% if(hasDescrip){%><div class="col-xs-12 col-md-6"><%-trek.mtt_descrip%></div><%}%>
+<h2><%-event.e_title%></h2>
+<div class="row eventData">
+	<div class="col-xs-12 col-md-6"><%-event.e_text%></div>
 	<div class="col-xs-12 col-md-6">
-		<p><strong>контакты:</strong></p>
+		<p><strong>Где пройдет:</strong></p>
 		<ul>
-			<li><strong>адрес:</strong> <%=trek.mtt_address%></li>
+			<li><strong>адрес:</strong> <%=event.e_address%></li>
 			<li class="trekCoords"><strong>координаты:</strong><br/>
-				широта: <%-trek.mtt_latitude + " (" + trek.mtt_gps_lat + ")"%><br/>
-				долгота: <%-trek.mtt_longitude + " (" + trek.mtt_gps_lng + ")"%>
+				широта: <%-event.e_latitude + " (" + event.e_gps_lat + ")"%><br/>
+				долгота: <%-event.e_longitude + " (" + event.e_gps_lng + ")"%>
 			</li>
-			<% if (trek.mtt_phones)		{%><li><strong>телефон:</strong> <%=trek.mtt_phones%></li><% }%>
-			<% if (trek.mtt_website)	{%><li><strong>сайт:</strong> <a href="http://<%=trek.mtt_website%>" target="_blank"><%=trek.mtt_website%></a></li><% }%>
-			<% if (trek.mtt_email)		{%><li><strong>e-mail:</strong> <%=trek.mtt_email%></li><% }%>
 		</ul>
+		<div class="eventMap">
+			<div id="eventMap"></div>
+		</div>
 	</div>
-	<div class="col-xs-12 col-md-<%=(hasDescrip ? 6 : 12)%> singleTrekMap">
-		<div id="mttMap"></div>
-	</div>
+	<div class="col-xs-12 col-md-6 eventImagesContainer"><%- include event_images.ejs %></div>
 </div>
 <script src="/js/mcMap.js" type="text/javascript"></script>
 <script type="text/javascript">
 //<!--
 (function($)
 {
-	var trek = MCJS["trek"] || {};
+	var event = MCJS["event"] || {};
 	var mapState = {
 		 controls: ["typeSelector"]
-		, center: [trek["mtt_latitude"], trek["mtt_longitude"]]
+		, center: [event["e_latitude"], event["e_longitude"]]
 		, zoom: 15
 		, type: 'yandex#hybrid'
 		//, behaviors: ["default"]
 	};
 	var mapOptions = {};
-	var MttMcMap = new McMap('mttMap', {state: mapState, options: mapOptions});
+	var EventMcMap = new McMap('eventMap', {state: mapState, options: mapOptions});
 
-	MttMcMap.init()
-			.then(function (MttMap)
+	EventMcMap.init()
+			.then(function (EventMap)
 			{
-				MttMap.behaviors.disable('drag');
-				MttMap.behaviors.disable('scrollZoom');
-				MttMap.behaviors.disable('scrollZoom');
+				EventMap.behaviors.disable('drag');
+				EventMap.behaviors.disable('scrollZoom');
+				EventMap.behaviors.disable('scrollZoom');
 
 				var coords = [
-					"широта: " + roundNumber(MttMap.getCenter()[0], 6) + ' (' +trek.mtt_gps_lat+')',
-					"долгота: " + 	roundNumber(MttMap.getCenter()[1], 6) + ' (' +trek.mtt_gps_lng+')'
+					"широта: " + roundNumber(EventMap.getCenter()[0], 6) + ' (' +event.e_gps_lat+')',
+					"долгота: " + 	roundNumber(EventMap.getCenter()[1], 6) + ' (' +event.e_gps_lng+')'
 				].join('<br/>');
 
-				var contentBody = ['<strong>адрес:</strong> '+trek.mtt_address];
-
-				if (trek.mtt_phones)
-					contentBody.push('<strong>телефон:</strong> '+trek.mtt_phones);
-
+				var contentBody = ['<strong>адрес:</strong> '+event.e_address];
+				
 				contentBody.push('<strong>координаты:</strong><br/>'+coords);
 
 				contentBody = '<ul><li>'+ contentBody.join('</li><li>') + '</li></ul>';
 
-				var mttPlacemark = new ymaps.Placemark(
-						MttMap.getCenter()
+				var eventPlacemark = new ymaps.Placemark(
+						EventMap.getCenter()
 						,	{
 							/* Свойства*/
-							iconContent: trek.mtt_name
-							, iconCaption: trek.mtt_name
-							,	balloonContentHeader: trek.mtt_name
+							iconContent: event.e_title
+							, iconCaption: event.e_title
+							,	balloonContentHeader: event.e_title
 							,	balloonContentBody: contentBody
 							,	balloonContentFooter: ''
 						}
@@ -70,9 +65,9 @@
 							preset: 'islands#blueDotIconWithCaption'
 							,	draggable: false
 						});
-				MttMap.geoObjects.add(mttPlacemark);
+				EventMap.geoObjects.add(eventPlacemark);
 
-				return ymaps.vow.resolve(MttMap);
+				return ymaps.vow.resolve(EventMap);
 			})
 			.fail(function (err)
 			{
