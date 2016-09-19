@@ -1,4 +1,8 @@
+<div class="eventImagesWrapper">
+<div class="eventImagesContainer">
 <% eventImages.forEach(function (image)
 {
-	%><img src="<%=image["previews"]["512_384"]%>" class="eventImage" data-img-id="<%=image["ei_id"]%>"/><%
+	%><div class="eventImageItem"><img src="<%=image["previews"]["512_384"]%>" class="eventImage" data-img-id="<%=image["ei_id"]%>"/></div><%
 });%>
+</div>
+</div>

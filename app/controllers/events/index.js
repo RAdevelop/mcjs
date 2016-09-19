@@ -63,12 +63,15 @@ class Events extends Base
 				if (event)
 				{
 					tplData["eventImages"] = event["eventImages"];
-					
-					this.getRes().expose(event, 'event');
+
 					this.view.setPageTitle(event["e_title"]);
 					this.view.setPageDescription(this.cheerio(event["e_notice"]).text());
 
+					if (event["eventImages"] && event["eventImages"][0] && event["eventImages"][0]["previews"]["512_384"])
+					this.view.setPageOgImage(event["eventImages"][0]["previews"]["512_384"]);
+
 					this.view.setPageH1(event.e_title);
+
 					//экспрот данных в JS на клиента
 					this.getRes().expose(tplData["event"], 'eventData');
 					//this.getRes().expose(event["eventImages"], 'eventImages');

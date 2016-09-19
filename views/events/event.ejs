@@ -1,6 +1,6 @@
 <h2><%-event.e_title%></h2>
 <div class="row eventData">
-	<div class="col-xs-12 col-md-6"><%-event.e_text%></div>
+	<div class="col-xs-12 col-md-6 eventText"><%-event.e_text%></div>
 	<div class="col-xs-12 col-md-6">
 		<p><strong>Где пройдет:</strong></p>
 		<ul>
@@ -14,14 +14,23 @@
 			<div id="eventMap"></div>
 		</div>
 	</div>
-	<div class="col-xs-12 col-md-6 eventImagesContainer"><%- include event_images.ejs %></div>
+	<div class="col-xs-12 col-md-6"><%- include event_images.ejs %></div>
 </div>
 <script src="/js/mcMap.js" type="text/javascript"></script>
+<script src="/js/jquery/mcImage.js" type="text/javascript"></script>
 <script type="text/javascript">
 //<!--
 (function($)
 {
-	var event = MCJS["event"] || {};
+	var event = MCJS["eventData"] || {};
+
+	$('mcImage').mcImage({
+		imgFieldId: "ei_id"//название поля id у картинки в json'e
+		, albumImages: '.eventData img.eventImage' //селектор для списка картинок
+		, jsonImageList: event["eventImages"] || {}
+		, jsPreviewsList: event["eventImagesPreviews"] || []
+	});
+
 	var mapState = {
 		 controls: ["typeSelector"]
 		, center: [event["e_latitude"], event["e_longitude"]]

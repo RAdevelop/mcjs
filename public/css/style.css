@@ -61,6 +61,25 @@ body.mce-content-body,
 	line-height: 50px;
 }
 
+.sharingSocNet
+{
+	position: relative;
+	display: inline-block;
+	vertical-align: middle;
+	line-height: 2em;
+	float: right;
+	white-space: nowrap;
+}
+.sharingSocNet a
+{
+	display: inline-block;
+	margin: 0 5px 0 5px;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: middle;
+	cursor: pointer;
+}
+
 .userProfileTop
 {
 	display: inline-block;
@@ -142,6 +161,61 @@ body.mce-content-body,
 .btnsToolbar .toolbarBtn
 {
 	min-width: 89px;
+}
+
+.imageDialog .modal-header
+{
+	padding: 15px 10px 5px 10px;
+}
+.imageDialog .modal-body
+{
+	padding: 0;
+	position: relative;
+}
+
+.imageDialog .modal-body .imageModalBody
+{
+	border: 1px solid red;
+
+	min-width: calc(100%);
+	min-width: -moz-calc(100%);
+	min-width: -webkit-calc(100%);
+
+	text-align: center;
+	display: block;
+	/*float: left;*/
+}
+.imageDialog .modal-body .imageModalBody img.imageInModal
+{
+	max-width: calc(100%);
+	max-width: -moz-calc(100%);
+	max-width: -webkit-calc(100%);
+}
+
+@media (min-width: 768px)
+{
+	.imageDialog
+	{
+		width: 700px;
+		margin: 10px auto;
+	}
+}
+
+@media (max-width: 1024px)
+{
+	.imageDialog .modal-body .imageModalBody
+	{
+		min-width: calc(100%);
+		min-width: -moz-calc(100%);
+		min-width: -webkit-calc(100%);
+	}
+
+	.imageDialog .modal-body .imageModalBody
+	{
+		min-height: calc(70%);
+		min-height: -moz-calc(70%);
+		min-height: -webkit-calc(70%);
+	}
 }
 
 /******************************** SITE MENU */
@@ -1127,19 +1201,28 @@ nav.pagesNavigation
 
 .eventData ul.eventImages li
 {
-	overflow: hidden;
 	list-style-type: none;
-	display: inline-block;
 }
-
+.eventImagesContainer .eventImageItem,
+.eventData ul.eventImages li
+{
+	text-align: center;
+	position: relative;
+	display: inline-block;
+	overflow: hidden;
+	margin: 0 10px 10px 0;
+	max-width: 216px;
+	max-height: 162px;
+}
+.eventImagesContainer .eventImageItem
+{
+	margin: 0 5px 10px 5px;
+}
 .eventImagesWrapper
 {
 
 }
-.eventImagesWrapper legend
-{
 
-}
 .eventImagesWrapper legend a:hover
 {
 	cursor: pointer;
@@ -1148,23 +1231,12 @@ nav.pagesNavigation
 .eventImagesWrapper .eventImagesContainer
 {
 	overflow: hidden;
-}
-.eventImagesWrapper .eventImagesContainer .eventImage,
-.eventImage
-{
-	float: left;
-	overflow: hidden;
-	margin: 0 10px 10px 0;
-	max-width: 216px;
-	max-height: 162px;
+	text-align: center;
+	display: block;
+	margin: 10px 0 0 0;
 }
 
-.eventImagesWrapper .eventImagesContainer .eventImage
-{
-	cursor: move;
-}
 
-.eventImagesWrapper .eventImagesContainer img.eventImage,
 img.eventImage
 {
 	cursor: move;
@@ -1183,6 +1255,103 @@ img.eventImage
 .eventData .eventMap #eventMap
 {
 	height: 100%;
+}
+
+@media (min-width: 1200px)
+{
+	.eventImagesContainer .eventImageItem
+	{
+		max-width: 257px;
+		max-height: 192px;
+	}
+	.eventData ul.eventImages li
+	{
+		max-width: 389px;
+		max-height: 291px;
+	}
+}
+@media (min-width: 992px) and (max-width: 1200px)
+{
+
+}
+@media (max-width: 1024px)
+{
+
+}
+@media (min-width: 768px) and (max-width: 992px)
+{
+
+}
+
+@media (min-width: 768px) and (max-width: 1024px)
+{
+	.eventImagesContainer .eventImageItem
+	{
+		max-width: 231px;
+		max-height: 173px;
+	}
+	.eventData ul.eventImages li
+	{
+		max-height: 384px;
+
+		max-width: calc(100%);
+		max-width: -moz-calc(100%);
+		max-width: -webkit-calc(100%);
+	}
+}
+@media (max-width: 768px)
+{
+	.eventImagesContainer .eventImageItem
+	{
+		max-width: 236px;
+		max-height: 177px;
+	}
+	.eventData ul.eventImages li
+	{
+		max-width: 357px;
+		max-height: 267px;
+	}
+}
+@media (max-width: 768px) and (orientation : landscape)
+{
+	.eventImagesContainer .eventImageItem
+	{
+		max-width: 308px;
+		max-height: 231px;
+	}
+	.eventData ul.eventImages li
+	{
+		max-width: 306px;
+		max-height: 229px;
+	}
+}
+@media (max-width: 568px)
+{
+	.eventImagesContainer .eventImageItem,
+	.eventData ul.eventImages li
+	{
+		max-height: 281px;
+		max-width: calc(100%);
+		max-width: -moz-calc(100%);
+		max-width: -webkit-calc(100%);
+	}
+}
+
+@media (max-width: 568px) and (orientation : landscape)
+{
+	.eventImagesContainer .eventImageItem,
+	.eventData ul.eventImages li
+	{
+		max-height: 384px;
+		max-width: calc(100%);
+		max-width: -moz-calc(100%);
+		max-width: -webkit-calc(100%);
+	}
+}
+
+@media (min-width: 320px) and (max-width: 480px)
+{
+
 }
 /**********  END СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ **************/
 
