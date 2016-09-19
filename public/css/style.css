@@ -1273,8 +1273,8 @@ img.eventImage
 	}
 	.eventData ul.eventImages li
 	{
-		max-width: 389px;
-		max-height: 291px;
+		max-width: 288px;
+		max-height: 216px;
 	}
 }
 @media (min-width: 992px) and (max-width: 1200px)
@@ -1332,6 +1332,15 @@ img.eventImage
 		max-height: 229px;
 	}
 }
+@media (max-width: 640px)
+{
+	.eventImagesContainer .eventImageItem,
+	.eventData ul.eventImages li
+	{
+		max-width: 293px;
+		max-height: 219px;
+	}
+}
 @media (max-width: 568px)
 {
 	.eventImagesContainer .eventImageItem,
@@ -1349,10 +1358,8 @@ img.eventImage
 	.eventImagesContainer .eventImageItem,
 	.eventData ul.eventImages li
 	{
-		max-height: 384px;
-		max-width: calc(100%);
-		max-width: -moz-calc(100%);
-		max-width: -webkit-calc(100%);
+		max-width: 255px;
+		max-height: 191px;
 	}
 }
 

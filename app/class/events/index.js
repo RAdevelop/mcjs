@@ -72,9 +72,9 @@ class Events extends Base
 	 *
 	 * @returns {Promise.<TResult>|*}
 	 */
-	getAll()
+	getEvents(i_yy, i_mm, i_dd, l_id = null)
 	{
-		return this.model('events').getAll();
+		return this.model('events').getEvents(i_yy, i_mm, i_dd, l_id);
 	}
 
 	/**

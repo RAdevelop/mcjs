@@ -42,84 +42,30 @@ class Events extends Base
 	 */
 	indexActionGet(cb)
 	{
-		return this.eventData(this.routeArgs)
-			.bind(this)
-			.spread(function (event, eventList)
-			{
-				return this.getUser(this.getUserId())
-					.then(function (userData)
-					{
-						return Promise.resolve([userData, event, eventList]);
-					})
-			})
-			.spread(function(userData, event, eventList)
-			{
-				let tplData = {};
+		let tplData = {
+			event: null,
+			eventList: null,
+			eventLocations: null
+		};
 
-				tplData.event = event || null;
-				tplData.eventList = eventList || null;
-
-				let tplFile = "events";
-				if (event)
-				{
-					tplData["eventImages"] = event["eventImages"];
-
-					this.view.setPageTitle(event["e_title"]);
-					this.view.setPageDescription(this.cheerio(event["e_notice"]).text());
-
-					if (event["eventImages"] && event["eventImages"][0] && event["eventImages"][0]["previews"]["512_384"])
-					this.view.setPageOgImage(event["eventImages"][0]["previews"]["512_384"]);
-
-					this.view.setPageH1(event.e_title);
-
-					//экспрот данных в JS на клиента
-					this.getRes().expose(tplData["event"], 'eventData');
-					//this.getRes().expose(event["eventImages"], 'eventImages');
-					//this.getRes().expose(event["eventImagesPreviews"], 'eventImagesPreviews');
-				}
-				else
-				{
-					this.getRes().expose(eventList, 'eventList');
-					//this.getRes().expose(eventLocations, 'eventLocations');
-				}
-
-				this.view.setTplData(tplFile, tplData);
-				this.view.addPartialData("user/left", {user: userData});
-				//this.view.addPartialData("user/right", {title: 'right_col'});
-
-				return cb(null);
-			})
-			.catch(function(err)
-			{
-				return cb(err);
-			});
-	}
-
-	/**
-	 * что показывать - указанный трек, или список треков...
-	 *
-	 * @param routeArgs - json данные параметров запроса
-	 * @returns {Promise}
-	 */
-	eventData(routeArgs)
-	{
-		let {i_event_id=null, s_event_alias=null, i_yy=null, i_mm=null, i_dd=null} = routeArgs;
+		let {i_event_id=null, s_event_alias=null} = this.routeArgs;
 
 		if (i_event_id)
-			return this.event(i_event_id, s_event_alias);
+			return this.event(cb, tplData, i_event_id, s_event_alias);
 
-		return this.eventList();
+		return this.eventList(cb, tplData, this.routeArgs);
 	}
 
 	/**
 	 * выбранное событие
 	 *
+	 * @param cb
+	 * @param tplData
 	 * @param i_event_id
 	 * @param s_alias
-	 * @returns Promise spread data [event, eventList]
 	 * @throws Errors.HttpStatusError
 	 */
-	event(i_event_id, s_alias)
+	event(cb, tplData, i_event_id, s_alias)
 	{
 		return this.getClass('events').get(i_event_id)
 			.bind(this)
@@ -143,106 +89,92 @@ class Events extends Base
 				event["eventImages"] = images;
 				event["eventImagesPreviews"] = allPreviews;
 
-				return Promise.resolve([event, null]);
+				return Promise.resolve(event);
+			})
+			.then(function (event)
+			{
+				let tplFile = "events";
+
+				tplData["event"] = event;
+				tplData["eventImages"] = event["eventImages"];
+
+				this.view.setPageTitle(event["e_title"]);
+				this.view.setPageDescription(event["e_notice"]);
+
+				if (event["eventImages"] && event["eventImages"][0] && event["eventImages"][0]["previews"]["512_384"])
+					this.view.setPageOgImage(event["eventImages"][0]["previews"]["512_384"]);
+
+				this.view.setPageH1(event.e_title);
+
+				//экспрот данных в JS на клиента
+				this.getRes().expose(tplData["event"], 'eventData');
+
+
+				this.view.setTplData(tplFile, tplData);
+				//this.view.addPartialData("user/left", {user: userData});
+				//this.view.addPartialData("user/right", {title: 'right_col'});
+
+				return cb(null);
+			})
+			.catch(function(err)
+			{
+				return cb(err);
 			});
 	}
 
 	/**
 	 * список событий
-	 *
-	 * @returns Promise spread data [event, eventList]
+	 * @param cb
+	 * @param tplData
+	 * @param routeArgs
 	 */
-	eventList()
+	eventList(cb, tplData, routeArgs)
 	{
+		let {i_yy=null, i_mm=null, i_dd=null} = routeArgs;
+		if (!i_yy && !i_mm && !i_dd)
+		{
+			let date = new Date();
+			i_yy=date.getFullYear();
+			i_mm=date.getMonth()+1;
+			i_dd=date.getDate();
+		}
+
+		let l_id = this.getReq().query["l_id"] || null;
+
 		return Promise.props({
-			eventList: this.getClass("events").getAll(),
+			eventList: this.getClass("events").getEvents(i_yy, i_mm, i_dd, l_id),
 			eventLocations: this.getClass("events").getLocations()
 		})
+			.bind(this)
 			.then(function (proprs)
 			{
-				proprs.eventLocations = proprs.eventLocations.reverse();
-				proprs.eventList = proprs.eventList.reverse();
+				return Promise.resolve([proprs.eventList, proprs.eventLocations, l_id]);
+			})
+			.spread(function(eventList, eventLocations, l_id)
+			{
+				let tplFile = "events";
 
-				let length = proprs.eventList.length;
+				tplData["eventList"] = eventList;
+				
+				tplData["eventLocations"] = {};
+				tplData["eventLocations"]["list"] = eventLocations;
+				tplData["eventLocations"]["l_id"] = l_id;
 
-				for(let t = 0; t < length; t++)
-				{
-					for(let l = 0; l < proprs.eventLocations.length; l++)
-					{
-						if (
-							proprs.eventList.hasOwnProperty(t)
-							&&	proprs.eventList[t]["e_location_id"] == proprs.eventLocations[l]["l_id"]
-						)
-						{
-							if (!proprs.eventLocations[l].hasOwnProperty("treks"))
-								proprs.eventLocations[l]["treks"] = [];
+				tplData["selectedDate"] = {i_yy:i_yy, i_mm:i_mm, i_dd:i_dd};
 
-							proprs.eventLocations[l]["treks"].push(proprs.eventList[t]);
-
-							proprs.eventList.splice(t, 1);
-
-							length--;
-							t--;
-						}
-					}
-				}
-
-				length = proprs.eventList.length;
-
-				for(let t = 0; t < length; t++)
-				{
-					let pids = (proprs.eventList[t]["e_location_pids"]).split(',');
-
-					for(let l = 0; l < proprs.eventLocations.length; l++)
-					{
-
-						let last = pids.lastIndexOf(proprs.eventLocations[l]["l_id"]);
-
-						if (last == -1)
-							continue;
-
-						if (!proprs.eventLocations[l].hasOwnProperty("treks"))
-							proprs.eventLocations[l]["treks"] = [];
-
-						proprs.eventLocations[l]["treks"].push(proprs.eventList[t]);
-
-						proprs.eventList.splice(t, 1);
-
-						length--;
-						t--;
-
-						break;
-					}
-				}
-
-				proprs.eventLocations = proprs.eventLocations.reverse();
+				this.getRes().expose(eventList, 'eventList');
+				//this.getRes().expose(eventLocations, 'eventLocations');
 
 
-				let pIndex, eventList = [];
-				proprs.eventLocations.forEach(function (locItem, locIndex, locNames)
-				{
-					if (locItem["l_e_level"] <= 1)
-					{
-						if (locItem["l_e_level"] == 1)
-						{
-							pIndex = locIndex;
+				this.view.setTplData(tplFile, tplData);
+				//this.view.addPartialData("user/left", {user: userData});
+				//this.view.addPartialData("user/right", {title: 'right_col'});
 
-							if (!locNames[pIndex].hasOwnProperty("child"))
-								locNames[pIndex]["child"] = [];
-						}
-
-						eventList.push(locItem);
-					}
-					else
-					{
-						locNames[pIndex]["child"].push(locItem);
-					}
-
-				});
-
-				proprs = null;
-
-				return Promise.resolve([null, eventList]);
+				return cb(null);
+			})
+			.catch(function(err)
+			{
+				return cb(err);
 			});
 	}
 
@@ -270,7 +202,8 @@ class Events extends Base
 				e_gps_lat: '',
 				e_gps_lng: '',
 				u_id: ''
-			}
+			},
+			eventLocations: null
 		};
 
 		let tplFile = "events";
@@ -432,7 +365,7 @@ class Events extends Base
 				this.getRes().expose(FileUpload.exposeUploadOptions('events'), 'eventsUploadOpts');
 
 				let tplFile = "events";
-				let tplData = { event: event, eventImages: images };
+				let tplData = { event: event, eventImages: images, eventLocations: null };
 				this.view.setTplData(tplFile, tplData);
 
 				this.view.setPageTitle(event.e_title);

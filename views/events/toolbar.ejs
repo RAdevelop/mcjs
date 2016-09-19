@@ -12,6 +12,23 @@
 		<div class="btn-group btn-group-sm" role="group" aria-label="список событий">
 			<a href="<%=menuItem.m_path+'/'%>" class="btn btn-default toolbarBtn"><span class="fa fa-fw fa-list"></span> все события</a>
 		</div>
+		<% if (eventLocations && eventLocations.list && eventLocations.list.length){%>
+		<div class="btn-group btn-group-sm" role="group" aria-label="список событий на карте">
+			<select id="eventLocations">
+				<option value="<%=_reqBaseUrl%>/"></option>
+				<%
+				let locSelected, locVal, locPaddingLeft = '';
+				eventLocations.list.forEach(function (eLoc)
+				{
+					locSelected = (eventLocations["l_id"] == eLoc["l_id"] ? 'selected="selected"' : '');
+					locVal = [_reqBaseUrl, _reqPath].join('/') + '/?l_id='+eLoc["l_id"];
+					locPaddingLeft = '&nbsp;'.repeat((eLoc["l_e_level"]*2));
+
+					%><option <%=locSelected%> value="<%=locVal%>"><%-locPaddingLeft%><%=eLoc["l_name"]%></option><%
+				});%>
+			</select>
+		</div>
+		<% }%>
 		<div class="btn-group btn-group-sm" role="group" aria-label="список событий на карте">
 			<a href="<%=menuItem.m_path+'/map/'%>" class="btn btn-default toolbarBtn"><span class="fa fa-fw fa-map-marker"></span> на карте</a>
 		</div>

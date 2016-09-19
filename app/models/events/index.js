@@ -213,14 +213,25 @@ class Events extends BaseModel
 	 *
 	 * @returns {Promise.<TResult>|*}
 	 */
-	getAll()
+	getEvents(i_yy, i_mm, i_dd, l_id = null)
 	{
+		let sqlData = [];
 		let sql =
-			`SELECT e_id, e_create_ts, e_update_ts, e_start_ts, e_end_ts, e_title, e_alias, e_notice, e_text, e_address, 
-			e_location_id, e_latitude, e_longitude, e_gps_lat, e_gps_lng, e_location_pids, u_id 
-			FROM events`;
+			`SELECT e.e_id, e.e_create_ts, e.e_update_ts, e.e_start_ts, e.e_end_ts, e.e_title, e.e_alias, 
+			e.e_notice, e.e_text, e.e_address, 
+			e.e_location_id, e.e_latitude, e.e_longitude, e.e_gps_lat, e.e_gps_lng, e.e_location_pids, 
+			e.u_id 
+			FROM events AS e`;
 
-		return this.constructor.conn().s(sql);
+		if (l_id > 0)
+		{
+			sql += `
+			JOIN events_locations AS el ON(el.e_id = e.e_id AND el.l_id = ? )
+			GROUP BY e.e_id`;
+			sqlData.push(l_id);
+		}
+		
+		return this.constructor.conn().s(sql, sqlData);
 	}
 
 	/**
