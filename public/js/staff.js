@@ -3,7 +3,6 @@
  * разные функции помошники
  */
 
-//// для кастомных кнопок шаринга в соц сетях
 //https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent
 function fixedEncodeURIComponent(str)
 {

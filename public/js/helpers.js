@@ -50,7 +50,7 @@ jQuery(document).ready(function ()
 		{
 			var self = this;
 			var $sharingSocNet = $('.sharingSocNet');
-			var socList = $sharingSocNet.attr('data-soc-list').split(',');
+			var socList = $sharingSocNet.attr('data-soc-list').split(',') || [];
 			var socLinks = '';
 
 			socList.forEach(function (socName)
@@ -59,7 +59,7 @@ jQuery(document).ready(function ()
 				{
 					case 'vk':
 
-						socLinks += '<a rel="nofollow" title="ВКонтакте" href="javascript:void(0);" class=""><i class="fa fa-vk"></i></a>';
+						socLinks += '<a rel="nofollow" title="ВКонтакте" href="javascript:void(0);" class=""><i class="fa fa-fw fa-vk"></i></a>';
 
 						$(document).on('click', '.sharingSocNet .fa-vk', function ()
 						{
@@ -69,7 +69,7 @@ jQuery(document).ready(function ()
 						break;
 
 					case 'ok':
-						socLinks += '<a rel="nofollow" title="Одноклассники" href="javascript:void(0);"><i class="fa fa-odnoklassniki"></i></a>';
+						socLinks += '<a rel="nofollow" title="Одноклассники" href="javascript:void(0);"><i class="fa fa-fw fa-odnoklassniki"></i></a>';
 
 						$(document).on('click', '.sharingSocNet .fa-odnoklassniki', function ()
 						{
@@ -78,7 +78,7 @@ jQuery(document).ready(function ()
 						break;
 
 					case 'fb':
-						socLinks += '<a rel="nofollow" title="FaceBook" href="javascript:void(0);"><i class="fa fa-facebook"></i></a>';
+						socLinks += '<a rel="nofollow" title="FaceBook" href="javascript:void(0);"><i class="fa fa-fw fa-facebook"></i></a>';
 
 						$(document).on('click', '.sharingSocNet .fa-facebook', function ()
 						{
@@ -87,7 +87,7 @@ jQuery(document).ready(function ()
 						break;
 
 					case 'tw':
-						socLinks += '<a rel="nofollow" title="Twitter" href="javascript:void(0);"><i class="fa fa-twitter"></i></a>';
+						socLinks += '<a rel="nofollow" title="Twitter" href="javascript:void(0);"><i class="fa fa-fw fa-twitter"></i></a>';
 
 						$(document).on('click', '.sharingSocNet .fa-twitter', function ()
 						{
@@ -96,7 +96,7 @@ jQuery(document).ready(function ()
 						break;
 
 					case 'gp':
-						socLinks += '<a rel="nofollow" title="Google+" href="javascript:void(0);"><i class="fa fa-google-plus"></i></a>';
+						socLinks += '<a rel="nofollow" title="Google+" href="javascript:void(0);"><i class="fa fa-fw fa-google-plus"></i></a>';
 
 						$(document).on('click', '.sharingSocNet .fa-google-plus', function ()
 						{
@@ -109,7 +109,7 @@ jQuery(document).ready(function ()
 			if (socLinks)
 			{
 				socLinks = 'поделиться в: '+socLinks;
-				$sharingSocNet.append(socLinks);
+				$sharingSocNet.empty().append(socLinks);
 			}
 		},
 		socialSharing: function (socName, shareUrl)

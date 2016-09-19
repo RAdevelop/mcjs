@@ -73,7 +73,7 @@ body.mce-content-body,
 .sharingSocNet a
 {
 	display: inline-block;
-	margin: 0 5px 0 5px;
+	margin: 0 2px 0 2px;
 	text-align: center;
 	white-space: nowrap;
 	vertical-align: middle;
@@ -163,6 +163,7 @@ body.mce-content-body,
 	min-width: 89px;
 }
 
+/******************************** Общие стили для просмотра фоток а диалогах */
 .imageDialog .modal-header
 {
 	padding: 15px 10px 5px 10px;
@@ -217,6 +218,7 @@ body.mce-content-body,
 		min-height: -webkit-calc(70%);
 	}
 }
+/******************************** END Общие стили для просмотра фоток а диалогах */
 
 /******************************** SITE MENU */
 
@@ -1237,6 +1239,11 @@ nav.pagesNavigation
 }
 
 
+.eventData .eventImagesWrapper
+{
+	display: none;
+}
+
 img.eventImage
 {
 	cursor: move;
@@ -1245,7 +1252,7 @@ img.eventImage
 
 .eventData img.eventImage
 {
-	cursor: auto;
+	cursor: pointer;
 }
 .eventData .eventMap
 {
