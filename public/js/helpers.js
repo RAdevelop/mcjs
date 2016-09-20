@@ -108,7 +108,7 @@ jQuery(document).ready(function ()
 
 			if (socLinks)
 			{
-				socLinks = 'поделиться в: '+socLinks;
+				socLinks = '<i class="fa fa-fw fa-share-alt"></i>&nbsp;поделиться: '+socLinks;
 				$sharingSocNet.empty().append(socLinks);
 			}
 		},

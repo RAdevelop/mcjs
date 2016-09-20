@@ -1264,6 +1264,11 @@ img.eventImage
 	height: 100%;
 }
 
+.eventLocationsBtnGroup select
+{
+	max-width: 150px;
+}
+
 @media (min-width: 1200px)
 {
 	.eventImagesContainer .eventImageItem

@@ -1,37 +1,43 @@
 <div class="row" xmlns="http://www.w3.org/1999/html">
 	<div class="btn-toolbar btnsToolbar" role="toolbar" aria-label="Опции для событий">
 		<div class="btn-group btn-group-sm" role="group" aria-label="Опции для событий">
-			<button type="button" class="btn btn-default dropdown-toggle toolbarBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="fa fa-fw fa-cog"></span> опции <span class="caret"></span></button>
+			<button type="button" class="btn btn-default dropdown-toggle toolbarBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-fw fa-cog"></i> опции <i class="caret"></i></button>
 			<ul class="dropdown-menu ">
-				<li><a href="<%=menuItem.m_path+'/add/'%>" ><span class="fa fa-fw fa-plus-square-o"></span> добавить событие</a></li>
+				<li><a href="<%=menuItem.m_path+'/add/'%>" ><i class="fa fa-fw fa-plus-square-o"></i> добавить событие</a></li>
 				<% if (event && event.e_id) {%>
-				<li><a href="<%=menuItem.m_path+'/edit/'+event.e_id%>/"><span class="fa fa-fw fa-edit"></span> редактировать событие</a></li>
+				<li><a href="<%=menuItem.m_path+'/edit/'+event.e_id%>/"><i class="fa fa-fw fa-edit"></i> редактировать событие</a></li>
 				<% }%>
 			</ul>
 		</div>
 		<div class="btn-group btn-group-sm" role="group" aria-label="список событий">
-			<a href="<%=menuItem.m_path+'/'%>" class="btn btn-default toolbarBtn"><span class="fa fa-fw fa-list"></span> все события</a>
+			<a href="<%=menuItem.m_path+'/'%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-list"></i> все события</a>
+		</div>
+		<div class="btn-group btn-group-sm" role="group" aria-label="список событий на карте">
+			<a href="<%=menuItem.m_path+'/map/'%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-map-o"></i> на карте</a>
 		</div>
 		<% if (eventLocations && eventLocations.list && eventLocations.list.length){%>
-		<div class="btn-group btn-group-sm" role="group" aria-label="список событий на карте">
-			<select id="eventLocations">
-				<option value="<%=_reqBaseUrl%>/"></option>
-				<%
-				let locSelected, locVal, locPaddingLeft = '';
+		<div class="btn-group btn-group-sm" role="group" aria-label="Выбор региона">
+			<button type="button" class="btn btn-default dropdown-toggle toolbarBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-fw fa-map-marker"></i><%
+				let selectedReg = 'регионы';
 				eventLocations.list.forEach(function (eLoc)
 				{
-					locSelected = (eventLocations["l_id"] == eLoc["l_id"] ? 'selected="selected"' : '');
-					locVal = [_reqBaseUrl, _reqPath].join('/') + '/?l_id='+eLoc["l_id"];
-					locPaddingLeft = '&nbsp;'.repeat((eLoc["l_e_level"]*2));
+					if (eventLocations["l_id"] == eLoc["l_id"])
+						selectedReg = eLoc["l_name"];
 
-					%><option <%=locSelected%> value="<%=locVal%>"><%-locPaddingLeft%><%=eLoc["l_name"]%></option><%
+				});%><%=selectedReg%>&nbsp;<i class="caret"></i></button>
+			<ul class="dropdown-menu ">
+				<li><a href="<%=_reqBaseUrl%>/">все события</a></li><%
+				let cssLocSelected, locHref;
+				eventLocations.list.forEach(function (eLoc, iLoc)
+				{
+					cssLocSelected = (eventLocations["l_id"] == eLoc["l_id"] ? 'selected' : '');
+					locHref = [_reqBaseUrl, _reqPath].join('/') + '?l_id='+eLoc["l_id"];
+				%><li class="<%=cssLocSelected%>" style="padding-left: <%=eLoc["l_e_level"]%>0px;"><a href="<%=locHref%>" ><%=eLoc["l_name"]%></a></li><%
+				if (eLoc[iLoc+1] && eLoc[iLoc+1]["l_level"] == 1){ %><li role="separator" class="divider"></li><%}
 				});%>
-			</select>
+			</ul>
 		</div>
 		<% }%>
-		<div class="btn-group btn-group-sm" role="group" aria-label="список событий на карте">
-			<a href="<%=menuItem.m_path+'/map/'%>" class="btn btn-default toolbarBtn"><span class="fa fa-fw fa-map-marker"></span> на карте</a>
-		</div>
 		<div class="sharingSocNet" data-soc-list="vk,ok,fb,tw,gp"></div>
 	</div>
 
