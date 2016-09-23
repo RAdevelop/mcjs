@@ -89,11 +89,19 @@ class Events extends Base
 				event["eventImages"] = images;
 				event["eventImagesPreviews"] = allPreviews;
 
-				return Promise.resolve(event);
+				return this.getClass("events").getLocations()
+					.then(function (eventLocations)
+					{
+						return Promise.resolve([event, eventLocations]);
+					});
 			})
-			.then(function (event)
+			.spread(function (event, eventLocations)
 			{
 				let tplFile = "events";
+
+				tplData["eventLocations"] = {};
+				tplData["eventLocations"]["list"] = eventLocations;
+				tplData["eventLocations"]["l_id"] = event["e_location_id"];
 
 				tplData["event"] = event;
 				tplData["eventImages"] = event["eventImages"];

@@ -25,14 +25,14 @@
 						selectedReg = eLoc["l_name"];
 
 				});%><%=selectedReg%>&nbsp;<i class="caret"></i></button>
-			<ul class="dropdown-menu ">
+			<ul class="dropdown-menu eventLocationsMenu">
 				<li><a href="<%=_reqBaseUrl%>/">все события</a></li><%
 				let cssLocSelected, locHref;
 				eventLocations.list.forEach(function (eLoc, iLoc)
 				{
 					cssLocSelected = (eventLocations["l_id"] == eLoc["l_id"] ? 'selected' : '');
 					locHref = [_reqBaseUrl, _reqPath].join('/') + '?l_id='+eLoc["l_id"];
-				%><li class="<%=cssLocSelected%>" style="padding-left: <%=eLoc["l_e_level"]%>0px;"><a href="<%=locHref%>" ><%=eLoc["l_name"]%></a></li><%
+				%><li class="<%=cssLocSelected%>"><a href="<%=locHref%>"><span style="padding-left: <%=eLoc["l_e_level"]%>0px;"><%=eLoc["l_name"]%></span></a></li><%
 				if (eLoc[iLoc+1] && eLoc[iLoc+1]["l_level"] == 1){ %><li role="separator" class="divider"></li><%}
 				});%>
 			</ul>

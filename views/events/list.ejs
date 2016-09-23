@@ -1,6 +1,98 @@
+<%
+function calendar(baseUrl = '', year = null, month = null, day = null)
+{
+	let toDay = new Date();
+	let namesMonth = {
+		'0': 'январь',
+		'1': 'февраль',
+		'2': 'март',
+		'3': 'апрель',
+		'4': 'май',
+		'5': 'июнь',
+		'6': 'июль',
+		'7': 'август',
+		'8': 'сентябрь',
+		'9': 'октябрь',
+		'10': 'ноябрь',
+		'11': 'декабрь'
+	};
+	let namesDay = {
+		'1': 'пн',
+		'2': 'вт',
+		'3': 'ср',
+		'4': 'чт',
+		'5': 'пт',
+		'6': 'сб',
+		'7': 'вс'//0
+	};
+
+	let weekEnds = ['6','7'];//0
+
+	year	= parseInt(year, 10)	|| toDay.getFullYear();
+	month	= parseInt(month, 10);
+	month	= (month>=0 && month<=11 ? (month-1>=0 ? month : 0) : toDay.getMonth());
+
+	day		= parseInt(day, 10)		|| toDay.getDate();
+
+	let firstDayOfMonth	= new Date(year, month, 1);
+	let firstDayOfMonth_weekDay = firstDayOfMonth.getDay();
+		if(firstDayOfMonth_weekDay == 0)
+		firstDayOfMonth_weekDay = 7;
+
+	let lastDayOfMonth	= new Date(year, month + 1, 0);
+	let numDaysInMonth = (lastDayOfMonth.getDate() - firstDayOfMonth.getDate()) + 1;
+
+	let htmlWeekDays = '', htmlDays = '';
+
+	Object.keys(namesDay).forEach(function (iDay)
+	{
+		htmlWeekDays +=`<th>${namesDay[iDay]}</th>`;
+	});
+
+	let fill = false;
+	let	cellDay	= firstDayOfMonth.getDate();
+	let tdClass = '';
+	for(iV = 0; iV < 6; iV++)
+	{
+		htmlDays += `<tr>`;
+		Object.keys(namesDay).forEach(function (iDay)
+		{
+			if(!fill && firstDayOfMonth_weekDay == iDay)
+				fill = true;
+
+			tdClass = (weekEnds.indexOf(iDay) !=-1 ? 'weekEnd' : '');
+
+			if(fill && cellDay <= numDaysInMonth)
+			{
+				htmlDays += `<td class="${tdClass}"><a href="${baseUrl}/${month+1}/${cellDay}/">${cellDay}</a></td>`;
+				cellDay++;
+			}
+			else htmlDays += `<td class="${tdClass}">&nbsp;</td>`;
+		});
+		htmlDays += `</tr>`;
+	}
+
+	let table = `<table class="calendar col-xs-12 col-md-3"><caption>${namesMonth[month]} ${year}</caption>
+	<thead><tr>${htmlWeekDays}</tr></thead><tbody>${htmlDays}</tbody></table>`;
+
+	return table;
+}
+
+function calendarYear(baseUrl = '', year)
+{
+	let calendarYear='';
+	for(let month = 0; month < 12; month++)
+	{
+		calendarYear +=calendar(baseUrl, year, month);
+	}
+	return calendarYear;
+}
+%>
 <div class="row eventListContainer">
-	<ul class="eventCol col-xs-12 col-md-3">
-	</ul>
+	<div class="col-xs-12 col-md-12">
+		<p>добавить выбор года в виде ссылки</p>
+		<%-calendarYear(_reqBaseUrl, 2016)%>
+	</div>
 </div>
 <script type="text/javascript">
 //<!--

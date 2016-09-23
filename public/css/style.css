@@ -437,6 +437,59 @@ body.mce-content-body,
 }*/
 /********************************  */
 
+/******************************** календарь  */
+.calendar
+{
+	float: left;
+	margin-right: 10px;
+	/*width: 16%;*/
+	border: 1px solid #ccc;
+}
+.calendar,
+.calendar caption,
+.calendar th,
+.calendar td
+{
+	text-align: center;
+}
+
+.calendar caption
+{
+	text-transform: uppercase;
+}
+.calendar th,
+.calendar td
+{
+	margin: 0;
+	padding: 3px;
+	border: 1px solid #ccc;
+}
+
+.calendar th
+{
+
+}
+.calendar td
+{
+
+}
+.calendar td:hover
+{
+	background-color: #e2e2e2;
+	cursor: pointer;
+}
+.calendar td.weekEnd
+{
+	background-color: #f7d4d4;
+}
+
+.calendar td a:hover
+{
+	text-decoration: underline;
+}
+
+/******************************** END календарь */
+
 /******************************** CHAT */
 #chat
 {
@@ -1183,6 +1236,12 @@ nav.pagesNavigation
 /**********  END мототреки **************/
 
 /**********  СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ  **************/
+
+.eventLocationsMenu li.selected
+{
+	background-color: #f5f5f5;
+}
+
 .eventData
 {
 
