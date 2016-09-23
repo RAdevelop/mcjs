@@ -5,6 +5,7 @@ const Promise = require("bluebird");
 const Base = require('app/lib/controller');
 const Mail = require('app/lib/mail');
 const FileUpload = require('app/lib/file/upload');
+const Calendar = require('app/lib/calendar');
 
 class Events extends Base
 {
@@ -16,8 +17,8 @@ class Events extends Base
 	{
 		return {
 			"index": {
-				'^\/?[0-9]{4,4}\/[0-9]+\/[0-9]+\/?$': ['i_yy','i_mm','i_dd'],
-				'^\/?[0-9]{4,4}\/[0-9]+\/?$': ['i_yy','i_mm'],
+				'^\/?[0-9]{4,4}\/[0-9]{1,2}\/[0-9]{1,2}\/?$': ['i_yy','i_mm','i_dd'],
+				'^\/?[0-9]{4,4}\/[0-9]{1,2}\/?$': ['i_yy','i_mm'],
 				'^\/?[0-9]{4,4}\/?$': ['i_yy'],
 				'^\/?[0-9]+\/\\S+\/?$': ['i_event_id','s_event_alias'],
 				'^\/?$': null
@@ -147,6 +148,10 @@ class Events extends Base
 			i_dd=date.getDate();
 		}
 
+		i_yy = parseInt(i_yy,10);
+		i_mm = parseInt(i_mm,10);
+		i_dd = parseInt(i_dd,10);
+
 		let l_id = this.getReq().query["l_id"] || null;
 
 		return Promise.props({
@@ -167,8 +172,10 @@ class Events extends Base
 				tplData["eventLocations"] = {};
 				tplData["eventLocations"]["list"] = eventLocations;
 				tplData["eventLocations"]["l_id"] = l_id;
-
+				console.log(i_yy, i_mm, i_dd);
 				tplData["selectedDate"] = {i_yy:i_yy, i_mm:i_mm, i_dd:i_dd};
+
+				tplData["calendarRender"] = Calendar.render(this.getBaseUrl(), {[i_yy]: [i_mm-1, i_mm, i_mm+1]}, {year: i_yy, month: i_mm, day: i_dd});
 
 				this.getRes().expose(eventList, 'eventList');
 				//this.getRes().expose(eventLocations, 'eventLocations');

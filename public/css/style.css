@@ -461,7 +461,7 @@ body.mce-content-body,
 .calendar td
 {
 	margin: 0;
-	padding: 3px;
+	padding: 0;
 	border: 1px solid #ccc;
 }
 
@@ -471,21 +471,44 @@ body.mce-content-body,
 }
 .calendar td
 {
+	height: 44px;
+	width: 45px;
+	line-height: 43px;
+}
 
-}
-.calendar td:hover
+.calendar td a
 {
-	background-color: #e2e2e2;
-	cursor: pointer;
-}
-.calendar td.weekEnd
-{
-	background-color: #f7d4d4;
+	display: inline-block;
+	width: 100%;
+	height: 100%;
+	line-height: 43px;
+	border: 0px;
+	border-radius: 45px;
+	box-sizing: border-box;
 }
 
 .calendar td a:hover
 {
 	text-decoration: underline;
+	background-color: #f1f1f1;
+}
+.calendar td.weekEnd a
+{
+	background-color: #f7d4d4;
+}
+.calendar td.toDay a
+{
+	color: #fff;
+	background-color: #d9534f;
+}
+.calendar td.checkedDay a
+{
+	color: #fff;
+	background-color: green;
+}
+.calendar td.toDay a:hover
+{
+	background-color: #ccc;
 }
 
 /******************************** END календарь */
