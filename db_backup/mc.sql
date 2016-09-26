@@ -143,46 +143,6 @@ INSERT INTO `controllers` VALUES (1,0,'/admin','Админ стартовая с
 UNLOCK TABLES;
 
 --
--- Table structure for table `events`
---
-
-DROP TABLE IF EXISTS `events`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `events` (
-  `e_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `e_create_ts` int(10) unsigned NOT NULL DEFAULT '0',
-  `e_update_ts` int(10) unsigned NOT NULL DEFAULT '0',
-  `e_start_ts` int(10) unsigned NOT NULL DEFAULT '0',
-  `e_end_ts` int(10) unsigned NOT NULL DEFAULT '0',
-  `e_title` varchar(255) NOT NULL,
-  `e_alias` varchar(255) NOT NULL,
-  `e_notice` text NOT NULL,
-  `e_text` text NOT NULL,
-  `e_address` varchar(255) NOT NULL,
-  `e_location_id` int(10) NOT NULL,
-  `e_latitude` decimal(10,8) DEFAULT NULL,
-  `e_longitude` decimal(11,8) DEFAULT NULL,
-  `e_gps_lat` varchar(45) NOT NULL,
-  `e_gps_lng` varchar(45) NOT NULL,
-  `e_location_pids` varchar(100) NOT NULL,
-  `u_id` int(11) unsigned NOT NULL,
-  `e_img_cnt` tinyint(3) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`e_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `events`
---
-
-LOCK TABLES `events` WRITE;
-/*!40000 ALTER TABLE `events` DISABLE KEYS */;
-INSERT INTO `events` VALUES (1,1473777538,1474297238,1472677200,1472850000,'МотоСобытия1','motosobitiya1','МотоСобытияA','<p><strong>Байк-Фестиваль</strong> \"Открытое небо\" создан для того, чтобы показать всем, что мир вез войны и агрессии возможен, что отдых на открытом пространстве с большим количеством людей &ndash; приятен, незабываем и безопасен. Мотоциклы, музыка, спорт и развлечения объединят всех, дадут возможность провести время в компании старых и новых друзей, зарядиться массой положительных эмоций.</p>\r\n<ul class=\"eventImages\">\r\n<li><img class=\"eventImage\" src=\"/events/0/1/5/9bf31c7ff062936a96d3c8bd1f8f2ff3/512_384.jpg\" data-img-id=\"5\"></li>\r\n<li><img class=\"eventImage\" src=\"/events/0/1/3/c51ce410c124a10e0db5e4b97fc2af39/512_384.jpg\" data-img-id=\"3\"></li>\r\n</ul>\r\n<p><strong>Байк-Фестиваль</strong> \"Открытое небо\" объявляет выходной всем &ndash; в течение трех дней на аэродроме пос. Никольское, 60-км. Киевского шоссе пройдёт беспрецедентное событие, которое объединит в себе грандиозный рок-концерт с участием отечественных и зарубежных звезд, уникальное пиротехническое шоу, турниры по экстремальным видам спорта, яркие клубные вечеринки и многочисленные шоу малой авиации, парашютистов и мотоциклистов.</p>\r\n<ul class=\"eventImages\">\r\n<li><img class=\"eventImage\" src=\"/events/0/1/6/c74d97b01eae257e44aa9d5bade97baf/512_384.jpg\" data-img-id=\"6\"></li>\r\n<li><img class=\"eventImage\" src=\"/events/0/1/4/aab3238922bcc25a6f606eb525ffdc56/512_384.jpg\" data-img-id=\"4\"></li>\r\n</ul>\r\n<p>Масштаб акции поражает &ndash; тонны звуковой аппаратуры и светотехники, лазерные установки, сотни людей, обеспечивающих безопасность, большее количество автобусов для доставки гостей на Байк-Фестиваль \"Открытое небо\", около пяти квадратных километров пространства, четко разбитого на зоны, в каждой из которых постоянно будут проводиться всевозможные концерты, выступления и турниры.</p>\r\n<ul class=\"eventImages\">\r\n<li><img class=\"eventImage\" src=\"/events/0/1/1/6512bd43d9caa6e02c990b0a82652dca/512_384.jpg\" data-img-id=\"1\"></li>\r\n</ul>\r\n<p>Цель <strong>Байк-Фестиваля</strong> \"Открытое небо\" - объединить людей на трое суток, показать им, всевозможные способы отдыха и развлечений. Спортивные турниры в рамках фестиваля продемонстрируют гостям скрытые возможности организма Человека и красоту здорового образа жизни, а активные конкурсы укрепят как семейные отношения, так и отношения между людьми в целом. Байк-Фестиваль \"Открытое небо\" - новый вид отдыха для молодых, целеустремленных, активных людей, которые понимают, что хотят от жизни и знают, как к этому прийти.</p>\r\n<p>Байк-Фестиваль \"Открытое небо\" будет проводиться уже в 12-й раз с 5 по 7 августа 2011г. Мероприятие, организованное мотоклубом \"Ночные Волки\", пройдет под патронажем государственной программы Российской Федерации \"Здоровье нации\", утвержденной решением Экспертно-консультативного Совета по проблемам национальной безопасности при председателе Государственной Думы Российской Федерации (Решение №13-127 от 07 декабря 1999 года). Ключевым аспектом мероприятия является пропаганда здорового образа жизни.</p>\r\n<p>Билеты можно будет приобрести непосредственно на входе на территорию фестиваля в дни его проведения.</p>\r\n<ul>\r\n<li>Цена билета на три дня: 1000 рублей.</li>\r\n<li>Девушкам управляющим мотоциклом въезд бесплатный!</li>\r\n</ul>\r\n<p>Приобретая билет Вы получите браслет, дающий право входа на территорию фестиваля на все три дня. Билет обеспечивает место для палатки. Палатку необходимо привезти с собой. Продажи и аренды палаток на фестивале нет!</p>\r\n<p>Уточнить информацию можно на сайте <a href=\"http://www.bfest.ru\" title=\"www.bfest.ru\" target=\"_blank\">www.bfest.ru</a>.</p>','Россия, Москва, Театральный проезд, 5с5',278,55.75978221,37.62493805,'55&deg; 45&prime;35&Prime;N','37&deg; 37&prime;30&Prime;E','70,278',1,6),(2,1473777767,1474122710,1474059600,1474578000,'МотоСобытия1','motosobitiya1','МотоСобытияА','<p>МотоСобытияТ</p>\r\n<ul class=\"eventImages\">\r\n<li><img class=\"eventImage\" src=\"/events/0/2/7/02e74f10e0327ad868d138f2b4fdd6f0/512_384.jpg\" data-img-id=\"7\"></li>\r\n</ul>','Россия, Москва, Кривоколенный переулок, 5с4',278,55.76152446,37.63465771,'55&deg; 45&prime;41&Prime;N','37&deg; 38&prime;5&Prime;E','70,278',1,1),(3,1473787102,1474122270,1472936400,1473800400,'МотоСобытия2','motosobitiya2','МотоСобытия2 анонс','<p>ad ad2</p>','Россия, Новгородская область, Великий Новгород, микрорайон Северный, улица Радищева, 5к1',344,58.56355267,31.27167039,'58&deg; 33&prime;49&Prime;N','31&deg; 16&prime;18&Prime;E','70,254,343,344',1,0);
-/*!40000 ALTER TABLE `events` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `events_image`
 --
 
@@ -212,6 +172,46 @@ LOCK TABLES `events_image` WRITE;
 /*!40000 ALTER TABLE `events_image` DISABLE KEYS */;
 INSERT INTO `events_image` VALUES (1,1,1473866595,1473866598,NULL,NULL,'/events/0/1/1/6512bd43d9caa6e02c990b0a82652dca',5,'25-maverick-vinales-esp_gp_3613.gallery_full_top_fullscreen.jpg'),(2,1,1473866595,1473866598,NULL,NULL,'/events/0/1/2/c20ad4d76fe97759aa27a0c99bff6710',4,'26-dani-pedrosa-esp_gp_3449.gallery_full_top_fullscreen.jpg'),(3,1,1473867350,1473867353,NULL,NULL,'/events/0/1/3/c51ce410c124a10e0db5e4b97fc2af39',3,'46-valentino-rossi-ita_5n27825.gallery_full_top_fullscreen.jpg'),(4,1,1473867350,1473867353,NULL,NULL,'/events/0/1/4/aab3238922bcc25a6f606eb525ffdc56',2,'93-marc-marquez-esp_gp_4858.gallery_full_top_fullscreen.jpg'),(5,1,1473882983,1473882984,NULL,NULL,'/events/0/1/5/9bf31c7ff062936a96d3c8bd1f8f2ff3',1,'banda.jpg'),(6,1,1473883007,1473883008,NULL,NULL,'/events/0/1/6/c74d97b01eae257e44aa9d5bade97baf',0,'banda3.jpg'),(7,2,1474062736,1474062737,NULL,NULL,'/events/0/2/7/02e74f10e0327ad868d138f2b4fdd6f0',0,'banda.jpg');
 /*!40000 ALTER TABLE `events_image` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `events_list`
+--
+
+DROP TABLE IF EXISTS `events_list`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `events_list` (
+  `e_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `e_create_ts` int(10) unsigned NOT NULL DEFAULT '0',
+  `e_update_ts` int(10) unsigned NOT NULL DEFAULT '0',
+  `e_start_ts` int(10) unsigned NOT NULL DEFAULT '0',
+  `e_end_ts` int(10) unsigned NOT NULL DEFAULT '0',
+  `e_title` varchar(255) NOT NULL,
+  `e_alias` varchar(255) NOT NULL,
+  `e_notice` text NOT NULL,
+  `e_text` text NOT NULL,
+  `e_address` varchar(255) NOT NULL,
+  `e_location_id` int(10) NOT NULL,
+  `e_latitude` decimal(10,8) DEFAULT NULL,
+  `e_longitude` decimal(11,8) DEFAULT NULL,
+  `e_gps_lat` varchar(45) NOT NULL,
+  `e_gps_lng` varchar(45) NOT NULL,
+  `e_location_pids` varchar(100) NOT NULL,
+  `u_id` int(11) unsigned NOT NULL,
+  `e_img_cnt` tinyint(3) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`e_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `events_list`
+--
+
+LOCK TABLES `events_list` WRITE;
+/*!40000 ALTER TABLE `events_list` DISABLE KEYS */;
+INSERT INTO `events_list` VALUES (1,1473777538,1474297238,1472677200,1472850000,'МотоСобытия1','motosobitiya1','МотоСобытияA','<p><strong>Байк-Фестиваль</strong> \"Открытое небо\" создан для того, чтобы показать всем, что мир вез войны и агрессии возможен, что отдых на открытом пространстве с большим количеством людей &ndash; приятен, незабываем и безопасен. Мотоциклы, музыка, спорт и развлечения объединят всех, дадут возможность провести время в компании старых и новых друзей, зарядиться массой положительных эмоций.</p>\r\n<ul class=\"eventImages\">\r\n<li><img class=\"eventImage\" src=\"/events/0/1/5/9bf31c7ff062936a96d3c8bd1f8f2ff3/512_384.jpg\" data-img-id=\"5\"></li>\r\n<li><img class=\"eventImage\" src=\"/events/0/1/3/c51ce410c124a10e0db5e4b97fc2af39/512_384.jpg\" data-img-id=\"3\"></li>\r\n</ul>\r\n<p><strong>Байк-Фестиваль</strong> \"Открытое небо\" объявляет выходной всем &ndash; в течение трех дней на аэродроме пос. Никольское, 60-км. Киевского шоссе пройдёт беспрецедентное событие, которое объединит в себе грандиозный рок-концерт с участием отечественных и зарубежных звезд, уникальное пиротехническое шоу, турниры по экстремальным видам спорта, яркие клубные вечеринки и многочисленные шоу малой авиации, парашютистов и мотоциклистов.</p>\r\n<ul class=\"eventImages\">\r\n<li><img class=\"eventImage\" src=\"/events/0/1/6/c74d97b01eae257e44aa9d5bade97baf/512_384.jpg\" data-img-id=\"6\"></li>\r\n<li><img class=\"eventImage\" src=\"/events/0/1/4/aab3238922bcc25a6f606eb525ffdc56/512_384.jpg\" data-img-id=\"4\"></li>\r\n</ul>\r\n<p>Масштаб акции поражает &ndash; тонны звуковой аппаратуры и светотехники, лазерные установки, сотни людей, обеспечивающих безопасность, большее количество автобусов для доставки гостей на Байк-Фестиваль \"Открытое небо\", около пяти квадратных километров пространства, четко разбитого на зоны, в каждой из которых постоянно будут проводиться всевозможные концерты, выступления и турниры.</p>\r\n<ul class=\"eventImages\">\r\n<li><img class=\"eventImage\" src=\"/events/0/1/1/6512bd43d9caa6e02c990b0a82652dca/512_384.jpg\" data-img-id=\"1\"></li>\r\n</ul>\r\n<p>Цель <strong>Байк-Фестиваля</strong> \"Открытое небо\" - объединить людей на трое суток, показать им, всевозможные способы отдыха и развлечений. Спортивные турниры в рамках фестиваля продемонстрируют гостям скрытые возможности организма Человека и красоту здорового образа жизни, а активные конкурсы укрепят как семейные отношения, так и отношения между людьми в целом. Байк-Фестиваль \"Открытое небо\" - новый вид отдыха для молодых, целеустремленных, активных людей, которые понимают, что хотят от жизни и знают, как к этому прийти.</p>\r\n<p>Байк-Фестиваль \"Открытое небо\" будет проводиться уже в 12-й раз с 5 по 7 августа 2011г. Мероприятие, организованное мотоклубом \"Ночные Волки\", пройдет под патронажем государственной программы Российской Федерации \"Здоровье нации\", утвержденной решением Экспертно-консультативного Совета по проблемам национальной безопасности при председателе Государственной Думы Российской Федерации (Решение №13-127 от 07 декабря 1999 года). Ключевым аспектом мероприятия является пропаганда здорового образа жизни.</p>\r\n<p>Билеты можно будет приобрести непосредственно на входе на территорию фестиваля в дни его проведения.</p>\r\n<ul>\r\n<li>Цена билета на три дня: 1000 рублей.</li>\r\n<li>Девушкам управляющим мотоциклом въезд бесплатный!</li>\r\n</ul>\r\n<p>Приобретая билет Вы получите браслет, дающий право входа на территорию фестиваля на все три дня. Билет обеспечивает место для палатки. Палатку необходимо привезти с собой. Продажи и аренды палаток на фестивале нет!</p>\r\n<p>Уточнить информацию можно на сайте <a href=\"http://www.bfest.ru\" title=\"www.bfest.ru\" target=\"_blank\">www.bfest.ru</a>.</p>','Россия, Москва, Театральный проезд, 5с5',278,55.75978221,37.62493805,'55&deg; 45&prime;35&Prime;N','37&deg; 37&prime;30&Prime;E','70,278',1,6),(2,1473777767,1474122710,1474059600,1474578000,'МотоСобытия1','motosobitiya1','МотоСобытияА','<p>МотоСобытияТ</p>\r\n<ul class=\"eventImages\">\r\n<li><img class=\"eventImage\" src=\"/events/0/2/7/02e74f10e0327ad868d138f2b4fdd6f0/512_384.jpg\" data-img-id=\"7\"></li>\r\n</ul>','Россия, Москва, Кривоколенный переулок, 5с4',278,55.76152446,37.63465771,'55&deg; 45&prime;41&Prime;N','37&deg; 38&prime;5&Prime;E','70,278',1,1),(3,1473787102,1474122270,1472936400,1473800400,'МотоСобытия2','motosobitiya2','МотоСобытия2 анонс','<p>ad ad2</p>','Россия, Новгородская область, Великий Новгород, микрорайон Северный, улица Радищева, 5к1',344,58.56355267,31.27167039,'58&deg; 33&prime;49&Prime;N','31&deg; 16&prime;18&Prime;E','70,254,343,344',1,0);
+/*!40000 ALTER TABLE `events_list` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -591,7 +591,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1474325073,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1473868152,'RoLex',1);
+INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1474914659,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1473868152,'RoLex',1);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1320,7 +1320,7 @@ BEGIN
         FROM `events_image`
 		WHERE e_id = inEid AND u_id = inUid;
         
-		UPDATE `events` SET 
+		UPDATE `events_list` SET 
         e_img_cnt = ei_cnt,
         e_update_ts = ts
 		WHERE e_id = inEid;
@@ -1440,7 +1440,7 @@ BEGIN
 			FROM `events_image`
 			WHERE e_id = inEid;
 			
-			UPDATE `events` SET 
+			UPDATE `events_list` SET 
             e_img_cnt = ei_cnt,
 			e_update_ts = ts
 			WHERE e_id = inEid;
@@ -3453,4 +3453,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-09-20  1:45:43
+-- Dump completed on 2016-09-26 21:31:08

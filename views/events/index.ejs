@@ -5,4 +5,5 @@
 <% if(event && ['edit', 'add'].indexOf(_action) != -1){ %><%- include edit.ejs %><% }
 else if (event){%><%- include event.ejs %><%}
 else if (eventList){%><%- include list.ejs %><%}
+else if (eventCalendar){%><%- include calendar.ejs %><%}
 %>

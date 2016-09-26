@@ -483,8 +483,12 @@ body.mce-content-body,
 	height: 100%;
 	line-height: 43px;
 	border: 0px;
-	border-radius: 45px;
 	box-sizing: border-box;
+	border-radius: 43px;
+	/*border-top-left-radius: 45px;
+	border-top-right-radius: 45px;
+	border-bottom-left-radius: 45px;
+	border-bottom-right-radius: 45px;*/
 }
 
 .calendar td a:hover

@@ -65,11 +65,12 @@ class Calendar
 	 * @param baseUrl
 	 * @param year
 	 * @param month
-	 * @param date - {year: year, month: month, day: day}
+	 * @param selectedDate - {year: year, month: month, day: day}
+	 * @param dateList - [] (массив дат в формете timestamp)
 	 * @returns {string}
 	 * @private
 	 */
-	static _calendar(baseUrl = '', year = null, month = null, date = {})
+	static _calendar(baseUrl = '', year = null, month = null, selectedDate = {}, dateList = [])
 	{
 		let toDay = new Date();
 		//console.log("1) year = "+year+ " month = "+month);
@@ -88,12 +89,12 @@ class Calendar
 
 		month = (month>0 && month<=12 ? month-1 : 0);
 
-		//let dateYear   = parseInt(date.year, 10);
+		//let dateYear   = parseInt(selectedDate.year, 10);
 
-		let dateMonth 	= parseInt(date.month, 10);
+		let dateMonth 	= parseInt(selectedDate.month, 10);
 		dateMonth	= (dateMonth >0 && dateMonth <=12 ? (dateMonth -1>=0 ? dateMonth -1 : 0) : dateMonth);
 
-		let dateDay = parseInt(date.day, 10);
+		let dateDay = parseInt(selectedDate.day, 10);
 
 		let firstDayOfMonth	= new Date(year, month, 1);
 		let firstDayOfMonth_weekDay = firstDayOfMonth.getDay();
@@ -169,16 +170,17 @@ class Calendar
 	 * @param baseUrl
 	 * @param monthsOfYears - {year: [month1, month2, ...]}
 	 * @param selectedDate - {year: year, month: month, day: day}
+	 * @param dateList - [] (массив дат в формете timestamp, которые покажем ввиде сылок)
 	 * @returns {string}
 	 */
-	static render(baseUrl = '', monthsOfYears = {}, selectedDate = {})
+	static render(baseUrl = '', monthsOfYears = {}, selectedDate = {}, dateList = [])
 	{
 		let calendar = '';
 		Object.keys(monthsOfYears).forEach(function (year)
 		{
 			monthsOfYears[year].forEach(function (month)
 			{
-				calendar += Calendar._calendar(baseUrl, year, month, selectedDate);
+				calendar += Calendar._calendar(baseUrl, year, month, selectedDate, dateList);
 			});
 		});
 

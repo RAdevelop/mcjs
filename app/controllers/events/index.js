@@ -46,15 +46,44 @@ class Events extends Base
 		let tplData = {
 			event: null,
 			eventList: null,
+			eventCalendar: null,
 			eventLocations: null
 		};
 
-		let {i_event_id=null, s_event_alias=null} = this.routeArgs;
+		let {i_event_id=null, s_event_alias=null, i_yy=null, i_mm=null, i_dd=null} = this.routeArgs;
 
 		if (i_event_id)
 			return this.event(cb, tplData, i_event_id, s_event_alias);
 
-		return this.eventList(cb, tplData, this.routeArgs);
+
+		//let {i_yy=null, i_mm=null, i_dd=null} = routeArgs;
+		if (!i_yy && !i_mm && !i_dd)
+		{
+			let date = new Date();
+			i_yy=date.getFullYear();
+			i_mm=date.getMonth()+1;
+			//i_dd=date.getDate();
+		}
+
+		i_yy = parseInt(i_yy,10);
+		i_mm = parseInt(i_mm,10);
+		i_dd = parseInt(i_dd,10);
+
+		let startDate = new Date(i_yy, i_mm-1);
+		let endDate = new Date(startDate.getFullYear(), startDate.getMonth()+2); //+3 месяца
+
+		console.log("startDate = ", startDate.getFullYear(), startDate.getMonth());
+		console.log("endDate = ", endDate.getFullYear(), endDate.getMonth());
+
+		let l_id = this.getReq().query["l_id"] || null;
+
+		if (i_dd)
+		{
+			tplData["selectedDate"] = {i_yy:i_yy, i_mm:i_mm, i_dd:i_dd};
+			return this.eventList(cb, tplData, startDate, endDate, l_id);
+		}
+
+		return this.eventCalendar(cb, tplData, startDate, endDate, l_id);
 	}
 
 	/**
@@ -137,25 +166,13 @@ class Events extends Base
 	 * @param tplData
 	 * @param routeArgs
 	 */
-	eventList(cb, tplData, routeArgs)
+	eventList(cb, tplData, startDate, endDate, l_id)
 	{
-		let {i_yy=null, i_mm=null, i_dd=null} = routeArgs;
-		if (!i_yy && !i_mm && !i_dd)
-		{
-			let date = new Date();
-			i_yy=date.getFullYear();
-			i_mm=date.getMonth()+1;
-			i_dd=date.getDate();
-		}
-
-		i_yy = parseInt(i_yy,10);
-		i_mm = parseInt(i_mm,10);
-		i_dd = parseInt(i_dd,10);
-
-		let l_id = this.getReq().query["l_id"] || null;
+		console.log("startDate = ", startDate.getFullYear(), startDate.getMonth());
+		console.log("endDate = ", endDate.getFullYear(), endDate.getMonth());
 
 		return Promise.props({
-			eventList: this.getClass("events").getEvents(i_yy, i_mm, i_dd, l_id),
+			eventList: this.getClass("events").getEvents(startDate.getTime()/1000, endDate.getTime()/1000, l_id),
 			eventLocations: this.getClass("events").getLocations()
 		})
 			.bind(this)
@@ -172,14 +189,80 @@ class Events extends Base
 				tplData["eventLocations"] = {};
 				tplData["eventLocations"]["list"] = eventLocations;
 				tplData["eventLocations"]["l_id"] = l_id;
-				console.log(i_yy, i_mm, i_dd);
-				tplData["selectedDate"] = {i_yy:i_yy, i_mm:i_mm, i_dd:i_dd};
 
-				tplData["calendarRender"] = Calendar.render(this.getBaseUrl(), {[i_yy]: [i_mm-1, i_mm, i_mm+1]}, {year: i_yy, month: i_mm, day: i_dd});
+				//console.log(i_yy, i_mm, i_dd);
+				//console.log(eventList);
 
-				this.getRes().expose(eventList, 'eventList');
+				//this.getRes().expose(eventList, 'eventList');
 				//this.getRes().expose(eventLocations, 'eventLocations');
 
+
+				this.view.setTplData(tplFile, tplData);
+				//this.view.addPartialData("user/left", {user: userData});
+				//this.view.addPartialData("user/right", {title: 'right_col'});
+
+				return cb(null);
+			})
+			.catch(function(err)
+			{
+				return cb(err);
+			});
+	}
+
+	/**
+	 *
+	 * @param start_ts
+	 * @param end_ts
+	 * @param l_id
+	 * @returns
+	 */
+	eventCalendar(cb, tplData, startDate, endDate, l_id = null)
+	{
+		//console.log("startDate = ", startDate.getFullYear(), startDate.getMonth());
+		//console.log("endDate = ", endDate.getFullYear(), endDate.getMonth());
+
+		return Promise.props({
+			eventDates: this.getClass("events").getEventsDate(startDate.getTime()/1000, endDate.getTime()/1000, l_id),
+			eventLocations: this.getClass("events").getLocations()
+		})
+			.bind(this)
+			.then(function (proprs)
+			{
+				console.log("proprs.eventDates = ", proprs.eventDates);
+
+				/*
+				для каждой пары proprs.eventDates: e_start_ts: '1472677200', e_end_ts: '1472850000'
+				создать список дат (с интервалов в 1 сутки? = 24 ч)
+				список в итоге должен быть из уникальных значений
+				 */
+
+				let s_date = new Date(1472850000*1000);
+
+				console.log("s_date");
+				console.log(s_date.getFullYear(), s_date.getMonth(), s_date.getDate());
+
+				return Promise.resolve([proprs.eventsDate, proprs.eventLocations, l_id]);
+			})
+			.spread(function(eventDates, eventLocations, l_id)
+			{
+				let tplFile = "events";
+
+				//tplData["eventDates"] = eventDates;
+
+				tplData["eventLocations"] = {};
+				tplData["eventLocations"]["list"] = eventLocations;
+				tplData["eventLocations"]["l_id"] = l_id;
+
+				//console.log(i_yy, i_mm, i_dd);
+				//console.log(eventList);
+
+				tplData["eventCalendar"] = Calendar.render(
+					this.getBaseUrl(),
+					{[startDate.getFullYear()]: [startDate.getMonth(), startDate.getMonth()+1, startDate.getMonth()+2]},
+					{}
+				);
+
+				//this.getRes().expose(eventLocations, 'eventLocations');
 
 				this.view.setTplData(tplFile, tplData);
 				//this.view.addPartialData("user/left", {user: userData});

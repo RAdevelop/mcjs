@@ -68,13 +68,39 @@ class Events extends Base
 	}
 
 	/**
-	 * список всех событий
+	 * список событий за указанный интервал дат (в формете timestamp)
 	 *
-	 * @returns {Promise.<TResult>|*}
+	 * @param start_ts
+	 * @param end_ts
+	 * @param l_id - id месторасположения
+	 *
+	 * @returns {*|Promise.<TResult>|*}
 	 */
-	getEvents(i_yy, i_mm, i_dd, l_id = null)
+	getEvents(date_ts, end_ts = null, l_id = null)
 	{
-		return this.model('events').getEvents(i_yy, i_mm, i_dd, l_id);
+		return this.model('events').getEvents(date_ts, end_ts, l_id);
+	}
+
+	/**
+	 * список дат событий за указанный интервал дат (в формете timestamp)
+	 *
+	 * @param start_ts
+	 * @param end_ts
+	 * @param l_id - id месторасположения
+	 *
+	 * @returns {*|Promise.<TResult>|*}
+	 */
+	getEventsDate(date_ts, end_ts, l_id = null)
+	{
+		return this.model('events').getEventsDate(date_ts, end_ts, l_id)
+			.then(function (eventsDate)
+			{
+				//console.log("eventsDate = ", eventsDate);
+				if (!eventsDate)
+					return Promise.resolve([]);
+
+				return Promise.resolve(eventsDate);
+			});
 	}
 
 	/**

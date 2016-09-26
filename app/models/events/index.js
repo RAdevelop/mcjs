@@ -37,7 +37,7 @@ class Events extends BaseModel
 		let i_e_id;
 
 		let sql =
-			`INSERT INTO events (u_id, e_title, e_alias, e_notice, e_text, e_address, e_latitude, e_longitude, e_location_id
+			`INSERT INTO events_list (u_id, e_title, e_alias, e_notice, e_text, e_address, e_latitude, e_longitude, e_location_id
 			, e_create_ts, e_update_ts, e_start_ts, e_end_ts, e_gps_lat, e_gps_lng) 
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
@@ -73,7 +73,7 @@ class Events extends BaseModel
 					INSERT INTO events_locations (e_id, l_id)
 					VALUES ${sqlIns.join(',')}
 					ON DUPLICATE KEY UPDATE l_id=VALUES(l_id);
-					UPDATE events SET e_location_pids = ? WHERE e_id = ?;`;
+					UPDATE events_list SET e_location_pids = ? WHERE e_id = ?;`;
 				sqlData.push(pids.join(','), i_e_id);
 
 				return this.constructor.conn().multis(sql, sqlData);
@@ -106,7 +106,7 @@ class Events extends BaseModel
 	edit(i_e_id, i_u_id, s_e_title, e_alias, t_e_notice, t_e_text, s_e_address, f_e_lat, f_e_lng, i_location_id, gps_lat, gps_lng, dd_start_ts, dd_end_ts)
 	{
 		let sql =
-			`UPDATE events SET e_update_ts = ?, e_start_ts = ?, e_end_ts = ?, e_title = ?, e_alias = ?, 
+			`UPDATE events_list SET e_update_ts = ?, e_start_ts = ?, e_end_ts = ?, e_title = ?, e_alias = ?, 
 			e_notice = ?, e_text = ?, e_address = ?, e_location_id = ?, e_latitude = ?, e_longitude = ?, e_gps_lat = ?, 
 			e_gps_lng = ?, u_id = ? 
 			WHERE e_id = ?`;
@@ -147,7 +147,7 @@ class Events extends BaseModel
 					`DELETE FROM events_locations WHERE e_id = ?;
 					INSERT INTO events_locations (e_id, l_id) 
 					VALUES ${sqlIns.join(',')} ON DUPLICATE KEY UPDATE l_id=VALUES(l_id);
-					UPDATE events SET e_location_pids = ? WHERE e_id = ?;`;
+					UPDATE events_list SET e_location_pids = ? WHERE e_id = ?;`;
 				sqlData.push(pids.join(','), i_e_id);
 
 				return this.constructor.conn().multis(sql, sqlData);
@@ -169,7 +169,7 @@ class Events extends BaseModel
 		let sql =
 			`SELECT e_id, e_create_ts, e_update_ts, e_start_ts, e_end_ts, e_title, e_alias, e_notice, e_text, e_address, 
 			e_location_id, e_latitude, e_longitude, e_gps_lat, e_gps_lng, e_location_pids, u_id, e_img_cnt
-			FROM events
+			FROM events_list
 			WHERE e_id = ?`;
 
 		return this.constructor.conn().sRow(sql, [e_id])
@@ -209,19 +209,27 @@ class Events extends BaseModel
 	}
 
 	/**
-	 * список всех событий
+	 * список событий за указанный интервал дат (в формете timestamp)
+	 *
+	 * @param start_ts
+	 * @param end_ts
+	 * @param l_id - id месторасположения
 	 *
 	 * @returns {Promise.<TResult>|*}
 	 */
-	getEvents(i_yy, i_mm, i_dd, l_id = null)
+	getEvents(start_ts, end_ts = null, l_id = null)
 	{
+		console.log(__dirname);
+		console.log("date_ts = ", start_ts);
+		console.log("end_ts = ", end_ts);
+
 		let sqlData = [];
 		let sql =
 			`SELECT e.e_id, e.e_create_ts, e.e_update_ts, e.e_start_ts, e.e_end_ts, e.e_title, e.e_alias, 
 			e.e_notice, e.e_text, e.e_address, 
 			e.e_location_id, e.e_latitude, e.e_longitude, e.e_gps_lat, e.e_gps_lng, e.e_location_pids, 
 			e.u_id 
-			FROM events AS e`;
+			FROM events_list AS e`;
 
 		if (l_id > 0)
 		{
@@ -230,7 +238,39 @@ class Events extends BaseModel
 			GROUP BY e.e_id`;
 			sqlData.push(l_id);
 		}
-		
+		console.log('\n');
+		return this.constructor.conn().s(sql, sqlData);
+	}
+	/**
+	 * список дат событий за указанный интервал дат (в формете timestamp)
+	 *
+	 * @param start_ts
+	 * @param end_ts
+	 * @param l_id - id месторасположения
+	 *
+	 * @returns {Promise.<TResult>|*}
+	 */
+	getEventsDate(start_ts, end_ts, l_id = null)
+	{
+		console.log(__dirname, " getEventsDate(");
+		console.log("start_ts = ", start_ts);
+		console.log("end_ts = ", end_ts);
+
+		let sqlData = [start_ts, end_ts];
+		let sql =
+			`SELECT e.e_id, e.e_start_ts, e.e_end_ts
+			FROM (SELECT NULL) AS z
+			JOIN events_list AS e ON(e.e_end_ts >= ? AND e.e_start_ts < ?)`;
+
+		if (l_id > 0)
+		{
+			sql += `
+			JOIN events_locations AS el ON(el.e_id = e.e_id AND el.l_id = ? )
+			GROUP BY e.e_id`;
+			sqlData.push(l_id);
+		}
+		console.log(sql);
+		console.log('\n');
 		return this.constructor.conn().s(sql, sqlData);
 	}
 
@@ -326,7 +366,7 @@ class Events extends BaseModel
 	{
 		let sql = `SELECT ei_id, e_id, ei_create_ts, ei_update_ts, ei_latitude, ei_longitude, ei_dir, ei_pos, ei_name
 			FROM events_image AS ei
-			JOIN 'events' AS e ON (e.e_id = ei.e_id)
+			JOIN events_list AS e ON (e.e_id = ei.e_id)
 			WHERE ei.ei_id = ?`;
 
 		return this.constructor.conn().sRow(sql, [ei_id]);
