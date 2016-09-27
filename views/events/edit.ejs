@@ -323,7 +323,7 @@
 			{
 				image = filesUploaded[i];
 				imgSrc = (image["previews"] && image["previews"]["256_192"] ? image["previews"]["256_192"] : '/_0.gif');
-				html = '<div class="image"><img src="'+imgSrc+'" alt="" class="eventImage" data-img-id="'+image["ei_id"]+'"/></div>';
+				html = '<div class="eventImageItem"><img src="'+imgSrc+'" alt="" class="eventImage" data-img-id="'+image["ei_id"]+'"/></div>';
 
 				$eventImagesContainer.prepend(html);
 				eventImages.unshift(image);

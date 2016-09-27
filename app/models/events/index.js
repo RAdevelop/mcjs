@@ -219,26 +219,25 @@ class Events extends BaseModel
 	 */
 	getEvents(start_ts, end_ts = null, l_id = null)
 	{
-		console.log(__dirname);
-		console.log("date_ts = ", start_ts);
-		console.log("end_ts = ", end_ts);
-
-		let sqlData = [];
+		let sqlData = [start_ts, end_ts];
 		let sql =
 			`SELECT e.e_id, e.e_create_ts, e.e_update_ts, e.e_start_ts, e.e_end_ts, e.e_title, e.e_alias, 
-			e.e_notice, e.e_text, e.e_address, 
+			e.e_notice, e.e_address, 
 			e.e_location_id, e.e_latitude, e.e_longitude, e.e_gps_lat, e.e_gps_lng, e.e_location_pids, 
-			e.u_id 
-			FROM events_list AS e`;
+			e.u_id,
+			ei.ei_id, ei.ei_latitude, ei.ei_longitude, ei.ei_dir, ei.ei_pos, ei.ei_name
+			FROM (SELECT NULL) AS z
+			JOIN events_list AS e ON(e.e_end_ts >= ? AND e.e_start_ts <= ?)
+			LEFT JOIN events_image AS ei ON(ei.e_id = e.e_id AND ei.ei_pos = 0)`;
 
 		if (l_id > 0)
 		{
-			sql += `
-			JOIN events_locations AS el ON(el.e_id = e.e_id AND el.l_id = ? )
-			GROUP BY e.e_id`;
+			sql +=
+				`JOIN events_locations AS el ON(el.e_id = e.e_id AND el.l_id = ?)
+				GROUP BY e.e_id`;
 			sqlData.push(l_id);
 		}
-		console.log('\n');
+
 		return this.constructor.conn().s(sql, sqlData);
 	}
 	/**
@@ -252,10 +251,6 @@ class Events extends BaseModel
 	 */
 	getEventsDate(start_ts, end_ts, l_id = null)
 	{
-		console.log(__dirname, " getEventsDate(");
-		console.log("start_ts = ", start_ts);
-		console.log("end_ts = ", end_ts);
-
 		let sqlData = [start_ts, end_ts];
 		let sql =
 			`SELECT e.e_id, e.e_start_ts, e.e_end_ts
@@ -264,13 +259,12 @@ class Events extends BaseModel
 
 		if (l_id > 0)
 		{
-			sql += `
-			JOIN events_locations AS el ON(el.e_id = e.e_id AND el.l_id = ? )
-			GROUP BY e.e_id`;
+			sql +=
+				`JOIN events_locations AS el ON(el.e_id = e.e_id AND el.l_id = ?)
+				GROUP BY e.e_id`;
 			sqlData.push(l_id);
 		}
-		console.log(sql);
-		console.log('\n');
+
 		return this.constructor.conn().s(sql, sqlData);
 	}
 

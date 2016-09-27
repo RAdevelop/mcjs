@@ -7,3 +7,14 @@ else if (event){%><%- include event.ejs %><%}
 else if (eventList){%><%- include list.ejs %><%}
 else if (eventCalendar){%><%- include calendar.ejs %><%}
 %>
+<script type="text/javascript">
+	//<!--
+	(function($)
+	{
+		$('select#eventLocations').on('change', function (event)
+		{
+			window.location.href = this.value;
+		});
+	})(jQuery);
+	//-->
+</script>

@@ -476,8 +476,10 @@ body.mce-content-body,
 	line-height: 43px;
 }
 
-.calendar td a
+.calendar td a,
+.calendar td span
 {
+
 	display: inline-block;
 	width: 100%;
 	height: 100%;
@@ -490,17 +492,23 @@ body.mce-content-body,
 	border-bottom-left-radius: 45px;
 	border-bottom-right-radius: 45px;*/
 }
+.calendar td a
+{
+	text-decoration: underline;
+}
 
 .calendar td a:hover
 {
-	text-decoration: underline;
+	text-decoration: none;
 	background-color: #f1f1f1;
 }
-.calendar td.weekEnd a
+.calendar td.weekEnd a,
+.calendar td.weekEnd span
 {
 	background-color: #f7d4d4;
 }
-.calendar td.toDay a
+.calendar td.toDay a,
+.calendar td.toDay span
 {
 	color: #fff;
 	background-color: #d9534f;

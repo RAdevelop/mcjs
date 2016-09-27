@@ -78,7 +78,30 @@ class Events extends Base
 	 */
 	getEvents(date_ts, end_ts = null, l_id = null)
 	{
-		return this.model('events').getEvents(date_ts, end_ts, l_id);
+		return this.model('events').getEvents(date_ts, end_ts, l_id)
+			.then(function (eventList)
+			{
+				if (!eventList)
+					return Promise.resolve(null);
+
+				let sizeParams = FileUpload.getUploadConfig('events').sizeParams;
+
+				//let allPreviews = [];
+				eventList.forEach(function (ev, indx)
+				{
+					eventList[indx]["previews"] = {};
+					if (ev["ei_dir"])
+					{
+						ev = FileUpload.getPreviews(sizeParams, ev, "ei_dir", true)["obj"];
+						//ev = obj["obj"];
+
+						//allPreviews = allPreviews.concat(obj["previews"]);
+						//ev["previews"]['orig'] = ev["ei_dir"] + '/orig/' + ev["ei_name"];
+					}
+				});
+
+				return Promise.resolve(eventList);
+			});
 	}
 
 	/**

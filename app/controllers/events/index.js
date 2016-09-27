@@ -7,6 +7,8 @@ const Mail = require('app/lib/mail');
 const FileUpload = require('app/lib/file/upload');
 const Calendar = require('app/lib/calendar');
 
+//const Moment = require('moment'); //работа со временем
+
 class Events extends Base
 {
 	/**
@@ -55,8 +57,6 @@ class Events extends Base
 		if (i_event_id)
 			return this.event(cb, tplData, i_event_id, s_event_alias);
 
-
-		//let {i_yy=null, i_mm=null, i_dd=null} = routeArgs;
 		if (!i_yy && !i_mm && !i_dd)
 		{
 			let date = new Date();
@@ -69,19 +69,21 @@ class Events extends Base
 		i_mm = parseInt(i_mm,10);
 		i_dd = parseInt(i_dd,10);
 
-		let startDate = new Date(i_yy, i_mm-1);
-		let endDate = new Date(startDate.getFullYear(), startDate.getMonth()+2); //+3 месяца
-
-		console.log("startDate = ", startDate.getFullYear(), startDate.getMonth());
-		console.log("endDate = ", endDate.getFullYear(), endDate.getMonth());
+		let startDate, endDate;
 
 		let l_id = this.getReq().query["l_id"] || null;
 
 		if (i_dd)
 		{
+			startDate = new Date(i_yy, i_mm-1, i_dd);
+			endDate = startDate;
+
 			tplData["selectedDate"] = {i_yy:i_yy, i_mm:i_mm, i_dd:i_dd};
 			return this.eventList(cb, tplData, startDate, endDate, l_id);
 		}
+
+		startDate = new Date(i_yy, i_mm-1);
+		endDate = new Date(startDate.getFullYear(), startDate.getMonth()+3); //+3 месяца
 
 		return this.eventCalendar(cb, tplData, startDate, endDate, l_id);
 	}
@@ -168,17 +170,18 @@ class Events extends Base
 	 */
 	eventList(cb, tplData, startDate, endDate, l_id)
 	{
-		console.log("startDate = ", startDate.getFullYear(), startDate.getMonth());
-		console.log("endDate = ", endDate.getFullYear(), endDate.getMonth());
-
-		return Promise.props({
-			eventList: this.getClass("events").getEvents(startDate.getTime()/1000, endDate.getTime()/1000, l_id),
-			eventLocations: this.getClass("events").getLocations()
-		})
+		return Promise.resolve(this.getClass("events").getEvents(startDate.getTime()/1000, endDate.getTime()/1000, l_id))
 			.bind(this)
-			.then(function (proprs)
+			.then(function (eventList)
 			{
-				return Promise.resolve([proprs.eventList, proprs.eventLocations, l_id]);
+				if (!eventList || !eventList.length)
+					throw new Errors.HttpStatusError(404, "Not found");
+
+				return this.getClass("events").getLocations()
+					.then(function (eventLocations)
+					{
+						return Promise.resolve([eventList, eventLocations, l_id]);
+					})
 			})
 			.spread(function(eventList, eventLocations, l_id)
 			{
@@ -228,38 +231,47 @@ class Events extends Base
 			.bind(this)
 			.then(function (proprs)
 			{
-				console.log("proprs.eventDates = ", proprs.eventDates);
+				let eventDates = [], eStartTs, eEndTs, eDelta, i;
+				proprs.eventDates.forEach(function (eDate)
+				{
+					eStartTs    = parseInt(eDate["e_start_ts"], 10);
+					eEndTs      = parseInt(eDate["e_end_ts"], 10);
 
-				/*
-				для каждой пары proprs.eventDates: e_start_ts: '1472677200', e_end_ts: '1472850000'
-				создать список дат (с интервалов в 1 сутки? = 24 ч)
-				список в итоге должен быть из уникальных значений
-				 */
+					if (eStartTs && eEndTs)
+					{
+						i = 0;
+						eDelta = 0;
+						do
+						{
+							eventDates.push((eStartTs+eDelta)*1000);
+							i++;
+							eDelta = 86400*i;
+						}
+						while (eStartTs + eDelta < eEndTs)
 
-				let s_date = new Date(1472850000*1000);
+						eventDates.push(eEndTs*1000);
+					}
+				});
 
-				console.log("s_date");
-				console.log(s_date.getFullYear(), s_date.getMonth(), s_date.getDate());
+				eventDates = this.getClass("events").helpers.arrayUnique(eventDates);
 
-				return Promise.resolve([proprs.eventsDate, proprs.eventLocations, l_id]);
+				proprs.eventDates = null;
+				return Promise.resolve([eventDates, proprs.eventLocations, l_id]);
 			})
 			.spread(function(eventDates, eventLocations, l_id)
 			{
 				let tplFile = "events";
 
-				//tplData["eventDates"] = eventDates;
-
 				tplData["eventLocations"] = {};
 				tplData["eventLocations"]["list"] = eventLocations;
 				tplData["eventLocations"]["l_id"] = l_id;
 
-				//console.log(i_yy, i_mm, i_dd);
-				//console.log(eventList);
-
 				tplData["eventCalendar"] = Calendar.render(
 					this.getBaseUrl(),
-					{[startDate.getFullYear()]: [startDate.getMonth(), startDate.getMonth()+1, startDate.getMonth()+2]},
-					{}
+					//так как месяцы считаются с нуля
+					{[startDate.getFullYear()]: [startDate.getMonth()+1, startDate.getMonth()+2, startDate.getMonth()+3]},
+					{},
+					eventDates
 				);
 
 				//this.getRes().expose(eventLocations, 'eventLocations');

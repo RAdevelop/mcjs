@@ -268,5 +268,18 @@ class Helpers
 
 		return str.join('');
 	}
+
+	static arrayUnique(inArr)
+	{
+		let uniHash={}, outArr=[], i=inArr.length;
+
+		while(i--)
+			uniHash[inArr[i]]=i;
+
+		for(i in uniHash)
+			outArr.push(i);
+
+		return Object.keys(uniHash);
+	}
 }
 module.exports = Helpers;

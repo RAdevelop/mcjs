@@ -114,6 +114,8 @@ class Calendar
 		let fill = false;
 		let	cellDay	= firstDayOfMonth.getDate();
 		let tdClass = '';
+		let listDate;
+
 		for(let i = 0; i < 6; i++)
 		{
 			htmlDays += `<tr>`;
@@ -132,19 +134,31 @@ class Calendar
 					if (cellDay == dateDay && month == dateMonth)
 						tdClass += ' checkedDay';
 
-					htmlDays += `<td class="${tdClass}"><a href="${baseUrl}/${year}/${month+1}/${cellDay}/">${cellDay}</a></td>`;
+					listDate = new Date(year, month, cellDay);
+
+					htmlDays += `<td class="${tdClass}">`;
+
+					if (dateList.indexOf(listDate.getTime().toString()) !== -1)
+					{
+						htmlDays += `<a href="${baseUrl}/${year}/${month+1}/${cellDay}/">${cellDay}</a>`;
+					}
+					else
+					{
+						htmlDays += `<span>${cellDay}</span>`;
+					}
+					htmlDays += `</td>`;
 					cellDay++;
 				}
 				else htmlDays += `<td class="${tdClass}">&nbsp;</td>`;
 			});
 			htmlDays += `</tr>`;
 		}
-
+		listDate = null;
 		let nextMoth, nextYear, prevMoth, prevYear;
 
 
-		nextYear=year;
-		prevYear=year;
+		nextYear = year;
+		prevYear = year;
 		nextMoth = month+2;
 		prevMoth = month;
 
