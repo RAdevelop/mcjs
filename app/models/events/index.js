@@ -222,10 +222,11 @@ class Events extends BaseModel
 		let sqlData = [start_ts, end_ts];
 		let sql =
 			`SELECT e.e_id, e.e_create_ts, e.e_update_ts, e.e_start_ts, e.e_end_ts, e.e_title, e.e_alias, 
-			e.e_notice, e.e_address, 
-			e.e_location_id, e.e_latitude, e.e_longitude, e.e_gps_lat, e.e_gps_lng, e.e_location_pids, 
-			e.u_id,
-			ei.ei_id, ei.ei_latitude, ei.ei_longitude, ei.ei_dir, ei.ei_pos, ei.ei_name
+			e.e_notice, e.e_address
+			, FROM_UNIXTIME(e.e_start_ts, "%d-%m-%Y") AS e_start_dd
+			, FROM_UNIXTIME(e.e_end_ts, "%d-%m-%Y") AS e_end_dd
+			, e.e_location_id, e.e_latitude, e.e_longitude, e.e_gps_lat, e.e_gps_lng, e.e_location_pids
+			, e.u_id, ei.ei_id, ei.ei_latitude, ei.ei_longitude, ei.ei_dir, ei.ei_pos, ei.ei_name
 			FROM (SELECT NULL) AS z
 			JOIN events_list AS e ON(e.e_end_ts >= ? AND e.e_start_ts <= ?)
 			LEFT JOIN events_image AS ei ON(ei.e_id = e.e_id AND ei.ei_pos = 0)`;
@@ -237,7 +238,8 @@ class Events extends BaseModel
 				GROUP BY e.e_id`;
 			sqlData.push(l_id);
 		}
-
+		//console.log(sql, sqlData);
+		//console.log('\n');
 		return this.constructor.conn().s(sql, sqlData);
 	}
 	/**

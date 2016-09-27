@@ -144,7 +144,7 @@ class Events extends Base
 				if (event["eventImages"] && event["eventImages"][0] && event["eventImages"][0]["previews"]["512_384"])
 					this.view.setPageOgImage(event["eventImages"][0]["previews"]["512_384"]);
 
-				this.view.setPageH1(event.e_title);
+				//this.view.setPageH1(event.e_title);
 
 				//экспрот данных в JS на клиента
 				this.getRes().expose(tplData["event"], 'eventData');
@@ -194,7 +194,7 @@ class Events extends Base
 				tplData["eventLocations"]["l_id"] = l_id;
 
 				//console.log(i_yy, i_mm, i_dd);
-				//console.log(eventList);
+				console.log(eventList);
 
 				//this.getRes().expose(eventList, 'eventList');
 				//this.getRes().expose(eventLocations, 'eventLocations');
