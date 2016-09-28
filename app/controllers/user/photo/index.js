@@ -234,9 +234,6 @@ class UserPhoto extends Base
 
 		let tplData = this.getParsedBody();
 
-		if (!tplData["btn_save_album"])
-			return Promise.reject(new Errors.HttpStatusError(400, "Bad request"));
-
 		let tplFile = 'user/profile/photo/albums.ejs';
 
 		//console.log(tplData);
@@ -269,13 +266,16 @@ class UserPhoto extends Base
 	 */
 	albumPostActions(tplData)
 	{
+		if (!tplData["btn_save_album"])
+			throw new Errors.HttpStatusError(400, "Bad request");
+
 		switch(tplData["btn_save_album"])
 		{
 			default:
 				tplData.formError.error = true;
 				tplData.formError.message = 'Невереные данные';
 
-				return Promise.reject(new Errors.HttpStatusError(400, tplData.formError.message));
+				throw new Errors.HttpStatusError(400, tplData.formError.message);
 				break;
 
 			case 'add_album':
@@ -328,7 +328,7 @@ class UserPhoto extends Base
 		let errors = {};
 
 		if (!tplData["i_u_id"] || tplData["i_u_id"] != this.getUserId())
-			return Promise.reject(new Errors.HttpStatusError(400, 'Bad request'));
+			throw new Errors.HttpStatusError(400, 'Bad request');
 
 		tplData = this.stripTags(tplData, ["s_album_name", "t_album_text"]);
 
@@ -367,7 +367,7 @@ class UserPhoto extends Base
 		tplData = this.stripTags(tplData, ["s_album_name", "t_album_text"]);
 		
 		if (!tplData["i_a_id"] || !tplData.hasOwnProperty("s_album_name") || !tplData.hasOwnProperty("t_album_text"))
-			return Promise.reject(new Errors.HttpStatusError(400, 'Bad request'));
+			throw new Errors.HttpStatusError(400, 'Bad request');
 
 		if (tplData["s_album_name"] == '')
 			errors["s_album_name"] = 'Укажите название альбома';
@@ -428,9 +428,7 @@ class UserPhoto extends Base
 	delImg(tplData)
 	{
 		if (!tplData["i_a_id"] || !tplData["i_ai_id"])
-			return Promise.reject(new Errors.HttpStatusError(400, 'Bad request'));
-
-		//return Promise.resolve(tplData);
+			throw new Errors.HttpStatusError(400, 'Bad request');
 
 		return this.getClass('user/photo').delImage(this.getUserId(), tplData["i_a_id"], tplData["i_ai_id"])
 			.then(function ()

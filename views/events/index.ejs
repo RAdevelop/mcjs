@@ -1,7 +1,6 @@
 <%  if(!_isXHR){%><%- layout('layout/default') %><% } %>
 <%- include toolbar.ejs %>
 <h1><%=_pageH1%></h1>
-
 <% if(event && ['edit', 'add'].indexOf(_action) != -1){ %><%- include edit.ejs %><% }
 else if (event){%><%- include event.ejs %><%}
 else if (eventList){%><%- include list.ejs %><%}
@@ -11,7 +10,7 @@ else if (eventCalendar){%><%- include calendar.ejs %><%}
 	//<!--
 	(function($)
 	{
-		$('select#eventLocations').on('change', function (event)
+		$('select#eventLocations').on('change', function ()
 		{
 			window.location.href = this.value;
 		});

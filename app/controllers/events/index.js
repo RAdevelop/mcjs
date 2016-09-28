@@ -194,7 +194,7 @@ class Events extends Base
 				tplData["eventLocations"]["l_id"] = l_id;
 
 				//console.log(i_yy, i_mm, i_dd);
-				console.log(eventList);
+				//console.log(eventList);
 
 				//this.getRes().expose(eventList, 'eventList');
 				//this.getRes().expose(eventLocations, 'eventLocations');
@@ -232,6 +232,7 @@ class Events extends Base
 			.then(function (proprs)
 			{
 				let eventDates = [], eStartTs, eEndTs, eDelta, i;
+
 				proprs.eventDates.forEach(function (eDate)
 				{
 					eStartTs    = parseInt(eDate["e_start_ts"], 10);
@@ -502,13 +503,25 @@ class Events extends Base
 	editActionPost(cb)
 	{
 		let tplFile = "events/edit.ejs";
-
-		//let formData = this.getReqBody();
 		let tplData = this.getParsedBody();
 
-		if (!tplData["i_event_id"])
-			throw new Errors.HttpStatusError(404, "Not found");
+		if (!tplData["i_event_id"] || !tplData["btn_save_event"])
+			return cb(new Errors.HttpStatusError(404, "Not found"));
 
+		//console.log(tplData);
+		switch(tplData["btn_save_event"])
+		{
+			case 'main':
+				return this.editEvent(cb, tplData, tplFile);
+				break;
+			case 'sort_img':
+				return this.sortImg(cb, tplData, tplFile);
+				break;
+		}
+	}
+
+	editEvent(cb, tplData, tplFile)
+	{
 		return this.getClass('events').get(tplData["i_event_id"])
 			.bind(this)
 			.then(function (event)
@@ -601,6 +614,37 @@ class Events extends Base
 			});
 	}
 
+	/**
+	 * сорхранение позиций фотографий после их сортировке на клиенте
+	 *
+	 * @param tplData
+	 */
+	sortImg(cb, tplData, tplFile)
+	{
+		return Promise.resolve(tplData)
+			.bind(this)
+			.then(function (tplData)
+			{
+				if (!tplData["i_event_id"] || !tplData.hasOwnProperty("ei_pos") || !tplData["ei_pos"].length)
+					return Promise.resolve(tplData);
+
+				return this.getClass('events').sortImgUpd(tplData["i_event_id"], tplData["ei_pos"])
+					.then(function ()
+					{
+						return Promise.resolve(tplData);
+					});
+			})
+			.then(function (tplData)
+			{
+				this.view.setTplData(tplFile, tplData);
+
+				return cb(null, true);
+			})
+			.catch(function (err)
+			{
+				return cb(err);
+			});
+	}
 	/**
 	 * просмотр треков на карте
 	 *

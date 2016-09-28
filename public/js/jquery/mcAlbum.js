@@ -101,7 +101,7 @@
 			htmlDialog += ''+
 				'<div class="btn-toolbar displayInlineBlock" role="toolbar" aria-label="Опции фотографии">' +
 				'<div class="btn-group btn-group-sm" role="group" aria-label="опции фотографии">' +
-				'<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">опции <span class="caret"></span></button>' +
+				'<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">опции <i class="caret"></i></button>' +
 				'<ul class="dropdown-menu dropdown-menu-left">' +
 				'<li><a href="javascript:void(0);">Another action</a></li>';
 			if(origSrc)
@@ -117,7 +117,7 @@
 			htmlDialog += '</ul>'
 			htmlDialog += '</div>' +
 				'<div class="btn-group btn-group-sm" role="group" aria-label="посмотреть на карте" data-toggle="tooltip" title="посмотреть на карте" data-container="body" data-placement="bottom">' +
-					'<button type="button" class="btn btn-default" id="btn_img_map"><span class="fa fa-fw fa-map-marker"></span></button>' +
+					'<button type="button" class="btn btn-default" id="btn_img_map"><i class="fa fa-fw fa-map-marker"></i></button>' +
 				'</div>'+
 				'</div>';
 
@@ -570,9 +570,6 @@
 			$albumWrapper.sortable({
 				update: function( event, ui )
 				{
-					//TODO сортрировку
-					console.log('TODO сортрировку');
-
 					var imgPos = [];
 					$(options.albumImages +' img').each(function (i, item)
 					{
@@ -596,11 +593,11 @@
 					})
 					.done(function(resData)
 					{
-						console.log(resData);
+						//console.log(resData);
 					})
 					.fail(function(resData)
 					{
-						console.log(resData);
+						//console.log(resData);
 					});
 				}
 			});

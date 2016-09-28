@@ -1314,6 +1314,19 @@ nav.pagesNavigation
 {
 	margin: 0 5px 10px 5px;
 }
+
+.eventImagesContainer .eventImageItem .eventImageTools
+{
+	background-color: #666;
+	color: #fff;
+	min-height: 24px;
+	line-height: 24px;
+}
+
+.eventImagesContainer .eventImageItem .eventImageTools a
+{
+	color: #fff;
+}
 .eventImagesWrapper
 {
 
@@ -1416,7 +1429,7 @@ img.eventImage
 
 .eventListContainer .eventListItem .eventListItemInfo .eventListItemInfoNotice
 {
-	background-color: rgba(0, 0, 0, 0.9);
+	background-color: rgba(0, 0, 0, 0.7);
 	top: 245px;
 	padding: 0px 3px 3px 3px;
 	bottom: 0;
@@ -1433,11 +1446,9 @@ img.eventImage
 .eventListContainer .eventListItem .eventListItemInfo .eventListItemInfoNotice p:first-child
 {
 	text-align: center;
+	font-weight: bold;
 }
-.eventListContainer .eventListItem .eventListItemInfo .eventListItemInfoNotice p
-{
-	min-height: 43px;
-}
+
 .eventListContainer .eventListItem .eventListItemInfo .eventListItemInfoNotice p:last-child
 {
 	border-top: 1px dotted;
@@ -1561,15 +1572,11 @@ img.eventImage
 
 	.eventListContainer .eventListItem .eventListItemInfo
 	{
-
-		/*height: calc(70%);
-		width: calc(100%);*/
-
 		max-width: calc(100%);
 		max-width: -moz-calc(100%);
 		max-width: -webkit-calc(100%);
 
-		max-height: 258px;
+		/*max-height: 258px;*/
 	}
 	.eventListContainer .eventListItem .eventListItemInfo .eventListItemInfoNotice
 	{

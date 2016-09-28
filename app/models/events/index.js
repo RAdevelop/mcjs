@@ -384,6 +384,60 @@ class Events extends BaseModel
 
 		return this.constructor.conn().s(sql, [e_id]);
 	}
+
+	/**
+	 * кол-вл фоток в событии
+	 *
+	 * @param e_id
+	 * @returns {*|Promise.<TResult>}
+	 */
+	countAlbumImages(e_id)
+	{
+		let sql = "SELECT COUNT(ei_id) AS cnt FROM events_image WHERE e_id = ?;";
+
+		return this.constructor.conn().sRow(sql, [e_id])
+			.then(function (res)
+			{
+				return Promise.resolve(res["cnt"]);
+			});
+	}
+
+	/**
+	 * сорхранение позиций фотографий после их сортировке на клиенте
+	 *
+	 * @param e_id
+	 * @param ei_pos - id фоток
+	 * @returns {*}
+	 */
+	updSortImg(e_id, ei_pos)
+	{
+		return this.countAlbumImages(e_id)
+			.bind(this)
+			.then(function (cnt)
+			{
+				cnt = parseInt(cnt, 10);
+				cnt = (!cnt ? 0 : cnt);
+				if (!cnt || !ei_pos.length || cnt < ei_pos.length)
+					return Promise.resolve(true);
+
+				let setOrdi = [];
+				let setData = [];
+
+				ei_pos.forEach(function (ei_id, i)
+				{
+					setOrdi.push("IF(ei_id = ?, ? ");
+					setData.push(ei_id, i);
+				});
+
+				let sql = "UPDATE events_image SET ei_pos = " + setOrdi.join(',') + ', ei_pos' +')'.repeat(setOrdi.length) +
+					" WHERE e_id = ? ";
+
+				setData.push(e_id);
+
+				//return Promise.resolve();
+				return this.constructor.conn().upd(sql, setData);
+			});
+	}
 }
 
 //************************************************************************* module.exports

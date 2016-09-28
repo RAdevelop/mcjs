@@ -90,6 +90,8 @@
 	var eventImages = MCJS["eventImages"] || [];
 	var eventImagesPreviews = MCJS["eventImagesPreviews"] || [];
 
+	var $eventImagesWrapper = $('.eventImagesWrapper');
+
 	if(eventImagesPreviews.length)
 		preloadImages(eventImagesPreviews);
 
@@ -100,7 +102,8 @@
 	{
 		$(document).on('click','.eventImagesWrapper .eventImagesContainer img', function (event)
 		{
-			//console.log($(this));
+			event.stopPropagation();
+
 			var html = '<li>'+this.outerHTML+'</li>';
 			editor.insertContent(html);
 			$(editor.getBody()).find('img.eventImage').closest('ul').addClass('eventImages');
@@ -121,6 +124,7 @@
 			.then(function(editor)
 			{
 				addImageToTinymce(editor);
+				imgTools(editor);
 				return Promise.resolve(editor);
 			})
 			.fail(function (err)
@@ -310,8 +314,6 @@
 
 	if (eventsUploadOpts)
 	{
-		var $eventImagesWrapper = $('.eventImagesWrapper');
-
 		function prependImgToEvent(filesUploaded, $eventImagesContainer)
 		{
 			if (!filesUploaded || !filesUploaded.length)
@@ -374,6 +376,79 @@
 					}
 				]
 			});
+		});
+	}
+
+	$eventImagesWrapper.find('.eventImagesContainer').sortable({
+		update: function( event, ui )
+		{
+			var imgPos = [];
+			$('.eventImagesContainer img.eventImage').each(function (i, item)
+			{
+				imgPos.push($(item).attr("data-img-id"));
+			});
+
+			if (!imgPos.length)
+				return;
+
+			var postData = {
+				"btn_save_event": "sort_img",
+				"i_event_id": '<%=event["e_id"]%>',
+				"ei_pos": imgPos
+			};
+
+			$.ajax({
+				url: '<%=_reqBaseUrl%>',
+				method: "POST",
+				data: postData,
+				dataType: "json"
+			})
+			.done(function(resData)
+			{
+				//console.log(resData);
+			})
+			.fail(function(resData)
+			{
+				//console.log(resData);
+			});
+		}
+	});
+
+	function imgToolsHtml($img)
+	{
+		var html = '<div class="eventImageTools">'
+		html += '<span><a href="javascript:void(0)" data-action="delete" data-img-id="'+$img.data('imgId')+'"><i class="fa fa-fw fa-trash-o"></i> удалить</a></span>';
+		html += '</div>';
+		return html;
+	}
+
+	function imgTools(editor)
+	{
+		$eventImagesWrapper.find('.eventImageItem img').each(function(i, img)
+		{
+			$(this).parent().prepend(imgToolsHtml($(img)));
+		});
+
+		$(document).on('click','.eventImagesWrapper .eventImagesContainer .eventImageTools a', function (event)
+		{
+			event.preventDefault();
+			event.stopPropagation();
+
+			//console.log($(this).data());
+
+			var $this = $(this);
+
+			switch ($this.data('action'))
+			{
+				case 'delete':
+					 $(editor.getBody()).find('img.eventImage[data-img-id="'+$this.data('imgId')+'"]').parent().remove();
+					McTinymce.clearEmptyTags(editor);
+
+					$this.parents('.eventImageItem').remove();
+					break;
+			}
+			McTinymce.clearEmptyTags(editor);
+			return false;
 		});
 	}
 

@@ -27,7 +27,7 @@ class Events extends Base
 	add(i_u_id, s_e_title, t_e_notice, t_e_text, s_e_address, f_e_lat, f_e_lng, i_location_id, dd_start_ts, dd_end_ts)
 	{
 		let {gps_lat, gps_lng} = this.getClass('location').coordConvert(f_e_lat, f_e_lng);
-		let e_alias = this.helpers.translit(s_e_title);
+		let e_alias = this.helpers.clearSymbol(this.helpers.translit(s_e_title), '-');
 
 		return this.model('events').add(i_u_id, s_e_title, e_alias, t_e_notice, t_e_text, s_e_address, f_e_lat, f_e_lng, i_location_id, gps_lat, gps_lng, dd_start_ts, dd_end_ts);
 	}
@@ -51,7 +51,7 @@ class Events extends Base
 	edit(i_e_id, i_u_id, s_e_title, t_e_notice, t_e_text, s_e_address, f_e_lat, f_e_lng, i_location_id, dd_start_ts, dd_end_ts)
 	{
 		let {gps_lat, gps_lng} = this.getClass('location').coordConvert(f_e_lat, f_e_lng);
-		let e_alias = this.helpers.translit(s_e_title);
+		let e_alias = this.helpers.clearSymbol(this.helpers.translit(s_e_title), '-');
 
 		return this.model('events').edit(i_e_id, i_u_id, s_e_title, e_alias, t_e_notice, t_e_text, s_e_address, f_e_lat, f_e_lng, i_location_id, gps_lat, gps_lng, dd_start_ts, dd_end_ts);
 	}
@@ -354,6 +354,18 @@ class Events extends Base
 						throw err;
 					});
 			});
+	}
+
+	/**
+	 * сорхранение позиций фотографий после их сортировке на клиенте
+	 *
+	 * @param e_id
+	 * @param ei_pos
+	 * @returns {*}
+	 */
+	sortImgUpd(e_id, ei_pos)
+	{
+		return this.model('events').updSortImg(e_id, ei_pos);
 	}
 }
 //************************************************************************* module.exports

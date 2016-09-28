@@ -247,7 +247,7 @@
 		McTinymce.tinymce.triggerSave();
 		editor.setContent(McTinymce.cleanTagEvents(editor.getContent()));
 
-		clearEmptyTags(editor, McTinymce.tinymce);
+		McTinymce.clearEmptyTags(editor);
 
 		editor.setContent(editor.getContent());
 		McTinymce.tinymce.triggerSave();
@@ -257,9 +257,11 @@
 
 		return editor;
 	};
-
-	function clearEmptyTags(editor, tinymce)
+	
+	McTinymce.clearEmptyTags = function (editor)
 	{
+		var tinymce = McTinymce.tinymce;
+		
 		var first = editor.getBody();
 		var walker = new tinymce.dom.TreeWalker(first.firstChild, editor.getBody());
 
@@ -272,7 +274,7 @@
 		{
 			if (walker.current().nodeType != 1 || tagNamesFilter.indexOf(walker.current().nodeName.toLowerCase()) != -1)
 				continue;
-			
+
 			if(reEmpty.test(walker.current().innerHTML))
 			{
 				//console.log(indx, walker.current());
