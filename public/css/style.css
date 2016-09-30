@@ -1395,6 +1395,8 @@ img.eventImage
 	color: #fff;
 	max-width: 384px;
 	max-height: 288px;
+	min-width: 384px;
+	min-height: 288px;
 	overflow: hidden;
 }
 
@@ -1498,6 +1500,9 @@ img.eventImage
 	{
 		max-width: 359px;
 		max-height: 269px;
+
+		min-width: 359px;
+		min-height: 269px;
 	}
 }
 @media (max-width: 768px)
@@ -1530,6 +1535,9 @@ img.eventImage
 	{
 		max-width: 100%;
 		max-height: 257px;
+
+		min-width: 100%;
+		min-height: 257px;
 	}
 
 	.eventListContainer .eventListItem .eventListItemInfo .eventListItemInfoNotice
@@ -1575,6 +1583,10 @@ img.eventImage
 		max-width: calc(100%);
 		max-width: -moz-calc(100%);
 		max-width: -webkit-calc(100%);
+
+		min-width: calc(100%);
+		min-width: -moz-calc(100%);
+		min-width: -webkit-calc(100%);
 
 		/*max-height: 258px;*/
 	}

@@ -177,7 +177,6 @@
 
 				searchControl.events.add('submit', function ()
 				{
-
 					//console.log('request: ' + searchControl.getRequestString());
 
 				}, this);
@@ -210,7 +209,7 @@
 				EventMap.events.add('click', function (event)
 				{
 					var coords = event.get('coords');
-					console.log('click by coords', coords);
+
 					//return McMap.locationByLatLng(coords[0], coords[1], 'house')
 					return McMap.locationByLatLng(coords)
 							.then(function(location)
@@ -438,9 +437,6 @@
 		{
 			event.preventDefault();
 			event.stopPropagation();
-
-			//console.log($(this).data());
-
 			var $this = $(this);
 
 			switch ($this.data('action'))
@@ -461,8 +457,6 @@
 					})
 					.done(function(resData)
 					{
-						console.log(resData);
-
 						$(editor.getBody()).find('img.eventImage[data-img-id="'+$this.data('imgId')+'"]').parent().remove();
 						McTinymce.clearEmptyTags(editor);
 

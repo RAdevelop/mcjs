@@ -381,26 +381,24 @@ class Events extends Base
 			.bind(this)
 			.then(function (event)
 			{
+
 				if (!event)
 					return Promise.resolve(null);
 
 				let dir = Path.join(FileUpload.getDocumentRoot, FileUpload.getUploadConfig('events')["pathUpload"], FileUpload.getAlbumUri(e_id));
 
 				return FileUpload.deleteDir(dir, true)
-					.bind(this)
-					.then(function ()
+					.then(function (done)
 					{
 						return Promise.resolve(event);
 					});
-
-				return Promise.resolve(event);
 			})
 			.then(function (event)
 			{
 				if (!event)
 					return Promise.resolve(e_id);
 
-				return this.model('events').delEvent(u_id, event.e_id);
+				return this.model('events').delEvent(event.e_id);
 			});
 	}
 }
