@@ -50,7 +50,7 @@ jQuery(document).ready(function ()
 		{
 			var self = this;
 			var $sharingSocNet = $('.sharingSocNet');
-			var socList = $sharingSocNet.attr('data-soc-list').split(',') || [];
+			var socList = ($sharingSocNet.attr('data-soc-list')||'').split(',') || [];
 			var socLinks = '';
 
 			socList.forEach(function (socName)

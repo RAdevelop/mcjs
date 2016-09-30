@@ -170,7 +170,7 @@ CREATE TABLE `events_image` (
 
 LOCK TABLES `events_image` WRITE;
 /*!40000 ALTER TABLE `events_image` DISABLE KEYS */;
-INSERT INTO `events_image` VALUES (1,1,1473866595,1473866598,NULL,NULL,'/events/0/1/1/6512bd43d9caa6e02c990b0a82652dca',2,'25-maverick-vinales-esp_gp_3613.gallery_full_top_fullscreen.jpg'),(2,1,1473866595,1473866598,NULL,NULL,'/events/0/1/2/c20ad4d76fe97759aa27a0c99bff6710',5,'26-dani-pedrosa-esp_gp_3449.gallery_full_top_fullscreen.jpg'),(3,1,1473867350,1473867353,NULL,NULL,'/events/0/1/3/c51ce410c124a10e0db5e4b97fc2af39',4,'46-valentino-rossi-ita_5n27825.gallery_full_top_fullscreen.jpg'),(4,1,1473867350,1473867353,NULL,NULL,'/events/0/1/4/aab3238922bcc25a6f606eb525ffdc56',0,'93-marc-marquez-esp_gp_4858.gallery_full_top_fullscreen.jpg'),(5,1,1473882983,1473882984,NULL,NULL,'/events/0/1/5/9bf31c7ff062936a96d3c8bd1f8f2ff3',1,'banda.jpg'),(6,1,1473883007,1473883008,NULL,NULL,'/events/0/1/6/c74d97b01eae257e44aa9d5bade97baf',3,'banda3.jpg'),(7,2,1474062736,1474062737,NULL,NULL,'/events/0/2/7/02e74f10e0327ad868d138f2b4fdd6f0',0,'banda.jpg'),(8,3,1474931744,1474931745,NULL,NULL,'/events/0/3/8/a5771bce93e200c36f7cd9dfd0e5deaa',0,'Русский Форсаж.jpg');
+INSERT INTO `events_image` VALUES (1,1,1473866595,1473866598,NULL,NULL,'/events/0/1/1/6512bd43d9caa6e02c990b0a82652dca',1,'25-maverick-vinales-esp_gp_3613.gallery_full_top_fullscreen.jpg'),(2,1,1473866595,1473866598,NULL,NULL,'/events/0/1/2/c20ad4d76fe97759aa27a0c99bff6710',4,'26-dani-pedrosa-esp_gp_3449.gallery_full_top_fullscreen.jpg'),(3,1,1473867350,1473867353,NULL,NULL,'/events/0/1/3/c51ce410c124a10e0db5e4b97fc2af39',3,'46-valentino-rossi-ita_5n27825.gallery_full_top_fullscreen.jpg'),(4,1,1473867350,1473867353,NULL,NULL,'/events/0/1/4/aab3238922bcc25a6f606eb525ffdc56',0,'93-marc-marquez-esp_gp_4858.gallery_full_top_fullscreen.jpg'),(6,1,1473883007,1473883008,NULL,NULL,'/events/0/1/6/c74d97b01eae257e44aa9d5bade97baf',2,'banda3.jpg'),(7,2,1474062736,1474062737,NULL,NULL,'/events/0/2/7/02e74f10e0327ad868d138f2b4fdd6f0',0,'banda.jpg'),(8,3,1474931744,1474931745,NULL,NULL,'/events/0/3/8/a5771bce93e200c36f7cd9dfd0e5deaa',0,'Русский Форсаж.jpg');
 /*!40000 ALTER TABLE `events_image` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -592,7 +592,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1475101338,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1473868152,'RoLex',1);
+INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1475232070,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1473868152,'RoLex',1);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1319,7 +1319,7 @@ BEGIN
         
         SELECT COUNT(ei_id) AS cnt INTO ei_cnt
         FROM `events_image`
-		WHERE e_id = inEid AND u_id = inUid;
+		WHERE e_id = inEid;
         
 		UPDATE `events_list` SET 
         e_img_cnt = ei_cnt,
@@ -3454,4 +3454,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-09-29  1:24:09
+-- Dump completed on 2016-09-30 13:43:02

@@ -360,7 +360,7 @@ class Events extends BaseModel
 	 */
 	getImage(ei_id)
 	{
-		let sql = `SELECT ei_id, e_id, ei_create_ts, ei_update_ts, ei_latitude, ei_longitude, ei_dir, ei_pos, ei_name
+		let sql = `SELECT ei.ei_id, ei.e_id, ei.ei_create_ts, ei.ei_update_ts, ei.ei_latitude, ei.ei_longitude, ei.ei_dir, ei.ei_pos, ei.ei_name
 			FROM events_image AS ei
 			JOIN events_list AS e ON (e.e_id = ei.e_id)
 			WHERE ei.ei_id = ?`;
@@ -437,6 +437,22 @@ class Events extends BaseModel
 				//return Promise.resolve();
 				return this.constructor.conn().upd(sql, setData);
 			});
+	}
+
+	/**
+	 * удаляем указанное событие
+	 *
+	 * @param e_id
+	 * @returns {Promise.<*>}
+	 */
+	delEvent(e_id)
+	{
+		let sql = `DELETE FROM events_image WHERE e_id = ?;
+		DELETE FROM events_locations WHERE e_id = ?;
+		DELETE FROM events_list WHERE e_id = ?;
+		`;
+
+		return this.constructor.conn().multis(sql, [e_id, e_id, e_id]);
 	}
 }
 

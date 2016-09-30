@@ -1,6 +1,8 @@
 "use strict";
 (function($)
 {
+	if ($.fn.postRes) return;
+	
 	$.fn.postRes = function(params)
 	{
 		var defaults = {

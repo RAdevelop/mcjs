@@ -517,6 +517,14 @@ class Events extends Base
 			case 'sort_img':
 				return this.sortImg(cb, tplData, tplFile);
 				break;
+
+			case 'del_img':
+				return this.delImg(cb, tplData, tplFile);
+				break;
+
+			case 'del_event':
+				return this.delEvent(cb, tplData, tplFile);
+				break;
 		}
 	}
 
@@ -730,6 +738,71 @@ class Events extends Base
 				self.view.setTplData(tplFile, tplData);
 
 				return cb(null, true);
+			});
+	}
+
+	/**
+	 * удаление фотографии пользователем
+	 *
+	 * @param tplData
+	 * @returns {*}
+	 */
+	delImg(cb, tplData, tplFile)
+	{
+		return Promise.resolve(tplData)
+			.bind(this)
+			.then(function (tplData)
+			{
+				if (!tplData["i_ei_id"])
+					throw new Errors.HttpStatusError(400, 'Bad request');
+
+				return this.getClass('events').delImage(this.getUserId(), tplData["i_event_id"], tplData["i_ei_id"])
+					.then(function ()
+					{
+						return Promise.resolve(tplData);
+					});
+			})
+			.then(function (tplData)
+			{
+				this.view.setTplData(tplFile, tplData);
+
+				return cb(null, true);
+			})
+			.catch(function (err)
+			{
+				return cb(err);
+			});
+	}
+
+	/**
+	 * удаление указанного события
+	 *
+	 * @param cb
+	 * @param tplData
+	 * @param tplFile
+	 * @returns {Promise.<T>}
+	 */
+	delEvent(cb, tplData, tplFile)
+	{
+		return Promise.resolve(tplData)
+			.bind(this)
+			.then(function (tplData)
+			{
+				return this.getClass('events').delEvent(this.getUserId(), tplData["i_event_id"])
+					.then(function ()
+					{
+						return Promise.resolve(tplData);
+					});
+			})
+			.then(function (tplData)
+			{
+				this.view.setTplData(tplFile, tplData);
+
+				return cb(null, true);
+			})
+			.catch(function (err)
+			{
+				return cb(err);
 			});
 	}
 }

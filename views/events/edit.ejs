@@ -77,7 +77,6 @@
 </fieldset>
 <%}%>
 <script src="/js/mcMap.js" type="text/javascript"></script>
-<script src="/js/jquery/postRes.js" type="text/javascript" ></script>
 <script src="/js/mcTinymce.js" type="text/javascript" ></script>
 <script src="/js/uploadify/jquery.uploadify.min.js" type="text/javascript" ></script>
 <script src="/js/uploadify/jquery.uploadifive.min.js" type="text/javascript" ></script>
@@ -325,7 +324,13 @@
 			{
 				image = filesUploaded[i];
 				imgSrc = (image["previews"] && image["previews"]["256_192"] ? image["previews"]["256_192"] : '/_0.gif');
-				html = '<div class="eventImageItem"><img src="'+imgSrc+'" alt="" class="eventImage" data-img-id="'+image["ei_id"]+'"/></div>';
+
+				var img = '<img src="'+imgSrc+'" alt="" class="eventImage" data-img-id="'+image["ei_id"]+'"/>';
+
+				html = '<div class="eventImageItem">';
+				html += imgToolsHtml($(img));
+				html += img;
+				html += '</div>';
 
 				$eventImagesContainer.prepend(html);
 				eventImages.unshift(image);
@@ -441,10 +446,33 @@
 			switch ($this.data('action'))
 			{
 				case 'delete':
-					 $(editor.getBody()).find('img.eventImage[data-img-id="'+$this.data('imgId')+'"]').parent().remove();
-					McTinymce.clearEmptyTags(editor);
 
-					$this.parents('.eventImageItem').remove();
+					var postData = {
+						"btn_save_event": "del_img",
+						"i_event_id": '<%=event["e_id"]%>',
+						"i_ei_id": $this.data('imgId')
+					};
+
+					$.ajax({
+						url: '<%=_reqBaseUrl%>',
+						method: "POST",
+						data: postData,
+						dataType: "json"
+					})
+					.done(function(resData)
+					{
+						console.log(resData);
+
+						$(editor.getBody()).find('img.eventImage[data-img-id="'+$this.data('imgId')+'"]').parent().remove();
+						McTinymce.clearEmptyTags(editor);
+
+						$this.parents('.eventImageItem').remove();
+					})
+					.fail(function(resData)
+					{
+						//console.log(resData);
+					});
+
 					break;
 			}
 			McTinymce.clearEmptyTags(editor);

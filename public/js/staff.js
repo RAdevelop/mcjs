@@ -80,23 +80,23 @@ if (!String.prototype.htmlspecialchars) {
 		//        example 3: htmlspecialchars('my "&entity;" is still here', null, null, false)
 		//        returns 3: 'my &quot;&entity;&quot; is still here'
 
-		var optTemp = 0
-		var i = 0
-		var noquotes = false
+		var optTemp = 0;
+		var i = 0;
+		var noquotes = false;
 		if (typeof quoteStyle === 'undefined' || quoteStyle === null) {
-			quoteStyle = 2
+			quoteStyle = 2;
 		}
-		string = string || ''
-		string = string.toString()
+		string = string || '';
+		string = string.toString();
 
 		if (doubleEncode !== false) {
 			// Put this first to avoid double-encoding
-			string = string.replace(/&/g, '&amp;')
+			string = string.replace(/&/g, '&amp;');
 		}
 
 		string = string
 			.replace(/</g, '&lt;')
-			.replace(/>/g, '&gt;')
+			.replace(/>/g, '&gt;');
 
 		var OPTS = {
 			'ENT_NOQUOTES': 0,
@@ -105,32 +105,32 @@ if (!String.prototype.htmlspecialchars) {
 			'ENT_COMPAT': 2,
 			'ENT_QUOTES': 3,
 			'ENT_IGNORE': 4
-		}
+		};
 		if (quoteStyle === 0) {
-			noquotes = true
+			noquotes = true;
 		}
 		if (typeof quoteStyle !== 'number') {
 			// Allow for a single string or an array of string flags
-			quoteStyle = [].concat(quoteStyle)
+			quoteStyle = [].concat(quoteStyle);
 			for (i = 0; i < quoteStyle.length; i++) {
 				// Resolve string input to bitwise e.g. 'ENT_IGNORE' becomes 4
 				if (OPTS[quoteStyle[i]] === 0) {
-					noquotes = true
+					noquotes = true;
 				} else if (OPTS[quoteStyle[i]]) {
-					optTemp = optTemp | OPTS[quoteStyle[i]]
+					optTemp = optTemp | OPTS[quoteStyle[i]];
 				}
 			}
-			quoteStyle = optTemp
+			quoteStyle = optTemp;
 		}
 		if (quoteStyle & OPTS.ENT_HTML_QUOTE_SINGLE) {
-			string = string.replace(/'/g, '&#039;')
+			string = string.replace(/'/g, '&#039;');
 		}
 		if (!noquotes) {
-			string = string.replace(/"/g, '&quot;')
+			string = string.replace(/"/g, '&quot;');
 		}
 
 		return string;
-	}
+	};
 }
 
 

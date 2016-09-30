@@ -40,8 +40,8 @@
 
 		function formAddAlbum(options)
 		{
-			options.aName = options.aName.htmlspecialchars(options.aName) || '';
-			options.aText = options.aText.htmlspecialchars(options.aText) || '';
+			options.aName = (options.aName || '').htmlspecialchars(options.aName || '');
+			options.aText = (options.aText || '').htmlspecialchars(options.aText || '');
 
 			var a_id = (options.album && options.album.a_id  && options.album.a_is_owner ? options.album.a_id : null);
 
@@ -90,7 +90,7 @@
 			var imgSrc = (img["previews"] && img["previews"]["1024_768"] ? img["previews"]["1024_768"] : '/_0.gif');
 			var origSrc = (img["previews"] && img["previews"]["orig"] ? img["previews"]["orig"] : null);
 
-			var ai_text = img["ai_text"].htmlspecialchars(img["ai_text"]);
+			var ai_text = (img["ai_text"]||'').htmlspecialchars(img["ai_text"]||'');
 
 			var htmlDialog = '';
 			htmlDialog += '<div class="modal " id="'+options.id+'" tabindex="-1" role="dialog" aria-labelledby="'+options.id+'">';
@@ -181,7 +181,7 @@
 				})
 				.fail(function(resData)
 				{
-					console.log(resData);
+					//console.log(resData);
 				});
 		}
 
@@ -214,8 +214,7 @@
 							})
 								.done(function(resData)
 								{
-									console.log('on done');
-									console.log(resData);
+									//console.log(resData);
 									if (!resData["formError"] || !resData["formError"]["error"])
 									{
 										$modal.modal('hide');
@@ -230,8 +229,7 @@
 								})
 								.fail(function(resData)
 								{
-									console.log('on fail');
-									console.log(resData);
+									//console.log(resData);
 
 									$('__album_image_delete_fail_dialog__').mcDialog({
 										title: resData.responseJSON.error.message
@@ -465,7 +463,6 @@
 
 		function getImg(ai_id)
 		{
-			//console.log('getImg(ai_id)');
 			var img = null;
 			var i;
 			for(i in MCJS["albumImages"])
@@ -476,8 +473,6 @@
 					break;
 				}
 			}
-			//console.log(img);
-			//console.log('END getImg(ai_id)');
 			return img;
 		}
 
