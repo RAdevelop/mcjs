@@ -59,8 +59,8 @@
 			case 'delete':
 
 				$('__del_event_dialog__').mcDialog({
-					title: 'Удалить мотособытие'
-					, body: formDelEvent(MCJS["eventData"], '<%=_reqBaseUrl%>')
+					title: 'Удаление мотособытия'
+					, body: formDelEvent(MCJS["eventData"]||{}, '<%=_reqBaseUrl%>')
 					, onOpen: function ($dialog)
 					{
 						$dialog.find('#formDelEvent').postRes({
@@ -90,12 +90,12 @@
 					}
 					, buttons: [
 						{
-							title: 'Да'
+							title: 'да'
 							, name: 'btn_del_event'
 							, cssClass: 'btn-success'
 						},
 						{
-							title: 'отменить'
+							title: 'нет'
 							,name: 'btn_del_event_cancel'
 							,cssClass: 'btn-danger'
 							,func:

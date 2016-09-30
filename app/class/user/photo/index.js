@@ -351,6 +351,39 @@ class UserPhoto extends User
 	{
 		return this.model('user/photo').updSortImg(u_id, a_id, ai_pos);
 	}
+
+	/**
+	 * удаление указанного альбома
+	 *
+	 * @param u_id
+	 * @param e_id
+	 * @returns {Promise.<*>}
+	 */
+	delAlbum(u_id, a_id)
+	{
+		return this.getAlbum(u_id, u_id, a_id)
+			.bind(this)
+			.then(function (album)
+			{
+				if (!album || !album["a_named"])
+					return Promise.resolve(album);
+
+				let dir = Path.join(FileUpload.getDocumentRoot, FileUpload.getUploadConfig('user_photo')["pathUpload"], FileUpload.getAlbumUri(a_id));
+
+				return FileUpload.deleteDir(dir, true)
+					.then(function (done)
+					{
+						return Promise.resolve(album);
+					});
+			})
+			.then(function (album)
+			{
+				if (!album || !album["a_named"])
+					return Promise.resolve(a_id);
+
+				return this.model('user/photo').delAlbum(album.a_id, u_id);
+			});
+	}
 }
 //************************************************************************* module.exports
 //писать после class Name....{}

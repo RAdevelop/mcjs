@@ -297,6 +297,10 @@ class UserPhoto extends Base
 			case 'sort_img':
 				return this.sortImg(tplData);
 				break;
+
+			case 'del_album':
+				return this.delAlbum(tplData);
+				break;
 		}
 	}
 
@@ -492,6 +496,24 @@ class UserPhoto extends Base
 				self.view.setTplData(tplFile, tplData);
 
 				return cb(null, true);
+			});
+	}
+
+	/**
+	 * удаление указанного альбома
+	 *
+	 * @param tplData
+	 * @returns {Promise.<T>}
+	 */
+	delAlbum(tplData)
+	{
+		if (!tplData["i_a_id"])
+			throw new Errors.HttpStatusError(400, 'Bad request');
+
+		return this.getClass('user/photo').delAlbum(this.getUserId(), tplData["i_a_id"])
+			.then(function ()
+			{
+				return Promise.resolve(tplData);
 			});
 	}
 }

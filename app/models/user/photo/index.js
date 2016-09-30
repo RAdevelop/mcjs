@@ -432,6 +432,20 @@ class Photo extends User
 				return this.constructor.conn().upd(sql, setData);
 			});
 	}
+
+	/**
+	 * удаляем указанное событие
+	 *
+	 * @param e_id
+	 * @returns {Promise.<*>}
+	 */
+	delAlbum(a_id, u_id)
+	{
+		let sql = `DELETE FROM album_image WHERE a_id = ? AND u_id = ?;
+		DELETE FROM album WHERE a_id = ? AND u_id = ?;`;
+
+		return this.constructor.conn().multis(sql, [a_id, u_id, a_id, u_id]);
+	}
 }
 
 module.exports = Photo;

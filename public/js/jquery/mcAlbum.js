@@ -36,6 +36,7 @@
 
 		var	$btnAddAlbum = $albumToolbar.find('#btn_add_album_modal');
 		var	$btnEditAlbum = $albumToolbar.find('#btn_edit_album_modal');
+		var	$btnDelAlbum = $albumToolbar.find('#btn_del_album_modal');
 		var	$btnAlbumUpload = $albumToolbar.find('#btn_album_upload');
 
 		function formAddAlbum(options)
@@ -61,6 +62,23 @@
 				'</div>' +
 				'</form>';
 
+			return html;
+		}
+		
+		function formDelAlbum(options)
+		{
+			var a_id = (options.album && options.album.a_id  && options.album.a_is_owner ? options.album.a_id : null);
+
+			var html = '<form class="form-horizontal" action="'+options.uri+'/" method="post" id="formDelAlbum">' +
+				'<input type="hidden" name="btn_save_album" value="del_album"/>' +
+				'<input type="hidden" name="i_a_id" value="'+a_id+'"/>' +
+				'<div class="form-group">' +
+				'<div class="col-sm-12 text-center">' +
+				'Удалить фотоальбом: ' + options.album.a_name + '?' +
+				'</div>' +
+				'</div>' +
+				'</form>';
+			
 			return html;
 		}
 
@@ -597,6 +615,64 @@
 				}
 			});
 		}
+
+		$btnDelAlbum.click(function (event)
+		{
+			event.preventDefault();
+			event.stopPropagation();
+
+			$('__del_album_dialog__').mcDialog({
+				title: 'Удаление фотоальбома'
+				, body: formDelAlbum(options)
+				, onOpen: function ($dialog)
+				{
+					$dialog.find('#formDelAlbum').postRes({
+						btnId: $dialog.find('#btn_del_album'),
+						onSuccess: function($respDialog, resp)
+						{
+							if (resp.hasOwnProperty("formError") && resp["formError"].hasOwnProperty("error") && !resp["formError"]["error"])
+							{
+								window.location.href = options.uri+'/'+options.u_id+'/';
+								return false;//не показать диалог
+							}
+							else
+							{
+								return true;
+							}
+						},
+						onFail: function ($respDialog, resp)
+						{
+							$dialog.hide();
+							return true;
+						},
+						onClose: function ($respDialog)
+						{
+							$dialog.show();
+						}
+					});
+				}
+				, buttons: [
+					{
+						title: 'да'
+						, name: 'btn_del_album'
+						, cssClass: 'btn-success'
+					},
+					{
+						title: 'нет'
+						,name: 'btn_del_album_cancel'
+						,cssClass: 'btn-danger'
+						,func:
+					{
+						"click": function(event)
+						{
+							$(event.data[0]).modal('hide');
+						}
+					}
+					}
+				]
+			});
+
+		});
 
 		$btnAddAlbum.click(function (event)
 		{
