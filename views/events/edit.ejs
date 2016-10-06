@@ -114,7 +114,7 @@
 				selector: '#t_e_text'
 				,body_class:"eventData"
 				//разрешенные теги (с указанными атрибутами)
-				,valid_elements:"h1,h2,h3,h4,h5,h6,p,em,i,ol,img[class|src|data-img-id|alt],ul[class],li,strong/b,a[href|class|title|target]"
+				,valid_elements:"h1,h2,h3,h4,h5,h6,p,em,i[class|aria-hidden],ol,img[class|src|data-img-id|alt],ul[class],li,strong/b,a[href|class|title|target],iframe[src|class|width|height|frameborder|allowfullscreen|webkitallowfullscreen|mozallowfullscreen|scrolling]"
 				//расширение для разрешенных тегов (-p - пустой абсац удалится)
 				,extended_valid_elements:"-p"
 				//запрещенные теги, удаляться потом сами
@@ -469,6 +469,7 @@
 
 					break;
 			}
+
 			McTinymce.clearEmptyTags(editor);
 			return false;
 		});

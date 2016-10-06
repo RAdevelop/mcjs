@@ -24,6 +24,56 @@
 		//McTinymce.save(this);
 	}
 
+	function postRequestOnPaste(editor, event)
+	{
+		event.stopPropagation();
+
+		console.log(event.clipboardData.getData('text/plain'));
+
+		var uri = event.clipboardData.getData('text/plain');
+		if (!isLink(uri))
+			return;
+
+		//https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/
+
+		var postData = {
+			"b_load_video_embed": "1",
+			"s_uri": uri
+		};
+
+		editor.setProgressState(true);
+		$.ajax({
+			url: 'video',
+			method: "POST",
+			data: postData,
+			dataType: "json"
+		})
+			.done(function(resData)
+			{
+				if (!resData["video_embed_url"])
+				{
+					editor.setProgressState(false);
+					return;
+				}
+
+				var iframe = '<iframe src="'+resData["video_embed_url"]+'" data-link="'+uri+'" class="iframeVideoEmbed" frameborder="0" webkitallowfullscreen="webkitallowfullscreen" mozallowfullscreen="mozallowfullscreen" allowfullscreen="allowfullscreen" scrolling="no"></iframe>';
+
+				editor.insertContent(iframe);
+
+				var $iframe = $(editor.getBody()).find('iframe[data-link="'+uri+'"]');
+
+				$iframe.parent().html($iframe.parent().html().replace(uri, ''));
+
+				editor.selection.select($iframe.parent().get(0), false);
+				editor.setProgressState(false);
+
+			})
+			.fail(function(resData)
+			{
+				console.log(resData);
+			});
+	}
+
 	var defaultSkin =  {
 		language: "ru_RU"
 	,   content_css: "/css/style.css"
@@ -34,6 +84,11 @@
 
 			//сабмит формы
 			editor.on('submit', editorOnSubmit);
+			editor.on('paste', function(event){
+
+				postRequestOnPaste(editor, event);
+
+			});
 		}/*,
 		 plugins: [
 		 'lists link charmap preview',
@@ -265,7 +320,7 @@
 		var first = editor.getBody();
 		var walker = new tinymce.dom.TreeWalker(first.firstChild, editor.getBody());
 
-		var tagNamesFilter = ['area', 'base', 'br', 'col', 'command', 'doctype', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'source', 'track', 'wbr'];
+		var tagNamesFilter = ['area', 'base', 'br', 'col', 'command', 'doctype', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'source', 'track', 'wbr', 'iframe'];
 		//var tagNamesFilter = ['img','hr'];
 		var regExp;
 		var reEmpty = /^((&nbsp;)*(\<br\s*\/?\s*\>)*(\s)*)+$/ig;

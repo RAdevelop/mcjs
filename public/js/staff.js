@@ -57,6 +57,14 @@ function updAvaProfileSrc($jq, src)
 	src = src || $jq.attr("src").split('?')[0];
 	$jq.attr("src", src +'?ts='+(new Date()).getTime());
 }
+function isLink(value)
+{
+	value = jQuery.trim(value);
+
+	let re = /^(https?\:\/\/)?((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))(\S*)$/;
+
+	return re.test(value);
+}
 
 if (!String.prototype.htmlspecialchars) {
 	String.prototype.htmlspecialchars = function (string, quoteStyle, charset, doubleEncode) {

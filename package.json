@@ -27,6 +27,7 @@
     "express-state": "^1.4.0",
     "formidable": "^1.0.17",
     "gm": "^1.23.0",
+    "iconv-lite": "^0.4.13",
     "ioredis": "^2.3.0",
     "lodash": "^4.15.0",
     "mariasql": "^0.2.6",

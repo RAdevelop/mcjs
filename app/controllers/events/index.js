@@ -7,6 +7,8 @@ const Mail = require('app/lib/mail');
 const FileUpload = require('app/lib/file/upload');
 const Calendar = require('app/lib/calendar');
 
+const VideoEmbed = require("app/lib/video/embed");
+
 //const Moment = require('moment'); //работа со временем
 
 class Events extends Base
@@ -505,6 +507,11 @@ class Events extends Base
 		let tplFile = "events/edit.ejs";
 		let tplData = this.getParsedBody();
 
+		if (tplData["b_load_video_embed"])
+		{
+			return this.video(cb, tplData, tplFile);
+		}
+
 		if (!tplData["i_event_id"] || !tplData["btn_save_event"])
 			return cb(new Errors.HttpStatusError(404, "Not found"));
 
@@ -796,6 +803,28 @@ class Events extends Base
 			})
 			.then(function (tplData)
 			{
+				this.view.setTplData(tplFile, tplData);
+
+				return cb(null, true);
+			})
+			.catch(function (err)
+			{
+				return cb(err);
+			});
+	}
+
+	video(cb, tplData, tplFile)
+	{
+		console.log(tplData);
+
+		//test https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/
+		const Video = new VideoEmbed(tplData["s_uri"]);
+
+		return Video.getVideo()
+			.bind(this)
+			.then(function (videoData)
+			{
+				Object.assign(tplData, videoData);
 				this.view.setTplData(tplFile, tplData);
 
 				return cb(null, true);

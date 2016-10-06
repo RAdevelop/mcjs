@@ -55,7 +55,7 @@ class Helpers
 		}
 	}
 	
-	static is_i(value)
+	static isI(value)
 	{
 		if (value.search(/-?0/) == 0 && value.length > 1) return false;
 
@@ -63,27 +63,27 @@ class Helpers
 	}
 
 
-	static is_ui(value)
+	static isUi(value)
 	{
 		if (value.search(/-/) == 0) return false;
 	
-		return Helpers.is_i(value);
+		return Helpers.isI(value);
 	}
 
 
-	static is_float(value)
+	static isFloat(value)
 	{
 		let re = /^-?\d+(?:\.\d+(?:E\-\d+)?)?$/;
 		return re.test(value);
 	}
 
-	static is_ufloat(value)
+	static isUfloat(value)
 	{
 		let re = /^\d+(?:\.\d+(?:E\-\d+)?)?$/;
 		return re.test(value);
 	}
 
-	static is_email(value)
+	static isEmail(value)
 	{
 		value = value.trim();
 		if (value.length >= 255) return false;
@@ -93,7 +93,16 @@ class Helpers
 		return re.test(value);
 	}
 
-	static is_date(date)
+	static isLink(value)
+	{
+		value = value.trim();
+	
+		let re = /^(https?\:\/\/)?((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))(\S*)$/;
+
+		return re.test(value);
+	}
+
+	static isDate(date)
 	{
 		let bd = date.split('-');
 
@@ -129,23 +138,23 @@ class Helpers
 			switch (type)
 			{
 				case 'i':
-					if(!Helpers.is_i(pValue)) pValue = null;
+					if(!Helpers.isI(pValue)) pValue = null;
 					break;
 	
 				case 'ui':
-					if(!Helpers.is_ui(pValue)) pValue = null;
+					if(!Helpers.isUi(pValue)) pValue = null;
 					break;
 	
 				// Float
 				case 'f':
-					if(!Helpers.is_float(pValue)) pValue = null;
+					if(!Helpers.isFloat(pValue)) pValue = null;
 					pValue = parseFloat(pValue);
 					break;
 	
 				//Float unsigned
 				case 'uf':
 				case 'fu':
-					if(!Helpers.is_ufloat(pValue)) pValue = null;
+					if(!Helpers.isUfloat(pValue)) pValue = null;
 					pValue = parseFloat(pValue);
 					break;
 	
@@ -171,14 +180,14 @@ class Helpers
 					pValue = pValue.toString();
 					break;
 	
-				case 'm': //is_email
-					if (!Helpers.is_email(pValue)) pValue = null;
+				case 'm': //isEmail
+					if (!Helpers.isEmail(pValue)) pValue = null;
 					break;
 	
 				case 'bd': //дата дня рождения вида дд-мм-гггг
 				case 'dd': //дата вида дд-мм-гггг
 
-					if(!Helpers.is_date(pValue)) pValue = null;
+					if(!Helpers.isDate(pValue)) pValue = null;
 	
 					break;
 				/*
