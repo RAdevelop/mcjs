@@ -551,14 +551,14 @@ iframe.iframeVideoEmbed
 {
 	iframe.iframeVideoEmbed
 	{
-		width: 100%;
+		/*width: 100%;*/
 	}
 }
 @media (min-width: 768px) and (max-width: 992px)
 {
 	iframe.iframeVideoEmbed
 	{
-		width: 100%;
+		/*width: 100%;*/
 	}
 }
 
@@ -566,21 +566,21 @@ iframe.iframeVideoEmbed
 {
 	iframe.iframeVideoEmbed
 	{
-		width: 100%;
+		/*width: 100%;*/
 	}
 }
 @media (max-width: 768px)
 {
 	iframe.iframeVideoEmbed
 	{
-		width: 100%;
+		/*width: 100%;*/
 	}
 }
 @media (max-width: 768px) and (orientation : landscape)
 {
 	iframe.iframeVideoEmbed
 	{
-		width: 100%;
+		/*width: 100%;*/
 	}
 }
 @media (max-width: 640px)
@@ -1580,7 +1580,7 @@ img.eventImage
 	}
 	.eventData ul.eventImages li
 	{
-		max-height: 384px;
+		/*max-height: 384px;*/
 
 		/*max-width: 293px;
 		max-height: 219px;*/

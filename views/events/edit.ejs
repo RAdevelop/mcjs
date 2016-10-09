@@ -63,16 +63,27 @@
 	</div>
 </form>
 <% if (_action == 'edit'){%>
+<ul>
+	<li><span class="popoverHelp " id="eventHelpImages">Как добавить изображения в "описание"</span></li>
+	<li><span class="popoverHelp " id="eventHelpVideo">Как добавить видео в "описание"</span></li>
+</ul>
+<div class="popoverContent" data-popover-for="#eventHelpImages">
+	<ol>
+		<li>загрузите изображения (максимум 5 файлов)</li>
+		<li>установите (кликните) курсор в нужном месте "описания"</li>
+		<li>кликните по нужному изображению, после чего оно добавится в "описание"</li>
+		<li>в любом случае, все изображения будут показаны под описанием на странице события</li>
+	</ol>
+</div>
+<div class="popoverContent" data-popover-for="#eventHelpVideo">
+	<ol>
+		<li>Скопируейте ссылку на видео</li>
+		<li>Вставьте ссылку в "опоисание"</li>
+		<li>В случае успешной обработки ссылки, видео добавится в "описание" вместо ссылки</li>
+	</ol>
+</div>
 <fieldset class="col-xs-12">
-	<legend><a href="javascript:void(0);" id="uploadEventImages"><i class="fa fa-cloud-upload" aria-hidden="true"></i> загрузить</a> Изображения [<span class="popoverHelp " id="eventHelpImages">Как добавить изображения в "описание"</span>]</legend>
-	<div class="popoverContent" data-popover-for="#eventHelpImages">
-		<ol>
-			<li>загрузите изображения (максимум 5 файлов)</li>
-			<li>установите (кликните) курсор в нужном месте "описания"</li>
-			<li>кликните по нужному изображению, после чего оно добавится в "описание"</li>
-			<li>в любом случае, все изображения будут показаны под описанием на странице события</li>
-		</ol>
-	</div>
+	<legend><a href="javascript:void(0);" id="uploadEventImages"><i class="fa fa-cloud-upload" aria-hidden="true"></i> загрузить</a> Изображения</legend>
 	<%- include event_images.ejs %>
 </fieldset>
 <%}%>

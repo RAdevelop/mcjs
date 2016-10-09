@@ -815,8 +815,6 @@ class Events extends Base
 
 	video(cb, tplData, tplFile)
 	{
-		console.log(tplData);
-
 		//test https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/
 		const Video = new VideoEmbed(tplData["s_uri"]);
 

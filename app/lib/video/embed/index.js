@@ -27,10 +27,12 @@ class VideoEmbed
 	get hostList()
 	{
 		return [
-			{"host": "youtube",     "encoding":"utf8"},
-			{"host": "vimeo",       "encoding":"utf8"},
-			{"host": "vkontakte",   "encoding":"win1251"},
-			{"host": "vk",          "encoding":"win1251"}
+			/*{"host": "rutube.ru",       "encoding":"utf8"},
+			{"host": "myvi.ru",         "encoding":"utf8"},
+			{"host": "youtube.com",     "encoding":"utf8"},
+			{"host": "vimeo.com",       "encoding":"utf8"},*/
+			{"host": "vkontakte.ru",    "encoding":"win1251"},
+			{"host": "vk.com",          "encoding":"win1251"}
 		];
 	}
 
@@ -41,10 +43,12 @@ class VideoEmbed
 	 */
 	setUri(uri)
 	{
-		//if (Helpers.isLink(uri))
-			this._uri  = uri;
-		//else
-		//	this._uri  = '';
+		let re = new RegExp('^https?::\/\/', 'gi');
+
+		if (!re.test(uri))
+			uri = 'https://'+uri;
+
+		this._uri  = uri;
 		return this;
 	}
 
@@ -89,21 +93,20 @@ class VideoEmbed
 	 */
 	setVideoHosting(hostName)
 	{
-		hostName = hostName.toLowerCase().split('.');
-
 		const self = this;
+		let re = new RegExp( hostName, 'gi');
+
 		this.hostList.some(function (host)
 		{
-			if(hostName.indexOf(host["host"]) != -1)
+			if(re.test(host["host"]))
 			{
-				self._videoHosting = host["host"];
+				let hName = host["host"].toLowerCase().split('.');
+				self._videoHosting = hName[hName.length-2];
 				self.setCharsetEncoding(host["encoding"]);
 				return true;
 			}
 			return false;
 		});
-
-		//console.log("this._videoHosting = ", this._videoHosting);
 
 		return this;
 	}
@@ -254,45 +257,65 @@ class VideoEmbed
 		{
 			let item = meta[key];
 
-			if (item.hasOwnProperty('attribs') && item["attribs"].hasOwnProperty('property'))
+			if (item.hasOwnProperty('attribs') && item["attribs"].hasOwnProperty('name'))
 			{
 				let content = item["attribs"]["content"] || '';
 
-				switch (item["attribs"]["property"])
+				if (content)
 				{
-					case 'og:title':
-						data["video_embed_title"] = content;
-						break;
+					switch (item["attribs"]["property"])
+					{
+						case 'description':
+							data["video_embed_text"] = content;
+							break;
+					}
+				}
+			}
 
-					case 'og:image':
-						data["video_embed_image"] = content;
-						break;
+			if (item.hasOwnProperty('attribs') && item["attribs"].hasOwnProperty('property'))
+			{
+				let content = item["attribs"]["content"] || '';
+				if (content)
+				{
+					switch (item["attribs"]["property"])
+					{
+						case 'og:title':
+							data["video_embed_title"] = content;
+							break;
 
-					case 'og:description':
-						data["video_embed_text"] = content;
-						break;
+						case 'og:image':
+							data["video_embed_image"] = content;
+							break;
 
-					case 'og:video:url':
-					case 'og:video':
-						if (!data["video_embed_url"])
+						case 'og:description':
+
+							data["video_embed_text"] = content;
+							break;
+
+						case 'og:video:url':
+						case 'og:video':
+							if (!data["video_embed_url"])
+								data["video_embed_url"] = content;
+							break;
+
+						case 'og:video:iframe':
+
 							data["video_embed_url"] = content;
-						break;
 
-					case 'og:video:iframe':
+							break;
 
-						data["video_embed_url"] = content;
+						case 'og:video:width':
+							data["video_embed_width"] = content;
+							break;
 
-						break;
-
-					case 'og:video:width':
-						data["video_embed_width"] = content;
-						break;
-					case 'og:video:height':
-						data["video_embed_height"] = content;
-						break;
+						case 'og:video:height':
+							data["video_embed_height"] = content;
+							break;
+					}
 				}
 			}
 		});
+
 		return data;
 	}
 
@@ -323,6 +346,7 @@ class VideoEmbed
 	_vk()
 	{
 		let data = this._parseMetaTag();
+
 		if (!data["video_embed_url"])
 			return this;
 
@@ -356,7 +380,7 @@ class VideoEmbed
 
 				if(typeof this['_'+this.getVideoHosting()] == 'function')
 				{
-					this[this.getVideoHosting()]();
+					this['_'+this.getVideoHosting()]();
 				}
 				else
 				{
