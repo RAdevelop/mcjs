@@ -190,7 +190,7 @@ class Events extends Base
 				let tplFile = "events";
 
 				tplData["eventList"] = eventList;
-				
+
 				tplData["eventLocations"] = {};
 				tplData["eventLocations"]["list"] = eventLocations;
 				tplData["eventLocations"]["l_id"] = l_id;
@@ -509,7 +509,7 @@ class Events extends Base
 
 		if (tplData["b_load_video_embed"])
 		{
-			return this.video(cb, tplData, tplFile);
+			return VideoEmbed.video(cb, tplData, tplFile, this);
 		}
 
 		if (!tplData["i_event_id"] || !tplData["btn_save_event"])
@@ -803,26 +803,6 @@ class Events extends Base
 			})
 			.then(function (tplData)
 			{
-				this.view.setTplData(tplFile, tplData);
-
-				return cb(null, true);
-			})
-			.catch(function (err)
-			{
-				return cb(err);
-			});
-	}
-
-	video(cb, tplData, tplFile)
-	{
-		//test https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/
-		const Video = new VideoEmbed(tplData["s_uri"]);
-
-		return Video.getVideo()
-			.bind(this)
-			.then(function (videoData)
-			{
-				Object.assign(tplData, videoData);
 				this.view.setTplData(tplFile, tplData);
 
 				return cb(null, true);

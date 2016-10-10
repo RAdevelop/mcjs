@@ -43,7 +43,7 @@ class VideoEmbed
 	 */
 	setUri(uri)
 	{
-		let re = new RegExp('^https?::\/\/', 'gi');
+		let re = new RegExp('^https?\:\/\/', 'gi');
 
 		if (!re.test(uri))
 			uri = 'https://'+uri;
@@ -395,47 +395,35 @@ class VideoEmbed
 				return Promise.resolve(this.getVideoData());
 			});
 	}
+
+	/**
+	 * статичный метод. вызываем в контроллерах
+	 * 
+	 * @param cb
+	 * @param tplData
+	 * @param tplFile
+	 * @param Controller
+	 * @returns {Promise.<TResult>}
+	 */
+	static video(cb, tplData, tplFile, Controller)
+	{
+		 //test https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/
+		 const Video = new VideoEmbed(tplData["s_uri"]);
+
+		 return Video.getVideo()
+		 .then(function (videoData)
+		 {
+		    Object.assign(tplData, videoData);
+			 Controller.view.setTplData(tplFile, tplData);
+
+		    return cb(null, true);
+		 })
+		 .catch(function (err)
+		 {
+		    return cb(err);
+		 });
+	 }
 }
 //************************************************************************* module.exports
 //писать после class Name....{}
 module.exports = VideoEmbed;
-
-/*
-let uri = '';
-uri = 'https://youtu.be/nQLkaqFoGk4';
-uri = 'https://vimeo.com/185412081';
-//uri = 'https://vk.com/video5844452_169189734'; //доступно
-uri = 'https://vkontakte.ru/video-27019642_456242064'; //доступно
-//uri = 'https://vk.com/video-27019642_456242064'; //доступно
-//uri = 'https://vk.com/video-34886964_170885070'; //НЕдоступно
-
-let start = new Date();
-
-const Video = new VideoEmbed(uri);
-
-Video.getVideo()
-	.then(function (video)
-	{
-		console.log("video = ", video);
-		//console.log(Video.getHtml());
-
-		let end = new Date();
-		console.log("response time: ", end.getTime() - start.getTime() + " ms");
-
-		//response time:  644 ms
-		//response time:  621 ms
-	})
-	.catch(function (err)
-	{
-		console.log(err);
-	});
-
-
-
-//<iframe src="//vk.com/video_ext.php?oid=5844452&id=169189734&hash=21475cd3b5a666e8&hd=2" width="853" height="480" frameborder="0" allowfullscreen></iframe>
-
-//<iframe width="1679" height="930" src="https://www.youtube.com/embed/nQLkaqFoGk4" frameborder="0" allowfullscreen></iframe>
-
-//<iframe src="https://player.vimeo.com/video/185412081" width="640" height="272" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-//<p><a href="https://vimeo.com/185412081">Violet Sands &mdash; No Matter What</a> from <a href="https://vimeo.com/dresscode">Dress Code</a> on <a href="https://vimeo.com">Vimeo</a>.</p>
-*/
