@@ -1,4 +1,5 @@
 "use strict";
+const Logger = require('app/lib/logger');
 const express = require('express');
 const router = express.Router();
 //const Errors = require('app/lib/errors');
@@ -59,6 +60,7 @@ module.exports = function(Classes, Control)
 			})
 			.catch(function (err)
 			{
+				Logger.error(err);
 				C = null;
 				return next(err);
 			});

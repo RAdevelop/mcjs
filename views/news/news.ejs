@@ -1,0 +1,25 @@
+<h2><%-news.n_title%></h2>
+<div class="row newsData">
+	<div class="col-xs-12 col-md-12 eventText"><%-news.n_text%></div>
+	<div class="col-xs-12 col-md-12"><%- include news_images.ejs %></div>
+</div>
+<script src="/js/mcMap.js" type="text/javascript"></script>
+<script src="/js/jquery/mcImage.js" type="text/javascript"></script>
+<script type="text/javascript">
+//<!--
+(function($)
+{
+	var news = MCJS["newsData"] || {};
+
+	$('mcImage').mcImage({
+		imgFieldId: "ni_id"//название поля id у картинки в json'e
+		, albumImages: '.newsData img.newsImage' //селектор для списка картинок
+		, albumImagesMain: '.newsData .newsText img.newsImage'
+		, albumImagesSub: '.newsData .newsImagesWrapper .newsImagesContainer img.newsImage'
+		, albumImagesSubWrapper: '.newsData .newsImagesWrapper'
+		, jsonImageList: news["newsImages"] || {}
+		, jsPreviewsList: news["newsImagesPreviews"] || []
+	});
+})(jQuery);
+//-->
+</script>

@@ -1,0 +1,19 @@
+<div class="row">
+	<div class="newsListContainer col-xs-12 col-sm-12 col-md-12"><%
+newsList.forEach(function (nItem)
+{
+	let hasImg = (!!nItem["previews"]["512_384"]);
+	let imgSrc = (hasImg ? nItem["previews"]["512_384"] : '/_0.gif');
+	%><div class="newsListItem">
+			<a  class="newsListItemInfo" href="<%=[_reqBaseUrl, nItem["n_id"], nItem["n_alias"]].join('/')%>/">
+				<img src="<%=imgSrc%>" alt="<%=nItem["n_title"]%>"/>
+			<div class="newsListItemInfoDate"><%=nItem["dd_show_ts"]%></div>
+			<div class="newsListItemInfoNotice">
+				<p><%=nItem["n_title"]%></p>
+				<p><%=nItem["n_notice"]%></p>
+			</div>
+			</a>
+	</div><%
+});
+ %></div>
+</div>

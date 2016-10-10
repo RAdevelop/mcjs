@@ -1,0 +1,315 @@
+<h4><%=(news.n_title ? 'редактирование' : 'добавление')%> новости</h4>
+<ul class="nav nav-pills nav-justified" role="tablist">
+	<li class="active" role="presentation"><a href="#base" aria-controls="base" role="tab" data-toggle="tab"><span class="fa fa-cog"></span> Основное</a></li>
+</ul>
+<!-- Tab panes -->
+<form class="form-horizontal newsData" action="<%=menuItem.m_path+'/'+_action%>/" method="post" id="formNews">
+	<input type="hidden" id="i_news_id" name="i_news_id" value="<%=news.n_id%>" />
+	<div class="panel panel-default">
+		<div class="panel-body tab-content">
+			<div role="tabpanel" class="tab-pane active" id="base">
+				<div class="form-group dd_show_ts">
+					<label for="s_n_title" class="col-sm-2 control-label">дата новости *</label>
+					<div class="col-sm-5">
+						<input type="text" class="form-control" id="dd_show_ts" name="dd_show_ts" value="<%=news.dd_show_ts%>" placeholder="дата новости" required="required" maxlength="10" />
+						<span class="help-block">дата новости</span>
+					</div>
+				</div>
+				<div class="form-group s_n_title">
+					<label for="s_n_title" class="col-sm-2 control-label">название *</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="s_n_title" name="s_n_title" value="<%=news.n_title%>" placeholder="заголовок новости" required="required" />
+					</div>
+				</div>
+				<div class="form-group t_n_notice">
+					<label for="t_n_notice" class="col-sm-2 control-label">анонс *</label>
+					<div class="col-sm-10">
+						<textarea class="form-control" style="height: 100px;" id="t_n_notice" name="t_n_notice" placeholder="анонс новости" required="required" ><%=news.n_notice%></textarea>
+					</div>
+				</div>
+				<div class="form-group t_n_text">
+					<label for="t_n_text" class="col-sm-2 control-label">описание *</label>
+					<div class="col-sm-10">
+						<textarea class="form-control" style="height: 250px;" id="t_n_text" name="t_n_text" placeholder="описание новости"><%=news.n_text%></textarea>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-xs-offset-5 col-sm-offset-5 ">
+			<input type="hidden" name="btn_save_news" value="main"/>
+			<button type="submit" class="btn btn-primary" id="btn_edit_news" value="1" data-loading-text="сохраняю..." autocomplete="off">сохранить</button>
+		</div>
+	</div>
+</form>
+<% if (_action == 'edit'){%>
+<ul>
+	<li><span class="popoverHelp " id="newsHelpImages">Как добавить изображения в "описание"</span></li>
+	<li><span class="popoverHelp " id="newsHelpVideo">Как добавить видео в "описание"</span></li>
+</ul>
+<div class="popoverContent" data-popover-for="#newsHelpImages">
+	<ol>
+		<li>загрузите изображения (максимум 5 файлов)</li>
+		<li>установите (кликните) курсор в нужном месте "описания"</li>
+		<li>кликните по нужному изображению, после чего оно добавится в "описание"</li>
+		<li>в любом случае, все изображения будут показаны под описанием на странице новости</li>
+	</ol>
+</div>
+<div class="popoverContent" data-popover-for="#newsHelpVideo">
+	<ol>
+		<li>Скопируейте ссылку на видео</li>
+		<li>Вставьте ссылку в "опоисание"</li>
+		<li>В случае успешной обработки ссылки, видео добавится в "описание" вместо ссылки</li>
+	</ol>
+</div>
+<fieldset class="col-xs-12">
+	<legend><a href="javascript:void(0);" id="uploadNewsImages"><i class="fa fa-cloud-upload" aria-hidden="true"></i> загрузить</a> Изображения</legend>
+	<%- include news_images.ejs %>
+</fieldset>
+<%}%>
+<script src="/js/mcTinymce.js" type="text/javascript" ></script>
+<script src="/js/uploadify/jquery.uploadify.min.js" type="text/javascript" ></script>
+<script src="/js/uploadify/jquery.uploadifive.min.js" type="text/javascript" ></script>
+<script src="/js/uploadify/jquery.fileUpload.js" type="text/javascript"></script>
+<script type="text/javascript">
+//<!--
+(function($)
+{
+	var newsData = MCJS["newsData"] || null;
+	var newsImages = MCJS["newsImages"] || [];
+	var newsImagesPreviews = MCJS["newsImagesPreviews"] || [];
+
+	var $newsImagesWrapper = $('.newsImagesWrapper');
+
+	if(newsImagesPreviews.length)
+		preloadImages(newsImagesPreviews);
+
+	$("#dd_show_ts").datepicker({ dateFormat: 'dd-mm-yy' });
+
+	function addImageToTinymce(editor)
+	{
+		$(document).on('click','.newsImagesWrapper .newsImagesContainer img', function (event)
+		{
+			event.stopPropagation();
+
+			var html = '<li>'+this.outerHTML+'</li>';
+			editor.insertContent(html);
+			$(editor.getBody()).find('img.eventImage').closest('ul').addClass('newsImages');
+		});
+	}
+
+	var newsTextTinymce = McTinymce(
+			{
+				selector: '#t_n_text'
+				,body_class:"newsData"
+				//разрешенные теги (с указанными атрибутами)
+				,valid_elements:"h1,h2,h3,h4,h5,h6,p,em,i[class|aria-hidden],ol,img[class|src|data-img-id|alt],ul[class],li,strong/b,a[href|class|title|target],iframe[src|class|width|height|frameborder|allowfullscreen|webkitallowfullscreen|mozallowfullscreen|scrolling]"
+				//расширение для разрешенных тегов (-p - пустой абсац удалится)
+				,extended_valid_elements:"-p"
+				//запрещенные теги, удаляться потом сами
+				//,invalid_elements: "div"
+			}, "visualblocks")
+			.then(function(editor)
+			{
+				addImageToTinymce(editor);
+				imgTools(editor);
+				return Promise.resolve(editor);
+			})
+			.fail(function (err)
+			{
+				console.log(err);
+			});
+
+	$('#formNews').postRes({btnId: 'btn_edit_news',
+		beforeSubmit: function ()
+		{
+			return newsTextTinymce.then(function (editor)
+			{
+				return new Promise(function(resolve, reject)
+				{
+					McTinymce.save(editor, function(editor){
+
+						return resolve(true);
+					});
+				});
+			});
+		},
+		onSuccess: function($dialog, respData)
+		{
+			if (respData["i_news_id"]) window.location.href = '<%=menuItem.m_path%>/edit/' +respData["i_news_id"] +'/';
+
+			return false;
+		}
+	});
+
+	var newsUploadOpts = MCJS["newsUploadOpts"] || null;
+
+	if (newsUploadOpts)
+	{
+		function prependImgToEvent(filesUploaded, $newsImagesContainer)
+		{
+			if (!filesUploaded || !filesUploaded.length)
+				return;
+
+			var i, image, html, imgSrc;
+
+			for(i = 0; i < filesUploaded.length; i++)
+			{
+				image = filesUploaded[i];
+				imgSrc = (image["previews"] && image["previews"]["256_192"] ? image["previews"]["256_192"] : '/_0.gif');
+
+				var img = '<img src="'+imgSrc+'" alt="" class="newsImage" data-img-id="'+image["ni_id"]+'"/>';
+
+				html = '<div class="newsImageItem">';
+				html += imgToolsHtml($(img));
+				html += img;
+				html += '</div>';
+
+				$newsImagesContainer.prepend(html);
+				newsImages.unshift(image);
+			}
+		}
+
+		newsUploadOpts.onEnd = function()
+		{
+			var filesUploaded = ($(this).data('uploadFileData') ? $(this).data('uploadFileData') : null);
+
+			$(this).parents('.modal').find('.modal-footer').show();
+
+			prependImgToEvent(filesUploaded, $newsImagesWrapper.find('.newsImagesContainer'));
+
+		};
+
+		newsUploadOpts.onStart = function()
+		{
+			$(this).parents('.modal').find('.modal-footer').hide();
+		};
+
+		var formNewsUpload = '<form class="form-horizontal text-center" action="<%=menuItem.m_path%>/upload" enctype="multipart/form-data" method="post" target="null_frame" id="formNewsUpload"><input type="hidden" name="btn_save_news" value="news_image_upload"/><input type="hidden" name="s_token" value="<%=news.s_token%>"/><input type="hidden" name="i_time" value="<%=news.i_time%>"/><input type="hidden" name="n_id" value="<%=news.n_id%>"/><div class="form-group uploadWrapper"><input type="file" name="news_image_upload" id="news_image_upload" style="display: none;"/></div></form>';
+
+		$(document).on('click', '#uploadNewsImages', function(event)
+		{
+			event.preventDefault();
+			event.stopPropagation();
+
+			$('__uploadNewsImages__').mcDialog({
+				title: 'Загрузить изображения'
+				, body: formNewsUpload
+				, onOpen: function ($dialog)
+				{
+					$dialog.find('#news_image_upload').fileUpload(newsUploadOpts);
+				}
+				, buttons: [
+					{
+						title: 'закрыть'
+						,name: 'btn_upload_event_close'
+						,cssClass: 'btn-danger'
+						,func:
+					{
+						"click": function(event)
+						{
+							$(event.data[0]).modal('hide');
+						}
+					}
+					}
+				]
+			});
+		});
+	}
+
+	$newsImagesWrapper.find('.newsImagesContainer').sortable({
+		update: function( event, ui )
+		{
+			var imgPos = [];
+			$('.newsImagesContainer img.eventImage').each(function (i, item)
+			{
+				imgPos.push($(item).attr("data-img-id"));
+			});
+
+			if (!imgPos.length)
+				return;
+
+			var postData = {
+				"btn_save_news": "sort_img",
+				"i_news_id": '<%=news["n_id"]%>',
+				"ni_pos": imgPos
+			};
+
+			$.ajax({
+				url: '<%=_reqBaseUrl%>',
+				method: "POST",
+				data: postData,
+				dataType: "json"
+			})
+			.done(function(resData)
+			{
+				//console.log(resData);
+			})
+			.fail(function(resData)
+			{
+				//console.log(resData);
+			});
+		}
+	});
+
+	function imgToolsHtml($img)
+	{
+		var html = '<div class="newsImageTools">'
+		html += '<span><a href="javascript:void(0)" data-action="delete" data-img-id="'+$img.data('imgId')+'"><i class="fa fa-fw fa-trash-o"></i> удалить</a></span>';
+		html += '</div>';
+		return html;
+	}
+
+	function imgTools(editor)
+	{
+		$newsImagesWrapper.find('.newsImageItem img').each(function(i, img)
+		{
+			$(this).parent().prepend(imgToolsHtml($(img)));
+		});
+
+		$(document).on('click','.newsImagesWrapper .newsImagesContainer .newsImageTools a', function (event)
+		{
+			event.preventDefault();
+			event.stopPropagation();
+			var $this = $(this);
+
+			switch ($this.data('action'))
+			{
+				case 'delete':
+
+					var postData = {
+						"btn_save_news": "del_img",
+						"i_news_id": '<%=news["n_id"]%>',
+						"i_ni_id": $this.data('imgId')
+					};
+
+					$.ajax({
+						url: '<%=_reqBaseUrl%>',
+						method: "POST",
+						data: postData,
+						dataType: "json"
+					})
+					.done(function(resData)
+					{
+						$(editor.getBody()).find('img.newsImage[data-img-id="'+$this.data('imgId')+'"]').parent().remove();
+						McTinymce.clearEmptyTags(editor);
+
+						$this.parents('.newsImageItem').remove();
+					})
+					.fail(function(resData)
+					{
+						//console.log(resData);
+					});
+
+					break;
+			}
+
+			McTinymce.clearEmptyTags(editor);
+			return false;
+		});
+	}
+
+})(jQuery);
+//-->
+</script>

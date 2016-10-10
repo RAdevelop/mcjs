@@ -1,0 +1,8 @@
+<div class="newsImagesWrapper">
+<div class="newsImagesContainer">
+<% newsImages.forEach(function (image)
+{
+	%><div class="newsImageItem"><img src="<%=image["previews"]["512_384"]%>" class="newsImage" data-news-id="<%=image["ni_id"]%>"/></div><%
+});%>
+</div>
+</div>

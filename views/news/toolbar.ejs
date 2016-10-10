@@ -1,0 +1,104 @@
+<div class="row">
+	<div class="btn-toolbar btnsToolbar" role="toolbar" aria-label="Опции для новостей">
+		<div class="btn-group btn-group-sm" role="group" aria-label="Опции для новостей">
+			<button type="button" class="btn btn-default dropdown-toggle toolbarBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-fw fa-cog"></i> опции <i class="caret"></i></button>
+			<ul class="dropdown-menu newsToolBar">
+				<li><a href="<%=menuItem.m_path+'/add/'%>" ><i class="fa fa-fw fa-plus-square-o"></i> добавить новость</a></li>
+			<% if (news && news.n_id) {%>
+				<li><a href="<%=menuItem.m_path+'/edit/'+news.n_id%>/"><i class="fa fa-fw fa-edit"></i> редактировать новость</a></li>
+				<% if (_action == 'edit'){%>
+				<li><a href="javascript:void(0);" data-action="delete" data-news-id="<%=news.n_id%>"><i class="fa fa-fw fa-trash-o"></i> удалить событие</a></li>
+				<% }%>
+			<% }%>
+			</ul>
+		</div>
+		<div class="btn-group btn-group-sm" role="group" aria-label="список новостей">
+			<a href="<%=menuItem.m_path+'/'%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-list"></i> все новости</a>
+		</div>
+		<div class="sharingSocNet" data-soc-list="vk,ok,fb,tw,gp"></div>
+	</div>
+</div>
+<script type="text/javascript">
+//<!--
+(function($)
+{
+	$('.newsToolBar a[data-action]').click(function(event)
+	{
+		event.preventDefault();
+		event.stopPropagation();
+
+		var $this = $(this)
+		switch($this.data('action'))
+		{
+			case 'delete':
+
+				$('__del_news_dialog__').mcDialog({
+					title: 'Удаление новости'
+					, body: formDelNews(MCJS["newsData"]||{}, '<%=_reqBaseUrl%>')
+					, onOpen: function ($dialog)
+					{
+						$dialog.find('#formDelNews').postRes({
+							btnId: $dialog.find('#btn_del_news'),
+							onSuccess: function($respDialog, resp)
+							{
+								if (resp.hasOwnProperty("formError") && resp["formError"].hasOwnProperty("error") && !resp["formError"]["error"])
+								{
+									window.location.href = '<%=menuItem.m_path%>';
+									return false;//не показать диалог
+								}
+								else
+								{
+									return true;
+								}
+							},
+							onFail: function ($respDialog, resp)
+							{
+								$dialog.hide();
+								return true;
+							},
+							onClose: function ($respDialog)
+							{
+								$dialog.show();
+							}
+						});
+					}
+					, buttons: [
+						{
+							title: 'да'
+							, name: 'btn_del_news'
+							, cssClass: 'btn-success'
+						},
+						{
+							title: 'нет'
+							,name: 'btn_del_news_cancel'
+							,cssClass: 'btn-danger'
+							,func:
+							{
+								"click": function(event)
+								{
+									$(event.data[0]).modal('hide');
+								}
+							}
+						}
+					]
+				});
+
+				break;
+		}
+	});
+
+	function formDelNews(news, uri)
+	{
+		var html = '<form class="form-horizontal" action="'+uri+'/" method="post" id="formDelNews">' +
+				'<input type="hidden" name="btn_save_news" value="del_news"/>' +
+				'<input type="hidden" name="i_news_id" value="'+news.n_id+'"/>' +
+				'<div class="form-group">' +
+				'<div class="col-sm-12 text-center">Удалить новость: ' + news.n_title + '?</div>' +
+				'</div>' +
+				'</form>';
+
+		return html;
+	}
+})(jQuery);
+//-->
+</script>

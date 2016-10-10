@@ -169,20 +169,12 @@ class Events extends BaseModel
 		let sql =
 			`SELECT e_id, e_create_ts, e_update_ts, e_start_ts, e_end_ts, e_title, e_alias, e_notice, e_text, e_address, 
 			e_location_id, e_latitude, e_longitude, e_gps_lat, e_gps_lng, e_location_pids, u_id, e_img_cnt
+			, FROM_UNIXTIME(e_start_ts, "%d-%m-%Y") AS dd_start_ts
+			, FROM_UNIXTIME(e_end_ts, "%d-%m-%Y") AS dd_end_ts
 			FROM events_list
 			WHERE e_id = ?`;
 
-		return this.constructor.conn().sRow(sql, [e_id])
-			.then(function (event)
-			{
-				if (event)
-				{
-					event['dd_start_ts'] = (event && event['e_start_ts'] > 0 ? Moment.unix(event['e_start_ts']).format("DD-MM-YYYY") : '');
-					event['dd_end_ts'] = (event && event['e_end_ts'] > 0 ? Moment.unix(event['e_end_ts']).format("DD-MM-YYYY") : '');
-				}
-
-				return Promise.resolve(event);
-			});
+		return this.constructor.conn().sRow(sql, [e_id]);
 	}
 
 	/**

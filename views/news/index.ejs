@@ -1,2 +1,7 @@
-<%  if(!_isXHR){%><%- layout('layout/index') %><% } -%>
-<h1><%=  (_pageH1 ? _pageH1 : "Новости МотоСообщества") -%></h1>
+<%  if(!_isXHR){%><%- layout('layout/default') %><% } %>
+<%- include toolbar.ejs %>
+<h1><%=_pageH1%></h1>
+<% if(news && ['edit', 'add'].indexOf(_action) != -1){ %><%- include edit.ejs %><% }
+else if (news){%><%- include news.ejs %><%}
+else if (newsList){%><%- include list.ejs %><%}
+%>

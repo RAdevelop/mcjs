@@ -538,7 +538,7 @@ class Events extends Base
 				if (!event)
 					throw new Errors.HttpStatusError(404, "Not found");
 
-				return Promise.resolve();
+				return Promise.resolve(true);
 			})
 			.then(function ()
 			{
