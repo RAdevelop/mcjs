@@ -45,38 +45,23 @@ module.exports = function(Classes, Control)
 
 		let C = new (Control.get(cName))(req, res, Classes);
 
-		C.callAction(function(err, json = false)
-		{
-			if (err)
+		C.callAction()
+			.then(function (json)
 			{
-				console.log('----- error in router.all ----');
-				console.log(__dirname);
-				console.log(err);
-				console.log('----- END error in router.all ----');
+				return C.view.render(json)
+					.then(function ()
+					{
+						C = null;
 
-				//C.view = null;
+						//let end = new Date();
+						//console.log("response time: ", end.getTime() - start.getTime() + " ms");
+					});
+			})
+			.catch(function (err)
+			{
 				C = null;
-				//Classes = null;
-				//Control = null;
-
 				return next(err);
-			}
-
-			return C.view.render(json)
-				.then(function ()
-				{
-					//C.view = null;
-					C = null;
-
-					//let end = new Date();
-					//console.log("response time: ", end.getTime() - start.getTime() + " ms");
-				})
-				.catch(function (err)
-				{
-					C = null;
-					return next(err);
-				});
-		});
+			});
 	});
 
 	return router;

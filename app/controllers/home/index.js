@@ -10,10 +10,9 @@ class Home extends Base
 {
 	/**
 	 *
-	 * @param cb
 	 * @returns {*}
 	 */
-	indexActionGet(cb)
+	indexActionGet()
 	{
 		return this.getUser(this.getUserId())
 			.bind(this)
@@ -23,17 +22,15 @@ class Home extends Base
 				this.view.addPartialData("user/left", {user: userData});
 				this.view.addPartialData("user/right", {title: 'right_col'});
 
-				return cb(null);
+				return Promise.resolve(null);
 			})
 			.catch(Errors.NotFoundError, function(err)
 			{
-				//self.view.setTplData("home", {});
-				//return cb(null);
 				throw new Errors.HttpStatusError(404, "Not found");
 			})
 			.catch(function(err)
 			{
-				return cb(err);
+				throw err;
 			});
 	}
 }

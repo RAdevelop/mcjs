@@ -35,13 +35,13 @@ class Profile extends Base
 
 	/**
 	 * показываем страницу пользователя (свою, или выбранного)
-	 * @param cb
+	 * 
 	 * @returns {*}
 	 */
-	indexActionGet(cb)
+	indexActionGet()
 	{
 		if (!this.isAuthorized())
-			return cb(new Errors.HttpStatusError(401, "Unauthorized"));
+			throw new Errors.HttpStatusError(401, "Unauthorized");
 
 		return this.getUser(this.getUserId())
 			.bind(this)
@@ -54,29 +54,29 @@ class Profile extends Base
 				this.view.setTplData(tplFile, tplData);
 				this.view.addPartialData('user/left', {user: userData});
 
-				return cb(null);
+				return Promise.resolve(null);
 			})
 			.catch(function(err)
 			{
-				return cb(err);
+				throw err;
 			});
 	}
 	
 	/**
 	 * обновляем данные пользователя (свою, или выбранного)
-	 * @param cb
+	 *
 	 * @returns {*}
 	 */
-	/*indexActionPost(cb)
+	/*indexActionPost()
 	{
 		if (!this.isAuthorized())
-			return cb(new Errors.HttpStatusError(401, "Unauthorized"));
+			throw new Errors.HttpStatusError(401, "Unauthorized");
 		
 		const self = this;
 		let tplFile = 'user/index.ejs';
 		let tplData = self.getUser();
 
-		console.log('indexActionPost(cb)');
+		console.log('indexActionPost()');
 
 		this.getClass("user").getUserData(tplData)
 			.bind(this)
@@ -84,24 +84,23 @@ class Profile extends Base
 			{
 				this.view.setTplData(tplFile, tplData);
 
-				return cb(null);
+				return Promise.resolve(null);
 			})
 			.catch(function(err)
 			{
-				return cb(err);
+				throw err;
 			});
 	}*/
 	
 	/**
 	 * профиль пользователя. формы редактирования данных
-	 * 
-	 * @param cb
+	 *
 	 * @returns {*}
 	 */
-	editActionGet(cb)
+	editActionGet()
 	{
 		if (!this.isAuthorized())
-		return cb(new Errors.HttpStatusError(401, "Unauthorized"));
+		throw new Errors.HttpStatusError(401, "Unauthorized");
 
 		let tplFile = 'user/profile/edit.ejs';
 
@@ -119,21 +118,20 @@ class Profile extends Base
 				this.getRes().expose(userData, 'userLocation');
 				this.getRes().expose(FileUpload.exposeUploadOptions('user_ava'), 'avaUploadOpts');
 
-				return cb(null);
+				return Promise.resolve(null);
 			})
 			.catch(function(err)
 			{
-				return cb(err);
+				throw err;
 			});
 	}
 	
 	/**
 	 * обновляем данные пользователя в ЛК
-	 * 
-	 * @param cb
+	 *
 	 * @returns {*}
 	 */
-	editActionPost(cb)
+	editActionPost()
 	{
 		let tplFile = 'user/profile/edit.ejs';
 		let tplData = this.getParsedBody();
@@ -144,7 +142,7 @@ class Profile extends Base
 			{
 				//tplData.formError.error = false;
 				this.view.setTplData(tplFile, tplData);
-				return cb(null);
+				return Promise.resolve(null);
 			})
 			.catch(Errors.FormError, Errors.AlreadyInUseError, function(err)
 			{
@@ -155,20 +153,20 @@ class Profile extends Base
 				this.view.setTplData(tplFile, tplData);
 
 				//this.getRes().expose();
-				return cb(null);
+				return Promise.resolve(null);
 			})
 			.catch(function(err)
 			{
-				return cb(err);
+				throw err;
 			});
 	}
 	
 	/**
 	 * обработка запросов по изменению данных (например, смена емейла...)
-	 * @param cb
+	 *
 	 * @returns {*}
 	 */
-	changeActionGet(cb)
+	changeActionGet()
 	{
 		//let self = this;
 		
@@ -178,11 +176,11 @@ class Profile extends Base
 		.then(function(tplData)
 		{
 			this.view.setTplData('user/profile/change_mail_confirm.ejs', tplData);
-			return cb(null);
+			return Promise.resolve(null);
 		})
 		.catch(function(err)
 		{
-			return cb(err);
+			throw err;
 		});
 	}
 	
@@ -621,10 +619,9 @@ class Profile extends Base
 	/**
 	 * загружаем новую аву
 	 *
-	 * @param cb
 	 * @returns {*}
 	 */
-	avaActionPost(cb)
+	avaActionPost()
 	{
 		let self = this;
 		let tplFile = 'user/profile/edit.ejs';
@@ -655,7 +652,7 @@ class Profile extends Base
 				};
 				self.view.setTplData(tplFile, tplData);
 
-				return cb(null, true);
+				return Promise.resolve(true);
 			})
 			.catch(function (err)
 			{
@@ -667,7 +664,7 @@ class Profile extends Base
 
 				self.view.setTplData(tplFile, tplData);
 
-				return cb(null, true);
+				return Promise.resolve(true);
 			});
 	}
 }

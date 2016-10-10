@@ -44,8 +44,8 @@ $(function()
                 {
                     click: function(event)
                     {
-                        var $dialog = event[0];
-                        var respData = event[1];
+                        var $dialog = event["data"][0];
+                        var respData = event["data"][1];
 
                         $dialog.modal('hide');
                         

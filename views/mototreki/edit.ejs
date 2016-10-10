@@ -78,7 +78,7 @@
 	$('#formMototrek').postRes({btnId: 'btn_edit_mototrek',
 		beforeSubmit: function ()
 		{
-			mttDescripTinymce.then(function (editor)
+			return mttDescripTinymce.then(function (editor)
 			{
 				//console.log(editor[0]);
 				console.log('McTinymce.tinymce.triggerSave()');

@@ -331,7 +331,29 @@ class Base
 		return this._routeArgs;
 	}
 
-	callAction(cb)
+	callAction()
+	{
+		this.setAction();
+
+		this._setBaseUrl(this.getReq(), this.getRes());
+
+
+		//console.log('this.isAction() = ', this.isAction());
+		//console.log('-----------------------');
+		//console.log('');
+
+		//if (!this._parseRoutePaths())
+		if (!this.isAction() || !this._parseRoutePaths())
+			throw new Errors.HttpStatusError(404, "Not Found");
+
+		this._getClasses().setSession(this.getReq().session);
+
+		//this.view = new Template(this.getReq(), this.getRes(), this);
+		this.view = Template.getTemplate(this);
+
+		return this[this.getAction()]();
+	}
+	/*callAction(cb)
 	{
 		this.setAction();
 
@@ -354,7 +376,7 @@ class Base
 		this[this.getAction()](cb);
 		return this;
 		//return cb(new Errors.HttpStatusError(404, "Not Found"));
-	}
+	}*/
 	
 	formError()
 	{

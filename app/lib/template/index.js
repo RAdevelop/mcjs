@@ -17,7 +17,7 @@ function Template(req, res, Controller = null)
 	if (re.test(req.header('referer')))
 	back = req.header('referer').replace(re, '');
 
-	if (back.indexOf('/login') == 0 || back.indexOf('/registration') == 0)
+	if (back.indexOf('/login') == 0 || back.indexOf('/registration') == 0 || back.indexOf('/logout') == 0)
 		back= '/';
 
 	this.data = {
@@ -168,9 +168,8 @@ Template.prototype.render = function(json = false)
 
 					ajaxData["html"] = html;
 
-					return resolve(self.res.json(ajaxData));
-
-					//return self.res.json(ajaxData);
+					self.res.json(ajaxData);
+					return resolve();
 				});
 			}
 			else
@@ -181,10 +180,8 @@ Template.prototype.render = function(json = false)
 				self.setController(null);
 				ajaxData["html"] = '';
 
-				return resolve(self.res.json(ajaxData));
-
-				//self.res.json(ajaxData);
-				//return resolve(true);
+				self.res.json(ajaxData);
+				return resolve();
 			}
 		});
 	}
@@ -205,19 +202,25 @@ Template.prototype.render = function(json = false)
 				self.setData(item);
 			});
 
-			let tplFile = Object.keys(renderData["tpl"]).shift();
-
-			self.setData(renderData["tpl"][tplFile]);
+			let tplFile;
+			if (renderData["tpl"])
+			{
+				tplFile = Object.keys(renderData["tpl"]).shift();
+				self.setData(renderData["tpl"][tplFile]);
+			}
+			else
+				tplFile = 'empty.ejs';
 
 			return new Promise(function (resolve, reject)
 			{
 				self.res.render(tplFile, self.getData(), function(err, html)
 				{
-					if(err) return reject(err);
+					if(err)
+						return reject(err);
 
 					self.setController(null);
-					return resolve(self.res.send(html));
-					//return self.res.send(html);
+					self.res.send(html);
+					return resolve();
 				});
 			});
 		})

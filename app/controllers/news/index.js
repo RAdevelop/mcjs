@@ -8,7 +8,7 @@ const Base = require('app/lib/controller');
 
 class News extends Base
 {
-	indexActionGet(cb)
+	indexActionGet()
 	{
 		return this.getUser(this.getUserId())
 			.bind(this)
@@ -17,11 +17,11 @@ class News extends Base
 				this.view.setTplData("news", {});
 				this.view.addPartialData("user/left", {user: userData});
 
-				return cb(null);
+				return Promise.resolve(null);
 			})
 			.catch(function(err)
 			{
-				return cb(err);
+				throw err;
 			});
 	}
 }

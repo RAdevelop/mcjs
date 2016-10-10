@@ -42,10 +42,9 @@ class Events extends Base
 	/**
 	 * главная страница
 	 *
-	 * @param cb
 	 * @returns {*}
 	 */
-	indexActionGet(cb)
+	indexActionGet()
 	{
 		let tplData = {
 			event: null,
@@ -57,7 +56,7 @@ class Events extends Base
 		let {i_event_id=null, s_event_alias=null, i_yy=null, i_mm=null, i_dd=null} = this.routeArgs;
 
 		if (i_event_id)
-			return this.event(cb, tplData, i_event_id, s_event_alias);
+			return this.event(tplData, i_event_id, s_event_alias);
 
 		if (!i_yy && !i_mm && !i_dd)
 		{
@@ -81,25 +80,24 @@ class Events extends Base
 			endDate = startDate;
 
 			tplData["selectedDate"] = {i_yy:i_yy, i_mm:i_mm, i_dd:i_dd};
-			return this.eventList(cb, tplData, startDate, endDate, l_id);
+			return this.eventList(tplData, startDate, endDate, l_id);
 		}
 
 		startDate = new Date(i_yy, i_mm-1);
 		endDate = new Date(startDate.getFullYear(), startDate.getMonth()+3); //+3 месяца
 
-		return this.eventCalendar(cb, tplData, startDate, endDate, l_id);
+		return this.eventCalendar(tplData, startDate, endDate, l_id);
 	}
 
 	/**
 	 * выбранное событие
 	 *
-	 * @param cb
 	 * @param tplData
 	 * @param i_event_id
 	 * @param s_alias
 	 * @throws Errors.HttpStatusError
 	 */
-	event(cb, tplData, i_event_id, s_alias)
+	event(tplData, i_event_id, s_alias)
 	{
 		return this.getClass('events').get(i_event_id)
 			.bind(this)
@@ -156,21 +154,21 @@ class Events extends Base
 				//this.view.addPartialData("user/left", {user: userData});
 				//this.view.addPartialData("user/right", {title: 'right_col'});
 
-				return cb(null);
+				return Promise.resolve(null);
 			})
 			.catch(function(err)
 			{
-				return cb(err);
+				throw err;
 			});
 	}
 
 	/**
 	 * список событий
-	 * @param cb
+	 *
 	 * @param tplData
 	 * @param routeArgs
 	 */
-	eventList(cb, tplData, startDate, endDate, l_id)
+	eventList(tplData, startDate, endDate, l_id)
 	{
 		return Promise.resolve(this.getClass("events").getEvents(startDate.getTime()/1000, endDate.getTime()/1000, l_id))
 			.bind(this)
@@ -206,11 +204,11 @@ class Events extends Base
 				//this.view.addPartialData("user/left", {user: userData});
 				//this.view.addPartialData("user/right", {title: 'right_col'});
 
-				return cb(null);
+				return Promise.resolve(null);
 			})
 			.catch(function(err)
 			{
-				return cb(err);
+				throw err;
 			});
 	}
 
@@ -221,7 +219,7 @@ class Events extends Base
 	 * @param l_id
 	 * @returns
 	 */
-	eventCalendar(cb, tplData, startDate, endDate, l_id = null)
+	eventCalendar(tplData, startDate, endDate, l_id = null)
 	{
 		//console.log("startDate = ", startDate.getFullYear(), startDate.getMonth());
 		//console.log("endDate = ", endDate.getFullYear(), endDate.getMonth());
@@ -283,20 +281,19 @@ class Events extends Base
 				//this.view.addPartialData("user/left", {user: userData});
 				//this.view.addPartialData("user/right", {title: 'right_col'});
 
-				return cb(null);
+				return Promise.resolve(null);
 			})
 			.catch(function(err)
 			{
-				return cb(err);
+				throw err;
 			});
 	}
 
 	/**
 	 * форма добавления события
 	 *
-	 * @param cb
 	 */
-	addActionGet(cb)
+	addActionGet()
 	{
 		let tplData = {
 			event: {
@@ -323,16 +320,15 @@ class Events extends Base
 
 		this.view.setTplData(tplFile, tplData);
 
-		return cb(null);
+		return Promise.resolve(null);
 	}
 
 	/**
 	 * добавляем новый трек
 	 *
-	 * @param cb
 	 * @returns {Promise.<TResult>}
 	 */
-	addActionPost(cb)
+	addActionPost()
 	{
 		//let formData = this.getReqBody();
 		let tplData = this.getParsedBody();
@@ -428,26 +424,25 @@ class Events extends Base
 			{
 				this.view.setTplData(tplFile, tplData);
 
-				return cb(null, true);
+				return Promise.resolve(true);
 			})
 			.catch(Errors.ValidationError, function (err)//такие ошибки не уводят со страницы.
 			{
 				this.view.setTplData(tplFile, err.data);
 
-				return cb(null, true);
+				return Promise.resolve(true);
 			})
 			.catch(function (err)
 			{
-				return cb(err);
+				throw err;
 			});
 	}
 
 	/**
 	 * форма редактирования события
 	 *
-	 * @param cb
 	 */
-	editActionGet(cb)
+	editActionGet()
 	{
 		let {i_event_id} = this.routeArgs;
 
@@ -488,54 +483,53 @@ class Events extends Base
 				this.getRes().expose(tplData["eventImages"], 'eventImages');
 				this.getRes().expose(allPreviews, 'eventImagesPreviews');
 
-				return cb(null);
+				return Promise.resolve(null);
 			})
 			.catch(function(err)
 			{
-				return cb(err);
+				throw err;
 			});
 	}
 
 	/**
 	 * редактируем трек по его id
 	 *
-	 * @param cb
 	 * @returns {Promise.<TResult>}
 	 */
-	editActionPost(cb)
+	editActionPost()
 	{
 		let tplFile = "events/edit.ejs";
 		let tplData = this.getParsedBody();
 
 		if (tplData["b_load_video_embed"])
 		{
-			return VideoEmbed.video(cb, tplData, tplFile, this);
+			return VideoEmbed.video(tplData, tplFile, this);
 		}
 
 		if (!tplData["i_event_id"] || !tplData["btn_save_event"])
-			return cb(new Errors.HttpStatusError(404, "Not found"));
+			throw new Errors.HttpStatusError(404, "Not found");
 
 		//console.log(tplData);
 		switch(tplData["btn_save_event"])
 		{
 			case 'main':
-				return this.editEvent(cb, tplData, tplFile);
+				return this.editEvent(tplData, tplFile);
 				break;
 			case 'sort_img':
-				return this.sortImg(cb, tplData, tplFile);
+				return this.sortImg(tplData, tplFile);
 				break;
 
 			case 'del_img':
-				return this.delImg(cb, tplData, tplFile);
+				return this.delImg(tplData, tplFile);
 				break;
 
 			case 'del_event':
-				return this.delEvent(cb, tplData, tplFile);
+				return this.delEvent(tplData, tplFile);
 				break;
 		}
 	}
 
-	editEvent(cb, tplData, tplFile)
+	editEvent(tplData, tplFile)
 	{
 		return this.getClass('events').get(tplData["i_event_id"])
 			.bind(this)
@@ -615,17 +609,17 @@ class Events extends Base
 			{
 				this.view.setTplData(tplFile, tplData);
 
-				return cb(null, true);
+				return Promise.resolve(true);
 			})
 			.catch(Errors.ValidationError, function (err) //такие ошибки не уводят со страницы
 			{
 				this.view.setTplData(tplFile, err.data);
 
-				return cb(null, true);
+				return Promise.resolve(true);
 			})
 			.catch(function (err)
 			{
-				return cb(err);
+				throw err;
 			});
 	}
 
@@ -634,7 +628,7 @@ class Events extends Base
 	 *
 	 * @param tplData
 	 */
-	sortImg(cb, tplData, tplFile)
+	sortImg(tplData, tplFile)
 	{
 		return Promise.resolve(tplData)
 			.bind(this)
@@ -653,20 +647,19 @@ class Events extends Base
 			{
 				this.view.setTplData(tplFile, tplData);
 
-				return cb(null, true);
+				return Promise.resolve(true);
 			})
 			.catch(function (err)
 			{
-				return cb(err);
+				throw err;
 			});
 	}
 	/**
 	 * просмотр треков на карте
 	 *
-	 * @param cb
 	 * @returns {Promise.<T>}
 	 */
-	mapActionGet(cb)
+	mapActionGet()
 	{
 		return Promise.props({
 			eventList: this.getClass("events").getAll(),
@@ -688,21 +681,20 @@ class Events extends Base
 				this.getRes().expose(props.eventList, 'eventList');
 				this.getRes().expose(props.eventLocations, 'eventLocations');
 
-				return cb(null);
+				return Promise.resolve(null);
 			})
 			.catch(function(err)
 			{
-				return cb(err);
+				throw err;
 			});
 	}
 
 	/**
 	 * добавляем фотографи к событию
 	 *
-	 * @param cb
 	 * @returns {*}
 	 */
-	uploadActionPost(cb)
+	uploadActionPost()
 	{
 		let self = this;
 		let tplFile = 'events/event_images.ejs';
@@ -733,7 +725,7 @@ class Events extends Base
 				};
 				self.view.setTplData(tplFile, tplData);
 
-				return cb(null, true);
+				return Promise.resolve(true);
 			})
 			.catch(function (err)
 			{
@@ -744,7 +736,7 @@ class Events extends Base
 
 				self.view.setTplData(tplFile, tplData);
 
-				return cb(null, true);
+				return Promise.resolve(true);
 			});
 	}
 
@@ -754,7 +746,7 @@ class Events extends Base
 	 * @param tplData
 	 * @returns {*}
 	 */
-	delImg(cb, tplData, tplFile)
+	delImg(tplData, tplFile)
 	{
 		return Promise.resolve(tplData)
 			.bind(this)
@@ -773,23 +765,22 @@ class Events extends Base
 			{
 				this.view.setTplData(tplFile, tplData);
 
-				return cb(null, true);
+				return Promise.resolve(true);
 			})
 			.catch(function (err)
 			{
-				return cb(err);
+				throw err;
 			});
 	}
 
 	/**
 	 * удаление указанного события
 	 *
-	 * @param cb
 	 * @param tplData
 	 * @param tplFile
 	 * @returns {Promise.<T>}
 	 */
-	delEvent(cb, tplData, tplFile)
+	delEvent(tplData, tplFile)
 	{
 		return Promise.resolve(tplData)
 			.bind(this)
@@ -805,11 +796,11 @@ class Events extends Base
 			{
 				this.view.setTplData(tplFile, tplData);
 
-				return cb(null, true);
+				return Promise.resolve(true);
 			})
 			.catch(function (err)
 			{
-				return cb(err);
+				throw err;
 			});
 	}
 }

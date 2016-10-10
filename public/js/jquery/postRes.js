@@ -17,6 +17,7 @@
 			beforeSubmit: function () {
 				if (Promise && Promise.resolve)
 				{
+
 					return Promise.resolve(true);
 				}
 				else
@@ -66,7 +67,7 @@
 		{
 			event.preventDefault();
 			event.stopPropagation();
-			
+
 			options.beforeSubmit()//Promise
 				.then(function()
 				{

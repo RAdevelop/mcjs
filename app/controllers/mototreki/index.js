@@ -33,10 +33,9 @@ class Mototreki extends Base
 	/**
 	 * главная страница
 	 *
-	 * @param cb
 	 * @returns {*}
 	 */
-	indexActionGet(cb)
+	indexActionGet()
 	{
 		let {i_mtt_id} = this.routeArgs;
 
@@ -75,11 +74,11 @@ class Mototreki extends Base
 				this.view.addPartialData("user/left", {user: userData});
 				//this.view.addPartialData("user/right", {title: 'right_col'});
 
-				return cb(null);
+				return Promise.resolve(null);
 			})
 			.catch(function(err)
 			{
-				return cb(err);
+				throw err;
 			});
 	}
 
@@ -218,9 +217,8 @@ class Mototreki extends Base
 	/**
 	 * форма добавления трека
 	 *
-	 * @param cb
 	 */
-	addActionGet(cb)
+	addActionGet()
 	{
 		let tplData = {
 			trek: {
@@ -236,29 +234,19 @@ class Mototreki extends Base
 			}
 		};
 
-		return Promise.resolve(tplData)
-			.bind(this)
-			.then(function(tplData)
-			{
-				let tplFile = "mototreki";
+		let tplFile = "mototreki";
 
-				this.view.setTplData(tplFile, tplData);
+		this.view.setTplData(tplFile, tplData);
 
-				return cb(null);
-			})
-			.catch(function(err)
-			{
-				return cb(err);
-			});
+		return Promise.resolve(null);
 	}
 
 	/**
 	 * добавляем новый трек
 	 *
-	 * @param cb
 	 * @returns {Promise.<TResult>}
 	 */
-	addActionPost(cb)
+	addActionPost()
 	{
 		let formData = this.getReqBody();
 		let tplData = this.getParsedBody();
@@ -332,26 +320,25 @@ class Mototreki extends Base
 			{
 				this.view.setTplData(tplFile, tplData);
 
-				return cb(null, true);
+				return Promise.resolve(true);
 			})
 			.catch(Errors.ValidationError, function (err)//такие ошибки не уводят со страницы.
 			{
 				this.view.setTplData(tplFile, err.data);
 
-				return cb(null, true);
+				return Promise.resolve(true);
 			})
 			.catch(function (err)
 			{
-				return cb(err);
+				throw err;
 			});
 	}
 
 	/**
 	 * форма редактирования трека
 	 *
-	 * @param cb
 	 */
-	editActionGet(cb)
+	editActionGet()
 	{
 		let {i_mtt_id} = this.routeArgs;
 
@@ -374,21 +361,20 @@ class Mototreki extends Base
 				//экспрот данных в JS на клиента
 				this.getRes().expose(tplData["trek"], 'trek');
 
-				return cb(null);
+				return Promise.resolve(null);
 			})
 			.catch(function(err)
 			{
-				return cb(err);
+				throw err;
 			});
 	}
 
 	/**
 	 * редактируем трек по его id
 	 *
-	 * @param cb
 	 * @returns {Promise.<TResult>}
 	 */
-	editActionPost(cb)
+	editActionPost()
 	{
 		let tplFile = "mototreki/edit.ejs";
 		let formData = this.getReqBody();
@@ -470,27 +456,26 @@ class Mototreki extends Base
 			{
 				this.view.setTplData(tplFile, tplData);
 
-				return cb(null, true);
+				return Promise.resolve(true);
 			})
 			.catch(Errors.ValidationError, function (err) //такие ошибки не уводят со страницы
 			{
 				this.view.setTplData(tplFile, err.data);
 
-				return cb(null, true);
+				return Promise.resolve(true);
 			})
 			.catch(function (err)
 			{
-				return cb(err);
+				throw err;
 			});
 	}
 
 	/**
 	 * просмотр треков на карте
 	 *
-	 * @param cb
 	 * @returns {Promise.<T>}
 	 */
-	mapActionGet(cb)
+	mapActionGet()
 	{
 		return Promise.props({
 			trekList: this.getClass("mototrek").getAll(),
@@ -511,11 +496,11 @@ class Mototreki extends Base
 				this.getRes().expose(props.trekList, 'trekList');
 				this.getRes().expose(props.trekLocations, 'trekLocations');
 
-				return cb(null);
+				return Promise.resolve(null);
 			})
 			.catch(function(err)
 			{
-				return cb(err);
+				throw err;
 			});
 	}
 }

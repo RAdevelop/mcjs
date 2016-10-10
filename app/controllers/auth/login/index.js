@@ -31,16 +31,15 @@ class Login extends Base
 
 	/**
 	 *
-	 * @param cb
 	 * @returns {*}
 	 */
-	indexActionGet(cb)
+	indexActionGet()
 	{
 		if(this.getUserId())
 			return this.getRes().redirect('back');
 		
 		if (this.getArgs().length > 0)
-			return cb(new Errors.HttpStatusError(404, "Not Found"));
+			throw new Errors.HttpStatusError(404, "Not Found");
 		
 		let tplData = {
 			m_mail:'',
@@ -50,45 +49,42 @@ class Login extends Base
 
 		this.view.setTplData("auth/login", tplData);
 
-		return cb(null);
+		return Promise.resolve(null);
 	}
 	
 	/**
 	 * авторизация
 	 *
-	 * @param cb
 	 * @returns {*}
 	 */
-	indexActionPost(cb)
+	indexActionPost()
 	{
 		//if(this.getUser()) return this.getRes().redirect('back');
-		
-		//let tplData = this.getReqBody();
+
 		let tplData = this.getParsedBody();
 
 		switch(tplData["btn_action"])
 		{
 			default:
 				this.view.setTplData("auth/login", tplData);
-				return cb(new Errors.HttpStatusError(400, "Bad Request"));
+				throw new Errors.HttpStatusError(400, "Bad Request");
 			break;
 			
 			case 'login':
-				return this._formLoginValidation(tplData, cb);
+				return this._formLoginValidation(tplData);
 			break;
 			
 			case 'reset':
-				return this._formResetValidation(tplData, cb);
+				return this._formResetValidation(tplData);
 			break;
 		}
 	}
 	
 	/**
 	 *
-	 * @param cb
 	 * @returns {*}
 	 */
-	resetActionGet(cb)
+	resetActionGet()
 	{
 		if(this.getUserId())
 			return this.getRes().redirect('back');
@@ -103,26 +99,31 @@ class Login extends Base
 			s_key: s_key
 		};
 		
-		return self.model("user").issetChangeRequest('pass_reset_confirm', s_key, function(err, isset)
+		return new Promise(function (resolve, reject)
 		{
-			if (err) return cb(err);
+			self.model("user").issetChangeRequest('pass_reset_confirm', s_key, function(err, isset)
+			{
+				if (err)
+					return reject(err);
 
-			if (!isset) tplData.s_key = null;
+				if (!isset)
+					tplData.s_key = null;
 
-			self.view.setTplData("auth/reset", tplData);
+				self.view.setTplData("auth/reset", tplData);
 
-			return cb(null);
+				return resolve(null);
+			});
 		});
 	}
 	
-	resetActionPost(cb)
+	resetActionPost()
 	{
 		let tplData = this.getReqBody();
 
-		return this._formPassUpdate(tplData, cb);
+		return this._formPassUpdate(tplData);
 	}
 	
-	_formPassUpdate(tplData, cb)
+	_formPassUpdate(tplData)
 	{
 		const self = this;
 		
@@ -160,14 +161,16 @@ class Login extends Base
 				{
 					tplData.s_password = tplData.s_password2 = tplData.s_key = '';
 					
-					if (err) return reject(err);
+					if (err)
+						return reject(err);
 					
 					tplData.formError.message = 'Пароль успешно изменен';
 					tplData.formError.text = 'Вы можете войти с новым паролем.';
 
 					self.model("user").clearUserChangeRequest(u_id, 'pass_reset_confirm', function (err)
 					{
-						if (err) return reject(err);
+						if (err)
+							return reject(err);
 
 						return resolve(tplData);
 					});
@@ -177,27 +180,26 @@ class Login extends Base
 		.then(function(tplData)
 		{
 			self.view.setTplData("auth/reset", tplData);
-			return cb(null);
+			return Promise.resolve(null);
 		})
 		.catch(Errors.ValidationError, function(err)
 		{
 			tplData.formError.errorName = err.name;
 			self.view.setTplData("auth/reset", tplData);
-			return cb(null);
+			return Promise.resolve(null);
 		})
 		.catch(function(err)
 		{
-			return cb(err);
+			throw err;
 		});
 	}
 	
 	/**
 	 * 
 	 * @param tplData
-	 * @param cb
 	 * @private
 	 */
-	_formResetValidation(tplData, cb)
+	_formResetValidation(tplData)
 	{
 		let errors = {};
 		
@@ -223,7 +225,8 @@ class Login extends Base
 			{
 				self.model("user").getByEmail(tplData.m_email, function(err, userData)
 				{
-					if(err) return reject(err);
+					if(err)
+						return reject(err);
 					
 					tplData.userData = self.model("user").filterData(userData);
 					
@@ -238,14 +241,6 @@ class Login extends Base
 
 			throw err;
 		})
-		.catch(Errors.ValidationError, Errors.NotFoundError, function(err)
-		{
-			tplData.s_password = '';
-			tplData.formError.error = true;
-			tplData.formError.errorName = err.name;
-			self.view.setTplData("auth/login", tplData);
-			return cb(null);
-		})
 		.then(function(tplData)
 		{
 			tplData.formError.message = 'Вам отправлено письмо';
@@ -255,41 +250,57 @@ class Login extends Base
 			
 			self.view.setTplData("auth/login", tplData);
 
-			self.model("user/auth").createPassResetConfirmKey(tplData.userData, function(err, user)
+			return new Promise(function(resolve, reject)
 			{
-				if (err)
-					return cb(error);
-				
-				const Mailer = new Mail('gmail');
-				
-				let sendParams = {
-					to:         tplData.m_email,
-					subject:    'Запрос на смену пароля на сайте www.MotoCommunity.ru',
-					tplName:    'auth/reset',
-					tplData: {
-						title: 'Запрос на смену пароля на сайте www.MotoCommunity.ru',
-						links: 'https://'+self.getHostPort(),//'https://www.MotoCommunity.ru',
-						link: 'http://'+self.getHostPort(),//'http://www.MotoCommunity.ru',
-						key: user.u_req_key
-					}
-				};
-				
-				Mailer.send(sendParams, function (err)
+				self.model("user/auth").createPassResetConfirmKey(tplData.userData, function(err, user)
 				{
-					let error = null;
-					if(err)
+					if (err)
+						return reject(error);
+
+					const Mailer = new Mail('gmail');
+
+					let sendParams = {
+						to:         tplData.m_email,
+						subject:    'Запрос на смену пароля на сайте www.MotoCommunity.ru',
+						tplName:    'auth/reset',
+						tplData: {
+							title: 'Запрос на смену пароля на сайте www.MotoCommunity.ru',
+							links: 'https://'+self.getHostPort(),//'https://www.MotoCommunity.ru',
+							link: 'http://'+self.getHostPort(),//'http://www.MotoCommunity.ru',
+							key: user.u_req_key
+						}
+					};
+
+					Mailer.send(sendParams, function (err)
 					{
-						error = new Errors.AppMailError('Ошибка при отправке письма', err);
-						Logger.error(error);
-					}
-					
-					return cb(error);
+						let error = null;
+						if(err)
+						{
+							error = new Errors.AppMailError('Ошибка при отправке письма', err);
+							Logger.error(error);
+						}
+
+						if (error)
+						return reject(error);
+
+						return resolve(null);
+					});
 				});
 			});
 		})
+		.catch(Errors.ValidationError, Errors.NotFoundError, function(err)
+		{
+			tplData.s_password = '';
+			tplData.formError.error = true;
+			tplData.formError.errorName = err.name;
+
+			self.view.setTplData("auth/login", tplData);
+
+			return Promise.resolve(null);
+		})
 		.catch(function(err)
 		{
-			return cb(err);
+			throw err;
 		});
 	}
 	
@@ -298,11 +309,10 @@ class Login extends Base
 	 * авторизация на сайте
 	 *
 	 * @param tplData
-	 * @param cb - ф-ция
 	 * @private
 	 * @returns {Promise}
 	 */
-	_formLoginValidation(tplData, cb)
+	_formLoginValidation(tplData)
 	{
 		let errors = {};
 		
@@ -338,7 +348,8 @@ class Login extends Base
 					
 					bcrypt.hash(tplData.s_password, userData["u_salt"], function(err, hash)
 					{
-						if(err) return reject(err);
+						if(err)
+							return reject(err);
 						
 						if(userData["u_pass"] == hash)
 						{
@@ -378,35 +389,40 @@ class Login extends Base
 		.then(function(tplData) //если валидация успешна
 		{
 			//TODO надо return Promise
-			self.getReq().session.regenerate(function(err)
+			return new Promise(function(resolve, reject)
 			{
-				if(err)
+				self.getReq().session.regenerate(function(err)
 				{
-					self.getReq().session.destroy();
-					
-					if(self.getReq().signedCookies.rtid)
-						Cookie.clearUserId(self.getReq(), self.getRes());
+					if(err)
+					{
+						self.getReq().session.destroy();
 
-					return cb(err);
-				}
+						if(self.getReq().signedCookies.rtid)
+							Cookie.clearUserId(self.getReq(), self.getRes());
 
-				//наличие этой куки потом проверять в req.signedCookies.rtid
-				// remember the ID
-				if(tplData.b_remember)
-					Cookie.setUserId(self.getRes(), tplData.userData.u_id);
-				
-				self.getReq().session.rtid = tplData.userData.u_id;
-				
-				self.view.setTplData("auth/login", tplData);
-				return cb(null);
+						return reject(err);
+					}
+
+					//наличие этой куки потом проверять в req.signedCookies.rtid
+					// remember the ID
+					if(tplData.b_remember)
+						Cookie.setUserId(self.getRes(), tplData.userData.u_id);
+
+					self.getReq().session.rtid = tplData.userData.u_id;
+
+					self.view.setTplData("auth/login", tplData);
+					return resolve(null);
+				});
 			});
 		})
 		.catch(Errors.ValidationError, Errors.NotFoundError, function(err)
 		{
 			tplData.formError.error = true;
 			tplData.formError.errorName = err.name;
+
 			self.view.setTplData("auth/login", tplData);
-			return cb(null);
+
+			return Promise.resolve(null);
 		})
 		.catch(Errors.AppRegistrationNotConfirmed, function(err)
 		{
@@ -415,41 +431,47 @@ class Login extends Base
 
 			self.view.setTplData("auth/login", tplData);
 
-			self.model("user/auth").createReqConfirmKey(tplData.userData, function(err, user)
+			return new Promise(function(resolve, reject)
 			{
-				if (err)
-					return cb(err);
-				
-				const Mailer = new Mail('gmail');
-				
-				let sendParams = {
-					to:         tplData.m_email,
-					subject:    'Повторный запрос на подтверждение регистрации на сайте www.MotoCommunity.ru',
-					tplName:    'auth/registration',
-					tplData: {
-						title: 'Повторный запрос на подтверждение регистрации на сайте www.MotoCommunity.ru',
-						links: 'https://'+self.getHostPort(),//'https://www.MotoCommunity.ru',
-						link: 'http://'+self.getHostPort(),//'http://www.MotoCommunity.ru',
-						key: user.u_req_key
-					}
-				};
-				
-				Mailer.send(sendParams, function (err)
+				self.model("user/auth").createReqConfirmKey(tplData.userData, function(err, user)
 				{
-					let error = null;
-					if(err)
+					if (err)
+						return reject(err);
+
+					const Mailer = new Mail('gmail');
+
+					let sendParams = {
+						to:         tplData.m_email,
+						subject:    'Повторный запрос на подтверждение регистрации на сайте www.MotoCommunity.ru',
+						tplName:    'auth/registration',
+						tplData: {
+							title: 'Повторный запрос на подтверждение регистрации на сайте www.MotoCommunity.ru',
+							links: 'https://'+self.getHostPort(),//'https://www.MotoCommunity.ru',
+							link: 'http://'+self.getHostPort(),//'http://www.MotoCommunity.ru',
+							key: user.u_req_key
+						}
+					};
+
+					Mailer.send(sendParams, function (err)
 					{
-						error = new Errors.AppMailError('Ошибка при отправке письма', err);
-						Logger.error(error);
-					}
-					
-					return cb(error);
+						let error = null;
+						if(err)
+						{
+							error = new Errors.AppMailError('Ошибка при отправке письма', err);
+							Logger.error(error);
+						}
+
+						if (error)
+						return reject(error);
+
+						return resolve(null);
+					});
 				});
 			});
 		})
 		.catch(function(err)
 		{
-			return cb(err);
+			throw err;
 		});
 	}
 }

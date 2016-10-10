@@ -9,19 +9,23 @@ class Logout extends Base
 	 * @param cb
 	 * @returns {*}
 	 */
-	indexActionPost(cb)
+	indexActionPost()
 	{
 		if(this.getReq().signedCookies.rtid)
 		Cookie.clearUserId(this.getReq(), this.getRes());
 		
 		let self = this;
 		
-		this.getReq().session.destroy(function(err)
+		return new Promise(function (resolve, reject)
 		{
-			if(err) return cb(err);
+			self.getReq().session.destroy(function(err)
+			{
+				if(err)
+					return reject(err);
 
-			delete self.getReq().session;
-			return self.getRes().redirect('/login');
+				delete self.getReq().session;
+				self.getRes().redirect('/login');
+			});
 		});
 	}
 }

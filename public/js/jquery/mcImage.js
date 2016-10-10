@@ -24,8 +24,7 @@
 		if ($albumImagesMain.length && $albumImagesSub.length)
 		{
 			var $albumImagesSubWrapper = $(options.albumImagesSubWrapper).hide();
-			console.log($albumImagesMain);
-			console.log($albumImagesSub);
+
 			var mId;
 			$albumImagesMain.each(function (mI, mItem)
 			{
@@ -45,8 +44,6 @@
 		}
 
 		var $albumImages = $(options.albumImages);
-
-		console.log($albumImages.length);
 
 		function imageDialog(img, params)
 		{

@@ -29,13 +29,13 @@ class UserPhoto extends Base
 
 	/**
 	 * показываем страницу пользователя (свою, или выбранного)
-	 * @param cb
+	 *
 	 * @returns {*}
 	 */
-	indexActionGet(cb)
+	indexActionGet()
 	{
 		//if (!this.isAuthorized())
-		//	return cb(new Errors.HttpStatusError(401, "Unauthorized"));
+		//	throw new Errors.HttpStatusError(401, "Unauthorized");
 		
 		let xhr = this.getReq().xhr;
 		let {i_u_id=this.getUserId(), i_a_id} = this.routeArgs;
@@ -66,25 +66,24 @@ class UserPhoto extends Base
 				};
 
 				if (i_a_id)
-					return this.album(cb, i_u_id, tplData, xhr);
+					return this.album(i_u_id, tplData, xhr);
 
-				return this.albumList(cb, i_u_id, tplData, xhr);
+				return this.albumList(i_u_id, tplData, xhr);
 			})
 			.catch(function (err)
 			{
-				return cb(err);
+				throw err;
 			});
 	}
 	
 	/**
 	 * список фотоальбомов пользователя
 	 *
-	 * @param cb
 	 * @param tplData
 	 * @param isAjax
 	 * @returns {Promise.<TResult>}
 	 */
-	albumList(cb, i_u_id, tplData, isAjax = false)
+	albumList(i_u_id, tplData, isAjax = false)
 	{
 		let {i_page=1} = this.routeArgs;
 
@@ -129,18 +128,17 @@ class UserPhoto extends Base
 				this.getRes().expose(tplData["albums"], exposeAlbums);
 				this.getRes().expose(tplData["pages"], 'pages');
 
-				return cb(null, isAjax);
+				return Promise.resolve(isAjax);
 			});
 	}
 
 	/**
 	 * просмотр фотоальбома
 	 *
-	 * @param cb
 	 * @param tplData
 	 * @param isAjax
 	 */
-	album(cb, i_u_id, tplData, isAjax = false)
+	album(i_u_id, tplData, isAjax = false)
 	{
 		let {i_a_id, i_page=1} = this.routeArgs;
 
@@ -223,14 +221,14 @@ class UserPhoto extends Base
 				this.getRes().expose(allPreviews, 'albumPreviews');
 				this.getRes().expose(tplData["pages"], 'pages');
 
-				return cb(null, isAjax);
+				return Promise.resolve(isAjax);
 			})
 	}
 
-	indexActionPost(cb)
+	indexActionPost()
 	{
 		if (!this.isAuthorized())
-			return cb(new Errors.HttpStatusError(401, "Unauthorized"));
+			throw new Errors.HttpStatusError(401, "Unauthorized");
 
 		let tplData = this.getParsedBody();
 
@@ -244,17 +242,17 @@ class UserPhoto extends Base
 			{
 				//tplData.formError.error = false;
 				this.view.setTplData(tplFile, tplData);
-				return cb(null, true);
+				return Promise.resolve(true);
 			})
 			.catch(Errors.FormError, function(err)
 			{
 				this.view.setTplData(tplFile, err.data);
 
-				return cb(null, true);
+				return Promise.resolve(true);
 			})
 			.catch(function(err)
 			{
-				return cb(err);
+				throw err;
 			});
 	}
 
@@ -449,10 +447,9 @@ class UserPhoto extends Base
 	/**
 	 * загружаем новую фотографю в альбом
 	 *
-	 * @param cb
 	 * @returns {*}
 	 */
-	uploadActionPost(cb)
+	uploadActionPost()
 	{
 		let self = this;
 		let tplFile = 'user/profile/photo/albums.ejs';
@@ -484,7 +481,7 @@ class UserPhoto extends Base
 				};
 				self.view.setTplData(tplFile, tplData);
 
-				return cb(null, true);
+				return Promise.resolve(true);
 			})
 			.catch(function (err)
 			{
@@ -495,7 +492,7 @@ class UserPhoto extends Base
 
 				self.view.setTplData(tplFile, tplData);
 
-				return cb(null, true);
+				return Promise.resolve(true);
 			});
 	}
 

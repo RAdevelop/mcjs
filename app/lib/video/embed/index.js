@@ -398,14 +398,14 @@ class VideoEmbed
 
 	/**
 	 * статичный метод. вызываем в контроллерах
-	 * 
+	 *
 	 * @param cb
 	 * @param tplData
 	 * @param tplFile
 	 * @param Controller
 	 * @returns {Promise.<TResult>}
 	 */
-	static video(cb, tplData, tplFile, Controller)
+	static video(tplData, tplFile, Controller)
 	{
 		 //test https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/
 		 const Video = new VideoEmbed(tplData["s_uri"]);
@@ -416,11 +416,7 @@ class VideoEmbed
 		    Object.assign(tplData, videoData);
 			 Controller.view.setTplData(tplFile, tplData);
 
-		    return cb(null, true);
-		 })
-		 .catch(function (err)
-		 {
-		    return cb(err);
+		    return Promise.resolve(true);
 		 });
 	 }
 }

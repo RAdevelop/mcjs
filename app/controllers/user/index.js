@@ -26,13 +26,13 @@ class User extends Base
 
 	/**
 	 * показываем страницу пользователя (свою, или выбранного)
-	 * @param cb
+	 *
 	 * @returns {*}
 	 */
-	indexActionGet(cb)
+	indexActionGet()
 	{
 		if (!this.isAuthorized())
-			return cb(new Errors.HttpStatusError(401, "Unauthorized"));
+			throw new Errors.HttpStatusError(401, "Unauthorized");
 
 		console.log("this.routeArgs;");
 		console.log(this.routeArgs);
@@ -40,9 +40,9 @@ class User extends Base
 		let {i_u_id} = this.routeArgs;
 
 		if (i_u_id)
-		return this.userProfile(cb, i_u_id);
+		return this.userProfile(i_u_id);
 
-		return this.usersList(cb);
+		return this.usersList();
 	}
 
 	/**
@@ -50,14 +50,14 @@ class User extends Base
 	 *
 	 * @param u_id
 	 */
-	userProfile(cb, u_id)
+	userProfile(u_id)
 	{
 		return this.getUser(u_id)
 			.bind(this)
 			.then(function (userData)
 			{
 				if (!userData || !userData.u_id)
-					return cb(new Errors.HttpStatusError(404, "Not found"));
+					throw new Errors.HttpStatusError(404, "Not found");
 
 				return this.getClass('user/photo').getAlbumList(this.getUserId(), u_id, new Pages(1, 4))
 					.spread(function (albums, Pages)
@@ -76,21 +76,20 @@ class User extends Base
 				this.view.addPartialData("user/left", {user: userData});
 				//self.view.addPartialData("user/right", {}); //TODO
 
-				return cb(null);
+				return Promise.resolve(null);
 			})
 			.catch(function (err)
 			{
-				return cb(err);
+				throw err;
 			});
 	}
 
 	/**
 	 * список пользователей
 	 *
-	 * @param cb
 	 * @returns {Promise.<T>}
 	 */
-	usersList(cb)
+	usersList()
 	{
 		let {i_page} = this.routeArgs;
 
@@ -117,11 +116,11 @@ class User extends Base
 				this.view.addPartialData("user/left", {user: tplData.user});
 				//self.view.addPartialData("user/right", {}); //TODO
 
-				return cb(null);
+				return Promise.resolve(null);
 			})
 			.catch(function(err)
 			{
-				return cb(err);
+				throw err;
 			});
 	}
 }

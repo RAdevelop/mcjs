@@ -29,10 +29,9 @@ class Registration extends Base
 	 *
 	 * форма регистрации
 	 *
-	 * @param cb
 	 * @returns {*}
 	 */
-	indexActionGet(cb) 
+	indexActionGet()
 	{
 		if (this.getUserId())
 			return this.getRes().redirect('back');
@@ -44,17 +43,16 @@ class Registration extends Base
 		};
 		
 		this.view.setTplData("auth/registration", tplData);
-		return cb(null);
+		return Promise.resolve(null);
 	}
 	
 	/**
 	 * 
 	 * отправка запроса на регисистрацию
-	 * 
-	 * @param cb
+	 *
 	 * @returns {*}
 	 */
-	indexActionPost(cb)
+	indexActionPost()
 	{
 		if (this.getReq()._user)
 			return this.getRes().redirect('back');
@@ -74,18 +72,20 @@ class Registration extends Base
 		.then(function(tplData) //если регистрация успешна
 		{
 			self.view.setTplData(tplFile, tplData);
-			return cb(null);
+			return Promise.resolve(null);
 		})
 		.catch(Errors.ValidationError, Errors.AlreadyInUseError, Errors.AppMailError, function(err)
 		{
 			tplData.formError.error = true;
 			tplData.formError.errorName = err.name;
+
 			self.view.setTplData(tplFile, tplData);
-			return cb(null);
+
+			return Promise.resolve(null);
 		})
 		.catch(function(err)
 		{
-			return cb(err);
+			throw err;
 		});
 	}
 	/**
@@ -185,54 +185,54 @@ class Registration extends Base
 			throw err;
 		});
 	}
-	
+
+	confirmed(tplData, u_id, key)
+	{
+		const self = this;
+
+		return new Promise(function(resolve, reject)
+		{
+			if (!u_id)
+				return reject(new Errors.HttpStatusError(404, "Not Found"));
+
+			self.model("user/auth").regConfirm(u_id, key, function(err, valid)
+			{
+				if (err) return reject(err);
+
+				tplData.confirmed = valid;
+				return resolve(tplData);
+			});
+		});
+	}
+
 	/**
 	 * страница подтверждения регистрации
-	 * 
-	 * @param cb
+	 *
 	 * @returns {*}
 	 */
-	confirmActionGet(cb)
+	confirmActionGet()
 	{
 		if (this.getUserId())
 			return this.getRes().redirect('/');
 		
 		/*if (this.getArgs().length > 1)
-			return cb(new Errors.HttpStatusError(404, "Not Found"));*/
+			throw new Errors.HttpStatusError(404, "Not Found");*/
 
 		const self = this;
 
 		let {s_key} = this.routeArgs;
 		let u_id = s_key.substr(32);
 		let tplData = {confirmed: false};
-		
-		function confirmed(u_id, key)
-		{
-			return new Promise(function(resolve, reject)
-			{
-				if (!u_id)
-					return reject(new Errors.HttpStatusError(404, "Not Found"));
 
-				self.model("user/auth").regConfirm(u_id, key, function(err, valid)
-				{
-					if (err) return reject(err);
-					
-					tplData.confirmed = valid;
-					return resolve(tplData);
-				});
-			});
-		}
-
-		return confirmed(u_id, s_key)
+		return self.confirmed(tplData, u_id, s_key)
 		.then(function(tplData)
 		{
 			self.view.setTplData('auth/confirm', tplData);
-			return cb(null);
+			return Promise.resolve(null);
 		})
 		.catch(function(err)
 		{
-			//self.view.setTplData(tplFile, tplData);
-			return cb(err);
+			throw err;
 		});
 	}
 }
