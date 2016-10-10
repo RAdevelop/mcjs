@@ -225,12 +225,17 @@ class Events extends BaseModel
 
 		if (l_id > 0)
 		{
-			sql +=
-				`JOIN events_locations AS el ON(el.e_id = e.e_id AND el.l_id = ?)
-				GROUP BY e.e_id`;
+			sql += `
+			JOIN events_locations AS el ON(el.e_id = e.e_id AND el.l_id = ?)
+			GROUP BY e.e_id`;
 			sqlData.push(l_id);
 		}
-		//console.log(sql, sqlData);
+
+		sql += `
+		ORDER BY e.e_start_ts DESC`;
+
+		//console.log(sql);
+		//console.log(sqlData);
 		//console.log('\n');
 		return this.constructor.conn().s(sql, sqlData);
 	}

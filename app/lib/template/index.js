@@ -133,7 +133,6 @@ Template.prototype.setDataNull = function()
  * @param json - флаг, true - вернуть в формате json, false - отрисовать страницу
  * @throws ?
  */
-//Template.prototype.render = function(tpl, tplData, json)
 Template.prototype.render = function(json = false)
 {
 	json = (json || this.req.xhr);
@@ -164,12 +163,13 @@ Template.prototype.render = function(json = false)
 				{
 					self.setController(null);
 
-					reject(err);
+					if (err)
+						return reject(err);
 
 					ajaxData["html"] = html;
 
 					self.res.json(ajaxData);
-					return resolve();
+					return resolve(true);
 				});
 			}
 			else
@@ -181,7 +181,7 @@ Template.prototype.render = function(json = false)
 				ajaxData["html"] = '';
 
 				self.res.json(ajaxData);
-				return resolve();
+				return resolve(true);
 			}
 		});
 	}

@@ -211,7 +211,7 @@ CREATE TABLE `events_list` (
 
 LOCK TABLES `events_list` WRITE;
 /*!40000 ALTER TABLE `events_list` DISABLE KEYS */;
-INSERT INTO `events_list` VALUES (3,1473787102,1476112721,1474578000,1474664400,'Финал международной мотофристайл-битвы в Москве в рамках шоу Adrenaline FMX Riders','final-megdunarodnoy-motofristayl-bitvi-v-moskve-v-ramkah-shou-adrenaline-fmx-riders','Финал международной мотофристайл- битвы в Москве в рамках шоу Adrenaline FMX RidersФинал международной мотофристайл- битвы в Москве в рамках шоу Adrenaline FMX Riders','<p>Ведущие FMX-райдеры России и Европы сойдутся в битве по мотофристайлу Adrenaline FMX Riders, которая состоится 15 августа на территории СК &laquo;Лужники&raquo; в Москве. Такое нельзя пропустить!</p>\r\n<ul class=\"eventImages\">\r\n<li><img class=\"eventImage\" src=\"/events/0/3/8/a5771bce93e200c36f7cd9dfd0e5deaa/512_384.jpg\" data-img-id=\"8\"></li>\r\n</ul>\r\n<p>Уникальное шоу и мотофристайл-битва Adrenaline FMX Riders подходит к своему завершающему третьему этапу. Мотофристайлеры из 6 стран покажут все свои возможности в финальной схватке за звание лучшего из лучших.</p>\r\n<p>В этом году любители экстремального спорта стали свидетелями новой уникальной шоу-программы Adrenaline FMX Riders, которая включает в себя состязательный элемент. Это значит, что мастера мотофристайла не только продемонстрируют умопомрачительные трюки, но также поборются за право встать на первое место подиума. Москва становится финалом мотофристайл-битвы, которая определит, кто из райдеров Германии, Франции, Испании, России, Польши и Латвии станет лучшим FMX-спортсменом шоу и получит долгожданный кубок шоу Adrenaline Rush&reg;! По сумме баллов в двух предыдущих этапах &ndash; в Санкт-Петербурге и Новосибирске &ndash; за лидерство поборются:</p>\r\n<p>Марк Пиньол (Испания) &ndash; 160 очковРоман Иззо (Франция) &ndash; 160 очковВладимир Ярыгин (Россия) &ndash; 120 очковНиколай Иванков (Россия)- 120 очковСудейская коллегия шоу, оценивающая мастерство исполнения основных FMX-элементов и сложнейших комбинационных прыжков, состоит из экстрим-райдеров с мировым именем: это участник X-Games Сэм Роджерс (США), Марко Пикадо (Коста-Рика), а также представитель Мотоциклетной Федерации России.</p>\r\n<p>Еще одним нововведением, которое уже оценили зрители мотофристайл-битв в Санкт-Петербурге и Новосибирске, стала абсолютно новая для России &laquo;перекрестная&raquo; площадка. Ее конструкция такова, что позволяет райдерам совершать прыжки крест-накрест &ndash; это увеличивает зрелищность шоу и количество вовлеченных зрителей, так как угол обзора всех трюков при таком расположении трамплинов и приземлений на площадке теперь приближен к максимально возможному.</p>\r\n<p>Узнать, кто же станет победителем шоу - первой российской мотофристайл-битвы Adrenaline FMX Riders, можно будет 15 августа на территории СК &laquo;Лужники&raquo;, начало в 18:00. Кроме того, поклонников легендарного шоу от Adrenaline Rush&reg; ждут выступления фристайлеров на снегоходе и квадроцикле, а также &laquo;поезд трюков&raquo; и бэкфлип-шоу.</p>\r\n<p>Adrenaline FMX Riders 15 августа в 18.00 на территории СК &laquo;Лужники&raquo;. Вход бесплатный!</p>','Россия, Новгородская область, Новгородский район, деревня Божонка',346,58.49963169,31.64348893,'58&deg; 29&prime;59&Prime;N','31&deg; 38&prime;37&Prime;E','70,254,345,346',1,1);
+INSERT INTO `events_list` VALUES (3,1473787102,1476138250,1474578000,1474664400,'Финал международной мотофристайл-битвы в Москве в рамках шоу Adrenaline FMX Riders','final-megdunarodnoy-motofristayl-bitvi-v-moskve-v-ramkah-shou-adrenaline-fmx-riders','Финал международной мотофристайл- битвы в Москве в рамках шоу Adrenaline FMX RidersФинал международной мотофристайл- битвы в Москве в рамках шоу Adrenaline FMX Riders','<p>Ведущие FMX-райдеры России и Европы сойдутся в битве по мотофристайлу Adrenaline FMX Riders, которая состоится 15 августа на территории СК &laquo;Лужники&raquo; в Москве. Такое нельзя пропустить!</p>\r\n<p>Уникальное шоу и мотофристайл-битва Adrenaline FMX Riders подходит к своему завершающему третьему этапу. Мотофристайлеры из 6 стран покажут все свои возможности в финальной схватке за звание лучшего из лучших.</p>\r\n<p>В этом году любители экстремального спорта стали свидетелями новой уникальной шоу-программы Adrenaline FMX Riders, которая включает в себя состязательный элемент. Это значит, что мастера мотофристайла не только продемонстрируют умопомрачительные трюки, но также поборются за право встать на первое место подиума. Москва становится финалом мотофристайл-битвы, которая определит, кто из райдеров Германии, Франции, Испании, России, Польши и Латвии станет лучшим FMX-спортсменом шоу и получит долгожданный кубок шоу Adrenaline Rush&reg;! По сумме баллов в двух предыдущих этапах &ndash; в Санкт-Петербурге и Новосибирске &ndash; за лидерство поборются:</p>\r\n<p>Марк Пиньол (Испания) &ndash; 160 очковРоман Иззо (Франция) &ndash; 160 очковВладимир Ярыгин (Россия) &ndash; 120 очковНиколай Иванков (Россия)- 120 очковСудейская коллегия шоу, оценивающая мастерство исполнения основных FMX-элементов и сложнейших комбинационных прыжков, состоит из экстрим-райдеров с мировым именем: это участник X-Games Сэм Роджерс (США), Марко Пикадо (Коста-Рика), а также представитель Мотоциклетной Федерации России.</p>\r\n<p>Еще одним нововведением, которое уже оценили зрители мотофристайл-битв в Санкт-Петербурге и Новосибирске, стала абсолютно новая для России &laquo;перекрестная&raquo; площадка. Ее конструкция такова, что позволяет райдерам совершать прыжки крест-накрест &ndash; это увеличивает зрелищность шоу и количество вовлеченных зрителей, так как угол обзора всех трюков при таком расположении трамплинов и приземлений на площадке теперь приближен к максимально возможному.</p>\r\n<p>Узнать, кто же станет победителем шоу - первой российской мотофристайл-битвы Adrenaline FMX Riders, можно будет 15 августа на территории СК &laquo;Лужники&raquo;, начало в 18:00. Кроме того, поклонников легендарного шоу от Adrenaline Rush&reg; ждут выступления фристайлеров на снегоходе и квадроцикле, а также &laquo;поезд трюков&raquo; и бэкфлип-шоу.</p>\r\n<p>Adrenaline FMX Riders 15 августа в 18.00 на территории СК &laquo;Лужники&raquo;. Вход бесплатный!</p>','Россия, Новгородская область, Новгородский район, деревня Божонка',346,58.49963169,31.64348893,'58&deg; 29&prime;59&Prime;N','31&deg; 38&prime;37&Prime;E','70,254,345,346',1,1);
 /*!40000 ALTER TABLE `events_list` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -450,7 +450,7 @@ CREATE TABLE `news_image` (
   `ni_name` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`ni_id`),
   KEY `nid_pos` (`n_id`,`ni_pos`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -459,6 +459,7 @@ CREATE TABLE `news_image` (
 
 LOCK TABLES `news_image` WRITE;
 /*!40000 ALTER TABLE `news_image` DISABLE KEYS */;
+INSERT INTO `news_image` VALUES (1,1,1476131423,1476131425,NULL,NULL,'/news/0/1/1/6512bd43d9caa6e02c990b0a82652dca',0,'motogp.jpg');
 /*!40000 ALTER TABLE `news_image` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -480,8 +481,9 @@ CREATE TABLE `news_list` (
   `n_text` text NOT NULL,
   `u_id` int(11) unsigned NOT NULL,
   `n_img_cnt` tinyint(3) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`n_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`n_id`),
+  KEY `showts` (`n_show_ts`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -490,7 +492,7 @@ CREATE TABLE `news_list` (
 
 LOCK TABLES `news_list` WRITE;
 /*!40000 ALTER TABLE `news_list` DISABLE KEYS */;
-INSERT INTO `news_list` VALUES (1,1476125613,1476125613,1476046800,'eTextTinymce','etexttinymce','eTextTinymce','<p>eTextTinymce</p>',1,0);
+INSERT INTO `news_list` VALUES (1,1476125613,1476139445,1476046800,'eTextTinymce','etexttinymce','eTextTinymce','<p>eTextTinymce<iframe src=\"https://rutube.ru/play/embed/8577873\" class=\"iframeVideoEmbed\" frameborder=\"0\" allowfullscreen=\"allowfullscreen\" webkitallowfullscreen=\"webkitallowfullscreen\" mozallowfullscreen=\"mozallowfullscreen\" scrolling=\"no\" data-link=\"https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/\"></iframe></p>\r\n<ul class=\"newsImages\">\r\n<li><img class=\"newsImage\" src=\"/news/0/1/1/6512bd43d9caa6e02c990b0a82652dca/512_384.jpg\" data-img-id=\"1\"></li>\r\n</ul>',1,1),(2,1476133593,1476133593,1476133200,'sdfsfd','sdfsfd','sdf','<p>sdf</p>',1,0),(3,1476133867,1476133867,1475960400,'xvbhnbn','xvbhnbn','cvbcvbcvb','<p>cvbcvbcvb</p>',1,0);
 /*!40000 ALTER TABLE `news_list` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -655,7 +657,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1476126047,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1475778789,'RoLex',1);
+INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1476139448,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1475778789,'RoLex',1);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3694,4 +3696,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-10-10 22:01:46
+-- Dump completed on 2016-10-11  1:45:04

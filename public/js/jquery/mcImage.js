@@ -20,11 +20,10 @@
 
 		var $albumImagesMain = $(options.albumImagesMain);
 		var $albumImagesSub = $(options.albumImagesSub);
+		var $albumImagesSubWrapper = $(options.albumImagesSubWrapper).hide();
 
 		if ($albumImagesMain.length && $albumImagesSub.length)
 		{
-			var $albumImagesSubWrapper = $(options.albumImagesSubWrapper).hide();
-
 			var mId;
 			$albumImagesMain.each(function (mI, mItem)
 			{
@@ -40,9 +39,13 @@
 				});
 			});
 
+			if ($albumImagesSub.length)
 			$albumImagesSubWrapper.show();
 		}
-
+		else if ($albumImagesSub.length)
+		{
+			$albumImagesSubWrapper.show();
+		}
 		var $albumImages = $(options.albumImages);
 
 		function imageDialog(img, params)

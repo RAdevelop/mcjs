@@ -28,7 +28,7 @@
 	{
 		event.stopPropagation();
 
-		console.log(event.clipboardData.getData('text/plain'));
+		//console.log(event.clipboardData.getData('text/plain'));
 
 		var uri = event.clipboardData.getData('text/plain');
 		if (!isLink(uri))

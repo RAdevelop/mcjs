@@ -1704,6 +1704,336 @@ img.eventImage
 /**********  END СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ **************/
 
 
+/**********  НОВОСТИ НОВОСТИ НОВОСТИ НОВОСТИ НОВОСТИ НОВОСТИ НОВОСТИ НОВОСТИ **************/
+
+.newsLocationsMenu li.selected
+{
+	background-color: #f5f5f5;
+}
+
+.newsData
+{
+
+}
+.newsData p
+{
+	overflow: hidden;
+}
+
+.newsData ul.newsImages
+{
+	overflow: hidden;
+	padding: 0;
+	margin: 0;
+	width: calc(100%);
+	text-align: center;
+}
+
+.newsData ul.newsImages li
+{
+	list-style-type: none;
+}
+.newsImagesContainer .newsImageItem,
+.newsData ul.newsImages li
+{
+	text-align: center;
+	position: relative;
+	display: inline-block;
+	overflow: hidden;
+	margin: 0 10px 10px 0;
+	max-width: 216px;
+	max-height: 162px;
+}
+.newsImagesContainer .newsImageItem
+{
+	margin: 0 5px 10px 5px;
+}
+
+.newsImagesContainer .newsImageItem .newsImageTools
+{
+	background-color: #666;
+	color: #fff;
+	min-height: 24px;
+	line-height: 24px;
+}
+
+.newsImagesContainer .newsImageItem .newsImageTools a
+{
+	color: #fff;
+}
+.newsImagesWrapper
+{
+
+}
+
+.newsImagesWrapper legend a:hover
+{
+	cursor: pointer;
+}
+
+.newsImagesWrapper .newsImagesContainer
+{
+	overflow: hidden;
+	text-align: center;
+	display: block;
+	margin: 10px 0 0 0;
+}
+
+
+.newsData .newsImagesWrapper
+{
+	display: none;
+}
+
+img.newsImage
+{
+	cursor: move;
+	width: calc(100%);
+}
+
+.newsData img.newsImage
+{
+	cursor: pointer;
+}
+
+.newsListContainer
+{
+
+}
+.newsListContainer .newsListItem
+{
+	float: left;
+	margin:  0px  10px  10px  0px;
+	width: auto;
+}
+
+.newsListContainer .newsListItem .newsListItemInfo
+{
+	display: block;
+	position: relative;
+	border: none;
+	color: #fff;
+	max-width: 384px;
+	max-height: 288px;
+	min-width: 384px;
+	min-height: 288px;
+	overflow: hidden;
+}
+
+.newsListContainer .newsListItem .newsListItemInfo img
+{
+	width: calc(100%);
+	opacity: 0.5;
+	-ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+	filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+}
+
+/*.newsListContainer .newsListItem .newsListItemInfo:hover img
+{
+	opacity: 1;
+	-ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+	filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+}*/
+
+.newsListContainer .newsListItem .newsListItemInfo div
+{
+	position: absolute;
+	width: 100%;
+}
+
+.newsListContainer .newsListItem .newsListItemInfo .newsListItemInfoDate
+{
+	top: 0;
+	padding: 3px;
+	text-align: center;
+	background-color: rgba(0, 0, 0, 0.7);
+}
+
+.newsListContainer .newsListItem .newsListItemInfo .newsListItemInfoNotice
+{
+	background-color: rgba(0, 0, 0, 0.7);
+	top: 245px;
+	padding: 0px 3px 3px 3px;
+	bottom: 0;
+	-webkit-transition: top 0.5s ease-out 0.1s;
+	-moz-transition: top 0.5s ease-out 0.1s;
+	-o-transition: top 0.5s ease-out 0.1s;
+	transition: top 0.5s ease-out 0.1s;
+}
+
+.newsListContainer .newsListItem .newsListItemInfo:hover .newsListItemInfoNotice
+{
+	top: 26px;
+}
+.newsListContainer .newsListItem .newsListItemInfo .newsListItemInfoNotice p:first-child
+{
+	text-align: center;
+	font-weight: bold;
+}
+
+.newsListContainer .newsListItem .newsListItemInfo .newsListItemInfoNotice p:last-child
+{
+	border-top: 1px dotted;
+}
+@media (min-width: 1200px)
+{
+	.newsImagesContainer .newsImageItem
+	{
+		max-width: 257px;
+		max-height: 192px;
+	}
+	.newsData ul.newsImages li
+	{
+		max-width: 288px;
+		max-height: 216px;
+	}
+}
+@media (min-width: 992px) and (max-width: 1200px)
+{
+
+}
+@media (max-width: 1024px)
+{
+
+}
+@media (min-width: 768px) and (max-width: 992px)
+{
+
+}
+
+@media (min-width: 768px) and (max-width: 1024px)
+{
+	.newsImagesContainer .newsImageItem
+	{
+		max-width: 231px;
+		max-height: 173px;
+	}
+	.newsData ul.newsImages li
+	{
+		/*max-height: 384px;*/
+
+		/*max-width: 293px;
+		max-height: 219px;*/
+	}
+
+	.newsListContainer .newsListItem .newsListItemInfo
+	{
+		max-width: 359px;
+		max-height: 269px;
+
+		min-width: 359px;
+		min-height: 269px;
+	}
+}
+@media (max-width: 768px)
+{
+	.newsImagesContainer .newsImageItem
+	{
+		max-width: 236px;
+		max-height: 177px;
+	}
+	.newsData ul.newsImages li
+	{
+		max-width: 357px;
+		max-height: 267px;
+	}
+}
+@media (max-width: 768px) and (orientation : landscape)
+{
+	.newsImagesContainer .newsImageItem
+	{
+		max-width: 308px;
+		max-height: 231px;
+	}
+	.newsData ul.newsImages li
+	{
+		max-width: 306px;
+		max-height: 229px;
+	}
+
+	.newsListContainer .newsListItem .newsListItemInfo
+	{
+		max-width: 100%;
+		max-height: 257px;
+
+		min-width: 100%;
+		min-height: 257px;
+	}
+
+	.newsListContainer .newsListItem .newsListItemInfo .newsListItemInfoNotice
+	{
+		top: 26px;
+		background-color: rgba(0, 0, 0, 0.7);
+	}
+}
+@media (max-width: 640px)
+{
+	.newsImagesContainer .newsImageItem,
+	.newsData ul.newsImages li
+	{
+		max-width: 293px;
+		max-height: 219px;
+	}
+
+	.newsListContainer .newsListItem .newsListItemInfo
+	{
+		max-width: 100%;
+		width: 100%;
+		height: calc(75% - 10px);
+	}
+	.newsListContainer .newsListItem .newsListItemInfo .newsListItemInfoNotice
+	{
+		top: 26px;
+		background-color: rgba(0, 0, 0, 0.7);
+	}
+}
+@media (max-width: 568px)
+{
+	.newsImagesContainer .newsImageItem,
+	.newsData ul.newsImages li
+	{
+		max-height: 281px;
+		max-width: calc(100%);
+		max-width: -moz-calc(100%);
+		max-width: -webkit-calc(100%);
+	}
+
+	.newsListContainer .newsListItem .newsListItemInfo
+	{
+		max-width: calc(100%);
+		max-width: -moz-calc(100%);
+		max-width: -webkit-calc(100%);
+
+		min-width: calc(100%);
+		min-width: -moz-calc(100%);
+		min-width: -webkit-calc(100%);
+
+		/*max-height: 258px;*/
+	}
+	.newsListContainer .newsListItem .newsListItemInfo .newsListItemInfoNotice
+	{
+		top: 26px;
+		background-color: rgba(0, 0, 0, 0.7);
+	}
+}
+
+@media (max-width: 568px) and (orientation : landscape)
+{
+	.newsImagesContainer .newsImageItem,
+	.newsData ul.newsImages li
+	{
+		max-width: 255px;
+		max-height: 191px;
+	}
+}
+
+@media (min-width: 320px) and (max-width: 480px)
+{
+
+}
+/**********  END НОВОСТИ НОВОСТИ НОВОСТИ НОВОСТИ НОВОСТИ НОВОСТИ НОВОСТИ НОВОСТИ **************/
+
+
 
 
 

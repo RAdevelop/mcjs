@@ -339,6 +339,8 @@ class Events extends Base
 
 		tplData = this.stripTags(tplData, ["dd_start_ts", "dd_end_ts", "s_e_title","t_e_notice", "s_e_address"]);
 
+		tplData["t_e_text"] = this.cheerio(tplData["t_e_text"]).root().cleanTagEvents().html();
+
 		if (!tplData["dd_start_ts"])
 			errors["dd_start_ts"] = "Укажите дату начала события";
 

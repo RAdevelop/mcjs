@@ -95,7 +95,7 @@
 
 			var html = '<li>'+this.outerHTML+'</li>';
 			editor.insertContent(html);
-			$(editor.getBody()).find('img.eventImage').closest('ul').addClass('newsImages');
+			$(editor.getBody()).find('img.newsImage').closest('ul').addClass('newsImages');
 		});
 	}
 
@@ -222,7 +222,7 @@
 		update: function( event, ui )
 		{
 			var imgPos = [];
-			$('.newsImagesContainer img.eventImage').each(function (i, item)
+			$('.newsImagesContainer img.newsImage').each(function (i, item)
 			{
 				imgPos.push($(item).attr("data-img-id"));
 			});

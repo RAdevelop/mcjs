@@ -3,5 +3,7 @@
 <h1><%=_pageH1%></h1>
 <% if(news && ['edit', 'add'].indexOf(_action) != -1){ %><%- include edit.ejs %><% }
 else if (news){%><%- include news.ejs %><%}
-else if (newsList){%><%- include list.ejs %><%}
+else if (newsList){%>
+<%- include list.ejs %>
+<%- include ../pages/index.ejs %><%}
 %>

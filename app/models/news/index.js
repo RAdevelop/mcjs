@@ -55,8 +55,7 @@ class News extends BaseModel
 	edit(i_n_id, i_u_id, s_n_title, n_alias, t_n_notice, t_n_text, dd_show_ts)
 	{
 		let sql =
-			`UPDATE news_list SET n_update_ts = ?, n_show_ts = ?,  = ?, n_title = ?, n_alias = ?, 
-			n_notice = ?, n_text = ?, u_id = ? 
+			`UPDATE news_list SET n_update_ts = ?, n_show_ts = ?, n_title = ?, n_alias = ?, n_notice = ?, n_text = ?, u_id = ? 
 			WHERE n_id = ?`;
 
 		let n_show_ts  = Moment(dd_show_ts, "DD-MM-YYYY").unix();
@@ -89,6 +88,23 @@ class News extends BaseModel
 		return this.constructor.conn().sRow(sql, [n_id]);
 	}
 
+
+	/**
+	 * кол-во новостей
+	 *
+	 * @returns {*|Promise.<TResult>}
+	 */
+	countNews()
+	{
+		let sql = "SELECT COUNT(n_id) AS cnt FROM news_list WHERE n_show_ts <= ?;";
+
+		return this.constructor.conn().sRow(sql, [Moment().unix()])
+			.then(function (res)
+			{
+				return Promise.resolve(res["cnt"] || 0);
+			});
+	}
+
 	/**
 	 * список новостей
 	 *
@@ -102,13 +118,18 @@ class News extends BaseModel
 			`SELECT n.n_id, n.n_create_ts, n.n_update_ts, n.n_show_ts, n.n_title, n.n_alias, n.n_notice 
 			, FROM_UNIXTIME(n.n_show_ts, "%d-%m-%Y") AS dd_show_ts
 			, n.u_id, ni.ni_id, ni.ni_dir, ni.ni_pos, ni.ni_name
-			FROM news_list AS n
+			FROM (SELECT NULL) AS z
+			JOIN news_list AS n ON(n.n_show_ts <= ?)
 			LEFT JOIN news_image AS ni ON(ni.n_id = n.n_id AND ni.ni_pos = 0)
+			ORDER BY n.n_show_ts DESC
 			LIMIT ${i_limit} OFFSET ${i_offset}`;
 
-		//console.log(sql, sqlData);
+		let sqlData = [Moment().unix()];
+
+		//console.log(sql);
+		//console.log(sqlData);
 		//console.log('\n');
-		return this.constructor.conn().s(sql);
+		return this.constructor.conn().s(sql, sqlData);
 	}
 
 	/**
@@ -227,7 +248,7 @@ class News extends BaseModel
 	}
 
 	/**
-	 * кол-вл фоток в событии
+	 * кол-вл фоток в новости
 	 *
 	 * @param n_id
 	 * @returns {*|Promise.<TResult>}

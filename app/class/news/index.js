@@ -60,32 +60,44 @@ class News extends Base
 	/**
 	 * список событий за указанный интервал дат (в формете timestamp)
 	 *
-	 * @param i_limit
-	 * @param i_offset
+	 * @param Pages
 	 *
 	 * @returns {*|Promise.<TResult>|*}
 	 */
-	getNews(i_limit, i_offset)
+	getNews(Pages)
 	{
-		return this.model('news').getNews(i_limit, i_offset)
-			.then(function (newsList)
+		return this.model('news').countNews()
+			.bind(this)
+			.then(function (cnt)
 			{
-				if (!newsList)
-					return Promise.resolve(null);
+				Pages.setTotal(cnt);
 
-				let sizeParams = FileUpload.getUploadConfig('news').sizeParams;
+				if (!cnt)
+					return [null, Pages];
 
-				//let allPreviews = [];
-				newsList.forEach(function (news, indx)
-				{
-					newsList[indx]["previews"] = {};
-					if (news["ni_dir"])
+				if (Pages.limitExceeded())
+					return Promise.reject(new FileErrors.HttpStatusError(404, "Not found"));
+
+				return this.model('news').getNews(Pages.getLimit(), Pages.getOffset())
+					.then(function (newsList)
 					{
-						news = FileUpload.getPreviews(sizeParams, news, "ni_dir", true)["obj"];
-					}
-				});
+						if (!newsList)
+							return Promise.resolve([null, Pages]);
 
-				return Promise.resolve(newsList);
+						let sizeParams = FileUpload.getUploadConfig('news').sizeParams;
+
+						//let allPreviews = [];
+						newsList.forEach(function (news, indx)
+						{
+							newsList[indx]["previews"] = {};
+							if (news["ni_dir"])
+							{
+								news = FileUpload.getPreviews(sizeParams, news, "ni_dir", true)["obj"];
+							}
+						});
+
+						return Promise.resolve([newsList, Pages]);
+					});
 			});
 	}
 

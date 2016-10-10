@@ -7,7 +7,7 @@
 			<% if (news && news.n_id) {%>
 				<li><a href="<%=menuItem.m_path+'/edit/'+news.n_id%>/"><i class="fa fa-fw fa-edit"></i> редактировать новость</a></li>
 				<% if (_action == 'edit'){%>
-				<li><a href="javascript:void(0);" data-action="delete" data-news-id="<%=news.n_id%>"><i class="fa fa-fw fa-trash-o"></i> удалить событие</a></li>
+				<li><a href="javascript:void(0);" data-action="delete" data-news-id="<%=news.n_id%>"><i class="fa fa-fw fa-trash-o"></i> удалить новость</a></li>
 				<% }%>
 			<% }%>
 			</ul>

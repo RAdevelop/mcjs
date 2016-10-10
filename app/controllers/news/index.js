@@ -11,7 +11,7 @@ const VideoEmbed = require("app/lib/video/embed");
 const Base = require('app/lib/controller');
 
 
-let limit_per_page = 20;
+let limit_per_page = 1;
 
 class News extends Base
 {
@@ -23,8 +23,9 @@ class News extends Base
 	{
 		return {
 			"index": {
-				'^\/?[0-9]+\/\\S+\/?$': ['i_news_id','s_news_alias'],
-				'^\/?$': null
+				'^\/?[0-9]+\/\\S+\/?$': ['i_news_id','s_news_alias']
+				,"^\/?page\/[1-9]+[0-9]*\/?$" : [ ,"i_page"] //список с постраничкой
+				,'^\/?$': null
 			},
 			"add": {
 				'^\/?$': null
@@ -101,7 +102,7 @@ class News extends Base
 				//this.view.setPageH1(news.n_title);
 
 				//экспрот данных в JS на клиента
-				this.getRes().expose(tplData["news"], 'eventData');
+				this.getRes().expose(tplData["news"], 'newsData');
 
 
 				this.view.setTplData(tplFile, tplData);
@@ -124,22 +125,42 @@ class News extends Base
 	 */
 	newsList(tplData)
 	{
-		return Promise.resolve(this.getClass("news").getNews(20, 0))//TODO add new Pages(....) 
-			.bind(this)
-			.then(function (newsList)
-			{
-				let tplFile = "news";
+		let {i_page=1} = this.routeArgs;
 
+		return Promise.resolve(this.getClass("news").getNews(new Pages(i_page, limit_per_page)))
+			.bind(this)
+			.spread(function (newsList, Pages)
+			{
 				tplData["newsList"] = newsList;
 
-				//this.getRes().expose(newsList, 'newsList');
-				//this.getRes().expose(eventLocations, 'eventLocations');
+				let exposeNews = 'newsList';
+				Pages.setLinksUri(this.getBaseUrl())
+					.setAjaxPagesType(true)
+					.setAjaxDataSrc([exposeNews])
+					.setAjaxDataTarget(exposeNews)
+					.setJquerySelectorData('.newsListContainer .newsListItem');
 
-				this.view.setTplData(tplFile, tplData);
+				tplData["pages"] = Pages.pages();
+
+				let tplFile = '';
+				let isAjax = this.getReq().xhr;
+				if (isAjax)
+				{
+					tplFile = 'news/list.ejs';
+				}
+				else
+				{
+					tplFile = 'news';
+				}
+
+				this.getRes().expose(newsList, exposeNews);
+				this.getRes().expose(tplData["pages"], 'pages');
+
+				this.view.setTplData(tplFile, tplData, isAjax);
 				//this.view.addPartialData("user/left", {user: userData});
 				//this.view.addPartialData("user/right", {title: 'right_col'});
 
-				return Promise.resolve(null);
+				return Promise.resolve(isAjax);
 			})
 			.catch(function(err)
 			{
@@ -188,6 +209,8 @@ class News extends Base
 		let errors = {};
 
 		tplData = this.stripTags(tplData, ["dd_show_ts", "s_n_title","t_n_notice"]);
+
+		tplData["t_n_text"] = this.cheerio(tplData["t_n_text"]).root().cleanTagEvents().html();
 
 		if (!tplData["dd_show_ts"])
 			errors["dd_show_ts"] = "Укажите дату новости";
@@ -349,7 +372,7 @@ class News extends Base
 
 				tplData = this.stripTags(tplData, ["dd_show_ts", "s_n_title","t_n_notice"]);
 
-				tplData["t_n_text"] = this.cheerio(tplData["t_n_text"]).root().cleanTagnews().html();
+				tplData["t_n_text"] = this.cheerio(tplData["t_n_text"]).root().cleanTagEvents().html();
 
 				if (!tplData["dd_show_ts"])
 					errors["dd_show_ts"] = "Укажите дату новости";
