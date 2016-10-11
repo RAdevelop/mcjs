@@ -7,7 +7,7 @@ newsList.forEach(function (nItem)
 	%><div class="newsListItem">
 			<a  class="newsListItemInfo" href="<%=[_reqBaseUrl, nItem["n_id"], nItem["n_alias"]].join('/')%>/">
 				<img src="<%=imgSrc%>" alt="<%=nItem["n_title"]%>"/>
-				<div class="newsListItemInfoDate"><%=nItem["dd_show_ts"]%></div>
+				<div class="newsListItemInfoDate"><%=nItem["dt_show_ts"]%></div>
 				<div class="newsListItemInfoNotice"><p><%=nItem["n_title"]%></p><p><%=nItem["n_notice"]%></p></div>
 			</a>
 	</div><%

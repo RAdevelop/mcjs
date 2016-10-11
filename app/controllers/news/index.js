@@ -66,7 +66,7 @@ class News extends Base
 	 */
 	news(tplData, i_news_id, s_alias)
 	{
-		return this.getClass('news').get(i_news_id)
+		return this.getClass('news').get(i_news_id, 1)
 			.bind(this)
 			.then(function (news)
 			{
@@ -127,7 +127,7 @@ class News extends Base
 	{
 		let {i_page=1} = this.routeArgs;
 
-		return Promise.resolve(this.getClass("news").getNews(new Pages(i_page, limit_per_page)))
+		return Promise.resolve(this.getClass("news").getNews(new Pages(i_page, limit_per_page), 1))
 			.bind(this)
 			.spread(function (newsList, Pages)
 			{
@@ -179,7 +179,7 @@ class News extends Base
 				n_id: '',
 				n_create_ts: '',
 				n_update_ts: '',
-				dd_show_ts: '',
+				dt_show_ts: '',
 				n_title: '',
 				n_notice: '',
 				n_text: '',
@@ -208,12 +208,13 @@ class News extends Base
 
 		let errors = {};
 
-		tplData = this.stripTags(tplData, ["dd_show_ts", "s_n_title","t_n_notice"]);
+		tplData = this.stripTags(tplData, ["dt_show_ts", "s_n_title","t_n_notice"]);
 
 		tplData["t_n_text"] = this.cheerio(tplData["t_n_text"]).root().cleanTagEvents().html();
+		tplData["b_show"] = tplData["b_show"] || false;
 
-		if (!tplData["dd_show_ts"])
-			errors["dd_show_ts"] = "Укажите дату новости";
+		if (!tplData["dt_show_ts"])
+			errors["dt_show_ts"] = "Укажите дату новости";
 
 		if (!tplData["s_n_title"])
 			errors["s_n_title"] = "Укажите название новости";
@@ -237,7 +238,7 @@ class News extends Base
 			})
 			.then(function (tplData)
 			{
-				return this.getClass('news').add(this.getUserId(), tplData["s_n_title"], tplData["t_n_notice"], tplData["t_n_text"], tplData["dd_show_ts"])
+				return this.getClass('news').add(this.getUserId(), tplData["s_n_title"], tplData["t_n_notice"], tplData["t_n_text"], tplData["dt_show_ts"], tplData["b_show"])
 					.bind(this)
 					.then(function (i_news_id)
 					{
@@ -275,7 +276,7 @@ class News extends Base
 		if (!i_news_id)
 			throw new Errors.HttpStatusError(404, "Not found");
 
-		return this.getClass('news').get(i_news_id)
+		return this.getClass('news').get(i_news_id, null)
 			.bind(this)
 			.then(function (news)
 			{
@@ -305,7 +306,7 @@ class News extends Base
 				this.view.setPageTitle(news.n_title);
 				this.view.setPageH1(news.n_title);
 				//экспрот данных в JS на клиента
-				this.getRes().expose(tplData["news"], 'eventData');
+				this.getRes().expose(tplData["news"], 'newsData');
 				this.getRes().expose(tplData["newsImages"], 'newsImages');
 				this.getRes().expose(allPreviews, 'newsImagesPreviews');
 
@@ -370,12 +371,13 @@ class News extends Base
 			{
 				let errors = {};
 
-				tplData = this.stripTags(tplData, ["dd_show_ts", "s_n_title","t_n_notice"]);
+				tplData = this.stripTags(tplData, ["dt_show_ts", "s_n_title","t_n_notice"]);
 
 				tplData["t_n_text"] = this.cheerio(tplData["t_n_text"]).root().cleanTagEvents().html();
+				tplData["b_show"] = tplData["b_show"] || false;
 
-				if (!tplData["dd_show_ts"])
-					errors["dd_show_ts"] = "Укажите дату новости";
+				if (!tplData["dt_show_ts"])
+					errors["dt_show_ts"] = "Укажите дату новости";
 
 				if (!tplData["s_n_title"])
 					errors["s_n_title"] = "Укажите название новости";
@@ -398,7 +400,7 @@ class News extends Base
 			{
 				return this.getClass('news').edit(
 					tplData["i_news_id"], this.getUserId(),
-					tplData["s_n_title"], tplData["t_n_notice"], tplData["t_n_text"], tplData["dd_show_ts"])
+					tplData["s_n_title"], tplData["t_n_notice"], tplData["t_n_text"], tplData["dt_show_ts"], tplData["b_show"])
 					.then(function ()
 					{
 						return Promise.resolve(tplData);

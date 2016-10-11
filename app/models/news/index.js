@@ -16,20 +16,22 @@ class News extends BaseModel
 	 * @param n_alias
 	 * @param t_n_notice
 	 * @param t_n_text
-	 * @param dd_show_ts
+	 * @param dt_show_ts
+	 * @param n_show
 	 *
 	 * @returns {Promise.<TResult>}
 	 */
-	add(i_u_id, s_n_title, n_alias, t_n_notice, t_n_text, dd_show_ts)
+	add(i_u_id, s_n_title, n_alias, t_n_notice, t_n_text, dt_show_ts, n_show)
 	{
-		let n_show_ts  = Moment(dd_show_ts, "DD-MM-YYYY").unix();
+		n_show = (parseInt(n_show, 10)||n_show ? 1 : 0);
 
+		let n_show_ts  = Moment(dt_show_ts, "DD-MM-YYYY HH:mm:ss").unix();
 		let now_ts = Moment().unix();
-		let sqlData = [i_u_id, s_n_title, n_alias, t_n_notice, t_n_text, now_ts, now_ts, n_show_ts];
+		let sqlData = [i_u_id, s_n_title, n_alias, t_n_notice, t_n_text, now_ts, now_ts, n_show_ts, n_show];
 
 		let sql =
-			`INSERT INTO news_list (u_id, n_title, n_alias, n_notice, n_text, n_create_ts, n_update_ts, n_show_ts) 
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+			`INSERT INTO news_list (u_id, n_title, n_alias, n_notice, n_text, n_create_ts, n_update_ts, n_show_ts, n_show) 
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
 		return this.constructor.conn().ins(sql, sqlData)
 			.bind(this)
@@ -48,20 +50,23 @@ class News extends BaseModel
 	 * @param n_alias
 	 * @param t_n_notice
 	 * @param t_n_text
-	 * @param dd_show_ts
+	 * @param dt_show_ts
+	 * @param n_show
 	 *
 	 * @returns {Promise.<TResult>}
 	 */
-	edit(i_n_id, i_u_id, s_n_title, n_alias, t_n_notice, t_n_text, dd_show_ts)
+	edit(i_n_id, i_u_id, s_n_title, n_alias, t_n_notice, t_n_text, dt_show_ts, n_show)
 	{
 		let sql =
-			`UPDATE news_list SET n_update_ts = ?, n_show_ts = ?, n_title = ?, n_alias = ?, n_notice = ?, n_text = ?, u_id = ? 
+			`UPDATE news_list SET n_update_ts = ?, n_show_ts = ?, n_title = ?, n_alias = ?, n_notice = ?, n_text = ?
+			, u_id = ?, n_show = ? 
 			WHERE n_id = ?`;
 
-		let n_show_ts  = Moment(dd_show_ts, "DD-MM-YYYY").unix();
+		n_show = (parseInt(n_show, 10)||n_show ? 1 : 0);
 
+		let n_show_ts  = Moment(dt_show_ts, "DD-MM-YYYY HH:mm:ss").unix();
 		let now_ts = Moment().unix();
-		let sqlData = [now_ts, n_show_ts, s_n_title, n_alias, t_n_notice, t_n_text, i_u_id, i_n_id];
+		let sqlData = [now_ts, n_show_ts, s_n_title, n_alias, t_n_notice, t_n_text, i_u_id, n_show, i_n_id];
 
 		return this.constructor.conn().upd(sql, sqlData)
 			.bind(this)
@@ -75,30 +80,53 @@ class News extends BaseModel
 	 * данные новости по его id
 	 *
 	 * @param n_id
+	 * @param n_show
 	 * @returns {*}
 	 */
-	getById(n_id)
+	getById(n_id, n_show = null)
 	{
 		let sql =
 			`SELECT n_id, n_create_ts, n_update_ts, n_show_ts, n_title, n_alias, n_notice, n_text, u_id, n_img_cnt
-			, FROM_UNIXTIME(n_show_ts, "%d-%m-%Y") AS dd_show_ts
+			, n_show, FROM_UNIXTIME(n_show_ts, "%d-%m-%Y %H:%i:%s") AS dt_show_ts
 			FROM news_list
 			WHERE n_id = ?`;
 
-		return this.constructor.conn().sRow(sql, [n_id]);
+		let sqlData = [n_id];
+
+		if (n_show !== null)
+		{
+			n_show = (parseInt(n_show, 10) ? 1 : 0);
+			sql += ` AND n_show = ?`;
+			sqlData.push(n_show);
+		}
+
+		return this.constructor.conn().sRow(sql, sqlData);
 	}
 
 
 	/**
 	 * кол-во новостей
 	 *
+	 * @param n_show
+	 *
 	 * @returns {*|Promise.<TResult>}
 	 */
-	countNews()
+	countNews(n_show = null)
 	{
-		let sql = "SELECT COUNT(n_id) AS cnt FROM news_list WHERE n_show_ts <= ?;";
+		let sqlData = [];
+		let where = [];
+		if (n_show !== null)
+		{
+			n_show = (parseInt(n_show, 10) ? 1 : 0);
+			where.push('n_show = ?');
+			sqlData.push(n_show);
+		}
 
-		return this.constructor.conn().sRow(sql, [Moment().unix()])
+		where.push('n_show_ts <= ?');
+		sqlData.push(Moment().unix());
+		let sql = `SELECT COUNT(n_id) AS cnt FROM news_list WHERE ${where.join(' AND ')};`;
+
+		return this.constructor.conn().sRow(sql, sqlData)
 			.then(function (res)
 			{
 				return Promise.resolve(res["cnt"] || 0);
@@ -110,25 +138,37 @@ class News extends BaseModel
 	 *
 	 * @param i_limit
 	 * @param i_offset
+	 * @param n_show
 	 * @returns {*}
 	 */
-	getNews(i_limit = 20, i_offset = 0)
+	getNews(i_limit = 20, i_offset = 0, n_show = null)
 	{
+		let sqlJoin = [];
+		let sqlData = [];
+
+		if (n_show !== null)
+		{
+			n_show = (parseInt(n_show, 10) ? 1 : 0);
+			sqlJoin.push('n_show = ?');
+			sqlData.push(n_show);
+		}
+
+		sqlData.push(Moment().unix());
+		sqlJoin.push('n.n_show_ts <= ?');
+
 		let sql =
 			`SELECT n.n_id, n.n_create_ts, n.n_update_ts, n.n_show_ts, n.n_title, n.n_alias, n.n_notice 
-			, FROM_UNIXTIME(n.n_show_ts, "%d-%m-%Y") AS dd_show_ts
+			, FROM_UNIXTIME(n.n_show_ts, "%d-%m-%Y") AS dt_show_ts
 			, n.u_id, ni.ni_id, ni.ni_dir, ni.ni_pos, ni.ni_name
 			FROM (SELECT NULL) AS z
-			JOIN news_list AS n ON(n.n_show_ts <= ?)
+			JOIN news_list AS n ON(${sqlJoin.join(' AND ')})
 			LEFT JOIN news_image AS ni ON(ni.n_id = n.n_id AND ni.ni_pos = 0)
 			ORDER BY n.n_show_ts DESC
 			LIMIT ${i_limit} OFFSET ${i_offset}`;
 
-		let sqlData = [Moment().unix()];
-
-		//console.log(sql);
-		//console.log(sqlData);
-		//console.log('\n');
+		/*console.log(sql);
+		console.log(sqlData);
+		console.log('\n');*/
 		return this.constructor.conn().s(sql, sqlData);
 	}
 

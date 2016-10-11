@@ -8,11 +8,15 @@
 	<div class="panel panel-default">
 		<div class="panel-body tab-content">
 			<div role="tabpanel" class="tab-pane active" id="base">
-				<div class="form-group dd_show_ts">
+				<div class="form-group dt_show_ts">
 					<label for="s_n_title" class="col-sm-2 control-label">дата новости *</label>
-					<div class="col-sm-5">
-						<input type="text" class="form-control" id="dd_show_ts" name="dd_show_ts" value="<%=news.dd_show_ts%>" placeholder="дата новости" required="required" maxlength="10" />
+					<div class="col-sm-2">
+						<input type="text" class="form-control" id="dt_show_ts" name="dt_show_ts" value="<%=news.dt_show_ts%>" placeholder="дата новости" required="required" maxlength="19" />
 						<span class="help-block">дата новости</span>
+					</div>
+					<div class="col-sm-2 checkbox">
+						<label><input type="checkbox"  name="b_show" <% if (news.n_show == '1'){ %>checked="checked"<%}%> />да</label>
+						<span class="help-block">опубликовать?</span>
 					</div>
 				</div>
 				<div class="form-group s_n_title">
@@ -85,7 +89,23 @@
 	if(newsImagesPreviews.length)
 		preloadImages(newsImagesPreviews);
 
-	$("#dd_show_ts").datepicker({ dateFormat: 'dd-mm-yy' });
+	$("#dt_show_ts").datepicker({
+		dateFormat: 'dd-mm-yy',
+		onSelect: function (dateText)
+		{
+			var now = new Date();
+			var hh = now.getHours();
+			var mm = now.getMinutes();
+			var ss = now.getSeconds();
+
+			hh = (hh.toString().length < 2 ? '0'+hh : hh);
+			mm = (mm.toString().length < 2 ? '0'+mm : mm);
+			ss = (ss.toString().length < 2 ? '0'+ss : ss);
+
+			var dateVal = [dateText, [hh, mm, ss].join(':')];
+			$(this).val(dateVal.join(' '));
+		}
+	});
 
 	function addImageToTinymce(editor)
 	{
@@ -203,7 +223,7 @@
 				, buttons: [
 					{
 						title: 'закрыть'
-						,name: 'btn_upload_event_close'
+						,name: 'btn_upload_close'
 						,cssClass: 'btn-danger'
 						,func:
 					{

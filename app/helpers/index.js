@@ -117,6 +117,38 @@ class Helpers
 
 		return true;
 	}
+	static isDateTime(dateTime)
+	{
+		let dt = dateTime.split(' ');
+		let d = (dt[0] ? dt[0].split('-') : []);
+		let t = (dt[1] ? dt[1].split(':') : []);
+		//return true;
+
+		if (d.length == 0 || d.length > 3)
+			return false;
+
+		if (t.length == 0 || t.length > 3)
+		{
+			t = ['00','00','00'];
+		}
+		let tH = parseInt(t[0], 10);
+		let tM = parseInt(t[1], 10);
+		let tS = parseInt(t[2], 10);
+
+		if (tH < 0 || tH > 23) t[0] = '00';
+		if (tM < 0 || tM > 59) t[1] = '00';
+		if (tS < 0 || tH > 59) t[2] = '00';
+
+		if (d[0].search(/^\d{2,2}$/ig) == -1) return false;
+		if (d[1].search(/^\d{2,2}$/ig) == -1) return false;
+		if (d[2].search(/^\d{4,4}$/ig) == -1) return false;
+
+		if (t[0].search(/^\d{2,2}$/ig) == -1) return false;
+		if (t[1].search(/^\d{2,2}$/ig) == -1) return false;
+		if (t[2].search(/^\d{2,2}$/ig) == -1) return false;
+
+		return true;
+	}
 
 
 	static varsValidate(pData)
@@ -189,6 +221,12 @@ class Helpers
 
 					if(!Helpers.isDate(pValue)) pValue = null;
 	
+					break;
+
+				case 'dt': //дата и время вида дд-мм-гггг чч:мм:сс
+
+					if(!Helpers.isDateTime(pValue)) pValue = null;
+
 					break;
 				/*
 				 case '':

@@ -1,9 +1,8 @@
-<h2><%-news.n_title%></h2>
+<h2><span class="badge"><%=news.dt_show_ts%></span> <%-news.n_title%></h2>
 <div class="row newsData">
 	<div class="col-xs-12 col-md-12 newsText"><%-news.n_text%></div>
 	<div class="col-xs-12 col-md-12"><%- include news_images.ejs %></div>
 </div>
-<script src="/js/mcMap.js" type="text/javascript"></script>
 <script src="/js/jquery/mcImage.js" type="text/javascript"></script>
 <script type="text/javascript">
 //<!--

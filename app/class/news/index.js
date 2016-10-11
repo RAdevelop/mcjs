@@ -16,15 +16,16 @@ class News extends Base
 	 * @param s_n_title
 	 * @param t_n_notice
 	 * @param t_n_text
-	 * @param dd_show_ts
+	 * @param dt_show_ts
+	 * @param n_show
 	 *
 	 * @returns {*}
 	 */
-	add(i_u_id, s_n_title, t_n_notice, t_n_text, dd_show_ts)
+	add(i_u_id, s_n_title, t_n_notice, t_n_text, dt_show_ts, n_show = 0)
 	{
 		let n_alias = this.helpers.clearSymbol(this.helpers.translit(s_n_title), '-');
 
-		return this.model('news').add(i_u_id, s_n_title, n_alias, t_n_notice, t_n_text, dd_show_ts);
+		return this.model('news').add(i_u_id, s_n_title, n_alias, t_n_notice, t_n_text, dt_show_ts, n_show);
 	}
 
 	/**
@@ -35,38 +36,41 @@ class News extends Base
 	 * @param s_n_title
 	 * @param t_n_notice
 	 * @param t_n_text
-	 * @param dd_show_ts
+	 * @param dt_show_ts
+	 * @param n_show
 	 *
 	 * @returns {Promise.<TResult>}
 	 */
-	edit(i_n_id, i_u_id, s_n_title, t_n_notice, t_n_text, dd_show_ts)
+	edit(i_n_id, i_u_id, s_n_title, t_n_notice, t_n_text, dt_show_ts, n_show = 0)
 	{
 		let n_alias = this.helpers.clearSymbol(this.helpers.translit(s_n_title), '-');
 
-		return this.model('news').edit(i_n_id, i_u_id, s_n_title, n_alias, t_n_notice, t_n_text, dd_show_ts);
+		return this.model('news').edit(i_n_id, i_u_id, s_n_title, n_alias, t_n_notice, t_n_text, dt_show_ts, n_show);
 	}
 
 	/**
 	 * данные новости по его id
 	 *
 	 * @param n_id
+	 * @param n_show
 	 * @returns {*}
 	 */
-	get(n_id)
+	get(n_id, n_show = null)
 	{
-		return this.model('news').getById(n_id);
+		return this.model('news').getById(n_id, n_show);
 	}
 
 	/**
 	 * список событий за указанный интервал дат (в формете timestamp)
 	 *
 	 * @param Pages
+	 * @param n_show
 	 *
 	 * @returns {*|Promise.<TResult>|*}
 	 */
-	getNews(Pages)
+	getNews(Pages, n_show = null)
 	{
-		return this.model('news').countNews()
+		return this.model('news').countNews(n_show)
 			.bind(this)
 			.then(function (cnt)
 			{
@@ -78,7 +82,7 @@ class News extends Base
 				if (Pages.limitExceeded())
 					return Promise.reject(new FileErrors.HttpStatusError(404, "Not found"));
 
-				return this.model('news').getNews(Pages.getLimit(), Pages.getOffset())
+				return this.model('news').getNews(Pages.getLimit(), Pages.getOffset(), n_show)
 					.then(function (newsList)
 					{
 						if (!newsList)
@@ -86,7 +90,6 @@ class News extends Base
 
 						let sizeParams = FileUpload.getUploadConfig('news').sizeParams;
 
-						//let allPreviews = [];
 						newsList.forEach(function (news, indx)
 						{
 							newsList[indx]["previews"] = {};
