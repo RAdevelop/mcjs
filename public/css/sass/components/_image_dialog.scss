@@ -1,0 +1,46 @@
+/******************************** Общие стили для просмотра фоток а диалогах */
+.imageDialog .modal-header
+{
+  padding: 15px 10px 5px 10px;
+}
+.imageDialog .modal-body
+{
+  padding: 0;
+  position: relative;
+}
+
+.imageDialog .modal-body .imageModalBody
+{
+  border: 1px solid red;
+  @include mix-min-width-calc(100%);
+
+  text-align: center;
+  display: block;
+  /*float: left;*/
+}
+.imageDialog .modal-body .imageModalBody img.imageInModal
+{
+  @include mix-max-width-calc(100%);
+}
+
+@media (min-width: 768px)
+{
+  .imageDialog
+  {
+    width: 700px;
+    margin: 10px auto;
+  }
+}
+
+@media (max-width: 1024px)
+{
+  .imageDialog .modal-body .imageModalBody
+  {
+    @include mix-min-width-calc(100%);
+  }
+
+  .imageDialog .modal-body .imageModalBody
+  {
+    @include mix-min-height-calc(70%);
+  }
+}

@@ -1,0 +1,320 @@
+/********** список фотоальбомов **************/
+
+.album-list-toolbar
+{
+  margin: 10px 0 10px 0;
+}
+
+.album-list-toolbar .dropdown-menu>li>a
+{
+  padding: 3px 5px;
+}
+.albums
+{
+  & .albumList
+  {
+    overflow: hidden;
+    min-height: 175px;
+
+    & .album
+    {
+      position: relative;
+      display: block;
+      overflow: hidden;
+      margin: 0 10px 10px 0;
+      float: left;
+      background-color: #fff;
+
+      /*max-width: 329px;
+      max-height: 248px;*/
+
+      max-width: 216px;
+      max-height: 162px;
+
+      & .albumImg
+      {
+        position: relative;
+        display: block;
+        overflow: hidden;
+        text-align: center;
+        background: #F1F1F1;
+
+        & .fa-camera
+        {
+          font-size: 115px;
+          font-size: 8em;
+          line-height: 213px;
+          color: #ccc;
+          text-decoration: none;
+        }
+
+        & img
+        {
+          @include mix-width-calc(100%);
+        }
+      }
+
+
+      & .albumTools
+      {
+        position: absolute;
+        top:0;
+        left:0;
+        right:0;
+        display: inline-block;
+        height: 24px;
+        padding: 3px 0 0 3px;
+        background-color: rgba(102, 102, 102, 0.6);
+        z-index: 1;
+
+        &:hover
+        {
+          background-color: rgba(255, 255, 255, 0.6);
+        }
+
+
+        & a, & span
+        {
+          color: rgba(0, 0, 0, 0.6);
+          display: inline-block;
+          text-decoration: none;
+        }
+
+        & a
+        {
+          line-height: 18px;
+          font-size: 21px;
+          background-color: transparent;
+        }
+
+        & .badge
+        {
+          font-size: 12px;
+          vertical-align: top;
+          color: #fff;
+          background-color: rgba(0, 0, 0, 0.6);
+        }
+      }
+
+
+      & .albumTitle
+      {
+        position: absolute;
+        padding: 0;
+        left: 0;
+        right: 0;
+
+        top: 135px;
+        bottom: -135px;
+
+        font-size: 12px;
+        color: #fff;
+        background-color: rgba(0, 0, 0, 0.7);
+
+        -webkit-transition: top 0.5s ease-out 0.1s;
+        -moz-transition: top 0.5s ease-out 0.1s;
+        -o-transition: top 0.5s ease-out 0.1s;
+        transition: top 0.5s ease-out 0.1s;
+
+        &:hover
+        {
+          bottom: 0;
+          top: 24px;
+        }
+
+        & .albumName
+        {
+          padding: 5px;
+        }
+
+        & .albumText
+        {
+          padding: 5px;
+          border-top: 1px dotted #fff;
+        }
+      }
+
+      @media (max-width: 1024px)
+      {
+        &
+        {
+          @include mix-max-width-calc(33%);
+          @include mix-max-height-calc(162px);
+        }
+      }
+
+      @media (max-width: 768px)
+      {
+        &
+        {
+          @include mix-max-width-calc(50%);
+          @include mix-max-height-calc(162px);
+        }
+      }
+
+      @media (min-width: 320px) and (max-width: 480px)
+      {
+        &
+        {
+          @include mix-max-width-calc(100%);
+          @include mix-max-height-calc(162px);
+        }
+      }
+    }
+  }
+  /********** список фоток в альбоме **************/
+
+  & .imageList
+  {
+    @include mix-min-height-calc(162px);
+
+    overflow: hidden;
+
+    & .image
+    {
+      cursor: move;
+      float: left;
+      overflow: hidden;
+      margin: 0 10px 10px 0;
+
+      @include mix-max-width-calc(216px);
+      @include mix-max-height-calc(162px);
+
+      & img
+      {
+        cursor: move;
+        @include mix-width-calc(100%);
+      }
+
+      @media (max-width: 1024px)
+      {
+        &
+        {
+          @include mix-max-width-calc(33%);
+          @include mix-max-height-calc(162px);
+        }
+      }
+
+      @media (max-width: 768px)
+      {
+        &
+        {
+          @include mix-max-width-calc(50%);
+          @include mix-max-height-calc(162px);
+        }
+      }
+
+      @media (min-width: 320px) and (max-width: 480px)
+      {
+        &
+        {
+          @include mix-max-width-calc(100%);
+          @include mix-max-height-calc(162px);
+        }
+      }
+    }
+  }
+
+  /********** END список фоток в альбоме **************/
+}
+
+//#Диалог с фоткой
+.albumImageDialog
+{
+  &.modal-dialog
+  {
+
+  }
+
+  & .modal-header
+  {
+    padding: 15px 10px 5px 10px;
+  }
+
+  & .modal-body
+  {
+    padding: 0;
+    position: relative;
+
+    & .imageModalBody
+    {
+      border: 1px solid red;
+
+      @include mix-max-width-calc(70%);
+      @include mix-min-width-calc(50%);
+
+      text-align: center;
+      display: block;
+      float: left;
+
+      & img.imageInModal
+      {
+        @include mix-max-width-calc(100%);
+      }
+
+      & .mcMap
+      {
+        @include mix-min-width-calc(100%);
+        @include mix-min-height-calc(100%);
+
+        & .albumImageInMapBalloon
+        {
+          width: 158px;
+          overflow: hidden;
+
+          & img
+          {
+            width: 100%;
+          }
+        }
+      }
+    }
+
+    & .imageModalContent
+    {
+      border: 1px solid green;
+      display: block;
+      overflow-y: scroll;
+      padding: 5px;
+
+      @include mix-max-width-calc(50%);
+      @include mix-max-height-calc(100%);
+
+      & textarea#imageText
+      {
+        width: 100%;
+        height: 70px;
+        overflow: hidden;
+        border: 0;
+        @include mix-border-radius(0);
+        margin: 0;
+        padding: 5px;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+    }
+  }
+
+  @media (min-width: 768px)
+  {
+    &
+    {
+      width: 700px;
+      margin: 10px auto;
+    }
+  }
+
+  @media (max-width: 1024px)
+  {
+    & .modal-body .imageModalBody,
+    & .modal-body .imageModalContent
+    {
+      @include mix-min-width-calc(100%);
+    }
+
+    & .modal-body .imageModalBody
+    {
+      @include mix-min-height-calc(70%);
+    }
+  }
+}
+/********** END список фоток в альбоме **************/

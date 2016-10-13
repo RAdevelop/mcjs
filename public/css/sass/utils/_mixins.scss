@@ -1,0 +1,63 @@
+// Mixins
+// --------------------------
+@mixin mix-font() {
+  font-family: 'Open Sans', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+  font-size: #{$font-size};
+}
+
+@mixin mix-width-calc($width) {
+  width: calc(#{$width});
+  width: -moz-calc(#{$width});
+  width: -webkit-calc(#{$width});
+}
+
+@mixin mix-min-width-calc($width) {
+  min-width: calc(#{$width});
+  min-width: -moz-calc(#{$width});
+  min-width: -webkit-calc(#{$width});
+}
+@mixin mix-max-width-calc($width) {
+  max-width: calc(#{$width});
+  max-width: -moz-calc(#{$width});
+  max-width: -webkit-calc(#{$width});
+}
+
+@mixin mix-height($height) {
+  height: calc(#{$height});
+  height: -moz-calc(#{$height});
+  height: -webkit-calc(#{$height});
+}
+
+@mixin mix-min-height-calc($height) {
+  min-height: calc(#{$height});
+  min-height: -moz-calc(#{$height});
+  min-height: -webkit-calc(#{$height});
+}
+@mixin mix-max-height-calc($height) {
+  max-height: calc(#{$height});
+  max-height: -moz-calc(#{$height});
+  max-height: -webkit-calc(#{$height});
+}
+
+@mixin mix-transition($property, $duration, $function, $delay) {
+  -webkit-transition: #{$property} #{$duration} #{$function} #{$delay};
+  -moz-transition: #{$property} #{$duration} #{$function} #{$delay};
+  -o-transition: #{$property} #{$duration} #{$function} #{$delay};
+  transition: #{$property} #{$duration} #{$function} #{$delay};
+}
+
+//#$opacity от 0 до 1
+@mixin mix-opacity($opacity){
+  opacity: #{$opacity};
+
+  $opacity: $opacity * 100;
+  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=#{$opacity});
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=#{$opacity});
+}
+
+@mixin mix-border-radius($radius) {
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+  -ms-border-radius: $radius;
+  border-radius: $radius;
+}

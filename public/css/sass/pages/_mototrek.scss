@@ -1,0 +1,251 @@
+/**********  мототреки **************/
+.mototrekMapContainer
+{
+  position: relative;
+}
+
+.mototrekMapContainer .mototrekMap
+{
+  height: 550px;
+}
+
+.mototrekMapContainer .mttLocationsNames button.dropdown-toggle
+{
+  display: none;
+  margin: 10px 0px 10px 0px;
+}
+
+.mototrekMapContainer .mttLocationsNames,
+.mototrekMapContainer .mttLocationsNames .dropdown-menu
+{
+  width: 100%;
+  position: relative;
+}
+
+.mototrekMapContainer .mttLocationsNames
+{
+  display: none;
+}
+
+.mototrekMapContainer .mttLocationsNames .dropdown-menu
+{
+  display: block;
+  z-index: 1;
+}
+.mototrekMapContainer .mttLocationsNames .dropdown-menu a
+{
+  white-space: normal;
+  color: #333;
+}
+.mototrekMapContainer .mttLocationsNames .dropdown-menu a:hover
+{
+  text-decoration: none;
+  background-color: transparent;
+}
+
+.mototrekMapContainer .mttLocationsNames li ul
+{
+  list-style-type: none;
+  padding: 0;
+}
+
+.mttLocationsNames .locLevel0
+{
+  padding-left: 0;
+  font-size: 18px;
+}
+.mttLocationsNames .locLevel1
+{
+  padding-left: 10px;
+  border-top: 1px dashed #ccc;
+}
+
+.mttLocationsNames .locLevel1:hover
+{
+  background-color: #f2f2f2;
+}
+
+.mttLocationsNames .locLevel1 a
+{
+  display: inline-block;
+  padding-left: 5px;
+}
+.mttLocationsNames .locLevel1 > a:first-letter
+{
+  font-weight: bold;
+}
+
+.mttLocationsNames .locLevel1 a.selected
+{
+  font-weight: bold;
+}
+
+.mttLocationsNames .locLevel1 .fa-caret-down
+{
+  cursor: pointer;
+  font-size: 1.3em;
+}
+
+.mttLocationsNames .locLevel1 ul
+{
+  display: none;
+}
+
+.mttLocationsNames .locLevel2
+{
+  padding-left: 20px;
+}
+
+@media (min-width: 1200px)
+{
+  .mototrekMapContainer .mttLocationsNames .dropdown-menu
+  {
+    display: block !important;
+  }
+}
+@media (min-width: 992px) and (max-width: 1200px)
+{
+  .mototrekMapContainer .mttLocationsNames .dropdown-menu
+  {
+    display: block !important;
+  }
+}
+@media (max-width: 1024px)
+{
+
+}
+@media (min-width: 768px) and (max-width: 992px)
+{
+  .mototrekMapContainer .mttLocationsNames button.dropdown-toggle
+  {
+    display: block;
+  }
+  .mototrekMapContainer .mttLocationsNames .dropdown-menu
+  {
+    position: absolute;
+    display: none;
+  }
+}
+@media (max-width: 768px)
+{
+  .mototrekMapContainer .mttLocationsNames button.dropdown-toggle
+  {
+    display: block;
+  }
+  .mototrekMapContainer .mttLocationsNames .dropdown-menu
+  {
+    position: absolute;
+    display: none;
+  }
+  .mototrekMapContainer .mototrekMap
+  {
+    height: 400px;
+  }
+}
+
+@media (min-width: 320px) and (max-width: 480px)
+{
+  .mototrekMapContainer .mttLocationsNames button.dropdown-toggle
+  {
+    display: block;
+  }
+  .mototrekMapContainer .mttLocationsNames .dropdown-menu
+  {
+    position: absolute;
+    display: none;
+  }
+  .mototrekMapContainer .mototrekMap
+  {
+    height: 320px;
+  }
+}
+
+.singleTrek
+{
+
+}
+
+.singleTrek .singleTrekMap
+{
+  height: 350px;
+}
+
+.singleTrek .singleTrekMap #mttMap
+{
+  height: 100%;
+}
+/**********  главная страница мототреков**************/
+.trekListContainer
+{
+
+}
+
+.trekListContainer .trekCol
+{
+  float: left;
+  list-style-type: none;
+}
+
+.trekListContainer .trekCol ul
+{
+  display: none;
+}
+
+.trekListContainer .trekCol ul,
+.trekListContainer .trekCol li
+{
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+.trekListContainer .trekCol > li
+{
+  border: 1px solid #fff;
+}
+
+.trekListContainer .trekCol > li:first-child
+{
+  font-size: 18px;
+}
+
+.trekListContainer .trekCol .hasTreks
+{
+  cursor: pointer;
+  padding-left: 10px;
+  font-size: 16px;
+}
+
+.trekListContainer .trekCol .hasTreks:first-letter
+{
+  font-weight: bold;
+}
+
+.trekListContainer .trekCol .hasTreks:hover
+{
+
+  background-color: #f8f8f8;
+  color: #333;
+  border: 1px solid #e2e2e2;
+  @include mix-border-radius(3px);
+}
+
+.trekListContainer .trekCol .hasTreks ul
+{
+  font-size: 14px;
+}
+
+.trekListContainer .trekCol .hasTreks ul li
+{
+  padding-left: 10px;
+}
+/**********  END главная страница мототреков **************/
+
+.trekToolbar
+{
+  padding: 10px;
+}
+
+.trekToolbar .trekToolbarBtn
+{
+  min-width: 89px;
+}

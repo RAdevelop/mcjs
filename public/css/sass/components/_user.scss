@@ -1,0 +1,47 @@
+.userProfileTop
+{
+  display: inline-block;
+  float: right;
+}
+
+.userProfileTop img
+{
+  height: 50px;
+}
+
+.userProfileTop .fa
+{
+  font-size: 35px;
+  vertical-align: middle;
+}
+
+/******************************** PROFILE AVA */
+#profile-ava
+{
+  margin: -100px 0px 0px 0px;
+  text-align: center;
+
+  & a
+  {
+    display: inline-block;
+
+    & img
+    {
+      border: 2px solid #fff;
+      width: 100% \9;
+    }
+  }
+
+  & .fa-user
+  {
+    font-size: 229px;
+  }
+}
+
+.profile-info > div
+{
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/******************************** END PROFILE AVA */

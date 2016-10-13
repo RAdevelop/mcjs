@@ -1,0 +1,85 @@
+/******************************** календарь  */
+.calendar
+{
+  float: left;
+  margin-right: 10px;
+  /*width: 16%;*/
+  border: 1px solid #ccc;
+}
+.calendar,
+.calendar caption,
+.calendar th,
+.calendar td
+{
+  text-align: center;
+}
+
+.calendar caption
+{
+  text-transform: uppercase;
+}
+.calendar th,
+.calendar td
+{
+  margin: 0;
+  padding: 0;
+  border: 1px solid #ccc;
+}
+
+.calendar th
+{
+
+}
+.calendar td
+{
+  height: 44px;
+  width: 45px;
+  line-height: 43px;
+}
+
+.calendar td a,
+.calendar td span
+{
+
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  line-height: 43px;
+  border: 0px;
+  box-sizing: border-box;
+  @include mix-border-radius(43px);
+  /*border-top-left-radius: 45px;
+  border-top-right-radius: 45px;
+  border-bottom-left-radius: 45px;
+  border-bottom-right-radius: 45px;*/
+}
+.calendar td a
+{
+  text-decoration: underline;
+}
+
+.calendar td a:hover
+{
+  text-decoration: none;
+  background-color: #f1f1f1;
+}
+.calendar td.weekEnd a,
+.calendar td.weekEnd span
+{
+  background-color: #f7d4d4;
+}
+.calendar td.toDay a,
+.calendar td.toDay span
+{
+  color: #fff;
+  background-color: #d9534f;
+}
+.calendar td.checkedDay a
+{
+  color: #fff;
+  background-color: green;
+}
+.calendar td.toDay a:hover
+{
+  background-color: #ccc;
+}

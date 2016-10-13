@@ -1,0 +1,23 @@
+.popoverContent
+{
+  display: none;
+  overflow: hidden;
+}
+.popoverHelp
+{
+  font-size: 12px;
+  line-height: calc(100%);
+  display: inline-block;
+  vertical-align: middle;
+}
+.popoverHelp::after
+{
+  content: "\f059";
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+}
+.popoverHelp:hover
+{
+  cursor: pointer;
+}

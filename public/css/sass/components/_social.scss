@@ -1,0 +1,28 @@
+a.social
+{
+  text-decoration: none;
+}
+a.social:hover
+{
+  color: #FFA500;
+}
+
+.sharingSocNet
+{
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 2em;
+  float: right;
+  white-space: nowrap;
+}
+
+.sharingSocNet a
+{
+  display: inline-block;
+  margin: 0 2px 0 2px;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+}

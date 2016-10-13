@@ -1,0 +1,15 @@
+body {
+  @include mix-font();
+
+  &.mc-project
+  {
+    padding-top: 100px;
+  }
+}
+/******************************** TinyMCE редактор */
+body.mce-content-body,
+.mce-container-body body
+{
+  padding: 0;
+}
+/******************************** END TinyMCE редактор */
