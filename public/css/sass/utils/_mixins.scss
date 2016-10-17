@@ -22,7 +22,7 @@
   max-width: -webkit-calc(#{$width});
 }
 
-@mixin mix-height($height) {
+@mixin mix-height-calc($height) {
   height: calc(#{$height});
   height: -moz-calc(#{$height});
   height: -webkit-calc(#{$height});

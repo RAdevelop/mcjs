@@ -5,7 +5,7 @@ const Promise = require("bluebird");
 const Pages = require("app/lib/pages");
 const FileUpload = require('app/lib/file/upload');
 
-const VideoEmbed = require("app/lib/video/embed");
+const EmbedContent = require("app/lib/embed/content");
 
 //const Moment = require('moment'); //работа со временем
 const Base = require('app/lib/controller');
@@ -328,10 +328,8 @@ class News extends Base
 		let tplFile = "news/edit.ejs";
 		let tplData = this.getParsedBody();
 
-		if (tplData["b_load_video_embed"])
-		{
-			return VideoEmbed.video(tplData, tplFile, this);
-		}
+		if (tplData["b_load_embed_content"])
+			return EmbedContent.content(tplData, tplFile, this);
 
 		if (!tplData["i_news_id"] || !tplData["btn_save_news"])
 			throw new Errors.HttpStatusError(404, "Not found");

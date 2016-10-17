@@ -11,7 +11,7 @@ const Cheerio = require('app/lib/cheerio');
 //const ConcatStream = require('concat-stream');//а это пока не надо
 const Iconv = require('iconv-lite');//надо использовать
 
-class VideoEmbed
+class EmbedContent
 {
 	constructor(uri)
 	{
@@ -132,20 +132,21 @@ class VideoEmbed
 	}
 
 	/**
-	 * объект с данными полученного видео..
+	 * объект с данными полученного контента..
 	 *
 	 * @param data
 	 * @returns {VideoEmbed}
 	 */
-	setVideoData(data = {})
+	setData(data = {})
 	{
 		data = Object.assign({
-			video_embed_url: '',
-			video_embed_title: '',
-			video_embed_text: '',
-			video_embed_width: '',
-			video_embed_height: '',
-			video_embed_image: ''
+			embed_url_video: '',
+			embed_url: '',
+			embed_title: '',
+			embed_text: '',
+			embed_width: '',
+			embed_height: '',
+			embed_image: ''
 		}, data);
 
 		this._data = data;
@@ -153,10 +154,10 @@ class VideoEmbed
 		return this;
 	}
 
-	getVideoData()
+	getData()
 	{
 		if (!this._data)
-			this.setVideoData();
+			this.setData();
 
 		return this._data;
 	}
@@ -266,7 +267,7 @@ class VideoEmbed
 					switch (item["attribs"]["property"])
 					{
 						case 'description':
-							data["video_embed_text"] = content;
+							data["embed_text"] = content;
 							break;
 					}
 				}
@@ -280,36 +281,41 @@ class VideoEmbed
 					switch (item["attribs"]["property"])
 					{
 						case 'og:title':
-							data["video_embed_title"] = content;
+							data["embed_title"] = content;
 							break;
 
 						case 'og:image':
-							data["video_embed_image"] = content;
+							data["embed_image"] = content;
 							break;
 
 						case 'og:description':
 
-							data["video_embed_text"] = content;
+							data["embed_text"] = content;
 							break;
 
-						case 'og:video:url':
+						case 'og:url': //url всегда (не важно какой контент)
+							if (!data["embed_url"])
+								data["embed_url"] = content;
+							break;
+
+						case 'og:video:url': //url для видео
 						case 'og:video':
-							if (!data["video_embed_url"])
-								data["video_embed_url"] = content;
+							if (!data["embed_url_video"])
+								data["embed_url_video"] = content;
 							break;
 
 						case 'og:video:iframe':
 
-							data["video_embed_url"] = content;
+							data["embed_url_video"] = content;
 
 							break;
 
 						case 'og:video:width':
-							data["video_embed_width"] = content;
+							data["embed_width"] = content;
 							break;
 
 						case 'og:video:height':
-							data["video_embed_height"] = content;
+							data["embed_height"] = content;
 							break;
 					}
 				}
@@ -321,14 +327,14 @@ class VideoEmbed
 
 	/*youtube()
 	{
-		this.setVideoData(this._parseMetaTag());
+		this.setData(this._parseMetaTag());
 
 		return this;
 	}
 
 	vimeo()
 	{
-		this.setVideoData(this._parseMetaTag());
+		this.setData(this._parseMetaTag());
 
 		return this;
 	}*/
@@ -347,21 +353,21 @@ class VideoEmbed
 	{
 		let data = this._parseMetaTag();
 
-		if (!data["video_embed_url"])
+		if (!data["embed_url_video"])
 			return this;
 
-		let url = Url.parse(data["video_embed_url"], true);
+		let url = Url.parse(data["embed_url_video"], true);
 
 		let oid     = (url.hasOwnProperty("query") && url["query"]["oid"] ? url["query"]["oid"] : null);
 		let id      = (url.hasOwnProperty("query") && url["query"]["vid"] ? url["query"]["vid"] : null);
 		let hash    = (url.hasOwnProperty("query") && url["query"]["embed_hash"] ? url["query"]["embed_hash"] : null);
 
 		if (oid && id && hash)
-			data["video_embed_url"] = `//${url["hostname"]}/video_ext.php?oid=${oid}&id=${id}&hash=${hash}`;
+			data["embed_url_video"] = `//${url["hostname"]}/video_ext.php?oid=${oid}&id=${id}&hash=${hash}`;
 		else
-			data["video_embed_url"] = '';
+			data["embed_url_video"] = '';
 
-		this.setVideoData(data);
+		this.setData(data);
 		return this;
 	}
 
@@ -369,14 +375,14 @@ class VideoEmbed
 	 * пытаемся получить данные видео для последующей вставке в <iframe...>
 	 * @returns {Promise.<TResult>|*}
 	 */
-	getVideo()
+	getContent()
 	{
 		return this.sendRequest()
 			.bind(this)
 			.then(function (hasBody)
 			{
 				if (!hasBody)
-					return Promise.resolve(this.getVideoData());
+					return Promise.resolve(this.getData());
 
 				if(typeof this['_'+this.getVideoHosting()] == 'function')
 				{
@@ -384,15 +390,15 @@ class VideoEmbed
 				}
 				else
 				{
-					this.setVideoData(this._parseMetaTag());
+					this.setData(this._parseMetaTag());
 				}
 
-				return Promise.resolve(this.getVideoData());
+				return Promise.resolve(this.getData());
 			})
 			.catch(function (err)
 			{
 				//console.log(err);
-				return Promise.resolve(this.getVideoData());
+				return Promise.resolve(this.getData());
 			});
 	}
 
@@ -405,15 +411,15 @@ class VideoEmbed
 	 * @param Controller
 	 * @returns {Promise.<TResult>}
 	 */
-	static video(tplData, tplFile, Controller)
+	static content(tplData, tplFile, Controller)
 	{
 		 //test https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/
-		 const Video = new VideoEmbed(tplData["s_uri"]);
+		 const Content = new EmbedContent(tplData["s_uri"]);
 
-		 return Video.getVideo()
-		 .then(function (videoData)
+		 return Content.getContent()
+		 .then(function (contentData)
 		 {
-		    Object.assign(tplData, videoData);
+			 Object.assign(tplData, contentData);
 			 Controller.view.setTplData(tplFile, tplData);
 
 		    return Promise.resolve(true);
@@ -422,4 +428,4 @@ class VideoEmbed
 }
 //************************************************************************* module.exports
 //писать после class Name....{}
-module.exports = VideoEmbed;
+module.exports = EmbedContent;

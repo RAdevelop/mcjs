@@ -7,7 +7,7 @@ const Mail = require('app/lib/mail');
 const FileUpload = require('app/lib/file/upload');
 const Calendar = require('app/lib/calendar');
 
-const VideoEmbed = require("app/lib/video/embed");
+const EmbedContent = require("app/lib/embed/content");
 
 //const Moment = require('moment'); //работа со временем
 
@@ -503,10 +503,8 @@ class Events extends Base
 		let tplFile = "events/edit.ejs";
 		let tplData = this.getParsedBody();
 
-		if (tplData["b_load_video_embed"])
-		{
-			return VideoEmbed.video(tplData, tplFile, this);
-		}
+		if (tplData["b_load_embed_content"])
+			return EmbedContent.content(tplData, tplFile, this);
 
 		if (!tplData["i_event_id"] || !tplData["btn_save_event"])
 			throw new Errors.HttpStatusError(404, "Not found");

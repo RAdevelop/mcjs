@@ -37,34 +37,78 @@
 		//https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/
 
 		var postData = {
-			"b_load_video_embed": "1",
+			"b_load_embed_content": "1",
 			"s_uri": uri
 		};
 
 		editor.setProgressState(true);
 		$.ajax({
-			url: 'video',
+			url: 'embed_content',
 			method: "POST",
 			data: postData,
 			dataType: "json"
 		})
 			.done(function(resData)
 			{
-				if (!resData["video_embed_url"])
+				var embedContent = '';
+				var $embedContent;
+				if (resData["embed_url_video"])
 				{
-					editor.setProgressState(false);
-					return;
+					embedContent = '<iframe src="'+resData["embed_url_video"]+'" data-link="'+uri+'" class="iframeVideoEmbed" frameborder="0" webkitallowfullscreen="webkitallowfullscreen" mozallowfullscreen="mozallowfullscreen" allowfullscreen="allowfullscreen" scrolling="no"></iframe>';
+
+					editor.insertContent(embedContent);
+
+					$embedContent = $(editor.getBody()).find('iframe[data-link="'+uri+'"]');
+				}
+				else if (resData["embed_url"] && (resData["embed_title"] || resData["embed_text"]))
+				{
+//https://www.adme.ru/zhizn-nauka/12-produktov-kotorye-ne-stoit-davat-detyam-do-3-let-1378615/
+					embedContent = '<dl data-link="'+uri+'" class="embed_content">';
+
+					if (resData["embed_image"])
+					{
+						embedContent += '<dt class="embed_content_image">';
+							embedContent += '<a target="_blank" rel="nofollow" href="'+resData["embed_url"]+'">';
+							embedContent += '<img data-width="" data-height="" width="" height="" class="" src="'+resData["embed_image"]+'" />';
+							embedContent += '</a>';
+						embedContent += '</dt>';
+					}
+
+					embedContent += '<dd class="embed_content_desc_wrap">';
+						if (resData["embed_title"])
+						{
+							//embedContent += '<div class="embed_content_title">';
+							embedContent += '<a target="_blank" rel="nofollow" href="'+resData["embed_url"]+'">';
+							embedContent += resData["embed_title"];
+							embedContent += '</a>';
+							//embedContent += '</div>';
+						}
+
+						if (resData["embed_text"])
+						{
+							//embedContent += '<div class="embed_content_desc">'+resData["embed_text"].replace('&nbsp;', ' ')+'</div>';
+							embedContent += resData["embed_text"];
+						}
+					embedContent += '</dd>';
+
+					embedContent += '</dl>';
+
+					editor.insertContent(embedContent.replace('&nbsp;', ' '));
+
+					$embedContent = $(editor.getBody()).find('dl[data-link="'+uri+'"]');
+
+					console.log(embedContent);
+
+					if (!$embedContent.hasClass('embed_content'))
+						$embedContent = null;
 				}
 
-				var iframe = '<iframe src="'+resData["video_embed_url"]+'" data-link="'+uri+'" class="iframeVideoEmbed" frameborder="0" webkitallowfullscreen="webkitallowfullscreen" mozallowfullscreen="mozallowfullscreen" allowfullscreen="allowfullscreen" scrolling="no"></iframe>';
+				if ($embedContent && $embedContent.hasOwnProperty('length') && $embedContent.length)
+				{
+					$embedContent.parent().html($embedContent.parent().html().replace(uri, ''));
+					editor.selection.select($embedContent.parent().get(0), false);
+				}
 
-				editor.insertContent(iframe);
-
-				var $iframe = $(editor.getBody()).find('iframe[data-link="'+uri+'"]');
-
-				$iframe.parent().html($iframe.parent().html().replace(uri, ''));
-
-				editor.selection.select($iframe.parent().get(0), false);
 				editor.setProgressState(false);
 
 			})
