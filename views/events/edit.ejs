@@ -83,7 +83,7 @@
 	</ol>
 </div>
 <fieldset class="col-xs-12">
-	<legend><a href="javascript:void(0);" id="uploadEventImages"><i class="fa fa-cloud-upload" aria-hidden="true"></i> загрузить</a> Изображения</legend>
+	<legend><a href="javascript:void(0);" id="uploadimages"><i class="fa fa-cloud-upload" aria-hidden="true"></i> загрузить</a> Изображения</legend>
 	<%- include event_images.ejs %>
 </fieldset>
 <%}%>
@@ -97,28 +97,16 @@
 (function($)
 {
 	var eventData = MCJS["eventData"] || null;
-	var eventImages = MCJS["eventImages"] || [];
-	var eventImagesPreviews = MCJS["eventImagesPreviews"] || [];
+	var images = MCJS["images"] || [];
+	var imagesPreviews = MCJS["imagesPreviews"] || [];
 
-	var $eventImagesWrapper = $('.eventImagesWrapper');
+	var $imagesWrapper = $('.imagesWrapper');
 
-	if(eventImagesPreviews.length)
-		preloadImages(eventImagesPreviews);
+	if(imagesPreviews.length)
+		preloadImages(imagesPreviews);
 
 	$("#dd_start_ts").datepicker({ dateFormat: 'dd-mm-yy' });
 	$("#dd_end_ts").datepicker({ dateFormat: 'dd-mm-yy' });
-
-	function addImageToTinymce(editor)
-	{
-		$(document).on('click','.eventImagesWrapper .eventImagesContainer img', function (event)
-		{
-			event.stopPropagation();
-
-			var html = '<li>'+this.outerHTML+'</li>';
-			editor.insertContent(html);
-			$(editor.getBody()).find('img.eventImage').closest('ul').addClass('eventImages');
-		});
-	}
 
 	var eTextTinymce = McTinymce(
 			{
@@ -133,7 +121,6 @@
 			}, "visualblocks")
 			.then(function(editor)
 			{
-				addImageToTinymce(editor);
 				imgTools(editor);
 				return Promise.resolve(editor);
 			})
@@ -323,7 +310,7 @@
 
 	if (eventsUploadOpts)
 	{
-		function prependImgToEvent(filesUploaded, $eventImagesContainer)
+		function prependImgToEvent(filesUploaded, $imagesContainer)
 		{
 			if (!filesUploaded || !filesUploaded.length)
 				return;
@@ -335,15 +322,15 @@
 				image = filesUploaded[i];
 				imgSrc = (image["previews"] && image["previews"]["256_192"] ? image["previews"]["256_192"] : '/_0.gif');
 
-				var img = '<img src="'+imgSrc+'" alt="" class="eventImage" data-img-id="'+image["ei_id"]+'"/>';
+				var img = '<img src="'+imgSrc+'" alt="" class="image" data-img-id="'+image["ei_id"]+'"/>';
 
-				html = '<div class="eventImageItem">';
+				html = '<div class="imageItem">';
 				html += imgToolsHtml($(img));
 				html += img;
 				html += '</div>';
 
-				$eventImagesContainer.prepend(html);
-				eventImages.unshift(image);
+				$imagesContainer.prepend(html);
+				images.unshift(image);
 			}
 		}
 
@@ -353,7 +340,7 @@
 
 			$(this).parents('.modal').find('.modal-footer').show();
 
-			prependImgToEvent(filesUploaded, $eventImagesWrapper.find('.eventImagesContainer'));
+			prependImgToEvent(filesUploaded, $imagesWrapper.find('.imagesContainer'));
 
 		};
 
@@ -364,12 +351,12 @@
 
 		var formEventsUpload = '<form class="form-horizontal text-center" action="<%=menuItem.m_path%>/upload"  enctype="multipart/form-data" method="post" target="null_frame" id="formEventsUpload"><input type="hidden" name="btn_save_event" value="event_image_upload"/><input type="hidden" name="s_token" value="<%=event.s_token%>"/><input type="hidden" name="i_time" value="<%=event.i_time%>"/><input type="hidden" name="e_id" value="<%=event.e_id%>"/><div class="form-group uploadWrapper"><input type="file" name="event_image_upload" id="event_image_upload" style="display: none;"/></div></form>';
 
-		$(document).on('click', '#uploadEventImages', function(event)
+		$(document).on('click', '#uploadimages', function(event)
 		{
 			event.preventDefault();
 			event.stopPropagation();
 
-			$('__uploadEventImages__').mcDialog({
+			$('__uploadimages__').mcDialog({
 				title: 'Загрузить изображения'
 				, body: formEventsUpload
 				, onOpen: function ($dialog)
@@ -394,11 +381,11 @@
 		});
 	}
 
-	$eventImagesWrapper.find('.eventImagesContainer').sortable({
+	$imagesWrapper.find('.imagesContainer').sortable({
 		update: function( event, ui )
 		{
 			var imgPos = [];
-			$('.eventImagesContainer img.eventImage').each(function (i, item)
+			$('.imagesContainer img.image').each(function (i, item)
 			{
 				imgPos.push($(item).attr("data-img-id"));
 			});
@@ -431,7 +418,7 @@
 
 	function imgToolsHtml($img)
 	{
-		var html = '<div class="eventImageTools">'
+		var html = '<div class="imageTools">'
 		html += '<span><a href="javascript:void(0)" data-action="delete" data-img-id="'+$img.data('imgId')+'"><i class="fa fa-fw fa-trash-o"></i> удалить</a></span>';
 		html += '</div>';
 		return html;
@@ -439,12 +426,12 @@
 
 	function imgTools(editor)
 	{
-		$eventImagesWrapper.find('.eventImageItem img').each(function(i, img)
+		$imagesWrapper.find('.imageItem img').each(function(i, img)
 		{
 			$(this).parent().prepend(imgToolsHtml($(img)));
 		});
 
-		$(document).on('click','.eventImagesWrapper .eventImagesContainer .eventImageTools a', function (event)
+		$(document).on('click','.imagesWrapper .imagesContainer .imageTools a', function (event)
 		{
 			event.preventDefault();
 			event.stopPropagation();
@@ -468,10 +455,10 @@
 					})
 					.done(function(resData)
 					{
-						$(editor.getBody()).find('img.eventImage[data-img-id="'+$this.data('imgId')+'"]').parent().remove();
+						$(editor.getBody()).find('img.image[data-img-id="'+$this.data('imgId')+'"]').parent().remove();
 						McTinymce.clearEmptyTags(editor);
 
-						$this.parents('.eventImageItem').remove();
+						$this.parents('.imageItem').remove();
 					})
 					.fail(function(resData)
 					{

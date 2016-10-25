@@ -26,10 +26,10 @@
 
 	$('mcImage').mcImage({
 		imgFieldId: "ei_id"//название поля id у картинки в json'e
-		, albumImages: '.eventData img.eventImage' //селектор для списка картинок
-		, albumImagesMain: '.eventData .eventText img.eventImage'
-		, albumImagesSub: '.eventData .eventImagesWrapper .eventImagesContainer img.eventImage'
-		, albumImagesSubWrapper: '.eventData .eventImagesWrapper'
+		, albumImages: '.eventData img.image' //селектор для списка картинок
+		, albumImagesMain: '.eventData .eventText img.image'
+		, albumImagesSub: '.eventData .imagesWrapper .imagesContainer img.image'
+		, albumImagesSubWrapper: '.eventData .imagesWrapper'
 		, jsonImageList: event["eventImages"] || {}
 		, jsPreviewsList: event["eventImagesPreviews"] || []
 	});

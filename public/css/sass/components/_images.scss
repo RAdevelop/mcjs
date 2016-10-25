@@ -1,0 +1,133 @@
+ul.images li
+{
+  list-style-type: none;
+}
+
+.imagesContainer .imageItem,
+ul.images li
+{
+  text-align: center;
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  margin: 0 10px 10px 0;
+  max-width: 216px;
+  max-height: 162px;
+}
+.imagesContainer .imageItem
+{
+  margin: 0 5px 10px 5px;
+}
+
+.imagesContainer .imageItem .imageTools
+{
+  background-color: #666;
+  color: #fff;
+  min-height: 24px;
+  line-height: 24px;
+}
+
+.imagesContainer .imageItem .imageTools a
+{
+  color: #fff;
+}
+
+.imagesWrapper legend a:hover
+{
+  cursor: pointer;
+}
+
+.imagesWrapper .imagesContainer
+{
+  overflow: hidden;
+  text-align: center;
+  display: block;
+  margin: 10px 0 0 0;
+}
+
+img.image
+{
+  cursor: move;
+  width: calc(100%);
+}
+
+@media (min-width: 1200px)
+{
+  .imagesContainer .imageItem
+  {
+    max-width: 257px;
+    max-height: 192px;
+  }
+  ul.images li
+  {
+    max-width: 288px;
+    max-height: 216px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px)
+{
+  .imagesContainer .imageItem
+  {
+    max-width: 231px;
+    max-height: 173px;
+  }
+}
+
+@media (max-width: 768px)
+{
+  .imagesContainer .imageItem
+  {
+    max-width: 236px;
+    max-height: 177px;
+  }
+  ul.images li
+  {
+    max-width: 357px;
+    max-height: 267px;
+  }
+}
+
+@media (max-width: 768px) and (orientation : landscape)
+{
+  .imagesContainer .imageItem
+  {
+    max-width: 308px;
+    max-height: 231px;
+  }
+  ul.images li
+  {
+    max-width: 306px;
+    max-height: 229px;
+  }
+}
+
+@media (max-width: 640px)
+{
+  .imagesContainer .imageItem,
+  ul.images li
+  {
+    max-width: 293px;
+    max-height: 219px;
+  }
+}
+
+@media (max-width: 568px)
+{
+  .imagesContainer .imageItem,
+  ul.images li
+  {
+    max-height: 281px;
+    @include mix-max-width-calc(100%);
+  }
+}
+
+@media (max-width: 568px) and (orientation : landscape)
+{
+  .imagesContainer .imageItem,
+  ul.images li
+  {
+    max-width: 255px;
+    max-height: 191px;
+  }
+}

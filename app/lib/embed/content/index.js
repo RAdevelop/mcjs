@@ -304,7 +304,7 @@ class EmbedContent
 								data["embed_url_video"] = content;
 							break;
 
-						case 'og:video:iframe':
+						case 'og:video:iframe'://url для видео
 
 							data["embed_url_video"] = content;
 

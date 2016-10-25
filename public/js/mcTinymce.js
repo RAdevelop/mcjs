@@ -191,6 +191,12 @@
 			.then(function (editor)
 			{
 				return editor[0];
+			})
+			.then(function (editor)
+			{
+				addImageToTinymce(editor);
+
+				return editor;
 			});
 	}
 
@@ -388,6 +394,18 @@
 		editor.setContent(editor.getContent());
 
 		tinymce.triggerSave();
+	}
+
+	function addImageToTinymce(editor)
+	{
+		$(document).on('click','.imagesWrapper .imagesContainer img', function (event)
+		{
+			event.stopPropagation();
+
+			var html = '<li>'+this.outerHTML+'</li>';
+			editor.insertContent(html);
+			$(editor.getBody()).find('img.image').closest('ul').addClass('images');
+		});
 	}
 
 	window.McTinymce = McTinymce;

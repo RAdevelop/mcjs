@@ -5,16 +5,12 @@
   background-color: #f5f5f5;
 }
 
-.eventData
-{
-
-}
 .eventData p
 {
   overflow: hidden;
 }
 
-.eventData ul.eventImages
+.eventData ul.images
 {
   overflow: hidden;
   padding: 0;
@@ -23,69 +19,14 @@
   text-align: center;
 }
 
-.eventData ul.eventImages li
-{
-  list-style-type: none;
-}
-.eventImagesContainer .eventImageItem,
-.eventData ul.eventImages li
-{
-  text-align: center;
-  position: relative;
-  display: inline-block;
-  overflow: hidden;
-  margin: 0 10px 10px 0;
-  max-width: 216px;
-  max-height: 162px;
-}
-.eventImagesContainer .eventImageItem
-{
-  margin: 0 5px 10px 5px;
-}
-
-.eventImagesContainer .eventImageItem .eventImageTools
-{
-  background-color: #666;
-  color: #fff;
-  min-height: 24px;
-  line-height: 24px;
-}
-
-.eventImagesContainer .eventImageItem .eventImageTools a
-{
-  color: #fff;
-}
-.eventImagesWrapper
-{
-
-}
-
-.eventImagesWrapper legend a:hover
-{
-  cursor: pointer;
-}
-
-.eventImagesWrapper .eventImagesContainer
-{
-  overflow: hidden;
-  text-align: center;
-  display: block;
-  margin: 10px 0 0 0;
-}
-
-
-.eventData .eventImagesWrapper
+.eventData .imagesWrapper
 {
   display: none;
 }
 
-img.eventImage
-{
-  cursor: move;
-  width: calc(100%);
-}
 
-.eventData img.eventImage
+
+.eventData img.image
 {
   cursor: pointer;
 }
@@ -134,13 +75,6 @@ img.eventImage
   @include mix-opacity(0.5);
 }
 
-/*.eventListContainer .eventListItem .eventListItemInfo:hover img
-{
-	opacity: 1;
-	-ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
-	filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
-}*/
-
 .eventListContainer .eventListItem .eventListItemInfo div
 {
   position: absolute;
@@ -178,19 +112,8 @@ img.eventImage
 {
   border-top: 1px dotted;
 }
-@media (min-width: 1200px)
-{
-  .eventImagesContainer .eventImageItem
-  {
-    max-width: 257px;
-    max-height: 192px;
-  }
-  .eventData ul.eventImages li
-  {
-    max-width: 288px;
-    max-height: 216px;
-  }
-}
+
+
 @media (min-width: 992px) and (max-width: 1200px)
 {
 
@@ -206,19 +129,6 @@ img.eventImage
 
 @media (min-width: 768px) and (max-width: 1024px)
 {
-  .eventImagesContainer .eventImageItem
-  {
-    max-width: 231px;
-    max-height: 173px;
-  }
-  .eventData ul.eventImages li
-  {
-    /*max-height: 384px;*/
-
-    /*max-width: 293px;
-    max-height: 219px;*/
-  }
-
   .eventListContainer .eventListItem .eventListItemInfo
   {
     max-width: 359px;
@@ -228,32 +138,9 @@ img.eventImage
     min-height: 269px;
   }
 }
-@media (max-width: 768px)
-{
-  .eventImagesContainer .eventImageItem
-  {
-    max-width: 236px;
-    max-height: 177px;
-  }
-  .eventData ul.eventImages li
-  {
-    max-width: 357px;
-    max-height: 267px;
-  }
-}
+
 @media (max-width: 768px) and (orientation : landscape)
 {
-  .eventImagesContainer .eventImageItem
-  {
-    max-width: 308px;
-    max-height: 231px;
-  }
-  .eventData ul.eventImages li
-  {
-    max-width: 306px;
-    max-height: 229px;
-  }
-
   .eventListContainer .eventListItem .eventListItemInfo
   {
     max-width: 100%;
@@ -269,15 +156,9 @@ img.eventImage
     background-color: rgba(0, 0, 0, 0.7);
   }
 }
+
 @media (max-width: 640px)
 {
-  .eventImagesContainer .eventImageItem,
-  .eventData ul.eventImages li
-  {
-    max-width: 293px;
-    max-height: 219px;
-  }
-
   .eventListContainer .eventListItem .eventListItemInfo
   {
     max-width: 100%;
@@ -290,15 +171,9 @@ img.eventImage
     background-color: rgba(0, 0, 0, 0.7);
   }
 }
+
 @media (max-width: 568px)
 {
-  .eventImagesContainer .eventImageItem,
-  .eventData ul.eventImages li
-  {
-    max-height: 281px;
-    @include mix-max-width-calc(100%);
-  }
-
   .eventListContainer .eventListItem .eventListItemInfo
   {
     @include mix-max-width-calc(100%);
@@ -310,16 +185,6 @@ img.eventImage
   {
     top: 26px;
     background-color: rgba(0, 0, 0, 0.7);
-  }
-}
-
-@media (max-width: 568px) and (orientation : landscape)
-{
-  .eventImagesContainer .eventImageItem,
-  .eventData ul.eventImages li
-  {
-    max-width: 255px;
-    max-height: 191px;
   }
 }
 

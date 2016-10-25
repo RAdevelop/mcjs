@@ -12,10 +12,10 @@
 
 	$('mcImage').mcImage({
 		imgFieldId: "ni_id"//название поля id у картинки в json'e
-		, albumImages: '.newsData img.newsImage' //селектор для списка картинок
-		, albumImagesMain: '.newsData .newsText img.newsImage'
-		, albumImagesSub: '.newsData .newsImagesWrapper .newsImagesContainer img.newsImage'
-		, albumImagesSubWrapper: '.newsData .newsImagesWrapper'
+		, albumImages: '.newsData img.image' //селектор для списка картинок
+		, albumImagesMain: '.newsData .newsText img.image'
+		, albumImagesSub: '.newsData .imagesWrapper .imagesContainer img.image'
+		, albumImagesSubWrapper: '.newsData .imagesWrapper'
 		, jsonImageList: news["newsImages"] || {}
 		, jsPreviewsList: news["newsImagesPreviews"] || []
 	});

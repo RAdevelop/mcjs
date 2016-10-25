@@ -228,6 +228,12 @@ body.mce-content-body,
   display: block;
   clear: both;
   margin: 3px 0 3px 0;
+  color: #fff;
+  font-weight: bold;
+  text-decoration: underline;
+}
+.embed_content_desc_wrap a:hover {
+  text-decoration: none;
 }
 
 .form-signin {
@@ -337,6 +343,114 @@ body.mce-content-body,
     min-height: calc(70%);
     min-height: -moz-calc(70%);
     min-height: -webkit-calc(70%);
+  }
+}
+ul.images li {
+  list-style-type: none;
+}
+
+.imagesContainer .imageItem,
+ul.images li {
+  text-align: center;
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  margin: 0 10px 10px 0;
+  max-width: 216px;
+  max-height: 162px;
+}
+
+.imagesContainer .imageItem {
+  margin: 0 5px 10px 5px;
+}
+
+.imagesContainer .imageItem .imageTools {
+  background-color: #666;
+  color: #fff;
+  min-height: 24px;
+  line-height: 24px;
+}
+
+.imagesContainer .imageItem .imageTools a {
+  color: #fff;
+}
+
+.imagesWrapper legend a:hover {
+  cursor: pointer;
+}
+
+.imagesWrapper .imagesContainer {
+  overflow: hidden;
+  text-align: center;
+  display: block;
+  margin: 10px 0 0 0;
+}
+
+img.image {
+  cursor: move;
+  width: calc(100%);
+}
+
+@media (min-width: 1200px) {
+  .imagesContainer .imageItem {
+    max-width: 257px;
+    max-height: 192px;
+  }
+
+  ul.images li {
+    max-width: 288px;
+    max-height: 216px;
+  }
+}
+@media (min-width: 768px) and (max-width: 1024px) {
+  .imagesContainer .imageItem {
+    max-width: 231px;
+    max-height: 173px;
+  }
+}
+@media (max-width: 768px) {
+  .imagesContainer .imageItem {
+    max-width: 236px;
+    max-height: 177px;
+  }
+
+  ul.images li {
+    max-width: 357px;
+    max-height: 267px;
+  }
+}
+@media (max-width: 768px) and (orientation: landscape) {
+  .imagesContainer .imageItem {
+    max-width: 308px;
+    max-height: 231px;
+  }
+
+  ul.images li {
+    max-width: 306px;
+    max-height: 229px;
+  }
+}
+@media (max-width: 640px) {
+  .imagesContainer .imageItem,
+  ul.images li {
+    max-width: 293px;
+    max-height: 219px;
+  }
+}
+@media (max-width: 568px) {
+  .imagesContainer .imageItem,
+  ul.images li {
+    max-height: 281px;
+    max-width: calc(100%);
+    max-width: -moz-calc(100%);
+    max-width: -webkit-calc(100%);
+  }
+}
+@media (max-width: 568px) and (orientation: landscape) {
+  .imagesContainer .imageItem,
+  ul.images li {
+    max-width: 255px;
+    max-height: 191px;
   }
 }
 .logo {
@@ -781,9 +895,9 @@ iframe.iframeVideoEmbed {
 }
 @media (max-width: 768px) {
   .albums .albumList .album {
-    max-width: calc(50%);
-    max-width: -moz-calc(50%);
-    max-width: -webkit-calc(50%);
+    max-width: calc(47%);
+    max-width: -moz-calc(47%);
+    max-width: -webkit-calc(47%);
     max-height: calc(162px);
     max-height: -moz-calc(162px);
     max-height: -webkit-calc(162px);
@@ -825,9 +939,9 @@ iframe.iframeVideoEmbed {
 }
 @media (max-width: 1024px) {
   .albums .imageList .image {
-    max-width: calc(33%);
-    max-width: -moz-calc(33%);
-    max-width: -webkit-calc(33%);
+    max-width: calc(32%);
+    max-width: -moz-calc(32%);
+    max-width: -webkit-calc(32%);
     max-height: calc(162px);
     max-height: -moz-calc(162px);
     max-height: -webkit-calc(162px);
@@ -947,7 +1061,7 @@ iframe.iframeVideoEmbed {
   overflow: hidden;
 }
 
-.eventData ul.eventImages {
+.eventData ul.images {
   overflow: hidden;
   padding: 0;
   margin: 0;
@@ -955,57 +1069,11 @@ iframe.iframeVideoEmbed {
   text-align: center;
 }
 
-.eventData ul.eventImages li {
-  list-style-type: none;
-}
-
-.eventImagesContainer .eventImageItem,
-.eventData ul.eventImages li {
-  text-align: center;
-  position: relative;
-  display: inline-block;
-  overflow: hidden;
-  margin: 0 10px 10px 0;
-  max-width: 216px;
-  max-height: 162px;
-}
-
-.eventImagesContainer .eventImageItem {
-  margin: 0 5px 10px 5px;
-}
-
-.eventImagesContainer .eventImageItem .eventImageTools {
-  background-color: #666;
-  color: #fff;
-  min-height: 24px;
-  line-height: 24px;
-}
-
-.eventImagesContainer .eventImageItem .eventImageTools a {
-  color: #fff;
-}
-
-.eventImagesWrapper legend a:hover {
-  cursor: pointer;
-}
-
-.eventImagesWrapper .eventImagesContainer {
-  overflow: hidden;
-  text-align: center;
-  display: block;
-  margin: 10px 0 0 0;
-}
-
-.eventData .eventImagesWrapper {
+.eventData .imagesWrapper {
   display: none;
 }
 
-img.eventImage {
-  cursor: move;
-  width: calc(100%);
-}
-
-.eventData img.eventImage {
+.eventData img.image {
   cursor: pointer;
 }
 
@@ -1048,12 +1116,6 @@ img.eventImage {
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
 }
 
-/*.eventListContainer .eventListItem .eventListItemInfo:hover img
-{
-	opacity: 1;
-	-ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
-	filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
-}*/
 .eventListContainer .eventListItem .eventListItemInfo div {
   position: absolute;
   width: 100%;
@@ -1090,29 +1152,7 @@ img.eventImage {
   border-top: 1px dotted;
 }
 
-@media (min-width: 1200px) {
-  .eventImagesContainer .eventImageItem {
-    max-width: 257px;
-    max-height: 192px;
-  }
-
-  .eventData ul.eventImages li {
-    max-width: 288px;
-    max-height: 216px;
-  }
-}
 @media (min-width: 768px) and (max-width: 1024px) {
-  .eventImagesContainer .eventImageItem {
-    max-width: 231px;
-    max-height: 173px;
-  }
-
-  .eventData ul.eventImages li {
-    /*max-height: 384px;*/
-    /*max-width: 293px;
-    max-height: 219px;*/
-  }
-
   .eventListContainer .eventListItem .eventListItemInfo {
     max-width: 359px;
     max-height: 269px;
@@ -1120,28 +1160,7 @@ img.eventImage {
     min-height: 269px;
   }
 }
-@media (max-width: 768px) {
-  .eventImagesContainer .eventImageItem {
-    max-width: 236px;
-    max-height: 177px;
-  }
-
-  .eventData ul.eventImages li {
-    max-width: 357px;
-    max-height: 267px;
-  }
-}
 @media (max-width: 768px) and (orientation: landscape) {
-  .eventImagesContainer .eventImageItem {
-    max-width: 308px;
-    max-height: 231px;
-  }
-
-  .eventData ul.eventImages li {
-    max-width: 306px;
-    max-height: 229px;
-  }
-
   .eventListContainer .eventListItem .eventListItemInfo {
     max-width: 100%;
     max-height: 257px;
@@ -1155,12 +1174,6 @@ img.eventImage {
   }
 }
 @media (max-width: 640px) {
-  .eventImagesContainer .eventImageItem,
-  .eventData ul.eventImages li {
-    max-width: 293px;
-    max-height: 219px;
-  }
-
   .eventListContainer .eventListItem .eventListItemInfo {
     max-width: 100%;
     width: 100%;
@@ -1173,14 +1186,6 @@ img.eventImage {
   }
 }
 @media (max-width: 568px) {
-  .eventImagesContainer .eventImageItem,
-  .eventData ul.eventImages li {
-    max-height: 281px;
-    max-width: calc(100%);
-    max-width: -moz-calc(100%);
-    max-width: -webkit-calc(100%);
-  }
-
   .eventListContainer .eventListItem .eventListItemInfo {
     max-width: calc(100%);
     max-width: -moz-calc(100%);
@@ -1194,13 +1199,6 @@ img.eventImage {
   .eventListContainer .eventListItem .eventListItemInfo .eventListItemInfoNotice {
     top: 26px;
     background-color: rgba(0, 0, 0, 0.7);
-  }
-}
-@media (max-width: 568px) and (orientation: landscape) {
-  .eventImagesContainer .eventImageItem,
-  .eventData ul.eventImages li {
-    max-width: 255px;
-    max-height: 191px;
   }
 }
 /**********  мототреки **************/
@@ -1405,11 +1403,16 @@ img.eventImage {
   min-width: 89px;
 }
 
+/**********  СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ  **************/
+.newsLocationsMenu li.selected {
+  background-color: #f5f5f5;
+}
+
 .newsData p {
   overflow: hidden;
 }
 
-.newsData ul.newsImages {
+.newsData ul.images {
   overflow: hidden;
   padding: 0;
   margin: 0;
@@ -1417,60 +1420,24 @@ img.eventImage {
   text-align: center;
 }
 
-.newsData ul.newsImages li {
-  list-style-type: none;
-}
-
-.newsImagesContainer .newsImageItem,
-.newsData ul.newsImages li {
-  text-align: center;
-  position: relative;
-  display: inline-block;
-  overflow: hidden;
-  margin: 0 10px 10px 0;
-  max-width: 216px;
-  max-height: 162px;
-}
-
-.newsImagesContainer .newsImageItem {
-  margin: 0 5px 10px 5px;
-}
-
-.newsImagesContainer .newsImageItem .newsImageTools {
-  background-color: #666;
-  color: #fff;
-  min-height: 24px;
-  line-height: 24px;
-}
-
-.newsImagesContainer .newsImageItem .newsImageTools a {
-  color: #fff;
-}
-
-.newsImagesWrapper legend a:hover {
-  cursor: pointer;
-}
-
-.newsImagesWrapper .newsImagesContainer {
-  overflow: hidden;
-  text-align: center;
-  display: block;
-  margin: 10px 0 0 0;
-}
-
-.newsData .newsImagesWrapper {
+.newsData .imagesWrapper {
   display: none;
 }
 
-img.newsImage {
-  cursor: move;
-  width: calc(100%);
-  width: -moz-calc(100%);
-  width: -webkit-calc(100%);
+.newsData img.image {
+  cursor: pointer;
 }
 
-.newsData img.newsImage {
-  cursor: pointer;
+.newsData .newsMap {
+  height: 350px;
+}
+
+.newsData .newsMap #eventMap {
+  height: 100%;
+}
+
+.newsLocationsBtnGroup select {
+  max-width: 150px;
 }
 
 .newsListContainer .newsListItem {
@@ -1500,12 +1467,6 @@ img.newsImage {
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
 }
 
-/*.newsListContainer .newsListItem .newsListItemInfo:hover img
-{
-	opacity: 1;
-	-ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
-	filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
-}*/
 .newsListContainer .newsListItem .newsListItemInfo div {
   position: absolute;
   width: 100%;
@@ -1542,29 +1503,7 @@ img.newsImage {
   border-top: 1px dotted;
 }
 
-@media (min-width: 1200px) {
-  .newsImagesContainer .newsImageItem {
-    max-width: 257px;
-    max-height: 192px;
-  }
-
-  .newsData ul.newsImages li {
-    max-width: 288px;
-    max-height: 216px;
-  }
-}
 @media (min-width: 768px) and (max-width: 1024px) {
-  .newsImagesContainer .newsImageItem {
-    max-width: 231px;
-    max-height: 173px;
-  }
-
-  .newsData ul.newsImages li {
-    /*max-height: 384px;*/
-    /*max-width: 293px;
-    max-height: 219px;*/
-  }
-
   .newsListContainer .newsListItem .newsListItemInfo {
     max-width: 359px;
     max-height: 269px;
@@ -1572,28 +1511,7 @@ img.newsImage {
     min-height: 269px;
   }
 }
-@media (max-width: 768px) {
-  .newsImagesContainer .newsImageItem {
-    max-width: 236px;
-    max-height: 177px;
-  }
-
-  .newsData ul.newsImages li {
-    max-width: 357px;
-    max-height: 267px;
-  }
-}
 @media (max-width: 768px) and (orientation: landscape) {
-  .newsImagesContainer .newsImageItem {
-    max-width: 308px;
-    max-height: 231px;
-  }
-
-  .newsData ul.newsImages li {
-    max-width: 306px;
-    max-height: 229px;
-  }
-
   .newsListContainer .newsListItem .newsListItemInfo {
     max-width: 100%;
     max-height: 257px;
@@ -1607,12 +1525,6 @@ img.newsImage {
   }
 }
 @media (max-width: 640px) {
-  .newsImagesContainer .newsImageItem,
-  .newsData ul.newsImages li {
-    max-width: 293px;
-    max-height: 219px;
-  }
-
   .newsListContainer .newsListItem .newsListItemInfo {
     max-width: 100%;
     width: 100%;
@@ -1625,14 +1537,6 @@ img.newsImage {
   }
 }
 @media (max-width: 568px) {
-  .newsImagesContainer .newsImageItem,
-  .newsData ul.newsImages li {
-    max-height: 281px;
-    max-width: calc(100%);
-    max-width: -moz-calc(100%);
-    max-width: -webkit-calc(100%);
-  }
-
   .newsListContainer .newsListItem .newsListItemInfo {
     max-width: calc(100%);
     max-width: -moz-calc(100%);
@@ -1646,13 +1550,6 @@ img.newsImage {
   .newsListContainer .newsListItem .newsListItemInfo .newsListItemInfoNotice {
     top: 26px;
     background-color: rgba(0, 0, 0, 0.7);
-  }
-}
-@media (max-width: 568px) and (orientation: landscape) {
-  .newsImagesContainer .newsImageItem,
-  .newsData ul.newsImages li {
-    max-width: 255px;
-    max-height: 191px;
   }
 }
 /********** профиль просматриваемого юзера **************/

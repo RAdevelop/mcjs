@@ -43,6 +43,12 @@
       display: block;
       clear: both;
       margin: 3px 0 3px 0;
+      color: #fff;
+      font-weight: bold;
+      text-decoration: underline;
+      &:hover {
+        text-decoration: none;
+      }
     }
   }
 }

@@ -68,7 +68,7 @@
 	</ol>
 </div>
 <fieldset class="col-xs-12">
-	<legend><a href="javascript:void(0);" id="uploadNewsImages"><i class="fa fa-cloud-upload" aria-hidden="true"></i> загрузить</a> Изображения</legend>
+	<legend><a href="javascript:void(0);" id="uploadimages"><i class="fa fa-cloud-upload" aria-hidden="true"></i> загрузить</a> Изображения</legend>
 	<%- include news_images.ejs %>
 </fieldset>
 <%}%>
@@ -81,13 +81,13 @@
 (function($)
 {
 	var newsData = MCJS["newsData"] || null;
-	var newsImages = MCJS["newsImages"] || [];
-	var newsImagesPreviews = MCJS["newsImagesPreviews"] || [];
+	var images = MCJS["images"] || [];
+	var imagesPreviews = MCJS["imagesPreviews"] || [];
 
-	var $newsImagesWrapper = $('.newsImagesWrapper');
+	var $imagesWrapper = $('.imagesWrapper');
 
-	if(newsImagesPreviews.length)
-		preloadImages(newsImagesPreviews);
+	if(imagesPreviews.length)
+		preloadImages(imagesPreviews);
 
 	$("#dt_show_ts").datepicker({
 		dateFormat: 'dd-mm-yy',
@@ -107,24 +107,12 @@
 		}
 	});
 
-	function addImageToTinymce(editor)
-	{
-		$(document).on('click','.newsImagesWrapper .newsImagesContainer img', function (event)
-		{
-			event.stopPropagation();
-
-			var html = '<li>'+this.outerHTML+'</li>';
-			editor.insertContent(html);
-			$(editor.getBody()).find('img.newsImage').closest('ul').addClass('newsImages');
-		});
-	}
-
 	var newsTextTinymce = McTinymce(
 			{
 				selector: '#t_n_text'
 				,body_class:"newsData"
 				//разрешенные теги (с указанными атрибутами)
-				,valid_elements:"h1,h2,h3,h4,h5,h6,p,em,i[class|aria-hidden],ol,img[class|src|data-img-id|alt],ul[class],li,strong/b,a[href|class|title|target],iframe[src|class|width|height|frameborder|allowfullscreen|webkitallowfullscreen|mozallowfullscreen|scrolling]"
+				,valid_elements:"dl[class|data-link],dt[class],dd[class],h1,h2,h3,h4,h5,h6,p[class|data-link],em,i[class|aria-hidden],ol,img[class|src|data-img-id|alt],ul[class],li,strong/b,a[href|class|title|target],iframe[src|class|width|height|frameborder|allowfullscreen|webkitallowfullscreen|mozallowfullscreen|scrolling]"
 				//расширение для разрешенных тегов (-p - пустой абсац удалится)
 				,extended_valid_elements:"-p"
 				//запрещенные теги, удаляться потом сами
@@ -132,7 +120,6 @@
 			}, "visualblocks")
 			.then(function(editor)
 			{
-				addImageToTinymce(editor);
 				imgTools(editor);
 				return Promise.resolve(editor);
 			})
@@ -167,7 +154,7 @@
 
 	if (newsUploadOpts)
 	{
-		function prependImgToEvent(filesUploaded, $newsImagesContainer)
+		function prependImgToEvent(filesUploaded, $imagesContainer)
 		{
 			if (!filesUploaded || !filesUploaded.length)
 				return;
@@ -179,15 +166,15 @@
 				image = filesUploaded[i];
 				imgSrc = (image["previews"] && image["previews"]["256_192"] ? image["previews"]["256_192"] : '/_0.gif');
 
-				var img = '<img src="'+imgSrc+'" alt="" class="newsImage" data-img-id="'+image["ni_id"]+'"/>';
+				var img = '<img src="'+imgSrc+'" alt="" class="image" data-img-id="'+image["ni_id"]+'"/>';
 
-				html = '<div class="newsImageItem">';
+				html = '<div class="imageItem">';
 				html += imgToolsHtml($(img));
 				html += img;
 				html += '</div>';
 
-				$newsImagesContainer.prepend(html);
-				newsImages.unshift(image);
+				$imagesContainer.prepend(html);
+				images.unshift(image);
 			}
 		}
 
@@ -197,7 +184,7 @@
 
 			$(this).parents('.modal').find('.modal-footer').show();
 
-			prependImgToEvent(filesUploaded, $newsImagesWrapper.find('.newsImagesContainer'));
+			prependImgToEvent(filesUploaded, $imagesWrapper.find('.imagesContainer'));
 
 		};
 
@@ -208,12 +195,12 @@
 
 		var formNewsUpload = '<form class="form-horizontal text-center" action="<%=menuItem.m_path%>/upload" enctype="multipart/form-data" method="post" target="null_frame" id="formNewsUpload"><input type="hidden" name="btn_save_news" value="news_image_upload"/><input type="hidden" name="s_token" value="<%=news.s_token%>"/><input type="hidden" name="i_time" value="<%=news.i_time%>"/><input type="hidden" name="n_id" value="<%=news.n_id%>"/><div class="form-group uploadWrapper"><input type="file" name="news_image_upload" id="news_image_upload" style="display: none;"/></div></form>';
 
-		$(document).on('click', '#uploadNewsImages', function(event)
+		$(document).on('click', '#uploadimages', function(event)
 		{
 			event.preventDefault();
 			event.stopPropagation();
 
-			$('__uploadNewsImages__').mcDialog({
+			$('__uploadimages__').mcDialog({
 				title: 'Загрузить изображения'
 				, body: formNewsUpload
 				, onOpen: function ($dialog)
@@ -238,11 +225,11 @@
 		});
 	}
 
-	$newsImagesWrapper.find('.newsImagesContainer').sortable({
+	$imagesWrapper.find('.imagesContainer').sortable({
 		update: function( event, ui )
 		{
 			var imgPos = [];
-			$('.newsImagesContainer img.newsImage').each(function (i, item)
+			$('.imagesContainer img.image').each(function (i, item)
 			{
 				imgPos.push($(item).attr("data-img-id"));
 			});
@@ -275,7 +262,7 @@
 
 	function imgToolsHtml($img)
 	{
-		var html = '<div class="newsImageTools">'
+		var html = '<div class="imageTools">'
 		html += '<span><a href="javascript:void(0)" data-action="delete" data-img-id="'+$img.data('imgId')+'"><i class="fa fa-fw fa-trash-o"></i> удалить</a></span>';
 		html += '</div>';
 		return html;
@@ -283,12 +270,12 @@
 
 	function imgTools(editor)
 	{
-		$newsImagesWrapper.find('.newsImageItem img').each(function(i, img)
+		$imagesWrapper.find('.imageItem img').each(function(i, img)
 		{
 			$(this).parent().prepend(imgToolsHtml($(img)));
 		});
 
-		$(document).on('click','.newsImagesWrapper .newsImagesContainer .newsImageTools a', function (event)
+		$(document).on('click','.imagesWrapper .imagesContainer .imageTools a', function (event)
 		{
 			event.preventDefault();
 			event.stopPropagation();
@@ -312,10 +299,10 @@
 					})
 					.done(function(resData)
 					{
-						$(editor.getBody()).find('img.newsImage[data-img-id="'+$this.data('imgId')+'"]').parent().remove();
+						$(editor.getBody()).find('img.image[data-img-id="'+$this.data('imgId')+'"]').parent().remove();
 						McTinymce.clearEmptyTags(editor);
 
-						$this.parents('.newsImageItem').remove();
+						$this.parents('.imageItem').remove();
 					})
 					.fail(function(resData)
 					{

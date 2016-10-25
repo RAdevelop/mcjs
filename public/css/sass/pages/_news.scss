@@ -1,9 +1,16 @@
+/**********  СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ  **************/
+
+.newsLocationsMenu li.selected
+{
+  background-color: #f5f5f5;
+}
+
 .newsData p
 {
   overflow: hidden;
 }
 
-.newsData ul.newsImages
+.newsData ul.images
 {
   overflow: hidden;
   padding: 0;
@@ -12,71 +19,28 @@
   text-align: center;
 }
 
-.newsData ul.newsImages li
-{
-  list-style-type: none;
-}
-.newsImagesContainer .newsImageItem,
-.newsData ul.newsImages li
-{
-  text-align: center;
-  position: relative;
-  display: inline-block;
-  overflow: hidden;
-  margin: 0 10px 10px 0;
-  max-width: 216px;
-  max-height: 162px;
-}
-.newsImagesContainer .newsImageItem
-{
-  margin: 0 5px 10px 5px;
-}
-
-.newsImagesContainer .newsImageItem .newsImageTools
-{
-  background-color: #666;
-  color: #fff;
-  min-height: 24px;
-  line-height: 24px;
-}
-
-.newsImagesContainer .newsImageItem .newsImageTools a
-{
-  color: #fff;
-}
-.newsImagesWrapper
-{
-
-}
-
-.newsImagesWrapper legend a:hover
-{
-  cursor: pointer;
-}
-
-.newsImagesWrapper .newsImagesContainer
-{
-  overflow: hidden;
-  text-align: center;
-  display: block;
-  margin: 10px 0 0 0;
-}
-
-
-.newsData .newsImagesWrapper
+.newsData .imagesWrapper
 {
   display: none;
 }
 
-img.newsImage
-{
-  cursor: move;
-  @include mix-width-calc(100%);
-}
-
-.newsData img.newsImage
+.newsData img.image
 {
   cursor: pointer;
+}
+.newsData .newsMap
+{
+  height: 350px;
+}
+
+.newsData .newsMap #eventMap
+{
+  height: 100%;
+}
+
+.newsLocationsBtnGroup select
+{
+  max-width: 150px;
 }
 
 .newsListContainer
@@ -109,13 +73,6 @@ img.newsImage
   @include mix-opacity(0.5);
 }
 
-/*.newsListContainer .newsListItem .newsListItemInfo:hover img
-{
-	opacity: 1;
-	-ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
-	filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
-}*/
-
 .newsListContainer .newsListItem .newsListItemInfo div
 {
   position: absolute;
@@ -136,7 +93,6 @@ img.newsImage
   top: 245px;
   padding: 0px 3px 3px 3px;
   bottom: 0;
-
   @include mix-transition(top, 0.5s, ease-out, 0.1s);
 }
 
@@ -154,19 +110,8 @@ img.newsImage
 {
   border-top: 1px dotted;
 }
-@media (min-width: 1200px)
-{
-  .newsImagesContainer .newsImageItem
-  {
-    max-width: 257px;
-    max-height: 192px;
-  }
-  .newsData ul.newsImages li
-  {
-    max-width: 288px;
-    max-height: 216px;
-  }
-}
+
+
 @media (min-width: 992px) and (max-width: 1200px)
 {
 
@@ -182,19 +127,6 @@ img.newsImage
 
 @media (min-width: 768px) and (max-width: 1024px)
 {
-  .newsImagesContainer .newsImageItem
-  {
-    max-width: 231px;
-    max-height: 173px;
-  }
-  .newsData ul.newsImages li
-  {
-    /*max-height: 384px;*/
-
-    /*max-width: 293px;
-    max-height: 219px;*/
-  }
-
   .newsListContainer .newsListItem .newsListItemInfo
   {
     max-width: 359px;
@@ -204,32 +136,9 @@ img.newsImage
     min-height: 269px;
   }
 }
-@media (max-width: 768px)
-{
-  .newsImagesContainer .newsImageItem
-  {
-    max-width: 236px;
-    max-height: 177px;
-  }
-  .newsData ul.newsImages li
-  {
-    max-width: 357px;
-    max-height: 267px;
-  }
-}
+
 @media (max-width: 768px) and (orientation : landscape)
 {
-  .newsImagesContainer .newsImageItem
-  {
-    max-width: 308px;
-    max-height: 231px;
-  }
-  .newsData ul.newsImages li
-  {
-    max-width: 306px;
-    max-height: 229px;
-  }
-
   .newsListContainer .newsListItem .newsListItemInfo
   {
     max-width: 100%;
@@ -245,15 +154,9 @@ img.newsImage
     background-color: rgba(0, 0, 0, 0.7);
   }
 }
+
 @media (max-width: 640px)
 {
-  .newsImagesContainer .newsImageItem,
-  .newsData ul.newsImages li
-  {
-    max-width: 293px;
-    max-height: 219px;
-  }
-
   .newsListContainer .newsListItem .newsListItemInfo
   {
     max-width: 100%;
@@ -266,16 +169,9 @@ img.newsImage
     background-color: rgba(0, 0, 0, 0.7);
   }
 }
+
 @media (max-width: 568px)
 {
-  .newsImagesContainer .newsImageItem,
-  .newsData ul.newsImages li
-  {
-    max-height: 281px;
-
-    @include mix-max-width-calc(100%);
-  }
-
   .newsListContainer .newsListItem .newsListItemInfo
   {
     @include mix-max-width-calc(100%);
@@ -287,16 +183,6 @@ img.newsImage
   {
     top: 26px;
     background-color: rgba(0, 0, 0, 0.7);
-  }
-}
-
-@media (max-width: 568px) and (orientation : landscape)
-{
-  .newsImagesContainer .newsImageItem,
-  .newsData ul.newsImages li
-  {
-    max-width: 255px;
-    max-height: 191px;
   }
 }
 
