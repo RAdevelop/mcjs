@@ -309,6 +309,7 @@ class MariaSQL
 							 if (conn.lastInsertId() > 0)
 							 return Promise.resolve(conn.lastInsertId());*/
 
+							res["info"]["insertId"] = parseInt(res["info"]["insertId"], 10);
 							return Promise.resolve(res["info"]);
 						});
 				});

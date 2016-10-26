@@ -1,0 +1,248 @@
+<%  if(!_isXHR){%><%- layout('layout/default.ejs') %><% } %>
+<%- include toolbar.ejs %>
+<h1><%=menuItem.m_h1%> на карте</h1>
+<div class="row mototrekMapContainer">
+	<div class="col-xs-12 col-md-3">
+		<div class="mttLocationsNames  open">
+			<button class="btn btn-default dropdown-toggle" type="button" id="dropdownLocationsNames"  aria-haspopup="true" aria-expanded="true"><span class="btnText">Регионы</span> <span class="caret"></span></button>
+			<ul class=" dropdown-menu" aria-labelledby="dropdownLocationsNames"><% trekLocations.forEach(function (item, i, list) {
+				let cssLevel = 'locLevel'+item["l_mtt_level"];
+				%><li class="<%=cssLevel%>"><% if (item["l_mtt_level"]==1) {%><i class="fa fa-caret-down" aria-hidden="true"></i><% }%>
+					<a href="javascript:void(0);" data-coords="<%=[item["l_latitude"], item["l_longitude"]]%>" data-location-id="<%=item["l_id"]%>"><%=item["l_name"]%></a><%
+				if (list[i+1] && list[i+1]["l_mtt_level"] == 2 && item["l_mtt_level"] == 1){%><ul><% } else{%></li><% }
+				if (list[i+1] && list[i+1]["l_mtt_level"] == 1 && item["l_mtt_level"] == 2){%></ul></li><% } %><%
+				if (list[i+1] && list[i+1]["l_level"] == 1){ %><li role="separator" class="divider"></li><%}
+		});%></ul>
+		</div>
+	</div>
+	<div class="col-xs-12 col-md-9 mototrekMap" id="mttMap"></div>
+</div>
+<script src="/js/mcMap.js" type="text/javascript"></script>
+<script type="text/javascript">
+//<!--
+(function($)
+{
+	var $locNamesBtn = $('#dropdownLocationsNames');
+		$locNamesBtn.attr("title", $locNamesBtn.text());
+	var $locNamesBtnText =	$locNamesBtn.find(".btnText");
+
+	var trekList = MCJS["trekList"] || [];
+	var trekLocations = MCJS["trekLocations"] || [];
+
+	var mapState = {
+		//controls: ["zoomControl", "searchControl", "typeSelector"]
+		controls: ["zoomControl", "typeSelector"]
+		, zoom: 10
+		, type: 'yandex#hybrid'
+		, behaviors: ["default"]
+	};
+	var mapOptions = {}, mapCluster = {};
+
+	//ключи - id объекта, значения - гео-коллекция точек
+	var placeMarkLocations = {};
+	var MttMcMap = new McMap('mttMap', {state: mapState, options: mapOptions});
+
+	MttMcMap.init()
+			.then(function (MttMap)
+			{
+				mapCluster = cluster();
+
+				MttMap.geoObjects.add(mapCluster);
+
+				MttMap.setBounds(mapCluster.getBounds(),
+						{
+							checkZoomRange: true
+						})
+						.then(function ()
+						{
+							onClickDropdownLocationsNames();
+							onClickMttLocationsNames(MttMap);
+
+							$(".mttLocationsNames").show();
+						});
+			})
+			.fail(function (err)
+			{
+				console.log(err);
+			});
+
+	/**
+	 * создаем гео-точку на основе данных трека
+	 * @param trek - данные по треку
+	 */
+	function makePlacemark(trek)
+	{
+		var coords = [trek["mtt_latitude"], trek["mtt_longitude"]];
+
+		var balloonContentBody = [
+			trek["mtt_address"],
+			"широта: " + trek.mtt_latitude + " (" + trek.mtt_gps_lat + ")",
+			"долгота: " + trek.mtt_longitude + " (" + trek.mtt_gps_lng + ")"
+		];
+
+		return new ymaps.Placemark(coords,
+				{
+					iconContent: trek["mtt_name"]
+					, iconCaption: trek["mtt_name"]
+					,	balloonContentHeader: trek["mtt_name"]
+					,	balloonContentBody: balloonContentBody.join('<br/>')
+					,	balloonContentFooter: '<a href="<%=menuItem.m_path%>/'+trek["mtt_id"]+'/">перейти на страницу трека</a>'
+				},
+				{
+					preset: 'islands#blueDotIconWithCaption'
+				}
+		);
+	}
+
+	/**
+	 * создаем объект кластера с предустановленными настройками
+	 */
+	function makeCluster()
+	{
+		/**
+		 * Создадим кластеризатор, вызвав функцию-конструктор.
+		 * Список всех опций доступен в документации.
+		 * @see https://api.yandex.ru/maps/doc/jsapi/2.1/ref/reference/Clusterer.xml#constructor-summary
+		 */
+		return new ymaps.Clusterer({
+			/**
+			 * Через кластеризатор можно указать только стили кластеров,
+			 * стили для меток нужно назначать каждой метке отдельно.
+			 * @see https://api.yandex.ru/maps/doc/jsapi/2.1/ref/reference/option.presetStorage.xml
+			 */
+			preset: 'islands#invertedBlueClusterIcons',
+			/**
+			 * Ставим true, если хотим кластеризовать только точки с одинаковыми координатами.
+			 */
+			groupByCoordinates: false,
+			/**
+			 * Опции кластеров указываем в кластеризаторе с префиксом "cluster".
+			 * @see https://api.yandex.ru/maps/doc/jsapi/2.1/ref/reference/ClusterPlacemark.xml
+			 */
+			clusterDisableClickZoom: true,
+			clusterHideIconOnBalloonOpen: false,
+			geoObjectHideIconOnBalloonOpen: false
+		});
+	}
+
+	function cluster()
+	{
+		var i, tl, placemark, cluster, mtt_location_pids;
+		for(i = 0; i < trekList.length; i++)
+		{
+			placemark = makePlacemark(trekList[i]);
+
+			mtt_location_pids = trekList[i]["mtt_location_pids"].split(',');
+			for(tl=0; tl < trekLocations.length; tl++)
+			{
+				if (mtt_location_pids.indexOf(trekLocations[tl]["l_id"]) != -1)
+				{
+					if (!placeMarkLocations.hasOwnProperty(trekLocations[tl]["l_id"]))
+						placeMarkLocations[trekLocations[tl]["l_id"]] = [];
+
+					placeMarkLocations[trekLocations[tl]["l_id"]].push(placemark);
+				}
+			}
+		}
+
+		cluster = makeCluster();
+
+		for(var l_id in placeMarkLocations)
+			cluster.add(placeMarkLocations[l_id]);
+
+		return cluster;
+	}
+
+	/**
+	 * клики по локации в меню (стране или области или городу .. и тп)
+	 */
+	function onClickMttLocationsNames(MttMap)
+	{
+		var $mttLocationsNames = $(".mttLocationsNames");
+		var caret = ".fa-caret-down";
+		var $caret = $mttLocationsNames.find(".locLevel1 "+caret);
+
+		$caret.on('click', function (event)
+		{
+			event.preventDefault();
+			event.stopPropagation();
+
+			var $ul = $(this).parent().find("ul");
+
+			$mttLocationsNames.find(".locLevel1 ul").not($ul).hide();
+
+			$ul.toggle();
+
+		});
+
+		var $linkName = $mttLocationsNames.find("a");
+
+		$linkName.on('click', function (event)
+		{
+			event.preventDefault();
+			var self = this;
+
+			$linkName.removeClass('selected');
+
+			$(self).parents('.locLevel1').find('> a').addClass('selected');
+
+			var coords = $(this).attr("data-coords").split(',');
+			var l_id = $(this).attr("data-location-id");
+
+			var bounds =  getLocationPointsCoords(l_id);
+			var cnt = bounds.length;
+				bounds = bounds.concat([coords]);
+
+			var centerAndZoom = ymaps.util.bounds.getCenterAndZoom(bounds, MttMap.container.getSize());
+				bounds =  ymaps.util.bounds.fromPoints(bounds);
+			//var center = ymaps.util.bounds.getCenter(bounds);
+			var center = (cnt > 1 ? ymaps.util.bounds.getCenter(bounds) : bounds[0]);
+
+			MttMap.setCenter(center, centerAndZoom.zoom, {checkZoomRange: true});
+			MttMap.setBounds(bounds, {checkZoomRange: false})
+					.then(function ()
+					{
+						MttMap.setCenter(center, MttMap.getZoom(), {checkZoomRange: false});
+						$locNamesBtn.click();
+						$locNamesBtnText.text($(self).text());
+
+						if ($(self).parent().find("ul").css('display') == 'none')
+						{
+							$(self).parent().find(caret).click();
+						}
+					});
+		});
+
+	}
+
+	/**
+	 * получаем массив точек для указанной локации (сатрны, области, города и тп)
+	 * @param l_id
+	 * @returns {Array}
+	 */
+	function getLocationPointsCoords(l_id)
+	{
+		var listOfCoords = [];
+		for (var i in placeMarkLocations[l_id])
+		{
+			if (!placeMarkLocations[l_id].hasOwnProperty(i))
+				continue;
+
+			listOfCoords.push(placeMarkLocations[l_id][i]["geometry"].getCoordinates());
+		}
+
+		return listOfCoords;
+	}
+
+	function onClickDropdownLocationsNames()
+	{
+		$locNamesBtn.click(function (event)
+		{
+			event.preventDefault();
+			$(this).parent().find('.dropdown-menu').toggle();
+			//console.log(this);
+		});
+	}
+})(jQuery);
+//-->
+</script>

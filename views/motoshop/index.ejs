@@ -1,4 +1,18 @@
-<%  if(!_isXHR){%><%- layout('layout/index') %><% } -%>
+<% if(motoshop && (_action =='edit' || _action =='add')){ %>
+<%  if(!_isXHR){%><%- layout('layout/default') %><% } %>
+<%- include toolbar.ejs %><h1><%=_pageH1%></h1>
+<%- include edit.ejs %><%
+}
+else if (motoshop){%>
+<%  if(!_isXHR){%><%- layout('layout/user/index') %><% } %>
+<%- include toolbar.ejs %><h1><%=_pageH1%></h1>
+<%- include motoshop.ejs %>
+<%}
+else if (motoshopList){%>
+<%  if(!_isXHR){%><%- layout('layout/user/index') %><% } %>
+<%- include toolbar.ejs %><h1><%=_pageH1%></h1>
+<%- include list.ejs %>
+<%}%>
 <p>Motosaloni</p>
 <ol>
 	<li>Название *<br>

@@ -101,14 +101,13 @@
 							else
 								formError = $.extend({}, formError, data.formError);
 
-							//if(formError || formError.error == false)
-
 							var text = formError.text.trim() || '';
 							var title = formError.message.trim();
 
 							if (title == '') title = 'Данные успешно сохранены';
 
-							$formBase.find('.form-group').removeClass("has-error");
+							//$formBase.find('.form-group').removeClass("has-error");
+							$formBase.find('.has-error').removeClass("has-error");
 
 							if(formError && formError.error == true)
 							{
@@ -138,8 +137,6 @@
 
 							if (showDialog)
 								_postResDialogBase(self.selector, title, text, options, !formError.error);
-
-							//console.log('mcDialog_'+self.selector.replace('#', ''));
 						})
 						.fail(function(data)
 						{

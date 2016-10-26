@@ -61,9 +61,9 @@ Template.prototype.setPageTitle = function(title, concatMenuTitle = true)
 	this.data._pageTitle = (concatMenuTitle ? this.data._pageTitle + ' ' + title : title);
 	return this;
 };
-Template.prototype.setPageH1 = function(h1)
+Template.prototype.setPageH1 = function(h1, addTo = true)
 {
-	this.data._pageH1 = h1;
+	this.data._pageH1 = (addTo ? this.data._pageH1 +' '+h1 : h1);
 	return this;
 };
 Template.prototype.setPageDescription = function(description)

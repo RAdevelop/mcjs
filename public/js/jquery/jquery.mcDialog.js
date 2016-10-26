@@ -3,15 +3,17 @@ function _htmlDialog(data)
 {
 	var defaults = {
 		id: '',
+		large: false, //стандартный или широкий (true)
 		title: 'Заголовок диалога',
 		body: 'контентная часть диалога',
 		buttons: []
 	};
 	var options = $.extend({}, defaults, data);
-	
+	var modal_size = (options.large ? 'modal-lg' : '');
+
 	var htmlDialog = '';
 	htmlDialog += '<div class="modal fade" id="'+options.id+'" tabindex="-1" role="dialog" aria-labelledby="'+options.id+'">';
-	htmlDialog += '<div class="modal-dialog" role="document">';
+	htmlDialog += '<div class="modal-dialog '+modal_size+' " role="document">';
 	htmlDialog += '<div class="modal-content">';
 	htmlDialog += '<div class="modal-header">';
 	htmlDialog += '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
@@ -51,6 +53,7 @@ function _htmlDialog(data)
 		var defaults = {
 			id: 'mcDialog'+this.selector.replace('#', '_').replace(/\s+/, '_').replace(/\./, '_')
 			,title: ''
+			,large: false //стандартный или широкий диалог (true)
 			,body: ''
 			,buttons: [
 				{

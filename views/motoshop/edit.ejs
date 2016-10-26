@@ -1,0 +1,361 @@
+<h4><%=(motoshop.mts_name ? 'редактирование' : 'добавление')%> мотосалона</h4>
+<ul class="nav nav-pills nav-justified" role="tablist">
+	<li class="active" role="presentation"><a href="#base" aria-controls="base" role="tab" data-toggle="tab"><span class="fa fa-cog"></span> Основное</a></li>
+	<% if (_action == 'edit') {%>
+	<li role="presentation"><a href="#contacts" aria-controls="contacts" role="tab" data-toggle="tab"><span class="fa fa-map-marker "></span> Адреса</a></li>
+	<% }%>
+</ul>
+<!-- Tab panes -->
+<div class="panel panel-default">
+	<div class="panel-body tab-content">
+		<div role="tabpanel" class="tab-pane active" id="base">
+			<% if (_action == 'add') {%><p class="text-center">После сохранения основных данных, Вы сможете указать список адресов.</p><% }%>
+			<form class="form-horizontal" action="<%=menuItem.m_path+'/'+_action%>/" method="post" id="formMotoshop">
+			<div class="form-group s_mts_name">
+				<label class="col-sm-2 control-label">название *</label>
+				<div class="col-sm-10">
+					<input type="hidden" id="i_mts_id" name="i_mts_id" value="<%=motoshop.mts_id%>" />
+					<input type="text" class="form-control" id="s_mts_name" name="s_mts_name" value="<%=motoshop.mts_name%>" placeholder="название мотосалона" required="required" />
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">контакты *</label>
+				<div class="col-sm-5 link_mts_website">
+					<input type="text" class="form-control" id="link_mts_website" name="link_mts_website" value="<%=motoshop.mts_website%>" placeholder="веб-сайт" required="required" maxlength="255" />
+					<span class="help-block">веб-сайт</span>
+				</div>
+				<div class="col-sm-5 m_mts_email">
+					<input type="text" class="form-control" id="m_mts_email" name="m_mts_email" value="<%=motoshop.mts_email%>" placeholder="E-mail" required="required" maxlength="255" />
+					<span class="help-block">E-mail</span>
+				</div>
+			</div>
+			<div class="form-group t_mts_descrip">
+				<label for="t_mts_descrip" class="col-sm-2 control-label">описание</label>
+				<div class="col-sm-10">
+					<textarea class="form-control" style="height: 250px;" id="t_mts_descrip" name="t_mts_descrip" placeholder="описание мотосалона"><%=motoshop.mts_descrip%></textarea>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-xs-offset-5 col-sm-offset-5 ">
+					<input type="hidden" name="btn_save_motoshop" value="main"/>
+					<button type="submit" class="btn btn-primary" id="btn_edit_motoshop" value="1" data-loading-text="сохраняю..." autocomplete="off">сохранить</button>
+				</div>
+			</div>
+			</form>
+		</div>
+		<% if (_action == 'edit') {%>
+		<div role="tabpanel" class="tab-pane" id="contacts">
+			<p class="text-center">
+				<a class="btn btn-primary btn-sm _js_address_tools" href="javascript:void(0);" data-action="add_address" role="button">добавить новый адрес</a>
+			</p>
+
+			<% motoshop.address_list.forEach(function (address)
+			{
+				
+			});%>
+			<div class="form-group s_mts_address">
+				<label for="m_mail" class="col-sm-1 control-label">адрес *</label>
+				<div class="col-sm-11">
+					<input type="text" class="form-control" id="s_mts_address" name="s_mts_address" value="<%=motoshop.mts_address%>" placeholder="адрес" required="required" data-toggle="tooltip" data-container="body" data-placement="auto" title="<%=motoshop.mts_address%>">
+					<span class="help-block">укажите адрес с помощью карты: через поиск адреса, или по клику на карте.</span>
+					<input type="text" id="f_mts_lat" name="f_mts_lat" value="<%=motoshop.mts_latitude%>" readonly="readonly" maxlength="20" required="required"  />
+					<input type="text" id="f_mts_lng" name="f_mts_lng" value="<%=motoshop.mts_longitude%>" readonly="readonly" maxlength="20" required="required"  />
+				</div>
+			</div>
+			<div class="form-group" >
+				<div class="col-sm-12" id="mtsAddressMap" style="height: 400px;"></div>
+			</div>
+		</div>
+		<% } %>
+	</div>
+</div>
+<script src="/js/mcMap.js" type="text/javascript"></script>
+<script src="/js/jquery/postRes.js" type="text/javascript" ></script>
+<script src="/js/mcTinymce.js" type="text/javascript" ></script>
+<script type="text/javascript">
+//<!--
+(function($)
+{
+	var mtsDescripTinymce = McTinymce({
+		selector: '#t_mts_descrip'
+	}, "default");
+
+	$('#formMotoshop').postRes({btnId: 'btn_edit_motoshop',
+		beforeSubmit: function ()
+		{
+			return mtsDescripTinymce.then(function (editor)
+			{
+				//console.log(editor[0]);
+				console.log('McTinymce.tinymce.triggerSave()');
+				McTinymce.tinymce.triggerSave();
+			});
+		},
+		onSuccess: function($dialog, respData)
+		{
+			if (respData["i_mts_id"])
+				window.location.href = "<%=menuItem.m_path%>/edit/" +respData["i_mts_id"] +'/';
+
+			return false;
+		}
+	});
+
+	var MtsMap = {
+		mtsPlacemark: null,
+		init: function()
+		{
+			var mapState = {
+				controls: ["zoomControl", "searchControl", "typeSelector"]
+				, zoom: 15
+				, type: 'yandex#hybrid'
+				, behaviors: ["default"]
+			};
+			var mapOptions = {};
+			var MtsMcMap = new McMap('mtsAddressMap', {state: mapState, options: mapOptions});
+
+			MtsMcMap.init()
+					.then(function (MtsMap)
+					{
+						MtsMap.behaviors.disable('multiTouch');
+						//MtsMap.behaviors.disable('scrollZoom');
+
+						MtsMap.geoObjects.removeAll();
+
+						MtsMap.addPlaceMark(MtsMap);
+
+						var searchControl = MtsMap.controls.get("searchControl");
+						searchControl.options.set("float", "right");
+
+						searchControl.events.add('submit', function ()
+						{
+
+							//console.log('request: ' + searchControl.getRequestString());
+
+						}, this);
+						searchControl.events.add('resultselect', function (res)
+						{
+							/*res.stopPropagation();
+							 res.preventDefault();
+							 res.stopImmediatePropagation();
+							 */
+							searchControl.hideResult();
+							searchControl.getResult(res.get('index'))
+									.then(function (result)
+									{
+										//console.log('result = ', result);
+										//console.log('result.geometry.getCoordinates() = ', result.geometry.getCoordinates());
+										//console.log("result.properties.get('name') = ", result.properties.get('name'));
+										//console.log("result.properties.get('text') = ", result.properties.get('text'));
+
+										var text = result.properties.get('text') || result.properties.get('geocoderMetaData.text');
+
+										MtsMap.updPlaceMark(MtsMap, text, result.geometry.getCoordinates());
+									})
+									.fail(function (err)
+									{
+										MtsMap.updPlaceMark(MtsMap, err.message, [], err);
+									});
+						}, this);
+
+						/* когда кликаем по карте */
+						MtsMap.events.add('click', function (event)
+						{
+							var coords = event.get('coords');
+							console.log('click by coords', coords);
+							//return McMap.locationByLatLng(coords[0], coords[1], 'house')
+							return McMap.locationByLatLng(coords)
+									.then(function(location)
+									{
+										MtsMap.updPlaceMark(MtsMap, location.text, location.coords);
+									})
+									.fail(function(err)
+									{
+										MtsMap.updPlaceMark(MtsMap, err.message, coords, err);
+									});
+						});
+
+						return ymaps.vow.resolve(MtsMap);
+					})
+					.fail(function (err)
+					{
+						console.log(err);
+					});
+		},
+
+		addPlaceMark: function(MtsMap)
+		{
+			var address = (MCJS["motoshop"] && MCJS["motoshop"]["mts_address"] ? MCJS["motoshop"]["mts_address"] : '');
+			var center = [];
+			if (MCJS["motoshop"] && MCJS["motoshop"]["mts_latitude"] && MCJS["motoshop"]["mts_longitude"])
+				center = [MCJS["motoshop"]["mts_latitude"], MCJS["motoshop"]["mts_longitude"]];
+			else
+				center = MtsMap.getCenter();
+
+			var iconContent = (MCJS["motoshop"] && MCJS["motoshop"]["mts_name"] ? MCJS["motoshop"]["mts_name"] : 'МотоСалона на карте');
+			var contentHeader = iconContent;
+			var contentBody =   '<p>Чтобы указать место расположения объекта, найдите его с помощью поисковой строки, ' +
+					'или кликните мышкой по карте.</p>';
+
+			var contentFooter = '<p><strong>Сейчас указан:</strong><br/>';
+			contentFooter += (address ? address+'<br/>' : '');
+			contentFooter += center.join(', ') + '</p>';
+
+			MtsMap.mtsPlacemark = new ymaps.Placemark(
+					center
+					,	{
+						/* Свойства*/
+						iconContent: iconContent
+						, iconCaption: iconContent
+						,	balloonContentHeader: contentHeader
+						,	balloonContentBody: contentBody
+						,	balloonContentFooter: contentFooter
+					}
+					,   {
+						/* Опции*/
+						//preset: 'islands#blueStretchyIcon' /* иконка растягивается под контент */
+						//preset: 'islands#blueBicycle2Icon
+						preset: 'islands#blueDotIconWithCaption'
+						,	draggable: true
+					});
+
+			/* когда двигаем метку */
+			MtsMap.mtsPlacemark.events.add('dragend', function (e)
+			{
+				var thisPlacemark = e.get('target');
+				var coords = thisPlacemark.geometry.getCoordinates();
+
+				return McMap.locationByLatLng(coords)
+						.then(function (location)
+						{
+							MtsMap.updPlaceMark(MtsMap, location.text, location.coords);
+						})
+						.fail(function(err)
+						{
+							MtsMap.updPlaceMark(MtsMap, err.message, coords, err);
+						});
+			});
+
+			MtsMap.geoObjects.add(MtsMap.mtsPlacemark);
+			MtsMap.setCenter(center);
+		},
+
+		updPlaceMark: function(MtsMap, text, coords, err)
+		{
+			var contentFooter = '<p><strong>Сейчас указан:</strong><br/>' +
+					text + '<br/>' +
+					coords.join(', ') +
+					'</p>';
+
+			MtsMap.mtsPlacemark.properties.set('balloonContentFooter', contentFooter);
+			MtsMap.mtsPlacemark.geometry.setCoordinates(coords);
+
+			if (err)
+			{
+				$('#s_mts_address').val('');
+				$('#f_mts_lat').val('');
+				$('#f_mts_lng').val('');
+
+				return;
+			}
+
+			$('#s_mts_address').val(text);
+			$('#s_mts_address').attr('data-original-title', text);
+			$('#f_mts_lat').val(coords[0]);
+			$('#f_mts_lng').val(coords[1]);
+		}
+	};
+
+	$(document).on('click', '._js_address_tools', function (event)
+	{
+		event.preventDefault();
+
+		var $this = $(this);
+
+		switch($this.data('action'))
+		{
+			case 'add_address':
+				showAddressForm();
+				break;
+		}
+	});
+
+	function showAddressForm()
+	{
+		var htmlForm = '<form class="form-horizontal" action="<%=menuItem.m_path+'/'+_action%>/" method="post" id="formAddressMts">';
+			htmlForm += '<input type="hidden" name="btn_save_motoshop" value="add_address"/>';
+			htmlForm += '<input type="hidden" name="i_mts_id" value="<%=motoshop.mts_id%>"/>';
+			htmlForm += '<div class="form-group s_address_website">';
+				htmlForm += '<label for="s_address_website" class="col-sm-2 control-label">веб-сайт</label>';
+				htmlForm += '<div class="col-sm-10 s_address_website">';
+					htmlForm += '<input type="text" class="form-control" id="s_address_website" name="s_address_website" value="" placeholder="веб-сайт" />';
+				htmlForm += '</div>';
+		htmlForm += '</div>';
+		htmlForm += '<div class="form-group m_address_email">';
+			htmlForm += '<label for="m_address_email" class="col-sm-2 control-label">E-mail</label>';
+			htmlForm += '<div class="col-sm-10">';
+				htmlForm += '<input type="text" class="form-control" id="m_address_email" name="m_address_email" value="" placeholder="E-mail" />';
+			htmlForm += '</div>';
+		htmlForm += '</div>';
+		htmlForm += '<div class="form-group s_address_phones">';
+			htmlForm += '<label for="s_address_phones" class="col-sm-2 control-label">телефон(-ы)</label>';
+			htmlForm += '<div class="col-sm-10 s_address_phones">';
+				htmlForm += '<input type="text" class="form-control" id="s_address_phones" name="s_address_phones" value="" placeholder="телефон(-ы)" />';
+			htmlForm += '</div>';
+		htmlForm += '</div>';
+		htmlForm += '</form>';
+
+		$('__address_form__').mcDialog({
+			title: 'Добавить/изменить адрес'
+			, large: true
+			, body: htmlForm
+			, onOpen: function ($dialog)
+			{
+				$dialog.find('#formAddressMts').postRes({
+					btnId: $dialog.find('#btn_save_address'),
+					onSuccess: function($respDialog, resp)
+					{
+						if (resp.hasOwnProperty("formError") && resp["formError"].hasOwnProperty("error") && !resp["formError"]["error"])
+						{
+							window.location.href = '<%=menuItem.m_path%>';
+							return false;//не показать диалог
+						}
+						else
+						{
+							return true;
+						}
+					},
+					onFail: function ($respDialog, resp)
+					{
+						$dialog.hide();
+						return true;
+					},
+					onClose: function ($respDialog)
+					{
+						$dialog.show();
+					}
+				});
+			}
+			, buttons: [
+				{
+					title: 'сохранить'
+					, name: 'btn_save_address'
+					, cssClass: 'btn-success'
+				},
+				{
+					title: 'закрыть'
+					,name: 'btn_address_event_close'
+					,cssClass: 'btn-danger'
+					,func:
+					{
+						"click": function(event)
+						{
+							$(event.data[0]).modal('hide');
+						}
+					}
+				}
+			]
+		});
+	}
+
+})(jQuery);
+//-->
+</script>

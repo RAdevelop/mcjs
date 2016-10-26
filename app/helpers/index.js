@@ -8,7 +8,6 @@ const Logger = require('app/lib/logger');
 
 class Helpers
 {
-
 	static loadRouters(app, dir, maxDepth, mountPath)
 	{
 		var maxDepth = maxDepth || 0;
@@ -228,12 +227,14 @@ class Helpers
 					if(!Helpers.isDateTime(pValue)) pValue = null;
 
 					break;
-				/*
+
+				 case 'link'://является ли ссылкой
+					 if (!Helpers.isLink(pValue)) pValue = null;
+				 break;
+			/*
 				 case '':
 				 break;
-	
-				 case '':
-				 break;*/
+				 */
 			}
 			postData[pKey] = pValue;
 		});

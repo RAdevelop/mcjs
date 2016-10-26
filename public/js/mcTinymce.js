@@ -114,6 +114,7 @@
 			})
 			.fail(function(resData)
 			{
+				editor.setProgressState(false);
 				console.log(resData);
 			});
 	}
