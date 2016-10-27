@@ -60,7 +60,7 @@ class Motoshop extends Base
 			}
 		};
 
-		let tplFile = "motoshop/edit.ejs";
+		let tplFile = "motoshop";
 
 		this.view.setTplData(tplFile, tplData);
 
@@ -190,9 +190,19 @@ class Motoshop extends Base
 			case 'main':
 				return this.edit(tplData);
 				break;
+
+			case 'add_address':
+				return this.addAddress(tplData);
+				break;
 		}
 	}
 
+	/**
+	 * редактируем основные данные
+	 *
+	 * @param tplData
+	 * @returns {Promise.<T>}
+	 */
 	edit(tplData)
 	{
 		let tplFile = "motoshop/edit.ejs";
@@ -221,8 +231,6 @@ class Motoshop extends Base
 				this.parseFormErrors(tplData, errors, 'Ошибки при заполнении формы');
 
 				return Promise.resolve(tplData);
-
-				//return Promise.resolve([errors, tplData]);
 			})
 			.then(function (tplData)
 			{
@@ -232,6 +240,76 @@ class Motoshop extends Base
 					tplData["link_mts_website"],
 					tplData["m_mts_email"],
 					tplData["t_mts_descrip"]
+				)
+					.then(function ()
+					{
+						return Promise.resolve(tplData);
+					});
+			})
+			.then(function (tplData)
+			{
+				this.view.setTplData(tplFile, tplData);
+
+				return Promise.resolve(true);
+			})
+			.catch(Errors.ValidationError, function (err) //такие ошибки не уводят со страницы
+			{
+				this.view.setTplData(tplFile, err.data);
+
+				return Promise.resolve(true);
+			})
+			.catch(function (err)
+			{
+				throw err;
+			});
+	}
+
+	/**
+	 * добавляем адрес
+	 *
+	 * @param tplData
+	 */
+	addAddress(tplData)
+	{
+		let tplFile = "motoshop/edit.ejs";
+
+		return this.getClass('motoshop').getMotoshop(tplData["i_mts_id"])
+			.bind(this)
+			.then(function (motoshop)
+			{
+				if (!motoshop)
+					throw new Errors.HttpStatusError(404, "Not found");
+
+				tplData = this.stripTags(tplData, ["s_address", "s_address_phones", "m_address_email", "link_address_website"]);
+				
+				let errors = {};
+
+				if (!tplData["s_address_phones"])
+					errors["s_address_phones"] = "Укажите телефон(ы)";
+
+				if (!tplData["link_address_website"])
+					errors["link_address_website"] = "Укажите веб-сайт";
+
+				if (!tplData["m_address_email"])
+					errors["m_address_email"] = "E-mail указан не верно";
+
+				if (!tplData["s_address"] || !tplData["f_address_lat"] || !tplData["f_address_lng"])
+					errors["s_address"] = "Укажите адрес";
+
+				this.parseFormErrors(tplData, errors, 'Ошибки при заполнении формы');
+
+				return Promise.resolve(tplData);
+			})
+			.then(function (tplData)
+			{
+				return this.getClass('motoshop').addAddress(
+					tplData["i_mts_id"],
+					tplData["link_address_website"],
+					tplData["m_address_email"],
+					tplData["s_address_phones"],
+					tplData["s_address"],
+					tplData["f_address_lat"],
+					tplData["f_address_lng"]
 				)
 					.then(function ()
 					{

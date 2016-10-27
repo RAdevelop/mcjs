@@ -74,6 +74,28 @@ class Motoshop extends BaseModel
 				return Promise.resolve(mts_id);
 			});
 	}
+
+	/**
+	 * добавляем адрес
+	 * 
+	 * @param mts_id
+	 * @param mts_address_website
+	 * @param mts_address_email
+	 * @param mts_address_phones
+	 * @param mts_address
+	 * @param mts_address_lat
+	 * @param mts_address_lng
+	 * @param gps_lat
+	 * @param gps_lng
+	 * @param location_id
+	 * @returns {Promise.<*>}
+	 */
+	addAddress(mts_id, mts_address_website, mts_address_email, mts_address_phones, mts_address, mts_address_lat, mts_address_lng, gps_lat, gps_lng, location_id)
+	{
+		console.log(mts_id, mts_address_website, mts_address_email, mts_address_phones, mts_address, mts_address_lat, mts_address_lng, gps_lat, gps_lng, location_id);
+
+		return Promise.resolve(mts_id);
+	}
 }
 //************************************************************************* module.exports
 //писать после class Name....{}

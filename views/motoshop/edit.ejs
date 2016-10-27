@@ -48,23 +48,10 @@
 			<p class="text-center">
 				<a class="btn btn-primary btn-sm _js_address_tools" href="javascript:void(0);" data-action="add_address" role="button">добавить новый адрес</a>
 			</p>
-
 			<% motoshop.address_list.forEach(function (address)
 			{
 				
 			});%>
-			<div class="form-group s_mts_address">
-				<label for="m_mail" class="col-sm-1 control-label">адрес *</label>
-				<div class="col-sm-11">
-					<input type="text" class="form-control" id="s_mts_address" name="s_mts_address" value="<%=motoshop.mts_address%>" placeholder="адрес" required="required" data-toggle="tooltip" data-container="body" data-placement="auto" title="<%=motoshop.mts_address%>">
-					<span class="help-block">укажите адрес с помощью карты: через поиск адреса, или по клику на карте.</span>
-					<input type="text" id="f_mts_lat" name="f_mts_lat" value="<%=motoshop.mts_latitude%>" readonly="readonly" maxlength="20" required="required"  />
-					<input type="text" id="f_mts_lng" name="f_mts_lng" value="<%=motoshop.mts_longitude%>" readonly="readonly" maxlength="20" required="required"  />
-				</div>
-			</div>
-			<div class="form-group" >
-				<div class="col-sm-12" id="mtsAddressMap" style="height: 400px;"></div>
-			</div>
 		</div>
 		<% } %>
 	</div>
@@ -101,8 +88,11 @@
 
 	var MtsMap = {
 		mtsPlacemark: null,
-		init: function()
+		address: {},
+		init: function(addressData)
 		{
+			MtsMap.addressData = addressData  || {};
+
 			var mapState = {
 				controls: ["zoomControl", "searchControl", "typeSelector"]
 				, zoom: 15
@@ -113,16 +103,16 @@
 			var MtsMcMap = new McMap('mtsAddressMap', {state: mapState, options: mapOptions});
 
 			MtsMcMap.init()
-					.then(function (MtsMap)
+					.then(function (AddrMap)
 					{
-						MtsMap.behaviors.disable('multiTouch');
-						//MtsMap.behaviors.disable('scrollZoom');
+						AddrMap.behaviors.disable('multiTouch');
+						//AddrMap.behaviors.disable('scrollZoom');
 
-						MtsMap.geoObjects.removeAll();
+						AddrMap.geoObjects.removeAll();
 
-						MtsMap.addPlaceMark(MtsMap);
+						MtsMap.addPlaceMark(AddrMap);
 
-						var searchControl = MtsMap.controls.get("searchControl");
+						var searchControl = AddrMap.controls.get("searchControl");
 						searchControl.options.set("float", "right");
 
 						searchControl.events.add('submit', function ()
@@ -148,16 +138,16 @@
 
 										var text = result.properties.get('text') || result.properties.get('geocoderMetaData.text');
 
-										MtsMap.updPlaceMark(MtsMap, text, result.geometry.getCoordinates());
+										MtsMap.updPlaceMark(AddrMap, text, result.geometry.getCoordinates());
 									})
 									.fail(function (err)
 									{
-										MtsMap.updPlaceMark(MtsMap, err.message, [], err);
+										MtsMap.updPlaceMark(AddrMap, err.message, [], err);
 									});
 						}, this);
 
 						/* когда кликаем по карте */
-						MtsMap.events.add('click', function (event)
+						AddrMap.events.add('click', function (event)
 						{
 							var coords = event.get('coords');
 							console.log('click by coords', coords);
@@ -165,15 +155,15 @@
 							return McMap.locationByLatLng(coords)
 									.then(function(location)
 									{
-										MtsMap.updPlaceMark(MtsMap, location.text, location.coords);
+										MtsMap.updPlaceMark(AddrMap, location.text, location.coords);
 									})
 									.fail(function(err)
 									{
-										MtsMap.updPlaceMark(MtsMap, err.message, coords, err);
+										MtsMap.updPlaceMark(AddrMap, err.message, coords, err);
 									});
 						});
 
-						return ymaps.vow.resolve(MtsMap);
+						return ymaps.vow.resolve(AddrMap);
 					})
 					.fail(function (err)
 					{
@@ -181,14 +171,15 @@
 					});
 		},
 
-		addPlaceMark: function(MtsMap)
+		addPlaceMark: function(AddrMap)
 		{
-			var address = (MCJS["motoshop"] && MCJS["motoshop"]["mts_address"] ? MCJS["motoshop"]["mts_address"] : '');
+			var address = (MtsMap.addressData["mts_address"] ? MtsMap.addressData["mts_address"] : '');
+
 			var center = [];
-			if (MCJS["motoshop"] && MCJS["motoshop"]["mts_latitude"] && MCJS["motoshop"]["mts_longitude"])
-				center = [MCJS["motoshop"]["mts_latitude"], MCJS["motoshop"]["mts_longitude"]];
+			if (MtsMap.addressData["mts_address_latitude"] && MtsMap.addressData["mts_address_longitude"])
+				center = [MtsMap.addressData["mts_address_latitude"], MtsMap.addressData["mts_address_longitude"]];
 			else
-				center = MtsMap.getCenter();
+				center = AddrMap.getCenter();
 
 			var iconContent = (MCJS["motoshop"] && MCJS["motoshop"]["mts_name"] ? MCJS["motoshop"]["mts_name"] : 'МотоСалона на карте');
 			var contentHeader = iconContent;
@@ -226,19 +217,19 @@
 				return McMap.locationByLatLng(coords)
 						.then(function (location)
 						{
-							MtsMap.updPlaceMark(MtsMap, location.text, location.coords);
+							MtsMap.updPlaceMark(AddrMap, location.text, location.coords);
 						})
 						.fail(function(err)
 						{
-							MtsMap.updPlaceMark(MtsMap, err.message, coords, err);
+							MtsMap.updPlaceMark(AddrMap, err.message, coords, err);
 						});
 			});
 
-			MtsMap.geoObjects.add(MtsMap.mtsPlacemark);
-			MtsMap.setCenter(center);
+			AddrMap.geoObjects.add(MtsMap.mtsPlacemark);
+			AddrMap.setCenter(center);
 		},
 
-		updPlaceMark: function(MtsMap, text, coords, err)
+		updPlaceMark: function(AddrMap, text, coords, err)
 		{
 			var contentFooter = '<p><strong>Сейчас указан:</strong><br/>' +
 					text + '<br/>' +
@@ -248,19 +239,24 @@
 			MtsMap.mtsPlacemark.properties.set('balloonContentFooter', contentFooter);
 			MtsMap.mtsPlacemark.geometry.setCoordinates(coords);
 
+			var $form = $('form#formAddressMts');
+			var $address = $form.find('#s_mts_address');
+			var $lat = $form.find('#f_mts_address_lat');
+			var $lng = $form.find('#f_mts_address_lng');
+
 			if (err)
 			{
-				$('#s_mts_address').val('');
-				$('#f_mts_lat').val('');
-				$('#f_mts_lng').val('');
+				$address.val('');
+				$lat.val('');
+				$lng.val('');
 
 				return;
 			}
 
-			$('#s_mts_address').val(text);
-			$('#s_mts_address').attr('data-original-title', text);
-			$('#f_mts_lat').val(coords[0]);
-			$('#f_mts_lng').val(coords[1]);
+			$address.val(text);
+			$address.attr('data-original-title', text);
+			$lat.val(coords[0]);
+			$lng.val(coords[1]);
 		}
 	};
 
@@ -278,29 +274,51 @@
 		}
 	});
 
-	function showAddressForm()
+	function showAddressForm(addressData)
 	{
+		addressData = addressData || {};
+		addressData["mts_address_website"]	= addressData["mts_address_website"]	|| MCJS["motoshop"]["mts_website"];
+		addressData["mts_address_email"]	= addressData["mts_address_email"]		|| MCJS["motoshop"]["mts_email"];
+		addressData["mts_address_phones"] 	= addressData["mts_address_phones"]		|| '';
+		addressData["mts_address"] 			= addressData["mts_address"]			|| '';
+		addressData["mts_address_latitude"] = addressData["mts_address_latitude"]	|| '';
+		addressData["mts_address_longitude"]= addressData["mts_address_longitude"]	|| '';
+
 		var htmlForm = '<form class="form-horizontal" action="<%=menuItem.m_path+'/'+_action%>/" method="post" id="formAddressMts">';
+			htmlForm += '<p class="text-center">Для каждого адреса можно задать свои: веб-сайт, e-mail, телефоны.<br/>По умолчанию, будут использоваться веб-сайт и e-mail, указанные в основных данных.</p>';
 			htmlForm += '<input type="hidden" name="btn_save_motoshop" value="add_address"/>';
 			htmlForm += '<input type="hidden" name="i_mts_id" value="<%=motoshop.mts_id%>"/>';
 			htmlForm += '<div class="form-group s_address_website">';
-				htmlForm += '<label for="s_address_website" class="col-sm-2 control-label">веб-сайт</label>';
-				htmlForm += '<div class="col-sm-10 s_address_website">';
-					htmlForm += '<input type="text" class="form-control" id="s_address_website" name="s_address_website" value="" placeholder="веб-сайт" />';
+				htmlForm += '<label class="col-sm-2 control-label">веб-сайт</label>';
+				htmlForm += '<div class="col-sm-10 link_address_website">';
+					htmlForm += '<input type="text" class="form-control" id="link_address_website" name="link_address_website" value="'+addressData["mts_address_website"]+'" placeholder="веб-сайт" />';
 				htmlForm += '</div>';
 		htmlForm += '</div>';
 		htmlForm += '<div class="form-group m_address_email">';
-			htmlForm += '<label for="m_address_email" class="col-sm-2 control-label">E-mail</label>';
+			htmlForm += '<label class="col-sm-2 control-label">E-mail</label>';
 			htmlForm += '<div class="col-sm-10">';
-				htmlForm += '<input type="text" class="form-control" id="m_address_email" name="m_address_email" value="" placeholder="E-mail" />';
+				htmlForm += '<input type="text" class="form-control" id="m_mts_address_email" name="m_mts_address_email" value="'+addressData["mts_address_email"]+'" placeholder="E-mail" />';
 			htmlForm += '</div>';
 		htmlForm += '</div>';
-		htmlForm += '<div class="form-group s_address_phones">';
+		htmlForm += '<div class="form-group s_mts_address_phones">';
 			htmlForm += '<label for="s_address_phones" class="col-sm-2 control-label">телефон(-ы)</label>';
-			htmlForm += '<div class="col-sm-10 s_address_phones">';
-				htmlForm += '<input type="text" class="form-control" id="s_address_phones" name="s_address_phones" value="" placeholder="телефон(-ы)" />';
+			htmlForm += '<div class="col-sm-10 s_mts_address_phones">';
+				htmlForm += '<input type="text" class="form-control" id="s_mts_address_phones" name="s_mts_address_phones" value="'+addressData["mts_address_phones"]+'" placeholder="телефон(-ы)" />';
 			htmlForm += '</div>';
 		htmlForm += '</div>';
+		htmlForm += '<div class="form-group s_mts_address">';
+			htmlForm += '<label class="col-sm-2 control-label">адрес *</label>';
+			htmlForm += '<div class="col-sm-10">';
+			htmlForm += '<input type="text" class="form-control" id="s_mts_address" name="s_mts_address" value="'+addressData["mts_address"]+'" placeholder="адрес" required="required" data-toggle="tooltip" data-container="body" data-placement="auto" title="">';
+			htmlForm += '<span class="help-block">укажите адрес с помощью карты: через поиск адреса, или по клику на карте.</span>';
+			htmlForm += '<input type="text" id="f_mts_address_lat" name="f_mts_address_lat" value="" readonly="readonly" maxlength="20" required="required"  />';
+			htmlForm += '<input type="text" id="f_mts_address_lng" name="f_mts_address_lng" value="" readonly="readonly" maxlength="20" required="required"  />';
+			htmlForm += '</div>';
+		htmlForm += '</div>';
+		htmlForm += '<div class="form-group" >';
+			htmlForm += '<div class="col-sm-12" id="mtsAddressMap" style="height: 300px;"></div>';
+		htmlForm += '</div>';
+
 		htmlForm += '</form>';
 
 		$('__address_form__').mcDialog({
@@ -309,13 +327,15 @@
 			, body: htmlForm
 			, onOpen: function ($dialog)
 			{
+				MtsMap.init();
+
 				$dialog.find('#formAddressMts').postRes({
 					btnId: $dialog.find('#btn_save_address'),
 					onSuccess: function($respDialog, resp)
 					{
 						if (resp.hasOwnProperty("formError") && resp["formError"].hasOwnProperty("error") && !resp["formError"]["error"])
 						{
-							window.location.href = '<%=menuItem.m_path%>';
+							//window.location.href
 							return false;//не показать диалог
 						}
 						else
