@@ -1403,6 +1403,16 @@ iframe.iframeVideoEmbed {
   min-width: 89px;
 }
 
+/**********  мотосалоны **************/
+.motoshopAddressList .motoshopAddress {
+  max-width: calc(33%);
+  max-width: -moz-calc(33%);
+  max-width: -webkit-calc(33%);
+}
+.motoshopAddressList .motoshopAddressTools {
+  border: 1px dashed #e2e2e2;
+}
+
 /**********  СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ  **************/
 .newsLocationsMenu li.selected {
   background-color: #f5f5f5;

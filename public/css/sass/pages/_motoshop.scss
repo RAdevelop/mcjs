@@ -1,0 +1,11 @@
+/**********  мотосалоны **************/
+.motoshopAddressList
+{
+  & .motoshopAddress {
+    @include mix-max-width-calc(33%);
+  }
+
+  & .motoshopAddressTools {
+    border: 1px dashed #e2e2e2;
+  }
+}

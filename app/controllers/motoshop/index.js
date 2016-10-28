@@ -194,6 +194,10 @@ class Motoshop extends Base
 			case 'add_address':
 				return this.addAddress(tplData);
 				break;
+			
+			case 'del_address':
+				return this.delAddress(tplData);
+				break;
 		}
 	}
 
@@ -325,6 +329,41 @@ class Motoshop extends Base
 			.catch(Errors.ValidationError, function (err) //такие ошибки не уводят со страницы
 			{
 				this.view.setTplData(tplFile, err.data);
+
+				return Promise.resolve(true);
+			})
+			.catch(function (err)
+			{
+				throw err;
+			});
+	}
+
+	/**
+	 * удаляем адрес
+	 * 
+	 * @param tplData
+	 * @returns {Promise.<T>}
+	 */
+	delAddress(tplData)
+	{
+		let tplFile = "motoshop/edit.ejs";
+		
+		return this.getClass('motoshop').getMotoshop(tplData["i_mts_id"])
+			.bind(this)
+			.then(function (motoshop)
+			{
+				if (!motoshop || !tplData["i_mts_address_id"])
+					throw new Errors.HttpStatusError(404, "Not found");
+				
+				return this.getClass('motoshop').delAddress(tplData["i_mts_id"], tplData["i_mts_address_id"])
+					.then(function ()
+					{
+						return Promise.resolve(tplData);
+					});
+			})
+			.then(function (tplData)
+			{
+				this.view.setTplData(tplFile, tplData);
 
 				return Promise.resolve(true);
 			})

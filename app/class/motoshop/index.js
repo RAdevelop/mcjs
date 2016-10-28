@@ -36,10 +36,15 @@ class Motoshop extends Base
 	getMotoshop(mts_id)
 	{
 		return this.model("motoshop").getMotoshop(mts_id)
+			.bind(this)
 			.then(function (motoshop)
 			{
-				motoshop["address_list"] = [];
-				return Promise.resolve(motoshop);
+				return this.model("motoshop").getMotoshopAddressList(mts_id)
+					.then(function (addressList)
+					{
+						motoshop["address_list"] = addressList || [];
+						return Promise.resolve(motoshop);
+					});
 			});
 	}
 
@@ -90,6 +95,18 @@ class Motoshop extends Base
 
 				return this.model("motoshop").addAddress(mts_id, mts_address_website, mts_address_email, mts_address_phones, mts_address, mts_address_lat, mts_address_lng, gps_lat, gps_lng, location_id);
 			});
+	}
+
+	/**
+	 * удаляем адрес
+	 *
+	 * @param mts_id
+	 * @param mts_address_id
+	 * @returns {*|Promise.<*>}
+	 */
+	delAddress(mts_id, mts_address_id)
+	{
+		return this.model("motoshop").delAddress(mts_id, mts_address_id);
 	}
 }
 //************************************************************************* module.exports

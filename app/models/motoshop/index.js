@@ -150,6 +150,40 @@ class Motoshop extends BaseModel
 
 		return Promise.resolve(mts_address_id);
 	}
+
+	/**
+	 * список адресов для указанного салона
+	 *
+	 * @param mts_id
+	 * @returns {*}
+	 */
+	getMotoshopAddressList(mts_id)
+	{
+		let sql = `SELECT mtsa.mts_address_id, mtsa.mts_id, mtsa.mts_address_website, mtsa.mts_address_email, 
+		mtsa.mts_address_phones, mtsa.mts_address, mtsa.mts_address_latitude, mtsa.mts_address_longitude, 
+		mtsa.mts_address_gps_lat, mtsa.mts_address_gps_lng, mtsa.mts_address_location_id, mtsa.mts_address_location_pids, 
+		mtsa.mts_address_create_ts, mtsa.mts_address_update_ts
+		FROM motoshop_address AS mtsa
+		WHERE mtsa.mts_id = ?`;
+
+		return this.constructor.conn().s(sql, [mts_id]);
+	}
+
+	/**
+	 * удаляем адрес
+	 *
+	 * @param mts_id
+	 * @param mts_address_id
+	 * @returns {*|Promise.<*>}
+	 */
+	delAddress(mts_id, mts_address_id)
+	{
+		let sql = `DELETE FROM motoshop_address WHERE mts_address_id = ?  AND mts_id = ? ;
+		DELETE FROM motoshop_address_locations WHERE mts_address_id = ?;
+		`;
+
+		return this.constructor.conn().multis(sql, [mts_address_id, mts_id, mts_address_id]);
+	}
 }
 //************************************************************************* module.exports
 //писать после class Name....{}
