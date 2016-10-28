@@ -444,8 +444,8 @@ CREATE TABLE `motoshop` (
   `mts_website` varchar(255) NOT NULL DEFAULT '',
   `mts_email` varchar(255) NOT NULL DEFAULT '',
   `mts_descrip` text,
-  `mts_create_ts` int(10) NOT NULL DEFAULT '0',
-  `mts_update_ts` int(10) NOT NULL DEFAULT '0',
+  `mts_create_ts` int(10) unsigned NOT NULL DEFAULT '0',
+  `mts_update_ts` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`mts_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -458,6 +458,67 @@ LOCK TABLES `motoshop` WRITE;
 /*!40000 ALTER TABLE `motoshop` DISABLE KEYS */;
 INSERT INTO `motoshop` VALUES (1,'ПрофМото2','profmoto.ru','info@profmoto.ru','<p>текст&nbsp;profmoto.ru 2</p>',1477486064,1477492985);
 /*!40000 ALTER TABLE `motoshop` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `motoshop_address`
+--
+
+DROP TABLE IF EXISTS `motoshop_address`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `motoshop_address` (
+  `mts_address_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `mts_id` int(10) unsigned NOT NULL,
+  `mts_address_website` varchar(255) NOT NULL DEFAULT '',
+  `mts_address_email` varchar(255) NOT NULL DEFAULT '',
+  `mts_address_phones` varchar(255) NOT NULL DEFAULT '',
+  `mts_address` varchar(255) NOT NULL DEFAULT '',
+  `mts_address_latitude` decimal(10,8) DEFAULT NULL,
+  `mts_address_longitude` decimal(11,8) DEFAULT NULL,
+  `mts_address_gps_lat` varchar(45) NOT NULL DEFAULT '',
+  `mts_address_gps_lng` varchar(45) NOT NULL DEFAULT '',
+  `mts_address_location_id` int(10) unsigned NOT NULL,
+  `mts_address_location_pids` varchar(100) NOT NULL DEFAULT '',
+  `mts_address_create_ts` int(10) unsigned NOT NULL DEFAULT '0',
+  `mts_address_update_ts` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`mts_address_id`),
+  KEY `mts_id` (`mts_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `motoshop_address`
+--
+
+LOCK TABLES `motoshop_address` WRITE;
+/*!40000 ALTER TABLE `motoshop_address` DISABLE KEYS */;
+INSERT INTO `motoshop_address` VALUES (1,1,'profmoto.ru','info@profmoto.ru','+7 (495) 648-13-03','Россия, Москва, Бережковская набережная, 20с53',55.73432900,37.55074700,'55&deg; 44&prime;4&Prime;N','37&deg; 33&prime;3&Prime;E',278,'70,278',1477647051,1477647051);
+/*!40000 ALTER TABLE `motoshop_address` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `motoshop_address_locations`
+--
+
+DROP TABLE IF EXISTS `motoshop_address_locations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `motoshop_address_locations` (
+  `mts_address_id` int(10) unsigned NOT NULL,
+  `l_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`l_id`,`mts_address_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `motoshop_address_locations`
+--
+
+LOCK TABLES `motoshop_address_locations` WRITE;
+/*!40000 ALTER TABLE `motoshop_address_locations` DISABLE KEYS */;
+INSERT INTO `motoshop_address_locations` VALUES (1,70),(1,278);
+/*!40000 ALTER TABLE `motoshop_address_locations` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -687,7 +748,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1477509155,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1477307894,'RoLex',1);
+INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1477647050,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1477307894,'RoLex',1);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3726,4 +3787,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-10-26 22:14:36
+-- Dump completed on 2016-10-28 21:05:14

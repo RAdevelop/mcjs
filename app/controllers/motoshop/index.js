@@ -280,21 +280,21 @@ class Motoshop extends Base
 				if (!motoshop)
 					throw new Errors.HttpStatusError(404, "Not found");
 
-				tplData = this.stripTags(tplData, ["s_address", "s_address_phones", "m_address_email", "link_address_website"]);
+				tplData = this.stripTags(tplData, ["s_mts_address", "s_mts_address_phones", "m_mts_address_email", "link_address_website"]);
 				
 				let errors = {};
 
-				if (!tplData["s_address_phones"])
-					errors["s_address_phones"] = "Укажите телефон(ы)";
+				if (!tplData["s_mts_address_phones"])
+					errors["s_mts_address_phones"] = "Укажите телефон(ы)";
 
 				if (!tplData["link_address_website"])
 					errors["link_address_website"] = "Укажите веб-сайт";
 
-				if (!tplData["m_address_email"])
-					errors["m_address_email"] = "E-mail указан не верно";
+				if (!tplData["m_mts_address_email"])
+					errors["m_mts_address_email"] = "E-mail указан не верно";
 
-				if (!tplData["s_address"] || !tplData["f_address_lat"] || !tplData["f_address_lng"])
-					errors["s_address"] = "Укажите адрес";
+				if (!tplData["s_mts_address"] || !tplData["f_mts_address_lat"] || !tplData["f_mts_address_lng"])
+					errors["s_mts_address"] = "Укажите адрес";
 
 				this.parseFormErrors(tplData, errors, 'Ошибки при заполнении формы');
 
@@ -305,11 +305,11 @@ class Motoshop extends Base
 				return this.getClass('motoshop').addAddress(
 					tplData["i_mts_id"],
 					tplData["link_address_website"],
-					tplData["m_address_email"],
-					tplData["s_address_phones"],
-					tplData["s_address"],
-					tplData["f_address_lat"],
-					tplData["f_address_lng"]
+					tplData["m_mts_address_email"],
+					tplData["s_mts_address_phones"],
+					tplData["s_mts_address"],
+					tplData["f_mts_address_lat"],
+					tplData["f_mts_address_lng"]
 				)
 					.then(function ()
 					{

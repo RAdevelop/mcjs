@@ -92,9 +92,63 @@ class Motoshop extends BaseModel
 	 */
 	addAddress(mts_id, mts_address_website, mts_address_email, mts_address_phones, mts_address, mts_address_lat, mts_address_lng, gps_lat, gps_lng, location_id)
 	{
-		console.log(mts_id, mts_address_website, mts_address_email, mts_address_phones, mts_address, mts_address_lat, mts_address_lng, gps_lat, gps_lng, location_id);
+		let sql = `INSERT INTO motoshop_address (mts_id, mts_address_website, mts_address_email, mts_address_phones, mts_address, 
+		mts_address_latitude, mts_address_longitude, mts_address_gps_lat, mts_address_gps_lng, mts_address_location_id, 
+		mts_address_create_ts, mts_address_update_ts) 
+		VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-		return Promise.resolve(mts_id);
+		let now_ts = Moment().unix();
+		let sqlData = [
+			mts_id, mts_address_website, mts_address_email, mts_address_phones, mts_address, mts_address_lat,
+			mts_address_lng, gps_lat, gps_lng, location_id, now_ts, now_ts
+		];
+
+		let mts_address_id;
+
+		return this.constructor.conn().ins(sql, sqlData)
+			.bind(this)
+			.then(function (res)
+			{
+				mts_address_id = res["insertId"];
+
+				sql = "SELECT l_lk, l_rk FROM location WHERE l_id = ?;";
+
+				return this.constructor.conn().sRow(sql, [location_id]);
+			})
+			.then(function (res)
+			{
+				let {l_lk, l_rk} = res;
+
+				sql = "SELECT l_id FROM location WHERE l_lk <= ? AND l_rk >= ? ORDER BY l_lk;";
+				return this.constructor.conn().s(sql, [l_lk, l_rk]);
+			})
+			.then(function (res)
+			{
+				let sqlIns = [], sqlData = [mts_address_id], pids = [];
+				res.forEach(function (item)
+				{
+					sqlIns.push("(?, ?)");
+					sqlData.push(mts_address_id, item["l_id"]);
+					pids.push(item["l_id"]);
+				});
+
+				sql = "DELETE FROM motoshop_address_locations WHERE mts_address_id = ?;";
+
+				sql += "INSERT INTO motoshop_address_locations (mts_address_id, l_id) " +
+					"VALUES " +sqlIns.join(',')+ "" +
+					" ON DUPLICATE KEY UPDATE l_id=VALUES(l_id);";
+
+				sql += "UPDATE motoshop_address SET mts_address_location_pids = ? WHERE mts_address_id = ?;";
+				sqlData.push(pids.join(','), mts_address_id);
+
+				return this.constructor.conn().multis(sql, sqlData);
+			})
+			.then(function ()
+			{
+				return Promise.resolve(mts_address_id);
+			});
+
+		return Promise.resolve(mts_address_id);
 	}
 }
 //************************************************************************* module.exports

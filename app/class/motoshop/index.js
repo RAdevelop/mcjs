@@ -86,7 +86,7 @@ class Motoshop extends Base
 			})
 			.then(function (location_id)
 			{
-				let {gps_lat, gps_lng} = this.getClass('location').coordConvert(f_mtt_lat, f_mtt_lng);
+				let {gps_lat, gps_lng} = this.getClass('location').coordConvert(mts_address_lat, mts_address_lng);
 
 				return this.model("motoshop").addAddress(mts_id, mts_address_website, mts_address_email, mts_address_phones, mts_address, mts_address_lat, mts_address_lng, gps_lat, gps_lng, location_id);
 			});
