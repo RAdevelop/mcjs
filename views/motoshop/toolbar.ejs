@@ -4,9 +4,9 @@
 			<button type="button" class="btn btn-default dropdown-toggle toolbarBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-fw fa-cog"></i> опции <i class="caret"></i></button>
 			<ul class="dropdown-menu ">
 				<li><a href="<%=menuItem.m_path+'/add/'%>" ><i class="fa fa-fw fa-plus-square-o"></i> добавить мотосалон</a></li>
-				<% if (motoshop && motoshop.mtt_id) {%>
-				<li><a href="<%=menuItem.m_path+'/edit/'+motoshop.mtt_id%>/"><i class="fa fa-fw fa-edit"></i> редактировать мотосалон</a></li>
-				<li><a href="#"><i class="fa fa-fw fa-edit"></i> удалить мотосалон</a></li>
+				<% if (motoshop && motoshop["mts_id"]) {%>
+				<li><a href="<%=menuItem.m_path+'/edit/'+motoshop["mts_id"]%>/"><i class="fa fa-fw fa-edit"></i> редактировать мотосалон</a></li>
+				<li><a href="javascript:void(0)" class="_js_motoshop_tools" data-action="delete"><i class="fa fa-fw fa-trash-o"></i> удалить мотосалон</a></li>
 				<% }%>
 			</ul>
 		</div>
@@ -18,3 +18,85 @@
 		</div>
 	</div>
 </div>
+<script type="text/javascript">
+//<!--
+(function($)
+{
+	$('._js_motoshop_tools').click(function (event)
+	{
+		event.preventDefault();
+		event.stopPropagation();
+		var $this = $(this);
+
+		switch($this.data('action'))
+		{
+			case 'delete':
+				deleteMotoshop(MCJS['motoshop']||{});
+				break;
+		}
+	});
+
+	function deleteMotoshop(motoshop)
+	{
+		if (!motoshop["mts_id"])
+			return;
+
+		var formDel = 'formDelMotoshop';
+		var btnName = 'btn_del_motoshop';
+		var html = '<form class="form-horizontal" action="<%=menuItem.m_path%>/edit/" method="post" id="'+formDel+'">' +
+				'<input type="hidden" name="btn_save_motoshop" value="delete"/>' +
+				'<input type="hidden" name="i_mts_id" value="'+motoshop["mts_id"]+'"/>' +
+				'<div class="form-group"><div class="col-sm-12 text-center">Удалить мотосалон: ' + motoshop["mts_name"] + '?</div>' +
+				'</div></form>';
+
+		$('__del_motoshop_dialog__').mcDialog({
+			title: 'Удаление мотосалона'
+			, body: html
+			, onOpen: function ($dialog)
+			{
+				$dialog.find('#'+formDel).postRes({
+					btnId: $dialog.find('#'+btnName),
+					onSuccess: function($respDialog, resp)
+					{
+						if (resp.hasOwnProperty("formError") && resp["formError"].hasOwnProperty("error") && !resp["formError"]["error"])
+						{
+							window.location.href = '<%=menuItem.m_path%>';
+							return false;//не показать диалог
+						}
+						return true;
+					},
+					onFail: function ($respDialog, resp)
+					{
+						$dialog.hide();
+						return true;
+					},
+					onClose: function ($respDialog)
+					{
+						$dialog.show();
+					}
+				});
+			}
+			, buttons: [
+				{
+					title: 'да'
+					, name: btnName
+					, cssClass: 'btn-success'
+				},
+				{
+					title: 'нет'
+					,name: 'btn_del_event_cancel'
+					,cssClass: 'btn-danger'
+					,func:
+					{
+						"click": function(event)
+						{
+							$(event.data[0]).modal('hide');
+						}
+					}
+				}
+			]
+		});
+	}
+})(jQuery);
+//-->
+</script>

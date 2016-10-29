@@ -82,6 +82,11 @@ body {
 body.mc-project {
   padding-top: 100px;
 }
+@media (max-width: 480px) and (orientation: portrait) {
+  body.mc-project {
+    padding-top: 150px;
+  }
+}
 
 /******************************** TinyMCE редактор */
 body.mce-content-body,
@@ -1405,9 +1410,27 @@ iframe.iframeVideoEmbed {
 
 /**********  мотосалоны **************/
 .motoshopAddressList .motoshopAddress {
-  max-width: calc(33%);
-  max-width: -moz-calc(33%);
-  max-width: -webkit-calc(33%);
+  max-width: calc(30%);
+  max-width: -moz-calc(30%);
+  max-width: -webkit-calc(30%);
+  float: left;
+  margin: 0 10px 10px 0;
+  overflow: hidden;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  border-radius: 5px;
+  padding: 3px;
+}
+.motoshopAddressList .motoshopAddress:hover {
+  background-color: #e2e2e2;
+}
+@media (max-width: 480px) {
+  .motoshopAddressList .motoshopAddress {
+    max-width: calc(100%);
+    max-width: -moz-calc(100%);
+    max-width: -webkit-calc(100%);
+  }
 }
 .motoshopAddressList .motoshopAddressTools {
   border: 1px dashed #e2e2e2;

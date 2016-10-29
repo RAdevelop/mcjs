@@ -147,8 +147,76 @@ class Motoshop extends BaseModel
 			{
 				return Promise.resolve(mts_address_id);
 			});
+	}
 
-		return Promise.resolve(mts_address_id);
+	/**
+	 * редактируем адрес
+	 *
+	 * @param mts_address_id
+	 * @param mts_address_website
+	 * @param mts_address_email
+	 * @param mts_address_phones
+	 * @param mts_address
+	 * @param mts_address_lat
+	 * @param mts_address_lng
+	 * @param gps_lat
+	 * @param gps_lng
+	 * @param location_id
+	 * @returns {Promise.<*>}
+	 */
+	editAddress(mts_address_id, mts_address_website, mts_address_email, mts_address_phones, mts_address, mts_address_lat, mts_address_lng, gps_lat, gps_lng, location_id)
+	{
+		let sql = `UPDATE motoshop_address SET mts_address_website = ?, mts_address_email = ?, mts_address_phones = ?, mts_address = ?, 
+		mts_address_latitude = ?, mts_address_longitude = ?, mts_address_gps_lat = ?, mts_address_gps_lng = ?, mts_address_location_id = ?, 
+		mts_address_update_ts = ?
+		WHERE mts_address_id = ?`;
+
+		let now_ts = Moment().unix();
+		let sqlData = [
+			mts_address_website, mts_address_email, mts_address_phones, mts_address, mts_address_lat,
+			mts_address_lng, gps_lat, gps_lng, location_id, now_ts, mts_address_id
+		];
+
+		return this.constructor.conn().upd(sql, sqlData)
+			.bind(this)
+			.then(function ()
+			{
+				sql = "SELECT l_lk, l_rk FROM location WHERE l_id = ?;";
+
+				return this.constructor.conn().sRow(sql, [location_id]);
+			})
+			.then(function (res)
+			{
+				let {l_lk, l_rk} = res;
+
+				sql = "SELECT l_id FROM location WHERE l_lk <= ? AND l_rk >= ? ORDER BY l_lk;";
+				return this.constructor.conn().s(sql, [l_lk, l_rk]);
+			})
+			.then(function (res)
+			{
+				let sqlIns = [], sqlData = [mts_address_id], pids = [];
+				res.forEach(function (item)
+				{
+					sqlIns.push("(?, ?)");
+					sqlData.push(mts_address_id, item["l_id"]);
+					pids.push(item["l_id"]);
+				});
+
+				sql = "DELETE FROM motoshop_address_locations WHERE mts_address_id = ?;";
+
+				sql += "INSERT INTO motoshop_address_locations (mts_address_id, l_id) " +
+					"VALUES " +sqlIns.join(',')+ "" +
+					" ON DUPLICATE KEY UPDATE l_id=VALUES(l_id);";
+
+				sql += "UPDATE motoshop_address SET mts_address_location_pids = ? WHERE mts_address_id = ?;";
+				sqlData.push(pids.join(','), mts_address_id);
+
+				return this.constructor.conn().multis(sql, sqlData);
+			})
+			.then(function ()
+			{
+				return Promise.resolve(mts_address_id);
+			});
 	}
 
 	/**
@@ -170,6 +238,62 @@ class Motoshop extends BaseModel
 	}
 
 	/**
+	 * удаляем мотосалон
+	 *
+	 * @param mts_id
+	 * @returns {*|Promise.<*>}
+	 */
+	delMotoshop(mts_id)
+	{
+		return this.getMotoshopAddressList(mts_id)
+			.bind(this)
+			.then(function(address_list){
+
+				let mtsAids = [];
+				if (address_list.length)
+				{
+					address_list.forEach(function (item)
+					{
+						mtsAids.push(item["mts_address_id"]);
+					});
+				}
+
+				let sqlData = [];
+				let sql = ``;
+				if (mtsAids.length)
+				{
+					sqlData = sqlData.concat(mtsAids);
+					sqlData.push(mts_id);
+					sqlData = sqlData.concat(mtsAids);
+
+					let inMtsAids = this.constructor.placeHoldersForIn(mtsAids);
+					sql = `DELETE FROM motoshop_address WHERE mts_address_id IN(${inMtsAids}) AND mts_id = ?;
+					DELETE FROM motoshop_address_locations WHERE mts_address_id IN(${inMtsAids});`;
+				}
+
+				sqlData.push(mts_id);
+				sql += `DELETE FROM motoshop WHERE mts_id = ?;`;
+
+				/*console.log(sqlData);
+				console.log(sql);*/
+
+				return this.constructor.conn().multis(sql, sqlData)
+					.then(function ()
+					{
+						return Promise.resolve(mts_id);
+					});
+
+
+				/*START TRANSACTION;
+				DELETE FROM  myTable where date = '2014-07-23';
+				INSERT INTO myTable (date,device_type,software_version,operation,bucket,bucket_count,metric_count)
+				values ('2014-07-23','XXXXX1','13.4.1.0','Discharge','1','1','2'),('2014-07-23','XXXXX2','14.4.1.0','Discharge2','0','1','1');
+				commit ;*/
+
+			});
+	}
+
+	/**
 	 * удаляем адрес
 	 *
 	 * @param mts_id
@@ -178,9 +302,8 @@ class Motoshop extends BaseModel
 	 */
 	delAddress(mts_id, mts_address_id)
 	{
-		let sql = `DELETE FROM motoshop_address WHERE mts_address_id = ?  AND mts_id = ? ;
-		DELETE FROM motoshop_address_locations WHERE mts_address_id = ?;
-		`;
+		let sql = `DELETE FROM motoshop_address WHERE mts_address_id = ? AND mts_id = ? ;
+		DELETE FROM motoshop_address_locations WHERE mts_address_id = ?;`;
 
 		return this.constructor.conn().multis(sql, [mts_address_id, mts_id, mts_address_id]);
 	}

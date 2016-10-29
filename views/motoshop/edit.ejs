@@ -48,7 +48,7 @@
 			<p class="text-center">
 				<a class="btn btn-primary btn-sm _js_address_tools" href="javascript:void(0);" data-action="add_address" role="button">добавить новый адрес</a>
 			</p>
-			<div class="motoshopAddressList">
+			<div class="motoshopAddressList _js_motoshopAddressList">
 			<% motoshop.address_list.forEach(function (address)
 			{
 				%>
@@ -282,11 +282,11 @@
 		switch($this.data('action'))
 		{
 			case 'add_address':
-				showAddressForm('add_address');
+				showAddressForm($this, 'add_address');
 				break;
 
 			case 'edit_address':
-				showAddressForm('edit_address', getAddressData($this.data('mtsaId')));
+				showAddressForm($this, 'edit_address', getAddressData($this.data('mtsaId')));
 				break;
 
 			case 'del_address':
@@ -372,9 +372,10 @@
 		return aData;
 	}
 
-	function showAddressForm(action, addressData)
+	function showAddressForm($tool, action, addressData)
 	{
 		addressData = addressData || {};
+		addressData["mts_id"]				= addressData["mts_id"]					|| MCJS["motoshop"]["mts_id"];
 		addressData["mts_address_website"]	= addressData["mts_address_website"]	|| MCJS["motoshop"]["mts_website"];
 		addressData["mts_address_email"]	= addressData["mts_address_email"]		|| MCJS["motoshop"]["mts_email"];
 		addressData["mts_address_phones"] 	= addressData["mts_address_phones"]		|| '';
@@ -385,7 +386,8 @@
 		var htmlForm = '<form class="form-horizontal" action="<%=menuItem.m_path+'/'+_action%>/" method="post" id="formAddressMts">';
 			htmlForm += '<p class="text-center">Для каждого адреса можно задать свои: веб-сайт, e-mail, телефоны.<br/>По умолчанию, будут использоваться веб-сайт и e-mail, указанные в основных данных.</p>';
 			htmlForm += '<input type="hidden" name="btn_save_motoshop" value="'+action+'"/>';
-			htmlForm += '<input type="hidden" name="i_mts_id" value="<%=motoshop.mts_id%>"/>';
+			htmlForm += '<input type="hidden" name="i_mts_id" value="'+addressData["mts_id"]+'"/>';
+			htmlForm += '<input type="hidden" name="i_mts_address_id" value="'+addressData["mts_address_id"]+'"/>';
 			htmlForm += '<div class="form-group s_address_website">';
 				htmlForm += '<label class="col-sm-2 control-label">веб-сайт</label>';
 				htmlForm += '<div class="col-sm-10 link_address_website">';
@@ -419,8 +421,10 @@
 
 		htmlForm += '</form>';
 
-		var title = (action == 'add_address' ? 'Добавить' : 'Изменить') + ' адрес';
-			title += (action == 'add_address' ? '' : ': '+addressData["mts_address"]);
+		let addMode = (action == 'add_address');
+
+		var title = (addMode ? 'Добавить' : 'Изменить') + ' адрес';
+			title += (addMode ? '' : ': '+addressData["mts_address"]);
 
 		$('__address_form__').mcDialog({
 			title: title
@@ -436,18 +440,38 @@
 					{
 						console.log(resp);
 
+						var htmlAddress = '<div class="motoshopAddress">';
+								htmlAddress += '<div class="motoshopAddressTools">';
+									htmlAddress += '<a class="btn btn-default btn-xs _js_address_tools" href="javascript:void(0);" data-mtsa-id="'+resp["i_mts_address_id"]+'" data-action="edit_address" role="button">редактировать</a>';
+									htmlAddress += '<a class="btn btn-default btn-xs _js_address_tools" href="javascript:void(0);" data-mtsa-id="'+resp["i_mts_address_id"]+'" data-action="del_address" role="button">удалить</a>';
+								htmlAddress += '</div>';
+							htmlAddress += '<div>'+resp["s_mts_address"]+'</div>';
+							htmlAddress += '<div>'+resp["link_address_website"]+'</div>';
+							htmlAddress += '<div>'+resp["m_mts_address_email"]+'</div>';
+							htmlAddress += '<div>'+resp["s_mts_address_phones"]+'</div>';
+						htmlAddress += '</div>';
+
 						if (resp.hasOwnProperty("formError") && resp["formError"].hasOwnProperty("error") && !resp["formError"]["error"])
 						{
-							//window.location.href
+							if (addMode)
+							{
+								updateJsMotoshopData(resp, true);
+								$('._js_motoshopAddressList').prepend(htmlAddress);
+							}
+							else
+							{
+								updateJsMotoshopData(resp, false);
+								$tool.parent().parent().replaceWith(htmlAddress);
+							}
+
+							$dialog.modal('hide');
 							return false;//не показать диалог
 						}
-						else
-						{
-							return true;
-						}
+						return true;
 					},
 					onFail: function ($respDialog, resp)
 					{
+						//$dialog.modal('hide');
 						$dialog.hide();
 						return true;
 					},
@@ -477,6 +501,47 @@
 				}
 			]
 		});
+	}
+
+	function updateJsMotoshopData(respData, addMode)
+	{
+		if (!MCJS['motoshop'])
+			MCJS['motoshop'] = {};
+
+		if (!MCJS['motoshop']['address_list'])
+			MCJS['motoshop']['address_list'] = [];
+
+		if (addMode)
+		{
+			MCJS['motoshop']['address_list'].push({
+
+				mts_address:			respData['s_mts_address'],
+				mts_address_email:		respData['m_mts_address_email'],
+				mts_address_id: 		respData['i_mts_address_id'],
+				mts_address_latitude: 	respData['f_mts_address_lat'],
+				mts_address_longitude:	respData['f_mts_address_lng'],
+				mts_address_phones:		respData['s_mts_address_phones'],
+				mts_address_website:	respData['link_address_website'],
+				mts_id:					respData['i_mts_id']
+			});
+		}
+		else
+		{
+			$.each(MCJS['motoshop']['address_list'], function (i, item)
+			{
+				if (item['mts_address_id'] == respData['i_mts_address_id'])
+				{
+					MCJS['motoshop']['address_list'][i]['mts_address']				= respData['s_mts_address'];
+					MCJS['motoshop']['address_list'][i]['mts_address_email']		= respData['m_mts_address_email'];
+					//MCJS['motoshop']['address_list'][i]['mts_address_id']			= respData['i_mts_address_id'];
+					MCJS['motoshop']['address_list'][i]['mts_address_latitude']		= respData['f_mts_address_lat'];
+					MCJS['motoshop']['address_list'][i]['mts_address_longitude']	= respData['f_mts_address_lng'];
+					MCJS['motoshop']['address_list'][i]['mts_address_phones']		= respData['s_mts_address_phones'];
+					MCJS['motoshop']['address_list'][i]['mts_address_website']		= respData['link_address_website'];
+					//MCJS['motoshop']['address_list'][i]['mts_id']					= respData['i_mts_id'];
+				}
+			});
+		}
 	}
 
 })(jQuery);

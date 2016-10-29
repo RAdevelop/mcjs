@@ -456,7 +456,6 @@ CREATE TABLE `motoshop` (
 
 LOCK TABLES `motoshop` WRITE;
 /*!40000 ALTER TABLE `motoshop` DISABLE KEYS */;
-INSERT INTO `motoshop` VALUES (1,'ПрофМото','profmoto.ru','info@profmoto.ru','<p>текст&nbsp;profmoto.ru 2</p>',1477486064,1477693336);
 /*!40000 ALTER TABLE `motoshop` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -484,7 +483,7 @@ CREATE TABLE `motoshop_address` (
   `mts_address_update_ts` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`mts_address_id`),
   KEY `mts_id` (`mts_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -746,7 +745,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1477693336,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1477307894,'RoLex',1);
+INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1477760672,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1477307894,'RoLex',1);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3785,4 +3784,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-10-29  1:23:09
+-- Dump completed on 2016-10-29 20:06:10

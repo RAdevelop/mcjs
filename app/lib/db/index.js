@@ -61,6 +61,17 @@ class DB
 	}
 
 	/**
+	 * возвращает строку вида ?,?,?,...
+	 *
+	 * @param arr
+	 * @returns {string}
+	 */
+	static placeHoldersForIn(arr)
+	{
+		return (new Array(arr.length)).fill('?').join(',');
+	}
+
+	/**
 	 *
 	 * выполнение sql запроса типа "select ..."
 	 *

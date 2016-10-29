@@ -2,7 +2,22 @@
 .motoshopAddressList
 {
   & .motoshopAddress {
-    @include mix-max-width-calc(33%);
+    @include mix-max-width-calc(30%);
+    float: left;
+    margin: 0 10px 10px 0;
+    overflow: hidden;
+    @include mix-border-radius(5px);
+    padding: 3px;
+
+    &:hover {
+      background-color: #e2e2e2;
+    }
+
+    @media (max-width: $screen-xs-min) {
+      & {
+        @include mix-max-width-calc(100%);
+      }
+    }
   }
 
   & .motoshopAddressTools {

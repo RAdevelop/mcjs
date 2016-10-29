@@ -192,7 +192,7 @@ class Events extends BaseModel
 			, IF(l.l_rk - l.l_lk = 0, 0, 1) AS l_has_child
 			, IF(ln.l_kind = 'country', 0, IF(ln.l_kind = 'province', 1, IF(ln.l_kind = 'locality' AND l.l_level < 3, 1, 2))) AS l_e_level
 			 FROM events_locations AS el
-			 JOIN location_names AS ln ON(el.l_id = ln.l_id  AND ln.l_kind IN (${(new Array(kinds.length)).fill('?').join(',')}))
+			 JOIN location_names AS ln ON(el.l_id = ln.l_id  AND ln.l_kind IN(${(new Array(kinds.length)).fill('?').join(',')}))
 			 JOIN location AS l ON(l.l_id = ln.l_id)
 			 GROUP BY el.l_id
 			 ORDER BY l.l_lk`;//, ln.l_name

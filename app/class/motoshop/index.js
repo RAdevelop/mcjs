@@ -39,6 +39,9 @@ class Motoshop extends Base
 			.bind(this)
 			.then(function (motoshop)
 			{
+				if (!motoshop)
+					return Promise.resolve(motoshop);
+				
 				return this.model("motoshop").getMotoshopAddressList(mts_id)
 					.then(function (addressList)
 					{
@@ -95,6 +98,51 @@ class Motoshop extends Base
 
 				return this.model("motoshop").addAddress(mts_id, mts_address_website, mts_address_email, mts_address_phones, mts_address, mts_address_lat, mts_address_lng, gps_lat, gps_lng, location_id);
 			});
+	}
+
+	/**
+	 * редактируем адрес
+	 *
+	 * @param mts_address_id
+	 * @param mts_address_website
+	 * @param mts_address_email
+	 * @param mts_address_phones
+	 * @param mts_address
+	 * @param mts_address_lat
+	 * @param mts_address_lng
+	 */
+	editAddress(mts_address_id, mts_address_website, mts_address_email, mts_address_phones, mts_address, mts_address_lat, mts_address_lng)
+	{
+		return Promise.resolve(mts_address)
+			.bind(this)
+			.then(function (mts_address)
+			{
+				const self = this;
+
+				return this.getClass('location').geoCoder(mts_address)
+					.then(function (locationData)
+					{
+						//возвращает location_id
+						return self.getClass('location').create(locationData);
+					});
+			})
+			.then(function (location_id)
+			{
+				let {gps_lat, gps_lng} = this.getClass('location').coordConvert(mts_address_lat, mts_address_lng);
+
+				return this.model("motoshop").editAddress(mts_address_id, mts_address_website, mts_address_email, mts_address_phones, mts_address, mts_address_lat, mts_address_lng, gps_lat, gps_lng, location_id);
+			});
+	}
+
+	/**
+	 * удаляем мотосалон
+	 *
+	 * @param mts_id
+	 * @returns {*|Promise.<*>}
+	 */
+	delMotoshop(mts_id)
+	{
+		return this.model("motoshop").delMotoshop(mts_id);
 	}
 
 	/**

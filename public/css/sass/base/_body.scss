@@ -4,6 +4,12 @@ body {
   &.mc-project
   {
     padding-top: 100px;
+
+    @media (max-width: $screen-xs-min) and (orientation: portrait) {
+      & {
+        padding-top: 150px;
+      }
+    }
   }
 }
 /******************************** TinyMCE редактор */
@@ -13,3 +19,19 @@ body.mce-content-body,
   padding: 0;
 }
 /******************************** END TinyMCE редактор */
+
+@media (min-width: $screen-xs-min) {
+
+}
+
+@media (min-width: $screen-sm-min) {
+
+}
+
+@media (min-width: $screen-md-min) {
+
+}
+
+@media (min-width: $screen-lg-min) {
+
+}

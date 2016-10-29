@@ -191,12 +191,20 @@ class Motoshop extends Base
 				return this.edit(tplData);
 				break;
 
+			case 'delete':
+				return this.delMotoshop(tplData);
+				break;
+
 			case 'add_address':
 				return this.addAddress(tplData);
 				break;
 			
 			case 'del_address':
 				return this.delAddress(tplData);
+				break;
+
+			case 'edit_address':
+				return this.editAddress(tplData);
 				break;
 		}
 	}
@@ -315,6 +323,88 @@ class Motoshop extends Base
 					tplData["f_mts_address_lat"],
 					tplData["f_mts_address_lng"]
 				)
+					.then(function (i_mts_address_id)
+					{
+						tplData['i_mts_address_id'] = i_mts_address_id;
+						return Promise.resolve(tplData);
+					});
+			})
+			.then(function (tplData)
+			{
+				this.view.setTplData(tplFile, tplData);
+
+				return Promise.resolve(true);
+			})
+			.catch(Errors.ValidationError, function (err) //такие ошибки не уводят со страницы
+			{
+				this.view.setTplData(tplFile, err.data);
+
+				return Promise.resolve(true);
+			})
+			.catch(function (err)
+			{
+				throw err;
+			});
+	}
+
+	/**
+	 * редактируем адрес
+	 *
+	 * @param tplData
+	 */
+	editAddress(tplData)
+	{
+		let tplFile = "motoshop/edit.ejs";
+
+		return this.getClass('motoshop').getMotoshop(tplData["i_mts_id"])
+			.bind(this)
+			.then(function (motoshop)
+			{
+				if (!motoshop)
+					throw new Errors.HttpStatusError(404, "Not found");
+
+				let found = false;
+
+				motoshop["address_list"].forEach(function (item)
+				{
+					if (item["mts_address_id"] == tplData["i_mts_address_id"])
+						found = true;
+				});
+
+				if (!found)
+					throw new Errors.HttpStatusError(404, "Not found");
+
+				tplData = this.stripTags(tplData, ["s_mts_address", "s_mts_address_phones", "m_mts_address_email", "link_address_website"]);
+
+				let errors = {};
+
+				if (!tplData["s_mts_address_phones"])
+					errors["s_mts_address_phones"] = "Укажите телефон(ы)";
+
+				if (!tplData["link_address_website"])
+					errors["link_address_website"] = "Укажите веб-сайт";
+
+				if (!tplData["m_mts_address_email"])
+					errors["m_mts_address_email"] = "E-mail указан не верно";
+
+				if (!tplData["s_mts_address"] || !tplData["f_mts_address_lat"] || !tplData["f_mts_address_lng"])
+					errors["s_mts_address"] = "Укажите адрес";
+
+				this.parseFormErrors(tplData, errors, 'Ошибки при заполнении формы');
+
+				return Promise.resolve(tplData);
+			})
+			.then(function (tplData)
+			{
+				return this.getClass('motoshop').editAddress(
+					tplData["i_mts_address_id"],
+					tplData["link_address_website"],
+					tplData["m_mts_address_email"],
+					tplData["s_mts_address_phones"],
+					tplData["s_mts_address"],
+					tplData["f_mts_address_lat"],
+					tplData["f_mts_address_lng"]
+				)
 					.then(function ()
 					{
 						return Promise.resolve(tplData);
@@ -339,8 +429,43 @@ class Motoshop extends Base
 	}
 
 	/**
+	 * удаляем мотосалон
+	 *
+	 * @param tplData
+	 * @returns {Promise.<T>}
+	 */
+	delMotoshop(tplData)
+	{
+		let tplFile = "motoshop/edit.ejs";
+
+		return this.getClass('motoshop').getMotoshop(tplData["i_mts_id"])
+			.bind(this)
+			.then(function (motoshop)
+			{
+				if (!motoshop)
+					throw new Errors.HttpStatusError(404, "Not found");
+
+				return this.getClass('motoshop').delMotoshop(tplData["i_mts_id"])
+					.then(function ()
+					{
+						return Promise.resolve(tplData);
+					});
+			})
+			.then(function (tplData)
+			{
+				this.view.setTplData(tplFile, tplData);
+
+				return Promise.resolve(true);
+			})
+			.catch(function (err)
+			{
+				throw err;
+			});
+	}
+
+	/**
 	 * удаляем адрес
-	 * 
+	 *
 	 * @param tplData
 	 * @returns {Promise.<T>}
 	 */
