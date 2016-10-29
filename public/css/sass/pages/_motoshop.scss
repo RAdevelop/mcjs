@@ -1,25 +1,56 @@
 /**********  мотосалоны **************/
-.motoshopAddressList
-{
-  & .motoshopAddress {
-    @include mix-max-width-calc(30%);
-    float: left;
-    margin: 0 10px 10px 0;
-    overflow: hidden;
-    @include mix-border-radius(5px);
-    padding: 3px;
 
-    &:hover {
-      background-color: #e2e2e2;
-    }
+.motoshopMap {
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+#mtsMap {
+  height: 250px;
+}
 
-    @media (max-width: $screen-xs-min) {
-      & {
-        @include mix-max-width-calc(100%);
-      }
-    }
+.motoshopAddress {
+  @include mix-width-calc(30%);
+  @include mix-min-height-calc(152px);
+  float: left;
+  margin: 0 0px 10px 15px;
+  overflow: hidden;
+  border: 1px solid #e2e2e2;
+  @include mix-border-radius(5px);
+  padding: 3px;
+
+  &:hover {
+    background-color: #e2e2e2;
   }
 
+  & .mts-address {
+    font-weight: bold;
+  }
+
+  & .mts-address-website {
+    @extend .mts-address;
+    padding-right: 11px;
+  }
+
+  & .mts-address-email {
+    @extend .mts-address;
+    padding-right: 2px;
+  }
+
+  & .mts-address-phones {
+    @extend .mts-address;
+    padding-right: 15px;
+  }
+
+  @media (max-width: $screen-xs-min) {
+    & {
+      @include mix-width-calc(90%);
+      @include mix-min-height-calc(100%);
+    }
+  }
+}
+
+.motoshopAddressList
+{
   & .motoshopAddressTools {
     border: 1px dashed #e2e2e2;
   }

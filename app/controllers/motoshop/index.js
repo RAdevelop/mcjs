@@ -18,7 +18,7 @@ class Motoshop extends Base
 	{
 		return {
 			"index": {
-				'^\/?[0-9]*\/?$': ['i_mts_id']
+				'^\/?[0-9]+\/\\S+\/?$': ['i_mts_id','s_mts_alias']
 			},
 			"add": {
 				'^\/?$': null
@@ -38,11 +38,174 @@ class Motoshop extends Base
 	 */
 	indexActionGet()
 	{
-		this.view.setTplData("motoshop", {});
-		//this.view.addPartialData("user/left", {user: userData});
-		//this.view.addPartialData("user/right", {title: 'right_col'});
+		let {i_mts_id} = this.routeArgs;
+		
+		return this.motoshopData(i_mts_id)
+			.bind(this)
+			.spread(function(motoshop, motoshopList)
+			{
+				let tplData = {};
+				
+				tplData.motoshop = motoshop || null;
+				tplData.motoshopList = motoshopList || null;
+				
+				let tplFile = "motoshop";
+				if (motoshop)
+				{
+					this.getRes().expose(motoshop, 'motoshop');
+					
+					this.view.setPageTitle(motoshop["mts_name"]);
+					this.view.setPageH1(motoshop["mts_name"]);
+					this.view.setPageDescription(this.cheerio(motoshop["mts_descrip"]).text());
+				}
+				else
+				{
+					this.getRes().expose(motoshopList, 'motoshopList');
+					//this.getRes().expose(motoshopLocations, 'motoshopLocations');
+				}
+				
+				this.view.setTplData(tplFile, tplData);
+				
+				return Promise.resolve(null);
+			})
+			.catch(function(err)
+			{
+				throw err;
+			});
+	}
 
-		return Promise.resolve(null);
+	/**
+	 * что показывать - указанный салон, или список ...
+	 *
+	 * @param i_mts_id
+	 * @returns {Promise}
+	 */
+	motoshopData(i_mts_id)
+	{
+		if (i_mts_id)
+			return this.motoshop(i_mts_id);
+
+		return this.motoshopList();
+	}
+
+	/**
+	 * выбранный салон
+	 *
+	 * @param i_mts_id
+	 * @returns Promise spread data [trek, motoshopList]
+	 * @throws Errors.HttpStatusError
+	 */
+	motoshop(i_mts_id)
+	{
+		let {s_mts_alias=null} = this.routeArgs;
+
+		return this.getClass('motoshop').getMotoshop(i_mts_id)
+			.then(function (motoshop)
+			{
+				if (!motoshop || s_mts_alias != motoshop["mts_alias"])
+					throw new Errors.HttpStatusError(404, "Not found");
+
+				return Promise.resolve([motoshop, null]);
+			});
+	}
+
+	/**
+	 * список салонов
+	 *
+	 * @returns Promise spread data [motoshop, motoshopList]
+	 */
+	motoshopList()
+	{
+		return Promise.props({
+			motoshopList: this.getClass("motoshop").getAll(),
+			motoshopLocations: this.getClass("motoshop").getLocations()
+		})
+			.then(function (proprs)
+			{
+				proprs.motoshopLocations = proprs.motoshopLocations.reverse();
+				proprs.motoshopList = proprs.motoshopList.reverse();
+
+				let length = proprs.motoshopList.length;
+
+				for(let t = 0; t < length; t++)
+				{
+					for(let l = 0; l < proprs.motoshopLocations.length; l++)
+					{
+						if (
+							proprs.motoshopList.hasOwnProperty(t)
+							&&	proprs.motoshopList[t]["mts_address_location_id"] == proprs.motoshopLocations[l]["l_id"]
+						)
+						{
+							if (!proprs.motoshopLocations[l].hasOwnProperty("treks"))
+								proprs.motoshopLocations[l]["treks"] = [];
+
+							proprs.motoshopLocations[l]["treks"].push(proprs.motoshopList[t]);
+
+							proprs.motoshopList.splice(t, 1);
+
+							length--;
+							t--;
+						}
+					}
+				}
+
+				length = proprs.motoshopList.length;
+
+				for(let t = 0; t < length; t++)
+				{
+					let pids = (proprs.motoshopList[t]["mtt_location_pids"]).split(',');
+
+					for(let l = 0; l < proprs.motoshopLocations.length; l++)
+					{
+
+						let last = pids.lastIndexOf(proprs.motoshopLocations[l]["l_id"]);
+
+						if (last == -1)
+							continue;
+
+						if (!proprs.motoshopLocations[l].hasOwnProperty("treks"))
+							proprs.motoshopLocations[l]["treks"] = [];
+
+						proprs.motoshopLocations[l]["treks"].push(proprs.motoshopList[t]);
+
+						proprs.motoshopList.splice(t, 1);
+
+						length--;
+						t--;
+
+						break;
+					}
+				}
+
+				proprs.motoshopLocations = proprs.motoshopLocations.reverse();
+
+
+				let pIndex, motoshopList = [];
+				proprs.motoshopLocations.forEach(function (locItem, locIndex, locNames)
+				{
+					if (locItem["l_mtt_level"] <= 1)
+					{
+						if (locItem["l_mtt_level"] == 1)
+						{
+							pIndex = locIndex;
+
+							if (!locNames[pIndex].hasOwnProperty("child"))
+								locNames[pIndex]["child"] = [];
+						}
+
+						motoshopList.push(locItem);
+					}
+					else
+					{
+						locNames[pIndex]["child"].push(locItem);
+					}
+
+				});
+
+				proprs = null;
+
+				return Promise.resolve([null, motoshopList]);
+			});
 	}
 
 	/**

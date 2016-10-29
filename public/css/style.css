@@ -55,6 +55,26 @@
   padding-left: 10px;
 }
 
+.padding15 {
+  padding: 15px;
+}
+
+.paddingTop15 {
+  padding-top: 15px;
+}
+
+.paddingRight15 {
+  padding-right: 15px;
+}
+
+.paddingBottom15 {
+  padding-bottom: 15px;
+}
+
+.paddingLeft15 {
+  padding-left: 15px;
+}
+
 .floatLeft {
   float: left;
 }
@@ -1409,29 +1429,58 @@ iframe.iframeVideoEmbed {
 }
 
 /**********  мотосалоны **************/
-.motoshopAddressList .motoshopAddress {
-  max-width: calc(30%);
-  max-width: -moz-calc(30%);
-  max-width: -webkit-calc(30%);
-  float: left;
-  margin: 0 10px 10px 0;
+.motoshopMap {
   overflow: hidden;
+  margin-bottom: 10px;
+}
+
+#mtsMap {
+  height: 250px;
+}
+
+.motoshopAddress {
+  width: calc(30%);
+  width: -moz-calc(30%);
+  width: -webkit-calc(30%);
+  min-height: calc(152px);
+  min-height: -moz-calc(152px);
+  min-height: -webkit-calc(152px);
+  float: left;
+  margin: 0 0px 10px 15px;
+  overflow: hidden;
+  border: 1px solid #e2e2e2;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   -ms-border-radius: 5px;
   border-radius: 5px;
   padding: 3px;
 }
-.motoshopAddressList .motoshopAddress:hover {
+.motoshopAddress:hover {
   background-color: #e2e2e2;
 }
+.motoshopAddress .mts-address, .motoshopAddress .mts-address-website, .motoshopAddress .mts-address-email, .motoshopAddress .mts-address-phones {
+  font-weight: bold;
+}
+.motoshopAddress .mts-address-website {
+  padding-right: 11px;
+}
+.motoshopAddress .mts-address-email {
+  padding-right: 2px;
+}
+.motoshopAddress .mts-address-phones {
+  padding-right: 15px;
+}
 @media (max-width: 480px) {
-  .motoshopAddressList .motoshopAddress {
-    max-width: calc(100%);
-    max-width: -moz-calc(100%);
-    max-width: -webkit-calc(100%);
+  .motoshopAddress {
+    width: calc(90%);
+    width: -moz-calc(90%);
+    width: -webkit-calc(90%);
+    min-height: calc(100%);
+    min-height: -moz-calc(100%);
+    min-height: -webkit-calc(100%);
   }
 }
+
 .motoshopAddressList .motoshopAddressTools {
   border: 1px dashed #e2e2e2;
 }

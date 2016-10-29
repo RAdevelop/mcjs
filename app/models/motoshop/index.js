@@ -12,20 +12,21 @@ class Motoshop extends BaseModel
 	 * добавляем новый мотосалон
 	 *
 	 * @param mts_name
+	 * @param mts_alias
 	 * @param mts_website
 	 * @param mts_email
 	 * @param mts_descrip
 	 * @returns {*}
 	 */
-	add(mts_name, mts_website, mts_email, mts_descrip)
+	add(mts_name, mts_alias, mts_website, mts_email, mts_descrip)
 	{
-		let sql = `INSERT INTO motoshop (mts_name, mts_website, mts_email, mts_descrip, mts_create_ts, mts_update_ts)
-		VALUES(?,?,?,?,?,?)`;
+		let sql = `INSERT INTO motoshop (mts_name, mts_alias, mts_website, mts_email, mts_descrip, mts_create_ts, mts_update_ts)
+		VALUES(?,?,?,?,?,?,?)`;
 
 		//let now_ts  = Moment(dd_start_ts, "DD-MM-YYYY").unix();
 		let now_ts = Moment().unix();
 
-		let sqlData = [mts_name, mts_website, mts_email, mts_descrip, now_ts, now_ts];
+		let sqlData = [mts_name, mts_alias, mts_website, mts_email, mts_descrip, now_ts, now_ts];
 		return this.constructor.conn().ins(sql, sqlData)
 			.then(function (res)
 			{
@@ -41,7 +42,7 @@ class Motoshop extends BaseModel
 	 */
 	getMotoshop(mts_id)
 	{
-		let sql = `SELECT mts_id, mts_name, mts_website, mts_email, mts_descrip, mts_create_ts, mts_update_ts
+		let sql = `SELECT mts_id, mts_name, mts_alias, mts_website, mts_email, mts_descrip, mts_create_ts, mts_update_ts
 		FROM motoshop
 		WHERE mts_id = ?`;
 
@@ -53,20 +54,22 @@ class Motoshop extends BaseModel
 	 *
 	 * @param mts_id
 	 * @param mts_name
+	 * @param mts_alias
 	 * @param mts_website
 	 * @param mts_email
 	 * @param mts_descrip
 	 * @returns {*}
 	 */
-	edit(mts_id, mts_name, mts_website, mts_email, mts_descrip)
+	edit(mts_id, mts_name, mts_alias, mts_website, mts_email, mts_descrip)
 	{
-		let sql = `UPDATE motoshop SET mts_name = ?, mts_website = ?, mts_email = ?, mts_descrip = ?, mts_update_ts = ?
+		let sql = `UPDATE motoshop SET mts_name = ?, mts_alias = ?, mts_website = ?, mts_email = ?, mts_descrip = ?, 
+		mts_update_ts = ?
 		WHERE mts_id = ?`;
 
 		//let now_ts  = Moment(dd_start_ts, "DD-MM-YYYY").unix();
 		let now_ts = Moment().unix();
 
-		let sqlData = [mts_name, mts_website, mts_email, mts_descrip, now_ts, mts_id];
+		let sqlData = [mts_name, mts_alias, mts_website, mts_email, mts_descrip, now_ts, mts_id];
 
 		return this.constructor.conn().upd(sql, sqlData)
 			.then(function ()
@@ -273,9 +276,6 @@ class Motoshop extends BaseModel
 
 				sqlData.push(mts_id);
 				sql += `DELETE FROM motoshop WHERE mts_id = ?;`;
-
-				/*console.log(sqlData);
-				console.log(sql);*/
 
 				return this.constructor.conn().multis(sql, sqlData)
 					.then(function ()

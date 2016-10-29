@@ -1,8 +1,8 @@
 <h4><%=(motoshop.mts_name ? 'редактирование' : 'добавление')%> мотосалона</h4>
 <ul class="nav nav-pills nav-justified" role="tablist">
-	<li class="active" role="presentation"><a href="#base" aria-controls="base" role="tab" data-toggle="tab"><span class="fa fa-cog"></span> Основное</a></li>
+	<li class="active" role="presentation"><a href="#base" aria-controls="base" role="tab" data-toggle="tab"><i class="fa fa-cog"></i> Основное</a></li>
 	<% if (_action == 'edit') {%>
-	<li role="presentation"><a href="#contacts" aria-controls="contacts" role="tab" data-toggle="tab"><span class="fa fa-map-marker "></span> Адреса</a></li>
+	<li role="presentation"><a href="#contacts" aria-controls="contacts" role="tab" data-toggle="tab"><i class="fa fa-map-marker "></i> Контакты</a></li>
 	<% }%>
 </ul>
 <!-- Tab panes -->
@@ -57,10 +57,10 @@
 						<a class="btn btn-default btn-xs _js_address_tools" href="javascript:void(0);" data-mtsa-id="<%=address["mts_address_id"]%>" data-action="edit_address" role="button">редактировать</a>
 						<a class="btn btn-default btn-xs _js_address_tools" href="javascript:void(0);" data-mtsa-id="<%=address["mts_address_id"]%>" data-action="del_address" role="button">удалить</a>
 					</div>
-					<div><%=address["mts_address"]%></div>
-					<div><%=address["mts_address_website"]%></div>
-					<div><%=address["mts_address_email"]%></div>
-					<div><%=address["mts_address_phones"]%></div>
+					<div><span class="mts-address">адрес:</span> <%=address["mts_address"]%></div>
+					<div><span class="mts-address-website">сайт:</span> <%=address["mts_address_website"]%></div>
+					<div><span class="mts-address-email">e-mail:</span> <%=address["mts_address_email"]%></div>
+					<div><span class="mts-address-phones">тел.:</span> <%=address["mts_address_phones"]%></div>
 				</div>
 				<%
 			});%>
@@ -130,9 +130,7 @@
 
 						searchControl.events.add('submit', function ()
 						{
-
 							//console.log('request: ' + searchControl.getRequestString());
-
 						}, this);
 						searchControl.events.add('resultselect', function (res)
 						{
@@ -445,10 +443,10 @@
 									htmlAddress += '<a class="btn btn-default btn-xs _js_address_tools" href="javascript:void(0);" data-mtsa-id="'+resp["i_mts_address_id"]+'" data-action="edit_address" role="button">редактировать</a>';
 									htmlAddress += '<a class="btn btn-default btn-xs _js_address_tools" href="javascript:void(0);" data-mtsa-id="'+resp["i_mts_address_id"]+'" data-action="del_address" role="button">удалить</a>';
 								htmlAddress += '</div>';
-							htmlAddress += '<div>'+resp["s_mts_address"]+'</div>';
-							htmlAddress += '<div>'+resp["link_address_website"]+'</div>';
-							htmlAddress += '<div>'+resp["m_mts_address_email"]+'</div>';
-							htmlAddress += '<div>'+resp["s_mts_address_phones"]+'</div>';
+							htmlAddress += '<div><span class="mts-address">'+resp["s_mts_address"]+'</div>';
+							htmlAddress += '<div><span class="mts-address-website">'+resp["link_address_website"]+'</div>';
+							htmlAddress += '<div><span class="mts-address-email">'+resp["m_mts_address_email"]+'</div>';
+							htmlAddress += '<div><span class="mts-address-phones">'+resp["s_mts_address_phones"]+'</div>';
 						htmlAddress += '</div>';
 
 						if (resp.hasOwnProperty("formError") && resp["formError"].hasOwnProperty("error") && !resp["formError"]["error"])

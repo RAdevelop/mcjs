@@ -1,83 +1,173 @@
-<div class="row singleTrek">
-	<% let hasDescrip  = (trek.mtt_descrip != '')%>
-	<% if(hasDescrip){%><div class="col-xs-12 col-md-6"><%-trek.mtt_descrip%></div><%}%>
-	<div class="col-xs-12 col-md-6">
-		<p><strong>контакты:</strong></p>
-		<ul>
-			<li><strong>адрес:</strong> <%=trek.mtt_address%></li>
-			<li class="trekCoords"><strong>координаты:</strong><br/>
-				широта: <%-trek.mtt_latitude + " (" + trek.mtt_gps_lat + ")"%><br/>
-				долгота: <%-trek.mtt_longitude + " (" + trek.mtt_gps_lng + ")"%>
-			</li>
-			<% if (trek.mtt_phones)		{%><li><strong>телефон:</strong> <%=trek.mtt_phones%></li><% }%>
-			<% if (trek.mtt_website)	{%><li><strong>сайт:</strong> <a href="http://<%=trek.mtt_website%>" target="_blank"><%=trek.mtt_website%></a></li><% }%>
-			<% if (trek.mtt_email)		{%><li><strong>e-mail:</strong> <%=trek.mtt_email%></li><% }%>
-		</ul>
+<div class="row">
+	<div class="col-xs-12 col-md-12"><%-motoshop.mts_descrip%></div>
+	<div class="col-xs-12 col-md-12 motoshopMap">
+		<div id="mtsMap"></div>
 	</div>
-	<div class="col-xs-12 col-md-<%=(hasDescrip ? 6 : 12)%> singleTrekMap">
-		<div id="mttMap"></div>
+	<% motoshop.address_list.forEach(function (address) { %>
+	<div class="motoshopAddress">
+		<div><span class="mts-address">адрес:</span> <a href="javascript:void(0);" class="_js_mts_addres_id" data-coords="<%=[address["mts_address_latitude"], address["mts_address_longitude"]].join(',')%>"><%=address["mts_address"]%></a></div>
+		<div><span class="mts-address-website">сайт:</span> <%=address["mts_address_website"]%></div>
+		<div><span class="mts-address-email">e-mail:</span> <%=address["mts_address_email"]%></div>
+		<div><span class="mts-address-phones">тел.:</span> <%=address["mts_address_phones"]%></div>
 	</div>
+	<%});%>
 </div>
 <script src="/js/mcMap.js" type="text/javascript"></script>
 <script type="text/javascript">
-//<!--
-(function($)
-{
-	var trek = MCJS["trek"] || {};
-	var mapState = {
-		 controls: ["typeSelector"]
-		, center: [trek["mtt_latitude"], trek["mtt_longitude"]]
-		, zoom: 15
-		, type: 'yandex#hybrid'
-		//, behaviors: ["default"]
-	};
-	var mapOptions = {};
-	var MttMcMap = new McMap('mttMap', {state: mapState, options: mapOptions});
+	//<!--
+	(function($)
+	{
+		var motoshop = MCJS["motoshop"] || {};
+		var motoshopAddressList = motoshop["address_list"] || [];
 
-	MttMcMap.init()
-			.then(function (MttMap)
-			{
-				MttMap.behaviors.disable('drag');
-				MttMap.behaviors.disable('scrollZoom');
-				MttMap.behaviors.disable('scrollZoom');
+		var mapState = {
+			//controls: ["zoomControl", "searchControl", "typeSelector"]
+			controls: ["zoomControl", "typeSelector"]
+			, zoom: 10
+			, type: 'yandex#hybrid'
+			, behaviors: ["default"]
+		};
+		var mapOptions = {}, mapCluster = {};
 
-				var coords = [
-					"широта: " + roundNumber(MttMap.getCenter()[0], 6) + ' (' +trek.mtt_gps_lat+')',
-					"долгота: " + 	roundNumber(MttMap.getCenter()[1], 6) + ' (' +trek.mtt_gps_lng+')'
-				].join('<br/>');
+		//ключи - id объекта, значения - гео-коллекция точек
+		var placeMarkLocations = [];
+		var MtsMcMap = new McMap('mtsMap', {state: mapState, options: mapOptions});
 
-				var contentBody = ['<strong>адрес:</strong> '+trek.mtt_address];
+		MtsMcMap.init()
+				.then(function (MtsMap)
+				{
+					mapCluster = cluster(motoshop);
 
-				if (trek.mtt_phones)
-					contentBody.push('<strong>телефон:</strong> '+trek.mtt_phones);
+					MtsMap.geoObjects.add(mapCluster);
 
-				contentBody.push('<strong>координаты:</strong><br/>'+coords);
+					MtsMap.setBounds(mapCluster.getBounds(),
+							{
+								checkZoomRange: true
+							});
+					onClickMtsAddress(MtsMap);
+					return ymaps.vow.resolve(MtsMap);
+				})
+				.fail(function (err)
+				{
+					console.log(err);
+				});
 
-				contentBody = '<ul><li>'+ contentBody.join('</li><li>') + '</li></ul>';
+		/**
+		 * создаем гео-точку на основе данных
+		 *
+		 * @param motoshop - данные по салону
+		 * @param mtsAddress - данные по адресу
+		 */
+		function makePlacemark(motoshop, mtsAddress)
+		{
+			var coords = [mtsAddress["mts_address_latitude"], mtsAddress["mts_address_longitude"]];
 
-				var mttPlacemark = new ymaps.Placemark(
-						MttMap.getCenter()
-						,	{
-							/* Свойства*/
-							iconContent: trek.mtt_name
-							, iconCaption: trek.mtt_name
-							,	balloonContentHeader: trek.mtt_name
-							,	balloonContentBody: contentBody
-							,	balloonContentFooter: ''
-						}
-						,   {
-							/* Опции*/
-							preset: 'islands#blueDotIconWithCaption'
-							,	draggable: false
-						});
-				MttMap.geoObjects.add(mttPlacemark);
+			var balloonContentBody = [
+				mtsAddress["mts_address"],
+				"широта: " + mtsAddress.mts_address_latitude + " (" + mtsAddress.mts_address_gps_lat + ")",
+				"долгота: " + mtsAddress.mts_address_longitude + " (" + mtsAddress.mts_address_gps_lng + ")"
+			];
 
-				return ymaps.vow.resolve(MttMap);
-			})
-			.fail(function (err)
-			{
-				console.log(err);
+			return new ymaps.Placemark(coords,
+					{
+						iconContent: motoshop["mts_name"]
+						, iconCaption: motoshop["mts_name"]
+						,	balloonContentHeader: motoshop["mts_name"]
+						,	balloonContentBody: balloonContentBody.join('<br/>')
+
+					},
+					{
+						preset: 'islands#blueDotIconWithCaption'
+					}
+			);
+		}
+
+		/**
+		 * создаем объект кластера с предустановленными настройками
+		 */
+		function makeCluster()
+		{
+			/**
+			 * Создадим кластеризатор, вызвав функцию-конструктор.
+			 * Список всех опций доступен в документации.
+			 * @see https://api.yandex.ru/maps/doc/jsapi/2.1/ref/reference/Clusterer.xml#constructor-summary
+			 */
+			return new ymaps.Clusterer({
+				/**
+				 * Через кластеризатор можно указать только стили кластеров,
+				 * стили для меток нужно назначать каждой метке отдельно.
+				 * @see https://api.yandex.ru/maps/doc/jsapi/2.1/ref/reference/option.presetStorage.xml
+				 */
+				preset: 'islands#invertedBlueClusterIcons',
+				/**
+				 * Ставим true, если хотим кластеризовать только точки с одинаковыми координатами.
+				 */
+				groupByCoordinates: false,
+				/**
+				 * Опции кластеров указываем в кластеризаторе с префиксом "cluster".
+				 * @see https://api.yandex.ru/maps/doc/jsapi/2.1/ref/reference/ClusterPlacemark.xml
+				 */
+				clusterDisableClickZoom: true,
+				clusterHideIconOnBalloonOpen: false,
+				geoObjectHideIconOnBalloonOpen: false
 			});
-})(jQuery);
-//-->
+		}
+
+		function cluster(motoshop)
+		{
+			var i, cluster;
+			for(i = 0; i < motoshopAddressList.length; i++)
+				placeMarkLocations.push(makePlacemark(motoshop, motoshopAddressList[i]));
+
+			cluster = makeCluster();
+
+			for(var pm in placeMarkLocations)
+				cluster.add(placeMarkLocations[pm]);
+
+			return cluster;
+		}
+
+		/**
+		 * клики по локации в меню (стране или области или городу .. и тп)
+		 */
+		function onClickMtsAddress(MtsMap)
+		{
+			var $addres = $("._js_mts_addres_id");
+
+			$addres.on('click', function (event)
+			{
+				event.preventDefault();
+				event.stopPropagation();
+
+				var coords = $(this).attr("data-coords").split(',');
+
+				MtsMap.setCenter(coords, 14, {checkZoomRange: true});
+
+				var toScroll = parseInt($(MtsMap.container.getElement()).offset().top, 10) - 50 - $('#navbarFixedTop').outerHeight();
+				$(window).delay(600).scrollTo(toScroll, 600, {axis:'y', interrupt: true, limit: false});
+			});
+
+		}
+
+		/**
+		 * получаем массив точек для указанной локации (сатрны, области, города и тп)
+		 * @param l_id
+		 * @returns {Array}
+		 */
+		function getLocationPointsCoords(l_id)
+		{
+			var listOfCoords = [];
+			for (var i in placeMarkLocations[l_id])
+			{
+				if (!placeMarkLocations[l_id].hasOwnProperty(i))
+					continue;
+
+				listOfCoords.push(placeMarkLocations[l_id][i]["geometry"].getCoordinates());
+			}
+
+			return listOfCoords;
+		}
+
+	})(jQuery);
+	//-->
 </script>

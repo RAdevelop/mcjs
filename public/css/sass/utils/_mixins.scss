@@ -5,6 +5,13 @@
   font-size: #{$font-size};
 }
 
+@mixin mix-height-auto() {
+  height: auto;
+}
+@mixin mix-width-auto() {
+  width: auto;
+}
+
 @mixin mix-width-calc($width) {
   width: calc(#{$width});
   width: -moz-calc(#{$width});

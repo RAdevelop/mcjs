@@ -24,7 +24,9 @@ class Motoshop extends Base
 	 */
 	add(mts_name, mts_website, mts_email, mts_descrip)
 	{
-		return this.model("motoshop").add(mts_name, mts_website, mts_email, mts_descrip);
+		let mts_alias = this.helpers.clearSymbol(this.helpers.translit(mts_name), '-');
+
+		return this.model("motoshop").add(mts_name, mts_alias, mts_website, mts_email, mts_descrip);
 	}
 	
 	/**
@@ -63,7 +65,8 @@ class Motoshop extends Base
 	 */
 	edit(mts_id, mts_name, mts_website, mts_email, mts_descrip)
 	{
-		return this.model("motoshop").edit(mts_id, mts_name, mts_website, mts_email, mts_descrip);
+		let mts_alias = this.helpers.clearSymbol(this.helpers.translit(mts_name), '-');
+		return this.model("motoshop").edit(mts_id, mts_name, mts_alias, mts_website, mts_email, mts_descrip);
 	}
 
 	/**
