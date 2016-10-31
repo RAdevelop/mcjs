@@ -99,7 +99,10 @@ class Motoshop extends Base
 	{
 		let {s_mts_alias=null} = this.routeArgs;
 
-		return this.getClass('motoshop').getMotoshop(i_mts_id)
+		//TODO написать условие для mts_show - админ, автор = null илначе 1
+		let mts_show = null;
+
+		return this.getClass('motoshop').getMotoshop(i_mts_id, mts_show)
 			.then(function (motoshop)
 			{
 				if (!motoshop || s_mts_alias != motoshop["mts_alias"])
@@ -244,7 +247,9 @@ class Motoshop extends Base
 		
 		tplData = this.stripTags(tplData, ["s_mts_name", "m_mts_email", "link_mts_website"]);
 		tplData["t_mts_descrip"] = this.cheerio(tplData["t_mts_descrip"]).root().cleanTagEvents().html();
-		
+
+		tplData["b_mts_show"] = (tplData["b_mts_show"] ? '1': '0');
+
 		if (!tplData["s_mts_name"])
 			errors["s_mts_name"] = "Укажите название";
 		
@@ -268,6 +273,7 @@ class Motoshop extends Base
 			.then(function (tplData)
 			{
 				return this.getClass('motoshop').add(
+					tplData["b_mts_show"],
 					tplData["s_mts_name"],
 					tplData["link_mts_website"],
 					tplData["m_mts_email"],
@@ -308,7 +314,10 @@ class Motoshop extends Base
 		if (!i_mts_id)
 			throw new Errors.HttpStatusError(404, "Not found");
 
-		return this.getClass('motoshop').getMotoshop(i_mts_id)
+		//TODO написать условие для mts_show - админ, автор = null илначе 1
+		let mts_show = null;
+
+		return this.getClass('motoshop').getMotoshop(i_mts_id, mts_show)
 			.bind(this)
 			.then(function (motoshop)
 			{
@@ -382,7 +391,10 @@ class Motoshop extends Base
 	{
 		let tplFile = "motoshop/edit.ejs";
 
-		return this.getClass('motoshop').getMotoshop(tplData["i_mts_id"])
+		//TODO написать условие для mts_show - админ, автор = null илначе 1
+		let mts_show = null;
+
+		return this.getClass('motoshop').getMotoshop(tplData["i_mts_id"], mts_show)
 			.bind(this)
 			.then(function (motoshop)
 			{
@@ -391,6 +403,8 @@ class Motoshop extends Base
 
 				tplData = this.stripTags(tplData, ["s_mts_name", "m_mts_email", "link_mts_website"]);
 				tplData["t_mts_descrip"] = this.cheerio(tplData["t_mts_descrip"]).root().cleanTagEvents().html();
+
+				tplData["b_mts_show"] = (tplData["b_mts_show"] ? '1' : '0');
 
 				let errors = {};
 
@@ -411,6 +425,7 @@ class Motoshop extends Base
 			{
 				return this.getClass('motoshop').edit(
 					tplData["i_mts_id"],
+					tplData["b_mts_show"],
 					tplData["s_mts_name"],
 					tplData["link_mts_website"],
 					tplData["m_mts_email"],
@@ -448,7 +463,10 @@ class Motoshop extends Base
 	{
 		let tplFile = "motoshop/edit.ejs";
 
-		return this.getClass('motoshop').getMotoshop(tplData["i_mts_id"])
+		//TODO написать условие для mts_show - админ, автор = null илначе 1
+		let mts_show = null;
+
+		return this.getClass('motoshop').getMotoshop(tplData["i_mts_id"], mts_show)
 			.bind(this)
 			.then(function (motoshop)
 			{
@@ -456,7 +474,9 @@ class Motoshop extends Base
 					throw new Errors.HttpStatusError(404, "Not found");
 
 				tplData = this.stripTags(tplData, ["s_mts_address", "s_mts_address_phones", "m_mts_address_email", "link_address_website"]);
-				
+
+				tplData["b_mts_address_show"] = (tplData["b_mts_address_show"] ? '1' : '0');
+
 				let errors = {};
 
 				if (!tplData["s_mts_address_phones"])
@@ -479,6 +499,7 @@ class Motoshop extends Base
 			{
 				return this.getClass('motoshop').addAddress(
 					tplData["i_mts_id"],
+					tplData["b_mts_address_show"],
 					tplData["link_address_website"],
 					tplData["m_mts_address_email"],
 					tplData["s_mts_address_phones"],
@@ -519,7 +540,10 @@ class Motoshop extends Base
 	{
 		let tplFile = "motoshop/edit.ejs";
 
-		return this.getClass('motoshop').getMotoshop(tplData["i_mts_id"])
+		//TODO написать условие для mts_show - админ, автор = null илначе 1
+		let mts_show = null;
+
+		return this.getClass('motoshop').getMotoshop(tplData["i_mts_id"], mts_show)
 			.bind(this)
 			.then(function (motoshop)
 			{
@@ -538,6 +562,8 @@ class Motoshop extends Base
 					throw new Errors.HttpStatusError(404, "Not found");
 
 				tplData = this.stripTags(tplData, ["s_mts_address", "s_mts_address_phones", "m_mts_address_email", "link_address_website"]);
+
+				tplData["b_mts_address_show"] = (tplData["b_mts_address_show"] ? '1' : '0');
 
 				let errors = {};
 
@@ -561,6 +587,7 @@ class Motoshop extends Base
 			{
 				return this.getClass('motoshop').editAddress(
 					tplData["i_mts_address_id"],
+					tplData["b_mts_address_show"],
 					tplData["link_address_website"],
 					tplData["m_mts_address_email"],
 					tplData["s_mts_address_phones"],
@@ -656,6 +683,40 @@ class Motoshop extends Base
 				return Promise.resolve(true);
 			})
 			.catch(function (err)
+			{
+				throw err;
+			});
+	}
+
+	/**
+	 * просмотр на карте
+	 *
+	 * @returns {Promise.<T>}
+	 */
+	mapActionGet()
+	{
+		return Promise.props({
+			motoshopList: this.getClass("motoshop").getAllMotoshop(),
+			motoshopLocations: this.getClass("motoshop").getMotoshopLocations()
+		})
+			.bind(this)
+			.then(function(props)
+			{
+				let tplData = {
+					motoshop: null,
+					motoshopList: props.motoshopList || [],
+					motoshopLocations: props.motoshopLocations || []
+				};
+				let tplFile = "motoshop/map.ejs";
+				this.view.setTplData(tplFile, tplData);
+
+				//экспрот данных в JS на клиента
+				this.getRes().expose(props.motoshopList, 'motoshopList');
+				this.getRes().expose(props.motoshopLocations, 'motoshopLocations');
+
+				return Promise.resolve(null);
+			})
+			.catch(function(err)
 			{
 				throw err;
 			});

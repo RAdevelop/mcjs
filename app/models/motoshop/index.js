@@ -11,6 +11,7 @@ class Motoshop extends BaseModel
 	/**
 	 * добавляем новый мотосалон
 	 *
+	 * @param mts_show
 	 * @param mts_name
 	 * @param mts_alias
 	 * @param mts_website
@@ -18,15 +19,15 @@ class Motoshop extends BaseModel
 	 * @param mts_descrip
 	 * @returns {*}
 	 */
-	add(mts_name, mts_alias, mts_website, mts_email, mts_descrip)
+	add(mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip)
 	{
-		let sql = `INSERT INTO motoshop (mts_name, mts_alias, mts_website, mts_email, mts_descrip, mts_create_ts, mts_update_ts)
-		VALUES(?,?,?,?,?,?,?)`;
+		let sql = `INSERT INTO motoshop (mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip, mts_create_ts, mts_update_ts)
+		VALUES(?,?,?,?,?,?,?,?)`;
 
 		//let now_ts  = Moment(dd_start_ts, "DD-MM-YYYY").unix();
 		let now_ts = Moment().unix();
 
-		let sqlData = [mts_name, mts_alias, mts_website, mts_email, mts_descrip, now_ts, now_ts];
+		let sqlData = [mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip, now_ts, now_ts];
 		return this.constructor.conn().ins(sql, sqlData)
 			.then(function (res)
 			{
@@ -38,21 +39,30 @@ class Motoshop extends BaseModel
 	 * данные мотосалона по его id
 	 *
 	 * @param mts_id
+	 * @param show
 	 * @returns {*}
 	 */
-	getMotoshop(mts_id)
+	getMotoshop(mts_id, show = null)
 	{
-		let sql = `SELECT mts_id, mts_name, mts_alias, mts_website, mts_email, mts_descrip, mts_create_ts, mts_update_ts
+		let sql = `SELECT mts_id, mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip, mts_create_ts, mts_update_ts
 		FROM motoshop
 		WHERE mts_id = ?`;
 
-		return this.constructor.conn().sRow(sql, [mts_id]);
+		let sqlData = [mts_id];
+		if (show)
+		{
+			sqlData.push(show);
+			sql += ` AND mts_show = ?`;
+		}
+
+		return this.constructor.conn().sRow(sql, sqlData);
 	}
 
 	/**
 	 * редактируем мотосалон
 	 *
 	 * @param mts_id
+	 * @param mts_show
 	 * @param mts_name
 	 * @param mts_alias
 	 * @param mts_website
@@ -60,16 +70,16 @@ class Motoshop extends BaseModel
 	 * @param mts_descrip
 	 * @returns {*}
 	 */
-	edit(mts_id, mts_name, mts_alias, mts_website, mts_email, mts_descrip)
+	edit(mts_id, mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip)
 	{
-		let sql = `UPDATE motoshop SET mts_name = ?, mts_alias = ?, mts_website = ?, mts_email = ?, mts_descrip = ?, 
+		let sql = `UPDATE motoshop SET mts_show = ?, mts_name = ?, mts_alias = ?, mts_website = ?, mts_email = ?, mts_descrip = ?, 
 		mts_update_ts = ?
 		WHERE mts_id = ?`;
 
 		//let now_ts  = Moment(dd_start_ts, "DD-MM-YYYY").unix();
 		let now_ts = Moment().unix();
 
-		let sqlData = [mts_name, mts_alias, mts_website, mts_email, mts_descrip, now_ts, mts_id];
+		let sqlData = [mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip, now_ts, mts_id];
 
 		return this.constructor.conn().upd(sql, sqlData)
 			.then(function ()
@@ -82,6 +92,7 @@ class Motoshop extends BaseModel
 	 * добавляем адрес
 	 * 
 	 * @param mts_id
+	 * @param mts_address_show
 	 * @param mts_address_website
 	 * @param mts_address_email
 	 * @param mts_address_phones
@@ -93,17 +104,17 @@ class Motoshop extends BaseModel
 	 * @param location_id
 	 * @returns {Promise.<*>}
 	 */
-	addAddress(mts_id, mts_address_website, mts_address_email, mts_address_phones, mts_address, mts_address_lat, mts_address_lng, gps_lat, gps_lng, location_id)
+	addAddress(mts_id, mts_address_show, mts_address_website, mts_address_email, mts_address_phones, mts_address, mts_address_lat, mts_address_lng, gps_lat, gps_lng, location_id)
 	{
 		let sql = `INSERT INTO motoshop_address (mts_id, mts_address_website, mts_address_email, mts_address_phones, mts_address, 
 		mts_address_latitude, mts_address_longitude, mts_address_gps_lat, mts_address_gps_lng, mts_address_location_id, 
-		mts_address_create_ts, mts_address_update_ts) 
-		VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+		mts_address_create_ts, mts_address_update_ts, mts_address_show)
+		VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
 		let now_ts = Moment().unix();
 		let sqlData = [
 			mts_id, mts_address_website, mts_address_email, mts_address_phones, mts_address, mts_address_lat,
-			mts_address_lng, gps_lat, gps_lng, location_id, now_ts, now_ts
+			mts_address_lng, gps_lat, gps_lng, location_id, now_ts, now_ts, mts_address_show
 		];
 
 		let mts_address_id;
@@ -156,6 +167,7 @@ class Motoshop extends BaseModel
 	 * редактируем адрес
 	 *
 	 * @param mts_address_id
+	 * @param mts_address_show
 	 * @param mts_address_website
 	 * @param mts_address_email
 	 * @param mts_address_phones
@@ -167,16 +179,16 @@ class Motoshop extends BaseModel
 	 * @param location_id
 	 * @returns {Promise.<*>}
 	 */
-	editAddress(mts_address_id, mts_address_website, mts_address_email, mts_address_phones, mts_address, mts_address_lat, mts_address_lng, gps_lat, gps_lng, location_id)
+	editAddress(mts_address_id, mts_address_show, mts_address_website, mts_address_email, mts_address_phones, mts_address, mts_address_lat, mts_address_lng, gps_lat, gps_lng, location_id)
 	{
-		let sql = `UPDATE motoshop_address SET mts_address_website = ?, mts_address_email = ?, mts_address_phones = ?, mts_address = ?, 
-		mts_address_latitude = ?, mts_address_longitude = ?, mts_address_gps_lat = ?, mts_address_gps_lng = ?, mts_address_location_id = ?, 
-		mts_address_update_ts = ?
+		let sql = `UPDATE motoshop_address SET mts_address_show = ?, mts_address_website = ?, mts_address_email = ?, mts_address_phones = ?, 
+		mts_address = ?, mts_address_latitude = ?, mts_address_longitude = ?, mts_address_gps_lat = ?, mts_address_gps_lng = ?, 
+		mts_address_location_id = ?, mts_address_update_ts = ?
 		WHERE mts_address_id = ?`;
 
 		let now_ts = Moment().unix();
 		let sqlData = [
-			mts_address_website, mts_address_email, mts_address_phones, mts_address, mts_address_lat,
+			mts_address_show, mts_address_website, mts_address_email, mts_address_phones, mts_address, mts_address_lat,
 			mts_address_lng, gps_lat, gps_lng, location_id, now_ts, mts_address_id
 		];
 
@@ -228,16 +240,23 @@ class Motoshop extends BaseModel
 	 * @param mts_id
 	 * @returns {*}
 	 */
-	getMotoshopAddressList(mts_id)
+	getMotoshopAddressList(mts_id, show = null)
 	{
 		let sql = `SELECT mtsa.mts_address_id, mtsa.mts_id, mtsa.mts_address_website, mtsa.mts_address_email, 
 		mtsa.mts_address_phones, mtsa.mts_address, mtsa.mts_address_latitude, mtsa.mts_address_longitude, 
 		mtsa.mts_address_gps_lat, mtsa.mts_address_gps_lng, mtsa.mts_address_location_id, mtsa.mts_address_location_pids, 
-		mtsa.mts_address_create_ts, mtsa.mts_address_update_ts
+		mtsa.mts_address_create_ts, mtsa.mts_address_update_ts, mts_address_show
 		FROM motoshop_address AS mtsa
 		WHERE mtsa.mts_id = ?`;
 
-		return this.constructor.conn().s(sql, [mts_id]);
+		let sqlData = [mts_id];
+
+		if (show)
+		{
+			sqlData.push(show);
+			sql += ` AND mts_address_show = ?`;
+		}
+		return this.constructor.conn().s(sql, sqlData);
 	}
 
 	/**
@@ -306,6 +325,49 @@ class Motoshop extends BaseModel
 		DELETE FROM motoshop_address_locations WHERE mts_address_id = ?;`;
 
 		return this.constructor.conn().multis(sql, [mts_address_id, mts_id, mts_address_id]);
+	}
+
+	/**
+	 * список локаций, к которым привязан мотосалон (включая родительские районы, города, страны..)
+	 *
+	 * @returns {*}
+	 */
+	getMotoshopLocations()
+	{
+		let kinds = ['country','province','locality'];
+
+		let inIds = this.constructor.placeHoldersForIn(kinds)
+
+		let sql = `SELECT l.l_id, l.l_pid, l.l_level, l.l_lk, l.l_rk,
+			ln.l_kind, ln.l_name, ln.l_full_name, ln.l_latitude , ln.l_longitude,
+			IF(l.l_rk - l.l_lk = 0, 0, 1) AS l_has_child,
+			IF(ln.l_kind = 'country', 0, IF(ln.l_kind = 'province', 1, IF(ln.l_kind = 'locality' AND l.l_level < 3, 1, 2))) AS l_mts_level
+			FROM (SELECT NULL) AS z 
+			JOIN motoshop AS mts ON (mts.mts_show = 1)
+			JOIN motoshop_address AS mtsa ON (mtsa.mts_id = mts.mts_id AND mtsa.mts_address_show = 1)
+			JOIN motoshop_address_locations AS mtsal ON (mtsa.mts_address_id = mtsal.mts_address_id)
+			JOIN location_names AS ln ON(mtsal.l_id = ln.l_id  AND ln.l_kind IN(${inIds}))
+			JOIN location AS l ON(l.l_id = ln.l_id)
+			GROUP BY mtsal.l_id
+			ORDER BY l.l_lk`;//, ln.l_name
+
+		/*console.log(sql);
+		console.log(kinds);*/
+
+		return this.constructor.conn().s(sql, kinds);
+	}
+
+	/**
+	 * список мотосалонов
+	 *
+	 * @returns {Promise.<TResult>|*}
+	 */
+	getAllMotoshop()
+	{
+		let sql = `SELECT mts_id, mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip, mts_create_ts, mts_update_ts
+		FROM motoshop`;
+
+		return this.constructor.conn().s(sql);
 	}
 }
 //************************************************************************* module.exports

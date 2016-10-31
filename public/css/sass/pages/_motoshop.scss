@@ -4,22 +4,28 @@
   overflow: hidden;
   margin-bottom: 10px;
 }
-#mtsMap {
+.motoshopMap {
   height: 250px;
+}
+
+.motoshopMapContainer .motoshopMap {
+  height: 550px;
 }
 
 .motoshopAddress {
   @include mix-width-calc(30%);
   @include mix-min-height-calc(152px);
+  @include mix-border-radius(5px);
+  border: 1px solid #e2e2e2;
+
   float: left;
   margin: 0 0px 10px 15px;
   overflow: hidden;
-  border: 1px solid #e2e2e2;
-  @include mix-border-radius(5px);
   padding: 3px;
+  list-style-type: none;
 
   &:hover {
-    background-color: #e2e2e2;
+    background-color: #f2f2f2;
   }
 
   & .mts-address {
@@ -41,6 +47,17 @@
     padding-right: 15px;
   }
 
+  & ul {
+    margin: 0;
+    display: inline-block;
+    vertical-align: text-top;
+    list-style-type: none;
+
+    & {
+      padding: 0;
+    }
+  }
+
   @media (max-width: $screen-xs-min) {
     & {
       @include mix-width-calc(90%);
@@ -51,7 +68,116 @@
 
 .motoshopAddressList
 {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+
   & .motoshopAddressTools {
     border: 1px dashed #e2e2e2;
   }
+}
+
+.motoshopMapContainer
+{
+  position: relative;
+}
+
+.motoshopMapContainer .mtsMap
+{
+  height: 550px;
+}
+
+.motoshopMapContainer .mtsLocationsNames button.dropdown-toggle
+{
+  display: none;
+  margin: 10px 0px 10px 0px;
+}
+
+.motoshopMapContainer .mtsLocationsNames,
+.motoshopMapContainer .mtsLocationsNames .dropdown-menu
+{
+  width: 100%;
+  position: relative;
+}
+
+.motoshopMapContainer .mtsLocationsNames
+{
+  display: none;
+}
+
+.motoshopMapContainer .mtsLocationsNames .dropdown-menu
+{
+  display: block;
+  z-index: 1;
+  @media (min-width: $screen-lg)
+  {
+    &
+    {
+      display: block !important;
+    }
+  }
+}
+.motoshopMapContainer .mtsLocationsNames .dropdown-menu a
+{
+  white-space: normal;
+  color: #333;
+  padding: 3px 0 3px 10px;
+}
+.motoshopMapContainer .mtsLocationsNames .dropdown-menu a:hover
+{
+  text-decoration: none;
+  background-color: transparent;
+}
+
+.motoshopMapContainer .mtsLocationsNames li ul
+{
+  list-style-type: none;
+  padding: 0;
+}
+
+.mtsLocationsNames .locLevel0
+{
+  padding-left: 0;
+  font-size: 18px;
+}
+.mtsLocationsNames .locLevel1
+{
+  padding-left: 10px;
+  border-top: 1px dashed #ccc;
+}
+
+.mtsLocationsNames .locLevel1:hover
+{
+  background-color: #f2f2f2;
+}
+
+.mtsLocationsNames .locLevel1 a
+{
+  display: inline-block;
+  padding-left: 5px;
+}
+.mtsLocationsNames .locLevel1 > a:first-letter
+{
+  font-weight: bold;
+}
+
+.mtsLocationsNames .locLevel1 a.selected
+{
+  font-weight: bold;
+}
+
+.mtsLocationsNames .locLevel1 .fa-caret-down
+{
+  cursor: pointer;
+  font-size: 1.3em;
+}
+
+.mtsLocationsNames .locLevel1 ul
+{
+  display: none;
+}
+
+.mtsLocationsNames .locLevel2
+{
+  padding-left: 20px;
 }

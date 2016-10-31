@@ -1,16 +1,16 @@
 <div class="row">
 	<div class="col-xs-12 col-md-12"><%-motoshop.mts_descrip%></div>
-	<div class="col-xs-12 col-md-12 motoshopMap">
-		<div id="mtsMap"></div>
-	</div>
+	<div class="col-xs-12 col-md-12 motoshopMap" id="mtsMap"></div>
+	<ul class="motoshopAddressList">
 	<% motoshop.address_list.forEach(function (address) { %>
-	<div class="motoshopAddress">
+	<li class="motoshopAddress">
 		<div><span class="mts-address">адрес:</span> <a href="javascript:void(0);" class="_js_mts_addres_id" data-coords="<%=[address["mts_address_latitude"], address["mts_address_longitude"]].join(',')%>"><%=address["mts_address"]%></a></div>
 		<div><span class="mts-address-website">сайт:</span> <%=address["mts_address_website"]%></div>
 		<div><span class="mts-address-email">e-mail:</span> <%=address["mts_address_email"]%></div>
-		<div><span class="mts-address-phones">тел.:</span> <%=address["mts_address_phones"]%></div>
-	</div>
+		<div><span class="mts-address-phones">тел.:</span> <ul><li><%-(address["mts_address_phones"].split(',')).join('</li><li>')%></li></ul></div>
+	</li>
 	<%});%>
+	</ul>
 </div>
 <script src="/js/mcMap.js" type="text/javascript"></script>
 <script type="text/javascript">

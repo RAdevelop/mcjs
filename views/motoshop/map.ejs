@@ -1,21 +1,21 @@
 <%  if(!_isXHR){%><%- layout('layout/default.ejs') %><% } %>
 <%- include toolbar.ejs %>
 <h1><%=menuItem.m_h1%> на карте</h1>
-<div class="row mototrekMapContainer">
+<div class="row motoshopMapContainer">
 	<div class="col-xs-12 col-md-3">
-		<div class="mttLocationsNames  open">
+		<div class="mtsLocationsNames _js_mtsLocationsNames open">
 			<button class="btn btn-default dropdown-toggle" type="button" id="dropdownLocationsNames"  aria-haspopup="true" aria-expanded="true"><span class="btnText">Регионы</span> <span class="caret"></span></button>
-			<ul class=" dropdown-menu" aria-labelledby="dropdownLocationsNames"><% trekLocations.forEach(function (item, i, list) {
-				let cssLevel = 'locLevel'+item["l_mtt_level"];
-				%><li class="<%=cssLevel%>"><% if (item["l_mtt_level"]==1) {%><i class="fa fa-caret-down" aria-hidden="true"></i><% }%>
+			<ul class=" dropdown-menu" aria-labelledby="dropdownLocationsNames"><% motoshopLocations.forEach(function (item, i, list) {
+				let cssLevel = 'locLevel'+item["l_mts_level"];
+				%><li class="<%=cssLevel%>">
 					<a href="javascript:void(0);" data-coords="<%=[item["l_latitude"], item["l_longitude"]]%>" data-location-id="<%=item["l_id"]%>"><%=item["l_name"]%></a><%
-				if (list[i+1] && list[i+1]["l_mtt_level"] == 2 && item["l_mtt_level"] == 1){%><ul><% } else{%></li><% }
-				if (list[i+1] && list[i+1]["l_mtt_level"] == 1 && item["l_mtt_level"] == 2){%></ul></li><% } %><%
+				if (list[i+1] && list[i+1]["l_mts_level"] == 2 && item["l_mts_level"] == 1){%><ul><% } else{%></li><% }
+				if (list[i+1] && list[i+1]["l_mts_level"] == 1 && item["l_mts_level"] == 2){%></ul></li><% } %><%
 				if (list[i+1] && list[i+1]["l_level"] == 1){ %><li role="separator" class="divider"></li><%}
 		});%></ul>
 		</div>
 	</div>
-	<div class="col-xs-12 col-md-9 mototrekMap" id="mttMap"></div>
+	<div class="col-xs-12 col-md-9 motoshopMap" id="mtsMap"></div>
 </div>
 <script src="/js/mcMap.js" type="text/javascript"></script>
 <script type="text/javascript">
@@ -26,8 +26,8 @@
 		$locNamesBtn.attr("title", $locNamesBtn.text());
 	var $locNamesBtnText =	$locNamesBtn.find(".btnText");
 
-	var trekList = MCJS["trekList"] || [];
-	var trekLocations = MCJS["trekLocations"] || [];
+	var motoshopList = MCJS["motoshopList"] || [];
+	var motoshopLocations = MCJS["motoshopLocations"] || [];
 
 	var mapState = {
 		//controls: ["zoomControl", "searchControl", "typeSelector"]
@@ -40,26 +40,31 @@
 
 	//ключи - id объекта, значения - гео-коллекция точек
 	var placeMarkLocations = {};
-	var MttMcMap = new McMap('mttMap', {state: mapState, options: mapOptions});
+	var MtsMcMap = new McMap('mtsMap', {state: mapState, options: mapOptions});
 
-	MttMcMap.init()
-			.then(function (MttMap)
+	var $mtsLocationsNames = $("._js_mtsLocationsNames");
+
+	MtsMcMap.init()
+			.then(function (MtsMap)
 			{
 				mapCluster = cluster();
 
-				MttMap.geoObjects.add(mapCluster);
+				MtsMap.geoObjects.add(mapCluster);
 
-				MttMap.setBounds(mapCluster.getBounds(),
+				MtsMap.setBounds(mapCluster.getBounds(),
 						{
 							checkZoomRange: true
 						})
 						.then(function ()
 						{
 							onClickDropdownLocationsNames();
-							onClickMttLocationsNames(MttMap);
+							onClickMttLocationsNames(MtsMap);
 
-							$(".mttLocationsNames").show();
+							$mtsLocationsNames.show();
 						});
+
+				//TODO удалить
+				$mtsLocationsNames.show();
 			})
 			.fail(function (err)
 			{
@@ -68,25 +73,25 @@
 
 	/**
 	 * создаем гео-точку на основе данных трека
-	 * @param trek - данные по треку
+	 * @param addressData - данные по адресу салона
 	 */
-	function makePlacemark(trek)
+	function makePlacemark(motoshop, addressData)
 	{
-		var coords = [trek["mtt_latitude"], trek["mtt_longitude"]];
+		var coords = [addressData["mts_address_latitude"], addressData["mts_address_longitude"]];
 
 		var balloonContentBody = [
-			trek["mtt_address"],
-			"широта: " + trek.mtt_latitude + " (" + trek.mtt_gps_lat + ")",
-			"долгота: " + trek.mtt_longitude + " (" + trek.mtt_gps_lng + ")"
+			motoshop["mtt_address"],
+			"широта: " + addressData.mts_address_latitude + " (" + addressData.mts_address_gps_lat + ")",
+			"долгота: " + addressData.mts_address_longitude + " (" + addressData.mts_address_gps_lng + ")"
 		];
 
 		return new ymaps.Placemark(coords,
 				{
-					iconContent: trek["mtt_name"]
-					, iconCaption: trek["mtt_name"]
-					,	balloonContentHeader: trek["mtt_name"]
+					iconContent: motoshop["mts_name"]
+					, iconCaption: motoshop["mts_name"]
+					,	balloonContentHeader: motoshop["mts_name"]
 					,	balloonContentBody: balloonContentBody.join('<br/>')
-					,	balloonContentFooter: '<a href="<%=menuItem.m_path%>/'+trek["mtt_id"]+'/">перейти на страницу трека</a>'
+					,	balloonContentFooter: '<a href="<%=menuItem.m_path%>/'+motoshop["mts_id"]+'/">перейти на страницу мотосалона</a>'
 				},
 				{
 					preset: 'islands#blueDotIconWithCaption'
@@ -127,20 +132,20 @@
 
 	function cluster()
 	{
-		var i, tl, placemark, cluster, mtt_location_pids;
-		for(i = 0; i < trekList.length; i++)
+		var i, tl, placemark, cluster, mts_address_location_pids;
+		for(i = 0; i < motoshopList.length; i++)
 		{
-			placemark = makePlacemark(trekList[i]);
+			placemark = makePlacemark(motoshopList[i]);
 
-			mtt_location_pids = trekList[i]["mtt_location_pids"].split(',');
-			for(tl=0; tl < trekLocations.length; tl++)
+			mts_address_location_pids = motoshopList[i]["mts_address_location_pids"].split(',');
+			for(tl=0; tl < motoshopLocations.length; tl++)
 			{
-				if (mtt_location_pids.indexOf(trekLocations[tl]["l_id"]) != -1)
+				if (mts_address_location_pids.indexOf(motoshopLocations[tl]["l_id"]) != -1)
 				{
-					if (!placeMarkLocations.hasOwnProperty(trekLocations[tl]["l_id"]))
-						placeMarkLocations[trekLocations[tl]["l_id"]] = [];
+					if (!placeMarkLocations.hasOwnProperty(motoshopLocations[tl]["l_id"]))
+						placeMarkLocations[motoshopLocations[tl]["l_id"]] = [];
 
-					placeMarkLocations[trekLocations[tl]["l_id"]].push(placemark);
+					placeMarkLocations[motoshopLocations[tl]["l_id"]].push(placemark);
 				}
 			}
 		}
@@ -156,26 +161,9 @@
 	/**
 	 * клики по локации в меню (стране или области или городу .. и тп)
 	 */
-	function onClickMttLocationsNames(MttMap)
+	function onClickMttLocationsNames(MtsMap)
 	{
-		var $mttLocationsNames = $(".mttLocationsNames");
-		var caret = ".fa-caret-down";
-		var $caret = $mttLocationsNames.find(".locLevel1 "+caret);
-
-		$caret.on('click', function (event)
-		{
-			event.preventDefault();
-			event.stopPropagation();
-
-			var $ul = $(this).parent().find("ul");
-
-			$mttLocationsNames.find(".locLevel1 ul").not($ul).hide();
-
-			$ul.toggle();
-
-		});
-
-		var $linkName = $mttLocationsNames.find("a");
+		var $linkName = $mtsLocationsNames.find("a");
 
 		$linkName.on('click', function (event)
 		{
@@ -186,33 +174,27 @@
 
 			$(self).parents('.locLevel1').find('> a').addClass('selected');
 
-			var coords = $(this).attr("data-coords").split(',');
-			var l_id = $(this).attr("data-location-id");
+			var coords = $(self).data("coords").split(',');
+			var l_id = $(self).data("locationId");
 
 			var bounds =  getLocationPointsCoords(l_id);
 			var cnt = bounds.length;
 				bounds = bounds.concat([coords]);
 
-			var centerAndZoom = ymaps.util.bounds.getCenterAndZoom(bounds, MttMap.container.getSize());
+			var centerAndZoom = ymaps.util.bounds.getCenterAndZoom(bounds, MtsMap.container.getSize());
 				bounds =  ymaps.util.bounds.fromPoints(bounds);
 			//var center = ymaps.util.bounds.getCenter(bounds);
 			var center = (cnt > 1 ? ymaps.util.bounds.getCenter(bounds) : bounds[0]);
 
-			MttMap.setCenter(center, centerAndZoom.zoom, {checkZoomRange: true});
-			MttMap.setBounds(bounds, {checkZoomRange: false})
+			MtsMap.setCenter(center, centerAndZoom.zoom, {checkZoomRange: true});
+			MtsMap.setBounds(bounds, {checkZoomRange: false})
 					.then(function ()
 					{
-						MttMap.setCenter(center, MttMap.getZoom(), {checkZoomRange: false});
+						MtsMap.setCenter(center, MtsMap.getZoom(), {checkZoomRange: false});
 						$locNamesBtn.click();
 						$locNamesBtnText.text($(self).text());
-
-						if ($(self).parent().find("ul").css('display') == 'none')
-						{
-							$(self).parent().find(caret).click();
-						}
 					});
 		});
-
 	}
 
 	/**

@@ -184,17 +184,6 @@ class Mototrek extends BaseModel
 	 */
 	getLocations()
 	{
-		/*let sql = "SELECT l.l_id, l.l_pid, l.l_level, l.l_lk, l.l_rk" +
-			", ln.l_kind, ln.l_name, ln.l_full_name, ln.l_latitude , ln.l_longitude" +
-			", IF(ln.l_kind = 'country', 0, IF(ln.l_kind = 'province', 1, IF(ln.l_kind = 'locality' AND l.l_level < 3, 1, 2))) AS l_mtt_level" +
-			" FROM moto_track_locations AS mtl" +
-			" JOIN location_names AS ln ON(mtl.l_id = ln.l_id)" +
-			" JOIN location AS l ON(l.l_id = ln.l_id)" +
-			" GROUP BY mtl.l_id" +
-			" ORDER BY l.l_lk";//, ln.l_name
-
-		return this.constructor.conn().s(sql);*/
-
 		let kinds = ['country','province','locality'];
 
 		let sql = "SELECT l.l_id, l.l_pid, l.l_level, l.l_lk, l.l_rk" +
