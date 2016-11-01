@@ -45,13 +45,24 @@ class Motoshop extends Base
 				if (!motoshop)
 					return Promise.resolve(motoshop);
 				
-				return this.model("motoshop").getMotoshopAddressList(mts_id, mts_show)
+				return this.getMotoshopAddressList([mts_id], mts_show)
 					.then(function (addressList)
 					{
 						motoshop["address_list"] = addressList || [];
 						return Promise.resolve(motoshop);
 					});
 			});
+	}
+
+	/**
+	 * список адресов для указанного (-ых) салона
+	 *
+	 * @param mts_id
+	 * @returns {*}
+	 */
+	getMotoshopAddressList(mts_id, show = null)
+	{
+		return this.model("motoshop").getMotoshopAddressList(mts_id, show);
 	}
 
 	/**
@@ -169,9 +180,9 @@ class Motoshop extends Base
 	 *
 	 * @returns {*}
 	 */
-	getMotoshopLocations()
+	getMotoshopLocations(show)
 	{
-		return this.model('motoshop').getMotoshopLocations();
+		return this.model('motoshop').getMotoshopLocations(show);
 	}
 
 	/**
@@ -179,9 +190,9 @@ class Motoshop extends Base
 	 *
 	 * @returns {Promise.<TResult>|*}
 	 */
-	getAllMotoshop()
+	getAllMotoshop(show)
 	{
-		return this.model('motoshop').getAllMotoshop();
+		return this.model('motoshop').getAllMotoshop(show);
 	}
 }
 //************************************************************************* module.exports

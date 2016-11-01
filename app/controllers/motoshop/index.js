@@ -695,24 +695,41 @@ class Motoshop extends Base
 	 */
 	mapActionGet()
 	{
+		let show = 1;
 		return Promise.props({
-			motoshopList: this.getClass("motoshop").getAllMotoshop(),
-			motoshopLocations: this.getClass("motoshop").getMotoshopLocations()
+			motoshopList: this.getClass("motoshop").getAllMotoshop(show),
+			motoshopLocations: this.getClass("motoshop").getMotoshopLocations(show)
 		})
 			.bind(this)
 			.then(function(props)
 			{
+				let mtsIds = [];
+				props.motoshopList.forEach(function (item)
+				{
+					mtsIds.push(item["mts_id"]);
+				});
+
+				return this.getClass("motoshop").getMotoshopAddressList(mtsIds, show)
+					.then(function (addressList)
+					{
+						return Promise.resolve([props.motoshopList, props.motoshopLocations, addressList]);
+					});
+			})
+			.spread(function(motoshopList, motoshopLocations, addressList)
+			{
 				let tplData = {
 					motoshop: null,
-					motoshopList: props.motoshopList || [],
-					motoshopLocations: props.motoshopLocations || []
+					//motoshopList: motoshopList || [],
+					motoshopLocations: motoshopLocations || []
 				};
+
 				let tplFile = "motoshop/map.ejs";
 				this.view.setTplData(tplFile, tplData);
 
 				//экспрот данных в JS на клиента
-				this.getRes().expose(props.motoshopList, 'motoshopList');
-				this.getRes().expose(props.motoshopLocations, 'motoshopLocations');
+				this.getRes().expose(motoshopList, 'motoshopList');
+				this.getRes().expose(motoshopLocations, 'motoshopLocations');
+				this.getRes().expose(addressList, 'motoshopAddressList');
 
 				return Promise.resolve(null);
 			})

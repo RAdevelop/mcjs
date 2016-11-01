@@ -235,21 +235,27 @@ class Motoshop extends BaseModel
 	}
 
 	/**
-	 * список адресов для указанного салона
+	 * список адресов для указанного (-ых) салона
 	 *
 	 * @param mts_id
 	 * @returns {*}
 	 */
 	getMotoshopAddressList(mts_id, show = null)
 	{
+		if (!mts_id.map)
+			mts_id = [mts_id];
+
+		let inMtsIds = this.constructor.placeHoldersForIn(mts_id);
+
 		let sql = `SELECT mtsa.mts_address_id, mtsa.mts_id, mtsa.mts_address_website, mtsa.mts_address_email, 
 		mtsa.mts_address_phones, mtsa.mts_address, mtsa.mts_address_latitude, mtsa.mts_address_longitude, 
 		mtsa.mts_address_gps_lat, mtsa.mts_address_gps_lng, mtsa.mts_address_location_id, mtsa.mts_address_location_pids, 
 		mtsa.mts_address_create_ts, mtsa.mts_address_update_ts, mts_address_show
 		FROM motoshop_address AS mtsa
-		WHERE mtsa.mts_id = ?`;
+		WHERE mtsa.mts_id IN(${inMtsIds})`;
 
-		let sqlData = [mts_id];
+		let sqlData = [];
+		sqlData = sqlData.concat(mts_id);
 
 		if (show)
 		{
@@ -332,19 +338,22 @@ class Motoshop extends BaseModel
 	 *
 	 * @returns {*}
 	 */
-	getMotoshopLocations()
+	getMotoshopLocations(show)
 	{
 		let kinds = ['country','province','locality'];
 
 		let inIds = this.constructor.placeHoldersForIn(kinds)
+
+		let sqlData = [show, show];
+		sqlData = sqlData.concat(kinds);
 
 		let sql = `SELECT l.l_id, l.l_pid, l.l_level, l.l_lk, l.l_rk,
 			ln.l_kind, ln.l_name, ln.l_full_name, ln.l_latitude , ln.l_longitude,
 			IF(l.l_rk - l.l_lk = 0, 0, 1) AS l_has_child,
 			IF(ln.l_kind = 'country', 0, IF(ln.l_kind = 'province', 1, IF(ln.l_kind = 'locality' AND l.l_level < 3, 1, 2))) AS l_mts_level
 			FROM (SELECT NULL) AS z 
-			JOIN motoshop AS mts ON (mts.mts_show = 1)
-			JOIN motoshop_address AS mtsa ON (mtsa.mts_id = mts.mts_id AND mtsa.mts_address_show = 1)
+			JOIN motoshop AS mts ON (mts.mts_show = ?)
+			JOIN motoshop_address AS mtsa ON (mtsa.mts_id = mts.mts_id AND mtsa.mts_address_show = ?)
 			JOIN motoshop_address_locations AS mtsal ON (mtsa.mts_address_id = mtsal.mts_address_id)
 			JOIN location_names AS ln ON(mtsal.l_id = ln.l_id  AND ln.l_kind IN(${inIds}))
 			JOIN location AS l ON(l.l_id = ln.l_id)
@@ -354,7 +363,7 @@ class Motoshop extends BaseModel
 		/*console.log(sql);
 		console.log(kinds);*/
 
-		return this.constructor.conn().s(sql, kinds);
+		return this.constructor.conn().s(sql, sqlData);
 	}
 
 	/**
@@ -362,12 +371,15 @@ class Motoshop extends BaseModel
 	 *
 	 * @returns {Promise.<TResult>|*}
 	 */
-	getAllMotoshop()
+	getAllMotoshop(show)
 	{
 		let sql = `SELECT mts_id, mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip, mts_create_ts, mts_update_ts
-		FROM motoshop`;
+		FROM motoshop
+		WHERE mts_show = ?`;
 
-		return this.constructor.conn().s(sql);
+		let sqlData = [show];
+
+		return this.constructor.conn().s(sql, sqlData);
 	}
 }
 //************************************************************************* module.exports

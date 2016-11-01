@@ -26,6 +26,7 @@ var config = {
 		, unset: 'destroy'
 	},
 	redis:{
+		// /usr/local/opt/redis/bin/redis-server /usr/local/etc/redis.conf
 		port: 6379,
 		host: 'localhost',
 		showFriendlyErrorStack: true

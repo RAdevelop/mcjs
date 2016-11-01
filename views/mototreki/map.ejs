@@ -195,14 +195,17 @@
 
 			var centerAndZoom = ymaps.util.bounds.getCenterAndZoom(bounds, MttMap.container.getSize());
 				bounds =  ymaps.util.bounds.fromPoints(bounds);
+
 			//var center = ymaps.util.bounds.getCenter(bounds);
 			var center = (cnt > 1 ? ymaps.util.bounds.getCenter(bounds) : bounds[0]);
 
-			MttMap.setCenter(center, centerAndZoom.zoom, {checkZoomRange: true});
+			MttMap.setCenter(center, centerAndZoom.zoom, {checkZoomRange: false});
+
 			MttMap.setBounds(bounds, {checkZoomRange: false})
 					.then(function ()
 					{
-						MttMap.setCenter(center, MttMap.getZoom(), {checkZoomRange: false});
+						MttMap.setCenter(center, MttMap.getZoom()-1, {checkZoomRange: false});
+						//MttMap.setCenter(center, centerAndZoom.zoom, {checkZoomRange: false});
 						$locNamesBtn.click();
 						$locNamesBtnText.text($(self).text());
 

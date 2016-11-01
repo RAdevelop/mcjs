@@ -28,6 +28,7 @@
 
 	var motoshopList = MCJS["motoshopList"] || [];
 	var motoshopLocations = MCJS["motoshopLocations"] || [];
+	var motoshopAddressList = MCJS["motoshopAddressList"] || [];
 
 	var mapState = {
 		//controls: ["zoomControl", "searchControl", "typeSelector"]
@@ -71,17 +72,28 @@
 				console.log(err);
 			});
 
+	function getMotoshop(mtsId)
+	{
+		for(var i = 0; i < motoshopList.length; i++)
+		{
+			if (motoshopList[i]["mts_id"] == mtsId)
+				return motoshopList[i];
+		}
+		return null;
+	}
+
 	/**
 	 * создаем гео-точку на основе данных трека
 	 * @param addressData - данные по адресу салона
 	 */
-	function makePlacemark(motoshop, addressData)
+	function makePlacemark(addressData)
 	{
 		var coords = [addressData["mts_address_latitude"], addressData["mts_address_longitude"]];
-
+		var motoshop = getMotoshop(addressData["mts_id"]);
 		var balloonContentBody = [
-			motoshop["mtt_address"],
-			"широта: " + addressData.mts_address_latitude + " (" + addressData.mts_address_gps_lat + ")",
+			addressData["mts_address"]+'<br/>',
+			'<ul><li>'+addressData["mts_address_phones"].split(',').join('</li><li>')+'</li></ul>',
+			"широта: " + addressData.mts_address_latitude + " (" + addressData.mts_address_gps_lat + ")"+'<br/>',
 			"долгота: " + addressData.mts_address_longitude + " (" + addressData.mts_address_gps_lng + ")"
 		];
 
@@ -90,8 +102,8 @@
 					iconContent: motoshop["mts_name"]
 					, iconCaption: motoshop["mts_name"]
 					,	balloonContentHeader: motoshop["mts_name"]
-					,	balloonContentBody: balloonContentBody.join('<br/>')
-					,	balloonContentFooter: '<a href="<%=menuItem.m_path%>/'+motoshop["mts_id"]+'/">перейти на страницу мотосалона</a>'
+					,	balloonContentBody: balloonContentBody.join('')
+					,	balloonContentFooter: '<a href="<%=menuItem.m_path%>/'+[motoshop["mts_id"], motoshop["mts_alias"]].join('/')+'/">перейти на страницу мотосалона</a>'
 				},
 				{
 					preset: 'islands#blueDotIconWithCaption'
@@ -133,11 +145,11 @@
 	function cluster()
 	{
 		var i, tl, placemark, cluster, mts_address_location_pids;
-		for(i = 0; i < motoshopList.length; i++)
+		for(i = 0; i < motoshopAddressList.length; i++)
 		{
-			placemark = makePlacemark(motoshopList[i]);
+			placemark = makePlacemark(motoshopAddressList[i]);
 
-			mts_address_location_pids = motoshopList[i]["mts_address_location_pids"].split(',');
+			mts_address_location_pids = motoshopAddressList[i]["mts_address_location_pids"].split(',');
 			for(tl=0; tl < motoshopLocations.length; tl++)
 			{
 				if (mts_address_location_pids.indexOf(motoshopLocations[tl]["l_id"]) != -1)
@@ -184,13 +196,12 @@
 			var centerAndZoom = ymaps.util.bounds.getCenterAndZoom(bounds, MtsMap.container.getSize());
 				bounds =  ymaps.util.bounds.fromPoints(bounds);
 			//var center = ymaps.util.bounds.getCenter(bounds);
-			var center = (cnt > 1 ? ymaps.util.bounds.getCenter(bounds) : bounds[0]);
+			var center = (cnt > 1 ? ymaps.util.bounds.getCenter(bounds) : bounds[1]);
 
-			MtsMap.setCenter(center, centerAndZoom.zoom, {checkZoomRange: true});
 			MtsMap.setBounds(bounds, {checkZoomRange: false})
 					.then(function ()
 					{
-						MtsMap.setCenter(center, MtsMap.getZoom(), {checkZoomRange: false});
+						MtsMap.setCenter(center, MtsMap.getZoom()-1, {checkZoomRange: false});
 						$locNamesBtn.click();
 						$locNamesBtnText.text($(self).text());
 					});
