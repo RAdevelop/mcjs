@@ -58,7 +58,7 @@
     }
   }
 
-  @media (max-width: $screen-xs-min) {
+  @media (max-width: $screen-xs) {
     & {
       @include mix-width-calc(90%);
       @include mix-min-height-calc(100%);
@@ -91,6 +91,11 @@
 {
   display: none;
   margin: 10px 0px 10px 0px;
+
+  @media (max-width: $screen-sm)
+  {
+    display: block;
+  }
 }
 
 .motoshopMapContainer .mtsLocationsNames,
@@ -109,13 +114,21 @@
 {
   display: block;
   z-index: 1;
-  @media (min-width: $screen-lg)
+  @media (min-width: $screen-md)
   {
     &
     {
       display: block !important;
     }
   }
+  @media (max-width: $screen-sm)
+  {
+    &
+    {
+      display: none;
+    }
+  }
+
 }
 .motoshopMapContainer .mtsLocationsNames .dropdown-menu a
 {

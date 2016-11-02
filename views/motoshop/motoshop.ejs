@@ -5,7 +5,7 @@
 	<% motoshop.address_list.forEach(function (address) { %>
 	<li class="motoshopAddress">
 		<div><span class="mts-address">адрес:</span> <a href="javascript:void(0);" class="_js_mts_addres_id" data-coords="<%=[address["mts_address_latitude"], address["mts_address_longitude"]].join(',')%>"><%=address["mts_address"]%></a></div>
-		<div><span class="mts-address-website">сайт:</span> <%=address["mts_address_website"]%></div>
+		<div><span class="mts-address-website">сайт:</span> <a href="http://<%=address["mts_address_website"]%>" target="_blank" ><%=address["mts_address_website"]%></a></div>
 		<div><span class="mts-address-email">e-mail:</span> <%=address["mts_address_email"]%></div>
 		<div><span class="mts-address-phones">тел.:</span> <ul><li><%-(address["mts_address_phones"].split(',')).join('</li><li>')%></li></ul></div>
 	</li>

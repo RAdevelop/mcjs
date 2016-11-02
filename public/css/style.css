@@ -1516,6 +1516,11 @@ iframe.iframeVideoEmbed {
   display: none;
   margin: 10px 0px 10px 0px;
 }
+@media (max-width: 768px) {
+  .motoshopMapContainer .mtsLocationsNames button.dropdown-toggle {
+    display: block;
+  }
+}
 
 .motoshopMapContainer .mtsLocationsNames,
 .motoshopMapContainer .mtsLocationsNames .dropdown-menu {
@@ -1531,6 +1536,16 @@ iframe.iframeVideoEmbed {
   display: block;
   z-index: 1;
 }
+@media (min-width: 992px) {
+  .motoshopMapContainer .mtsLocationsNames .dropdown-menu {
+    display: block !important;
+  }
+}
+@media (max-width: 768px) {
+  .motoshopMapContainer .mtsLocationsNames .dropdown-menu {
+    display: none;
+  }
+}
 
 .motoshopMapContainer .mtsLocationsNames .dropdown-menu a {
   white-space: normal;
@@ -1543,11 +1558,6 @@ iframe.iframeVideoEmbed {
   background-color: transparent;
 }
 
-@media (min-width: 1200px) {
-  .motoshopMapContainer .mtsLocationsNames .dropdown-menu {
-    display: block !important;
-  }
-}
 .motoshopMapContainer .mtsLocationsNames li ul {
   list-style-type: none;
   padding: 0;

@@ -255,6 +255,8 @@ class Motoshop extends Base
 		
 		if (!tplData["link_mts_website"])
 			errors["link_mts_website"] = "Укажите веб-сайт";
+		else
+			tplData["link_mts_website"] = tplData["link_mts_website"].replace(/^https?:\/\//gi, '');
 
 		if (!tplData["m_mts_email"])
 			errors["m_mts_email"] = "E-mail указан не верно";
@@ -413,6 +415,8 @@ class Motoshop extends Base
 
 				if (!tplData["link_mts_website"])
 					errors["link_mts_website"] = "Укажите веб-сайт";
+				else
+					tplData["link_mts_website"] = tplData["link_mts_website"].replace(/^https?:\/\//gi, '');
 
 				if (!tplData["m_mts_email"])
 					errors["m_mts_email"] = "E-mail указан не верно";
@@ -484,6 +488,8 @@ class Motoshop extends Base
 
 				if (!tplData["link_address_website"])
 					errors["link_address_website"] = "Укажите веб-сайт";
+				else
+					tplData["link_address_website"] = tplData["link_address_website"].replace(/^https?:\/\//gi, '');
 
 				if (!tplData["m_mts_address_email"])
 					errors["m_mts_address_email"] = "E-mail указан не верно";
@@ -572,6 +578,8 @@ class Motoshop extends Base
 
 				if (!tplData["link_address_website"])
 					errors["link_address_website"] = "Укажите веб-сайт";
+				else
+					tplData["link_address_website"] = tplData["link_address_website"].replace(/^https?:\/\//gi, '');
 
 				if (!tplData["m_mts_address_email"])
 					errors["m_mts_address_email"] = "E-mail указан не верно";
