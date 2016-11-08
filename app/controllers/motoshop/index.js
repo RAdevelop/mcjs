@@ -18,7 +18,8 @@ class Motoshop extends Base
 	{
 		return {
 			"index": {
-				'^\/?[0-9]+\/\\S+\/?$': ['i_mts_id','s_mts_alias']
+				'^\/?[0-9]+\/\\S+\/?$': ['i_mts_id','s_mts_alias'],
+				'^\/?$': null,
 			},
 			"add": {
 				'^\/?$': null
@@ -60,10 +61,10 @@ class Motoshop extends Base
 				}
 				else
 				{
-					this.getRes().expose(motoshopList, 'motoshopList');
+					//this.getRes().expose(motoshopList, 'motoshopList');
 					//this.getRes().expose(motoshopLocations, 'motoshopLocations');
 				}
-				
+
 				this.view.setTplData(tplFile, tplData);
 				
 				return Promise.resolve(null);
@@ -119,95 +120,20 @@ class Motoshop extends Base
 	 */
 	motoshopList()
 	{
-		return Promise.props({
-			motoshopList: this.getClass("motoshop").getAll(),
-			motoshopLocations: this.getClass("motoshop").getLocations()
-		})
-			.then(function (proprs)
+		let show = 1;
+
+		return this.getClass("motoshop").getMotoshopLocations(show)
+			.then(function (motoshopLocations)
 			{
-				proprs.motoshopLocations = proprs.motoshopLocations.reverse();
-				proprs.motoshopList = proprs.motoshopList.reverse();
+				//motoshopLocations = proprs.motoshopLocations.reverse();
 
-				let length = proprs.motoshopList.length;
-
-				for(let t = 0; t < length; t++)
-				{
-					for(let l = 0; l < proprs.motoshopLocations.length; l++)
-					{
-						if (
-							proprs.motoshopList.hasOwnProperty(t)
-							&&	proprs.motoshopList[t]["mts_address_location_id"] == proprs.motoshopLocations[l]["l_id"]
-						)
-						{
-							if (!proprs.motoshopLocations[l].hasOwnProperty("treks"))
-								proprs.motoshopLocations[l]["treks"] = [];
-
-							proprs.motoshopLocations[l]["treks"].push(proprs.motoshopList[t]);
-
-							proprs.motoshopList.splice(t, 1);
-
-							length--;
-							t--;
-						}
-					}
-				}
-
-				length = proprs.motoshopList.length;
-
-				for(let t = 0; t < length; t++)
-				{
-					let pids = (proprs.motoshopList[t]["mtt_location_pids"]).split(',');
-
-					for(let l = 0; l < proprs.motoshopLocations.length; l++)
-					{
-
-						let last = pids.lastIndexOf(proprs.motoshopLocations[l]["l_id"]);
-
-						if (last == -1)
-							continue;
-
-						if (!proprs.motoshopLocations[l].hasOwnProperty("treks"))
-							proprs.motoshopLocations[l]["treks"] = [];
-
-						proprs.motoshopLocations[l]["treks"].push(proprs.motoshopList[t]);
-
-						proprs.motoshopList.splice(t, 1);
-
-						length--;
-						t--;
-
-						break;
-					}
-				}
-
-				proprs.motoshopLocations = proprs.motoshopLocations.reverse();
+				//let length = proprs.motoshopList.length;
+				let length = motoshopLocations.length;
 
 
-				let pIndex, motoshopList = [];
-				proprs.motoshopLocations.forEach(function (locItem, locIndex, locNames)
-				{
-					if (locItem["l_mtt_level"] <= 1)
-					{
-						if (locItem["l_mtt_level"] == 1)
-						{
-							pIndex = locIndex;
+				//console.log(motoshopLocations);
 
-							if (!locNames[pIndex].hasOwnProperty("child"))
-								locNames[pIndex]["child"] = [];
-						}
-
-						motoshopList.push(locItem);
-					}
-					else
-					{
-						locNames[pIndex]["child"].push(locItem);
-					}
-
-				});
-
-				proprs = null;
-
-				return Promise.resolve([null, motoshopList]);
+				return Promise.resolve([null, motoshopLocations]);
 			});
 	}
 

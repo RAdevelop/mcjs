@@ -417,8 +417,8 @@
 			htmlForm += '<div class="col-sm-10">';
 			htmlForm += '<input type="text" class="form-control" id="s_mts_address" name="s_mts_address" value="'+addressData["mts_address"]+'" placeholder="адрес" required="required" data-toggle="tooltip" data-container="body" data-placement="auto" title="">';
 			htmlForm += '<span class="help-block">укажите адрес с помощью карты: через поиск адреса, или по клику на карте.</span>';
-			htmlForm += '<input type="text" id="f_mts_address_lat" name="f_mts_address_lat" value="'+addressData['mts_address_latitude']+'" readonly="readonly" maxlength="20" required="required"  />';
-			htmlForm += '<input type="text" id="f_mts_address_lng" name="f_mts_address_lng" value="'+addressData['mts_address_longitude']+'" readonly="readonly" maxlength="20" required="required"  />';
+			htmlForm += '<input type="hidden" id="f_mts_address_lat" name="f_mts_address_lat" value="'+addressData['mts_address_latitude']+'" readonly="readonly" maxlength="20" required="required"  />';
+			htmlForm += '<input type="hidden" id="f_mts_address_lng" name="f_mts_address_lng" value="'+addressData['mts_address_longitude']+'" readonly="readonly" maxlength="20" required="required"  />';
 			htmlForm += '</div>';
 		htmlForm += '</div>';
 		htmlForm += '<div class="form-group" >';

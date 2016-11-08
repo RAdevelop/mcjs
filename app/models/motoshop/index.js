@@ -361,7 +361,7 @@ class Motoshop extends BaseModel
 			ORDER BY l.l_lk`;//, ln.l_name
 
 		/*console.log(sql);
-		console.log(kinds);*/
+		console.log(sqlData);*/
 
 		return this.constructor.conn().s(sql, sqlData);
 	}

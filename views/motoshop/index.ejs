@@ -9,7 +9,7 @@ else if (motoshop){%>
 <%- include motoshop.ejs %>
 <%}
 else if (motoshopList){%>
-<%  if(!_isXHR){%><%- layout('layout/user/index') %><% } %>
+<%  if(!_isXHR){%><%- layout('layout/default') %><% } %>
 <%- include toolbar.ejs %><h1><%=_pageH1%></h1>
 <%- include list.ejs %>
 <%}%>
