@@ -222,41 +222,20 @@
       border: 1px solid #fff;
     }
 
+    & .locLevel2 .fa
+    {
+      cursor: pointer;
+    }
+    & .locLevel3,
+    & .locLevel4
+    {
+      padding-left: 20px;
+      display: none;
+    }
 
     & > li:first-child
     {
       font-size: 18px;
-    }
-
-    & .hasTreks
-    {
-      cursor: pointer;
-      padding-left: 10px;
-      font-size: 16px;
-    }
-
-    & .hasTreks:first-letter
-    {
-      font-weight: bold;
-    }
-
-    & .hasTreks:hover
-    {
-
-      background-color: #f8f8f8;
-      color: #333;
-      border: 1px solid #e2e2e2;
-      @include mix-border-radius(3px);
-    }
-
-    & .hasTreks ul
-    {
-      font-size: 14px;
-    }
-
-    & .hasTreks ul li
-    {
-      padding-left: 10px;
     }
   }
 }

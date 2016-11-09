@@ -102,7 +102,7 @@ body {
 body.mc-project {
   padding-top: 100px;
 }
-@media (max-width: 480px) and (orientation: portrait) {
+@media (max-width: 320px) and (orientation: portrait) {
   body.mc-project {
     padding-top: 150px;
   }
@@ -1610,31 +1610,15 @@ iframe.iframeVideoEmbed {
 .shopListContainer .motoshopCol > li {
   border: 1px solid #fff;
 }
+.shopListContainer .motoshopCol .locLevel2 .fa {
+  cursor: pointer;
+}
+.shopListContainer .motoshopCol .locLevel3, .shopListContainer .motoshopCol .locLevel4 {
+  padding-left: 20px;
+  display: none;
+}
 .shopListContainer .motoshopCol > li:first-child {
   font-size: 18px;
-}
-.shopListContainer .motoshopCol .hasTreks {
-  cursor: pointer;
-  padding-left: 10px;
-  font-size: 16px;
-}
-.shopListContainer .motoshopCol .hasTreks:first-letter {
-  font-weight: bold;
-}
-.shopListContainer .motoshopCol .hasTreks:hover {
-  background-color: #f8f8f8;
-  color: #333;
-  border: 1px solid #e2e2e2;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  -ms-border-radius: 3px;
-  border-radius: 3px;
-}
-.shopListContainer .motoshopCol .hasTreks ul {
-  font-size: 14px;
-}
-.shopListContainer .motoshopCol .hasTreks ul li {
-  padding-left: 10px;
 }
 
 /**********  СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ  **************/

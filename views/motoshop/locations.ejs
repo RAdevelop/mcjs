@@ -1,0 +1,55 @@
+<div class="row shopListContainer">
+	<ul class="motoshopCol _js_motoshop col-xs-12 col-md-3">
+		<%
+		let pId = '';
+		motoshopLocations.forEach(function (locItem, locIndex, locNames)
+		{
+			let dataLoc = '';
+			if (locItem["l_level"] == 2)
+			{
+				dataLoc = 'data-loc-id="'+locItem["l_id"]+'"';
+				pId = locItem["l_id"];
+			}
+
+			if (locItem["l_level"] > 2)
+				dataLoc = 'data-loc-pid="'+pId+'"';
+
+		%><li class="locLevel<%=locItem["l_level"]%>" <%-dataLoc%> ><%
+			if (locNames.hasOwnProperty(locIndex+1) && locNames[locIndex]["l_level"] == 2 && locNames[locIndex+1]["l_level"] > 2)
+			{ %><i <%-dataLoc%> class="fa fa-plus-square-o _js_pid-loc" aria-hidden="true"></i>&nbsp;<%
+			} %><% if (locItem["l_level"] > 1){%><a href="<%=(_reqBaseUrl+'/'+locItem["l_id"]+'/')%>"><%=locItem["l_name"]%></a><% } else {%><%=locItem["l_name"]%><% } %></li><%
+		if (locNames.hasOwnProperty(locIndex+1) && locNames[locIndex+1]["l_level"] == 1)
+		{
+		%></ul><ul class="motoshopCol _js_motoshop col-xs-12 col-md-3"><% } %>
+		<% })%></ul>
+</div>
+<script type="text/javascript">
+//<!--
+(function($)
+{
+	var $pidLoc = $('._js_pid-loc');
+
+	$pidLoc.click(function (event)
+	{
+		event.preventDefault();
+		var $self = $(this);
+		console.log($self.data('locId'));
+
+		if ($self.hasClass('fa-plus-square-o'))
+		{
+			$self.removeClass('fa-plus-square-o').addClass('fa-minus-square-o');
+		}
+		else
+		{
+			$self.removeClass('fa-minus-square-o').addClass('fa-plus-square-o');
+		}
+
+		$self.parents('._js_motoshop').find('[data-loc-pid="'+$self.data('locId')+'"]').toggle();
+
+
+		//$hasTrek.find('ul').hide();
+		//$(this).find('ul').show();
+	});
+})(jQuery);
+//-->
+</script>

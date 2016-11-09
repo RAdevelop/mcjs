@@ -19,6 +19,7 @@ class Motoshop extends Base
 		return {
 			"index": {
 				'^\/?[0-9]+\/\\S+\/?$': ['i_mts_id','s_mts_alias'],
+				'^\/?[0-9]+\/?$': ['i_loc_id'],
 				'^\/?$': null,
 			},
 			"add": {
@@ -39,17 +40,16 @@ class Motoshop extends Base
 	 */
 	indexActionGet()
 	{
-		let {i_mts_id} = this.routeArgs;
-		
-		return this.motoshopData(i_mts_id)
+		return this.motoshopData()
 			.bind(this)
-			.spread(function(motoshop, motoshopList)
+			.spread(function(motoshop, motoshopList, motoshopLocations)
 			{
 				let tplData = {};
 				
 				tplData.motoshop = motoshop || null;
 				tplData.motoshopList = motoshopList || null;
-				
+				tplData.motoshopLocations = motoshopLocations || null;
+
 				let tplFile = "motoshop";
 				if (motoshop)
 				{
@@ -78,15 +78,19 @@ class Motoshop extends Base
 	/**
 	 * что показывать - указанный салон, или список ...
 	 *
-	 * @param i_mts_id
+	 * @param
 	 * @returns {Promise}
 	 */
-	motoshopData(i_mts_id)
+	motoshopData()
 	{
+		let {i_mts_id, i_loc_id} = this.routeArgs;
+
 		if (i_mts_id)
 			return this.motoshop(i_mts_id);
+		else if(i_loc_id)
+			return this.motoshopList(i_loc_id);
 
-		return this.motoshopList();
+		return this.motoshopLocations();
 	}
 
 	/**
@@ -109,16 +113,16 @@ class Motoshop extends Base
 				if (!motoshop || s_mts_alias != motoshop["mts_alias"])
 					throw new Errors.HttpStatusError(404, "Not found");
 
-				return Promise.resolve([motoshop, null]);
+				return Promise.resolve([motoshop, null, null]);
 			});
 	}
 
 	/**
-	 * список салонов
+	 * список населенных пунктов
 	 *
-	 * @returns Promise spread data [motoshop, motoshopList]
+	 * @returns Promise spread data [motoshop, motoshopList, motoshopLocations]
 	 */
-	motoshopList()
+	motoshopLocations()
 	{
 		let show = 1;
 
@@ -133,7 +137,7 @@ class Motoshop extends Base
 
 				//console.log(motoshopLocations);
 
-				return Promise.resolve([null, motoshopLocations]);
+				return Promise.resolve([null, null, motoshopLocations]);
 			});
 	}
 

@@ -1,11 +1,11 @@
 <div class="row shopListContainer">
 	<ul class="motoshopCol _js_motoshop col-xs-12 col-md-3">
-		<% motoshopList.forEach(function (locItem, locIndex, locNames)
+		<% motoshopLocations.forEach(function (locItem, locIndex, locNames)
 		{
 		%><li class="">
 			<% if (locItem["l_level"] > 1){%><a href="<%=(_reqBaseUrl+'/'+locItem["l_id"]+'/')%>"><%=locItem["l_name"]%></a><% } else {%><%=locItem["l_name"]%><% } %></li><%
 		if (locNames.hasOwnProperty(locIndex+1) && locNames[locIndex+1]["l_level"] == 1)
-		{ %></ul><ul class="motoshopCol col-xs-12 col-md-3"><% } %>
+		{ %></ul><ul class="motoshopCol _js_motoshop col-xs-12 col-md-3"><% } %>
 		<% })%></ul>
 </div>
 <script type="text/javascript">

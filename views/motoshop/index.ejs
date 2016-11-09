@@ -12,6 +12,11 @@ else if (motoshopList){%>
 <%  if(!_isXHR){%><%- layout('layout/default') %><% } %>
 <%- include toolbar.ejs %><h1><%=_pageH1%></h1>
 <%- include list.ejs %>
+<%}
+else if (motoshopLocations){%>
+<%  if(!_isXHR){%><%- layout('layout/default') %><% } %>
+<%- include toolbar.ejs %><h1><%=_pageH1%></h1>
+<%- include locations.ejs %>
 <%}%>
 <p>Motosaloni</p>
 <ol>

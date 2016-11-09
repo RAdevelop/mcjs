@@ -1,9 +1,12 @@
 <div class="row trekListContainer">
-	<ul class="trekCol col-xs-12 col-md-3">
+	<ul class="trekCol _js_trek col-xs-12 col-md-3">
 		<% trekList.forEach(function (locItem, locIndex, locNames)
 		{
 			let hasTreks = (locItem.hasOwnProperty("child") || locItem.hasOwnProperty("treks") ? "hasTreks" : "");
-		%><li class="<%=hasTreks%>"><%=locItem["l_name"]%><% if (locItem.hasOwnProperty("treks")) { %><ul><% locItem["treks"].forEach(function (trek) {%><li><a href="<%=(_reqBaseUrl+'/'+trek["mtt_id"]+'/')%>" title="<%=trek["mtt_name"]%>"><%=trek["mtt_name"]%></a></li><%}); %></ul><%}
+		%><li class="<%=hasTreks%>"><%=locItem["l_name"]%><%
+			if (locItem.hasOwnProperty("treks")) {
+			%><ul><% locItem["treks"].forEach(function (trek) {%><li><a href="<%=(_reqBaseUrl+'/'+trek["mtt_id"]+'/')%>" title="<%=trek["mtt_name"]%>"><%=trek["mtt_name"]%></a></li><%}); %></ul><%
+			}
 			if (locItem.hasOwnProperty("child"))
 			{
 			%><ul><%
@@ -13,14 +16,14 @@
 						{%><li><a href="<%=(_reqBaseUrl+'/'+trek["mtt_id"]+'/')%>" title="<%=trek["mtt_name"]%>"><%=trek["mtt_name"]%></a></li><%}); %></ul><%}%></li><%
 				}); %></ul><%} %></li><%
 		if (locNames.hasOwnProperty(locIndex+1) && locNames[locIndex+1]["l_level"] == 1)
-		{ %></ul><ul class="trekCol col-xs-12 col-md-3"><% } %>
+		{ %></ul><ul class="trekCol _js_trek col-xs-12 col-md-3"><% } %>
 		<% })%></ul>
 </div>
 <script type="text/javascript">
 //<!--
 (function($)
 {
-	var $trekCols = $('.trekListContainer .trekCol');
+	var $trekCols = $('._js_trek');
 	var $hasTrek = $trekCols.find('.hasTreks');
 	$hasTrek.click(function (event)
 	{

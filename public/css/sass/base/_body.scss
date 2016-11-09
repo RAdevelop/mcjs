@@ -5,7 +5,7 @@ body {
   {
     padding-top: 100px;
 
-    @media (max-width: $screen-xs-min) and (orientation: portrait) {
+    @media (max-width: $screen-xxs-min) and (orientation: portrait) {
       & {
         padding-top: 150px;
       }
