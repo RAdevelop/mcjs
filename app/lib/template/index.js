@@ -61,15 +61,32 @@ Template.prototype.setPageTitle = function(title, concatMenuTitle = true)
 	this.data._pageTitle = (concatMenuTitle ? this.data._pageTitle + ' ' + title : title);
 	return this;
 };
+
+Template.prototype.getPageTitle = function()
+{
+	return this.data._pageTitle;
+};
+
 Template.prototype.setPageH1 = function(h1, addTo = true)
 {
 	this.data._pageH1 = (addTo ? this.data._pageH1 +' '+h1 : h1);
 	return this;
 };
+
+Template.prototype.getPageH1 = function()
+{
+	return this.data._pageH1;
+};
+
 Template.prototype.setPageDescription = function(description)
 {
 	this.data._pageDescription = description;
 	return this;
+};
+
+Template.prototype.getPageDescription = function()
+{
+	return this.data._pageDescription;
 };
 
 Template.prototype.setPageOgImage = function(src)

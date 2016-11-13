@@ -50,16 +50,15 @@
 		<% if (_action == 'edit') {%>
 		<div role="tabpanel" class="tab-pane" id="contacts">
 			<p class="text-center">
-				<a class="btn btn-primary btn-sm _js_address_tools" href="javascript:void(0);" data-action="add_address" role="button">добавить новый адрес</a>
+				<a class="btn btn-primary btn-sm js-addressTools" href="javascript:void(0);" data-action="add_address" role="button">добавить новый адрес</a>
 			</p>
-			<div class="motoshopAddressList _js_motoshopAddressList">
-			<% motoshop.address_list.forEach(function (address)
-			{
-				%>
+			<div class="motoshopAddressList js-motoshopAddressList">
+			<% 	motoshop.address_list.forEach(function (address)
+			{ %>
 				<div class="motoshopAddress">
 					<div class="motoshopAddressTools">
-						<a class="btn btn-default btn-xs _js_address_tools" href="javascript:void(0);" data-mtsa-id="<%=address["mts_address_id"]%>" data-action="edit_address" role="button">редактировать</a>
-						<a class="btn btn-default btn-xs _js_address_tools" href="javascript:void(0);" data-mtsa-id="<%=address["mts_address_id"]%>" data-action="del_address" role="button">удалить</a>
+						<a class="btn btn-default btn-xs js-addressTools" href="javascript:void(0);" data-mtsa-id="<%=address["mts_address_id"]%>" data-action="edit_address" role="button">редактировать</a>
+						<a class="btn btn-default btn-xs js-addressTools" href="javascript:void(0);" data-mtsa-id="<%=address["mts_address_id"]%>" data-action="del_address" role="button">удалить</a>
 					</div>
 					<div><span class="mts-address">адрес:</span> <%=address["mts_address"]%></div>
 					<div><span class="mts-address-website">сайт:</span> <%=address["mts_address_website"]%></div>
@@ -273,7 +272,7 @@
 		}
 	};
 
-	$(document).on('click', '._js_address_tools', function (event)
+	$(document).on('click', '.js-addressTools', function (event)
 	{
 		event.preventDefault();
 
@@ -462,8 +461,8 @@
 					{
 						var htmlAddress = '<div class="motoshopAddress">';
 								htmlAddress += '<div class="motoshopAddressTools">';
-									htmlAddress += '<a class="btn btn-default btn-xs _js_address_tools" href="javascript:void(0);" data-mtsa-id="'+resp["i_mts_address_id"]+'" data-action="edit_address" role="button">редактировать</a>';
-									htmlAddress += '<a class="btn btn-default btn-xs _js_address_tools" href="javascript:void(0);" data-mtsa-id="'+resp["i_mts_address_id"]+'" data-action="del_address" role="button">удалить</a>';
+									htmlAddress += '<a class="btn btn-default btn-xs js-addressTools" href="javascript:void(0);" data-mtsa-id="'+resp["i_mts_address_id"]+'" data-action="edit_address" role="button">редактировать</a>';
+									htmlAddress += '<a class="btn btn-default btn-xs js-addressTools" href="javascript:void(0);" data-mtsa-id="'+resp["i_mts_address_id"]+'" data-action="del_address" role="button">удалить</a>';
 								htmlAddress += '</div>';
 							htmlAddress += '<div><span class="mts-address">адрес:</span> '+resp["s_mts_address"]+'</div>';
 							htmlAddress += '<div><span class="mts-address-website">сайт:</span> '+resp["link_address_website"]+'</div>';
@@ -476,7 +475,7 @@
 							if (addMode)
 							{
 								updateJsMotoshopData(resp, true);
-								$('._js_motoshopAddressList').prepend(htmlAddress);
+								$('.js-motoshopAddressList').prepend(htmlAddress);
 							}
 							else
 							{

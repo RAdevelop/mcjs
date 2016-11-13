@@ -440,7 +440,7 @@ DROP TABLE IF EXISTS `motoshop`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `motoshop` (
   `mts_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `mts_name` varchar(255) NOT NULL DEFAULT '',
+  `mts_name` varchar(150) NOT NULL DEFAULT '',
   `mts_alias` varchar(255) NOT NULL,
   `mts_website` varchar(255) NOT NULL DEFAULT '',
   `mts_email` varchar(255) NOT NULL DEFAULT '',
@@ -449,7 +449,8 @@ CREATE TABLE `motoshop` (
   `mts_update_ts` int(10) unsigned NOT NULL DEFAULT '0',
   `mts_show` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`mts_id`),
-  KEY `mts_show` (`mts_show`)
+  KEY `mts_show` (`mts_show`),
+  KEY `mts_name` (`mts_name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -487,7 +488,7 @@ CREATE TABLE `motoshop_address` (
   `mts_address_update_ts` int(10) unsigned NOT NULL DEFAULT '0',
   `mts_address_show` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`mts_address_id`),
-  KEY `mts_id` (`mts_id`,`mts_address_show`)
+  KEY `mts_id` (`mts_id`,`mts_address_show`,`mts_address_location_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -511,7 +512,8 @@ DROP TABLE IF EXISTS `motoshop_address_locations`;
 CREATE TABLE `motoshop_address_locations` (
   `mts_address_id` int(10) unsigned NOT NULL,
   `l_id` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`l_id`,`mts_address_id`)
+  PRIMARY KEY (`l_id`,`mts_address_id`),
+  KEY `lid` (`l_id`,`mts_address_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -752,7 +754,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1478727929,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1477307894,'RoLex',1);
+INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1479074378,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1477307894,'RoLex',1);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3791,4 +3793,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-11-10  0:49:21
+-- Dump completed on 2016-11-14  1:00:45

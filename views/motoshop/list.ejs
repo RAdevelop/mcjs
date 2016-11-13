@@ -1,28 +1,34 @@
-<div class="row shopListContainer">
-	<ul class="motoshopCol _js_motoshop col-xs-12 col-md-3">
-		<% motoshopLocations.forEach(function (locItem, locIndex, locNames)
+<div class="row">
+	<ul class="shopListContainer js-motoshop-list col-xs-12 col-md-12">
+		<% motoshopList.forEach(function (shop)
 		{
-		%><li class="">
-			<% if (locItem["l_level"] > 1){%><a href="<%=(_reqBaseUrl+'/'+locItem["l_id"]+'/')%>"><%=locItem["l_name"]%></a><% } else {%><%=locItem["l_name"]%><% } %></li><%
-		if (locNames.hasOwnProperty(locIndex+1) && locNames[locIndex+1]["l_level"] == 1)
-		{ %></ul><ul class="motoshopCol _js_motoshop col-xs-12 col-md-3"><% } %>
-		<% })%></ul>
+		%><li class="shopItem">
+			<h5><a href="<%=[_reqBaseUrl, shop["mts_id"], shop["mts_alias"]].join('/')%>/" target="_blank"><%=shop["mts_name"]%></a></h5>
+			<ul class="motoshopAddressList">
+				<%
+					let addressCnt = shop["address_list"].length;
+					addressCnt = (addressCnt > 3 ? 3 : addressCnt);
+					let styleWidth = 'width'+(Math.floor(100/addressCnt)-2);
+
+				shop["address_list"].forEach(function (address){ %>
+					<li class="motoshopAddress <%=styleWidth%>">
+						<div class="motoshopAddressData">
+							<div><span class="mts-address-website">сайт:</span> <%=address["mts_address_website"]%></div>
+							<div><span class="mts-address">адрес:</span> <%=address["mts_address"]%></div>
+							<div><span class="mts-address-email">e-mail:</span> <ul><li><%-(address["mts_address_phones"].split(',')).join('</li><li>')%></li></ul></div>
+							<div><span class="mts-address-phones">тел.:</span> <%=address["mts_address_email"]%></div>
+						</div>
+					</li>
+				<% }); %></ul>
+		</li>
+	<% }); %>
+	</ul>
 </div>
 <script type="text/javascript">
 //<!--
 (function($)
 {
-	var $motoshopCols = $('_js_motoshop');
-	var $hasTrek = $motoshopCols.find('.hasShops');
-	$hasTrek.click(function (event)
-	{
-		if (event.target.tagName.toLowerCase() == 'a')
-			return;
 
-		event.preventDefault();
-		$hasTrek.find('ul').hide();
-		$(this).find('ul').show();
-	});
 })(jQuery);
 //-->
 </script>

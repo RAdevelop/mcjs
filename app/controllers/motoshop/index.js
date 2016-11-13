@@ -5,8 +5,10 @@
 
 const Errors = require('app/lib/errors');
 const Promise = require("bluebird");
-
+const Pages = require("app/lib/pages");
 const Base = require('app/lib/controller');
+
+let limit_per_page = 2;
 
 class Motoshop extends Base
 {
@@ -18,6 +20,7 @@ class Motoshop extends Base
 	{
 		return {
 			"index": {
+				'^\/?[0-9]+\/page\/[1-9]+[0-9]*\/?$': ['i_loc_id', ,'i_page'],
 				'^\/?[0-9]+\/\\S+\/?$': ['i_mts_id','s_mts_alias'],
 				'^\/?[0-9]+\/?$': ['i_loc_id'],
 				'^\/?$': null,
@@ -40,12 +43,17 @@ class Motoshop extends Base
 	 */
 	indexActionGet()
 	{
-		return this.motoshopData()
+		let {i_mts_id, i_loc_id} = this.routeArgs;
+
+		if(i_loc_id)
+			return this.motoshopList(i_loc_id);
+
+		return this.motoshopData(i_mts_id)
 			.bind(this)
-			.spread(function(motoshop, motoshopList, motoshopLocations)
+			.spread(function(motoshop, motoshopList, motoshopLocations, Pages)
 			{
 				let tplData = {};
-				
+
 				tplData.motoshop = motoshop || null;
 				tplData.motoshopList = motoshopList || null;
 				tplData.motoshopLocations = motoshopLocations || null;
@@ -58,11 +66,6 @@ class Motoshop extends Base
 					this.view.setPageTitle(motoshop["mts_name"]);
 					this.view.setPageH1(motoshop["mts_name"]);
 					this.view.setPageDescription(this.cheerio(motoshop["mts_descrip"]).text());
-				}
-				else
-				{
-					//this.getRes().expose(motoshopList, 'motoshopList');
-					//this.getRes().expose(motoshopLocations, 'motoshopLocations');
 				}
 
 				this.view.setTplData(tplFile, tplData);
@@ -81,16 +84,79 @@ class Motoshop extends Base
 	 * @param
 	 * @returns {Promise}
 	 */
-	motoshopData()
+	motoshopData(i_mts_id)
 	{
-		let {i_mts_id, i_loc_id} = this.routeArgs;
+		//TODO написать условие для mts_show - админ, автор = null илначе 1
+		let mts_show = null;
 
 		if (i_mts_id)
-			return this.motoshop(i_mts_id);
-		else if(i_loc_id)
-			return this.motoshopList(i_loc_id);
+			return this.motoshop(i_mts_id, mts_show);
 
-		return this.motoshopLocations();
+		return this.motoshopLocations(1);
+	}
+
+	/**
+	 * список мотосалонов для указанной локации
+	 * @param i_loc_id
+	 * @param mts_show
+	 * @returns {*|Promise.<TResult>|{then, fail}}
+	 */
+	motoshopList(i_loc_id)
+	{
+		let {i_page=1} = this.routeArgs;
+		let mts_show = 1;
+
+		return Promise.props({
+			list: this.getClass("motoshop").getMotoshopListByLocId(i_loc_id, mts_show, new Pages(i_page, limit_per_page)),
+			location: this.getClass("location").getLocationById(i_loc_id)
+		})
+			.bind(this)
+			//.spread(function (motoshopList, Pages)
+			.then(function (props)
+			{
+				let tplData = {};
+
+				let Pages = props.list[1];
+				tplData.motoshopList = props.list[0];
+
+				let tplFile = '';
+				let isAjax = this.getReq().xhr;
+				if (isAjax)
+				{
+					tplFile = 'motoshop/list.ejs';
+				}
+				else
+				{
+					tplFile = 'motoshop';
+					tplData.motoshop = null;
+					tplData.motoshopLocations = null;
+					tplData.location = props.location;
+
+					this.view.setPageTitle(tplData.location["l_name"], true);
+					this.view.setPageH1(tplData.location["l_name"], true);
+					this.view.setPageDescription(this.view.getPageTitle());
+				}
+
+				let exposeList = 'motoshopList';
+				Pages.setLinksUri([this.getBaseUrl(), i_loc_id].join('/'))
+					.setAjaxPagesType(true)
+					.setAjaxDataSrc([exposeList])
+					.setAjaxDataTarget(exposeList)
+					.setJquerySelectorData('.shopListContainer .shopItem');
+
+				tplData["pages"] = Pages.pages();
+
+				this.getRes().expose(tplData["pages"], 'pages');
+				this.getRes().expose(tplData.motoshopList, 'motoshopList');
+
+				this.view.setTplData(tplFile, tplData, isAjax);
+
+				return Promise.resolve(null);
+			})
+			.catch(function (err)
+			{
+				throw err;
+			});
 	}
 
 	/**
@@ -100,12 +166,9 @@ class Motoshop extends Base
 	 * @returns Promise spread data [trek, motoshopList]
 	 * @throws Errors.HttpStatusError
 	 */
-	motoshop(i_mts_id)
+	motoshop(i_mts_id, mts_show)
 	{
 		let {s_mts_alias=null} = this.routeArgs;
-
-		//TODO написать условие для mts_show - админ, автор = null илначе 1
-		let mts_show = null;
 
 		return this.getClass('motoshop').getMotoshop(i_mts_id, mts_show)
 			.then(function (motoshop)
@@ -122,21 +185,11 @@ class Motoshop extends Base
 	 *
 	 * @returns Promise spread data [motoshop, motoshopList, motoshopLocations]
 	 */
-	motoshopLocations()
+	motoshopLocations(mts_show)
 	{
-		let show = 1;
-
-		return this.getClass("motoshop").getMotoshopLocations(show)
+		return this.getClass("motoshop").getMotoshopLocations(mts_show)
 			.then(function (motoshopLocations)
 			{
-				//motoshopLocations = proprs.motoshopLocations.reverse();
-
-				//let length = proprs.motoshopList.length;
-				let length = motoshopLocations.length;
-
-
-				//console.log(motoshopLocations);
-
 				return Promise.resolve([null, null, motoshopLocations]);
 			});
 	}

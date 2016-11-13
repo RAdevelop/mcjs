@@ -240,7 +240,7 @@ class Motoshop extends BaseModel
 	 * @param mts_id
 	 * @returns {*}
 	 */
-	getMotoshopAddressList(mts_id, show = null)
+	getMotoshopAddressList(mts_id, show = null, location_id = null)
 	{
 		if (!mts_id.map)
 			mts_id = [mts_id];
@@ -260,7 +260,12 @@ class Motoshop extends BaseModel
 		if (show)
 		{
 			sqlData.push(show);
-			sql += ` AND mts_address_show = ?`;
+			sql += ` AND mtsa.mts_address_show = ?`;
+		}
+		if (location_id)
+		{
+			sqlData.push(location_id);
+			sql += ` AND mtsa.mts_address_location_id = ?`;
 		}
 		return this.constructor.conn().s(sql, sqlData);
 	}
@@ -378,6 +383,52 @@ class Motoshop extends BaseModel
 		WHERE mts_show = ?`;
 
 		let sqlData = [show];
+
+		return this.constructor.conn().s(sql, sqlData);
+	}
+
+	countMotoshopByLocId(loc_id, mts_show)
+	{
+		let sql = `SELECT COUNT(mts_id) AS cnt
+			FROM (SELECT NULL) AS z
+			JOIN motoshop AS mts ON(mts.mts_show = ? 
+				AND EXISTS (
+				SELECT 1 FROM motoshop_address AS ma 
+		        WHERE mts.mts_id = ma.mts_id AND ma.mts_address_show = ? AND ma.mts_address_location_id = ?
+		        )
+		    )`;
+		let sqlData = [mts_show, mts_show, loc_id];
+
+		/*console.log(sql);
+		 console.log(sqlData);*/
+
+		return this.constructor.conn().sRow(sql, sqlData)
+			.then(function (res)
+			{
+				return Promise.resolve(res["cnt"] || 0);
+			});
+	}
+
+	/**
+	 * список мотосалонов для указанной локации
+	 * @param i_loc_id
+	 * @param mts_show
+	 * @returns {*|Promise.<TResult>|{then, fail}}
+	 */
+	getMotoshopListByLocId(loc_id, mts_show, limit = 20, offset = 0)
+	{
+		let sql = `SELECT 
+			mts.mts_id, mts.mts_name, mts.mts_alias, mts.mts_website, mts.mts_email, mts.mts_show
+			FROM (SELECT NULL) AS z
+			JOIN motoshop AS mts ON(mts.mts_show = ? 
+				AND EXISTS (
+				SELECT 1 FROM motoshop_address AS ma 
+		        WHERE mts.mts_id = ma.mts_id AND ma.mts_address_show = ? AND ma.mts_address_location_id = ?
+		        )
+			)
+			ORDER BY mts.mts_name
+			LIMIT ${limit} OFFSET ${offset}`;
+		let sqlData = [mts_show, mts_show, loc_id];
 
 		return this.constructor.conn().s(sql, sqlData);
 	}

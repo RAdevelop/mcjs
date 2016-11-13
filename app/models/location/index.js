@@ -31,19 +31,22 @@ class Location extends BaseModel
 			});
 	}
 
-
 	/**
-	 * получаем список расположений (страна - область - населенный пункт)
+	 * получаем данные локации по ее id
+	 *
+	 * @param loc_id
+	 * @returns {*}
 	 */
-	locationList(cb)
+	getLocationById(loc_id)
 	{
-		let sql = "SELECT l.l_id, l.l_pid, l.l_level, l.l_lk, l.l_rk, nl.l_name, nl.l_name AS value " +
-			"FROM `location` AS l " +
-			"JOIN `location_names` AS nl ON (nl.l_id = l.l_id) " +
-			"ORDER BY l.l_lk";
-		
+		let sql = `SELECT l.l_id, l.l_pid, l.l_level, l.l_lk, l.l_rk, 
+			ln.l_name, ln.l_latitude, ln.l_longitude, ln.l_full_name
+			FROM location AS l
+			JOIN location_names AS ln ON(ln.l_id = l.l_id)
+			WHERE l.l_id = ?`;
 
-		return this.constructor.conn().s(sql);
+
+		return this.constructor.conn().sRow(sql, [loc_id]);
 	}
 }
 

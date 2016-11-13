@@ -201,6 +201,17 @@ class Location extends Base
 			gps_lng: Math.abs(lngG) + '&deg; '+ lngMin + '&prime;' + lngSec + '&Prime;'+EW
 		};
 	}
+
+	/**
+	 * получаем данные локации по ее id
+	 *
+	 * @param loc_id
+	 * @returns {*}
+	 */
+	getLocationById(loc_id)
+	{
+		return this.model("location").getLocationById(loc_id);
+	}
 }
 //************************************************************************* module.exports
 //писать после class Name....{}

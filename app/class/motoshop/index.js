@@ -3,11 +3,11 @@
  */
 "use strict";
 
-const Logger = require('app/lib/logger');
+//const Logger = require('app/lib/logger');
 const Promise = require("bluebird");
-const FileUpload = require('app/lib/file/upload');
+//const FileUpload = require('app/lib/file/upload');
 const FileErrors = require('app/lib/file/errors');
-const Path = require('path');
+//const Path = require('path');
 
 const Base = require('app/lib/class');
 
@@ -34,6 +34,7 @@ class Motoshop extends Base
 	 * данные мотосалона по его id
 	 * 
 	 * @param mts_id
+	 * @param mts_show
 	 * @returns {*}
 	 */
 	getMotoshop(mts_id, mts_show = null)
@@ -58,6 +59,7 @@ class Motoshop extends Base
 	 * список адресов для указанного (-ых) салона
 	 *
 	 * @param mts_id
+	 * @param show
 	 * @returns {*}
 	 */
 	getMotoshopAddressList(mts_id, show = null)
@@ -193,6 +195,65 @@ class Motoshop extends Base
 	getAllMotoshop(show)
 	{
 		return this.model('motoshop').getAllMotoshop(show);
+	}
+
+	/**
+	 * список мотосалонов для указанной локации
+	 * @param loc_id
+	 * @param mts_show
+	 * @param Pages
+	 * @returns {*|Promise.<TResult>|{then, fail}}
+	 */
+	getMotoshopListByLocId(loc_id, mts_show, Pages)
+	{
+		return this.model("motoshop").countMotoshopByLocId(loc_id, mts_show)
+			.bind(this)
+			.then(function (cnt)
+			{
+				Pages.setTotal(cnt);
+				if (!cnt)
+					return [[], Pages];
+
+				if (Pages.limitExceeded())
+					return Promise.reject(new FileErrors.HttpStatusError(404, "Not found"));
+
+				return this.model("motoshop").getMotoshopListByLocId(loc_id, mts_show, Pages.getLimit(), Pages.getOffset())
+					.then(function (list)
+					{
+						if (!list)
+							return Promise.resolve([[], Pages]);
+
+						let mts_ids = [];
+						list.forEach(function (shop){
+							mts_ids.push(shop['mts_id']);
+						});
+
+						return Promise.resolve([list, mts_ids]);
+					});
+			})
+			.spread(function (list, mts_ids)
+			{
+				return this.model("motoshop").getMotoshopAddressList(mts_ids, mts_show, loc_id)
+					.then(function (addressList)
+					{
+						list.forEach(function (shop)
+						{
+							addressList.forEach(function (address)
+							{
+								if (shop['mts_id'] == address['mts_id'])
+								{
+									if (!shop.hasOwnProperty('address_list'))
+										shop['address_list'] = [];
+
+									shop['address_list'].push(address);
+								}
+							});
+						});
+
+						mts_ids = addressList = null;
+						return Promise.resolve([list, Pages]);
+					});
+			});
 	}
 }
 //************************************************************************* module.exports

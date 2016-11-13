@@ -195,8 +195,6 @@
   padding-left: 20px;
 }
 
-
-
 .shopListContainer
 {
   & .motoshopCol
@@ -236,6 +234,29 @@
     & > li:first-child
     {
       font-size: 18px;
+    }
+  }
+}
+
+ul.shopListContainer {
+  list-style-type: none;
+
+  & .shopItem
+  {
+
+    vertical-align: text-top;
+    margin-right: 20px;
+
+    & a {
+      clear: both;
+      display: block;
+    }
+    & .motoshopAddress {
+      width: auto;
+
+      & .motoshopAddressData {
+        color: inherit;
+      }
     }
   }
 }

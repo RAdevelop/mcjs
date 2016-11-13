@@ -95,6 +95,42 @@
   cursor: pointer;
 }
 
+.width100 {
+  width: 100% !important;
+}
+
+.width99 {
+  width: 99% !important;
+}
+
+.width98 {
+  width: 98% !important;
+}
+
+.width50 {
+  width: 50% !important;
+}
+
+.width49 {
+  width: 49% !important;
+}
+
+.width48 {
+  width: 48% !important;
+}
+
+.width33 {
+  width: 33% !important;
+}
+
+.width32 {
+  width: 32% !important;
+}
+
+.width31 {
+  width: 31% !important;
+}
+
 body {
   font-family: 'Open Sans', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
   font-size: 14px;
@@ -1619,6 +1655,24 @@ iframe.iframeVideoEmbed {
 }
 .shopListContainer .motoshopCol > li:first-child {
   font-size: 18px;
+}
+
+ul.shopListContainer {
+  list-style-type: none;
+}
+ul.shopListContainer .shopItem {
+  vertical-align: text-top;
+  margin-right: 20px;
+}
+ul.shopListContainer .shopItem a {
+  clear: both;
+  display: block;
+}
+ul.shopListContainer .shopItem .motoshopAddress {
+  width: auto;
+}
+ul.shopListContainer .shopItem .motoshopAddress .motoshopAddressData {
+  color: inherit;
 }
 
 /**********  СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ  **************/
