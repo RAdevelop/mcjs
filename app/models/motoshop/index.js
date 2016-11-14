@@ -272,6 +272,8 @@ class Motoshop extends BaseModel
 			sql += ` AND mal.l_id = ?`;
 		}
 
+		sql += ` GROUP BY mtsa.mts_address_id`;
+
 		/*console.log(sql);
 		console.log(sqlData);*/
 

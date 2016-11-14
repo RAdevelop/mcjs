@@ -512,7 +512,7 @@ DROP TABLE IF EXISTS `motoshop_address_locations`;
 CREATE TABLE `motoshop_address_locations` (
   `mts_address_id` int(10) unsigned NOT NULL,
   `l_id` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`l_id`,`mts_address_id`),
+  PRIMARY KEY (`mts_address_id`,`l_id`),
   KEY `lid` (`l_id`,`mts_address_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -523,7 +523,7 @@ CREATE TABLE `motoshop_address_locations` (
 
 LOCK TABLES `motoshop_address_locations` WRITE;
 /*!40000 ALTER TABLE `motoshop_address_locations` DISABLE KEYS */;
-INSERT INTO `motoshop_address_locations` VALUES (1,70),(2,70),(5,70),(6,70),(7,70),(8,70),(9,70),(10,70),(11,70),(12,70),(13,70),(14,70),(15,70),(3,187),(4,187),(1,278),(2,278),(6,278),(7,278),(8,278),(9,278),(10,278),(11,278),(12,278),(13,278),(14,278),(15,284),(3,347),(4,347),(5,348),(15,349),(15,350);
+INSERT INTO `motoshop_address_locations` VALUES (1,70),(1,278),(2,70),(2,278),(3,187),(3,347),(4,187),(4,347),(5,70),(5,348),(6,70),(6,278),(7,70),(7,278),(8,70),(8,278),(9,70),(9,278),(10,70),(10,278),(11,70),(11,278),(12,70),(12,278),(13,70),(13,278),(14,70),(14,278),(15,70),(15,284),(15,349),(15,350);
 /*!40000 ALTER TABLE `motoshop_address_locations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -754,7 +754,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1479075129,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1479153790,'RoLex',1);
+INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1479075129,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1479155039,'RoLex',1);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3793,4 +3793,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-11-14 23:04:20
+-- Dump completed on 2016-11-14 23:24:33

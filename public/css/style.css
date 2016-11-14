@@ -1471,9 +1471,9 @@ iframe.iframeVideoEmbed {
 }
 
 .motoshopAddress {
-  width: calc(30%);
-  width: -moz-calc(30%);
-  width: -webkit-calc(30%);
+  width: calc(31%);
+  width: -moz-calc(31%);
+  width: -webkit-calc(31%);
   min-height: calc(152px);
   min-height: -moz-calc(152px);
   min-height: -webkit-calc(152px);
