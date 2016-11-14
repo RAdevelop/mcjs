@@ -114,10 +114,14 @@ class Motoshop extends Base
 			//.spread(function (motoshopList, Pages)
 			.then(function (props)
 			{
+				//если не нашли список салонов
+				if (!props.list[0])
+					throw new Errors.HttpStatusError(404, "Not found");
+
 				let tplData = {};
+				tplData.motoshopList = props.list[0];
 
 				let Pages = props.list[1];
-				tplData.motoshopList = props.list[0];
 
 				let tplFile = '';
 				let isAjax = this.getReq().xhr;

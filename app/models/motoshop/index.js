@@ -245,6 +245,9 @@ class Motoshop extends BaseModel
 		if (!mts_id.map)
 			mts_id = [mts_id];
 
+		if (mts_id.length == 0)
+			return Promise.resolve(null);
+
 		let inMtsIds = this.constructor.placeHoldersForIn(mts_id);
 
 		let sql = `SELECT mtsa.mts_address_id, mtsa.mts_id, mtsa.mts_address_website, mtsa.mts_address_email, 
@@ -252,6 +255,7 @@ class Motoshop extends BaseModel
 		mtsa.mts_address_gps_lat, mtsa.mts_address_gps_lng, mtsa.mts_address_location_id, mtsa.mts_address_location_pids, 
 		mtsa.mts_address_create_ts, mtsa.mts_address_update_ts, mts_address_show
 		FROM motoshop_address AS mtsa
+		JOIN motoshop_address_locations AS mal ON(mal.mts_address_id = mtsa.mts_address_id)
 		WHERE mtsa.mts_id IN(${inMtsIds})`;
 
 		let sqlData = [];
@@ -265,8 +269,12 @@ class Motoshop extends BaseModel
 		if (location_id)
 		{
 			sqlData.push(location_id);
-			sql += ` AND mtsa.mts_address_location_id = ?`;
+			sql += ` AND mal.l_id = ?`;
 		}
+
+		/*console.log(sql);
+		console.log(sqlData);*/
+
 		return this.constructor.conn().s(sql, sqlData);
 	}
 
@@ -393,11 +401,12 @@ class Motoshop extends BaseModel
 			FROM (SELECT NULL) AS z
 			JOIN motoshop AS mts ON(mts.mts_show = ? 
 				AND EXISTS (
-				SELECT 1 FROM motoshop_address AS ma 
-		        WHERE mts.mts_id = ma.mts_id AND ma.mts_address_show = ? AND ma.mts_address_location_id = ?
+				SELECT 1 FROM motoshop_address_locations AS mal
+                JOIN motoshop_address AS ma ON(mal.l_id = ? AND ma.mts_address_id = mal.mts_address_id)
+		        WHERE mts.mts_id = ma.mts_id AND ma.mts_address_show = ?
 		        )
 		    )`;
-		let sqlData = [mts_show, mts_show, loc_id];
+		let sqlData = [mts_show, loc_id, mts_show];
 
 		/*console.log(sql);
 		 console.log(sqlData);*/
@@ -422,15 +431,24 @@ class Motoshop extends BaseModel
 			FROM (SELECT NULL) AS z
 			JOIN motoshop AS mts ON(mts.mts_show = ? 
 				AND EXISTS (
-				SELECT 1 FROM motoshop_address AS ma 
-		        WHERE mts.mts_id = ma.mts_id AND ma.mts_address_show = ? AND ma.mts_address_location_id = ?
+				SELECT 1 FROM motoshop_address_locations AS mal
+                JOIN motoshop_address AS ma ON(mal.l_id = ? AND ma.mts_address_id = mal.mts_address_id)
+		        WHERE mts.mts_id = ma.mts_id AND ma.mts_address_show = ?
 		        )
 			)
 			ORDER BY mts.mts_name
 			LIMIT ${limit} OFFSET ${offset}`;
-		let sqlData = [mts_show, mts_show, loc_id];
 
-		return this.constructor.conn().s(sql, sqlData);
+		let sqlData = [mts_show, loc_id, mts_show];
+
+		return this.constructor.conn().s(sql, sqlData)
+			.then(function (res)
+			{
+				if (res['info']['numRows'] == '0')
+					return Promise.resolve(null);
+
+				return Promise.resolve(res);
+			});
 	}
 }
 //************************************************************************* module.exports

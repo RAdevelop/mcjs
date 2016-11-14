@@ -60,11 +60,12 @@ class Motoshop extends Base
 	 *
 	 * @param mts_id
 	 * @param show
+	 * @param location_id
 	 * @returns {*}
 	 */
-	getMotoshopAddressList(mts_id, show = null)
+	getMotoshopAddressList(mts_id, show = null, location_id = null)
 	{
-		return this.model("motoshop").getMotoshopAddressList(mts_id, show);
+		return this.model("motoshop").getMotoshopAddressList(mts_id, show, location_id);
 	}
 
 	/**
@@ -212,7 +213,7 @@ class Motoshop extends Base
 			{
 				Pages.setTotal(cnt);
 				if (!cnt)
-					return [[], Pages];
+					return [null, null];
 
 				if (Pages.limitExceeded())
 					return Promise.reject(new FileErrors.HttpStatusError(404, "Not found"));
@@ -221,7 +222,7 @@ class Motoshop extends Base
 					.then(function (list)
 					{
 						if (!list)
-							return Promise.resolve([[], Pages]);
+							return Promise.resolve([null, null]);
 
 						let mts_ids = [];
 						list.forEach(function (shop){
@@ -233,7 +234,10 @@ class Motoshop extends Base
 			})
 			.spread(function (list, mts_ids)
 			{
-				return this.model("motoshop").getMotoshopAddressList(mts_ids, mts_show, loc_id)
+				if (!list || !mts_ids)
+					return Promise.resolve([null, Pages]);
+
+				return this.getMotoshopAddressList(mts_ids, mts_show, loc_id)
 					.then(function (addressList)
 					{
 						list.forEach(function (shop)

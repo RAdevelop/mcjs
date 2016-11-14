@@ -6,7 +6,7 @@
 				<li><a href="<%=menuItem.m_path+'/add/'%>" ><i class="fa fa-fw fa-plus-square-o"></i> добавить мотосалон</a></li>
 				<% if (motoshop && motoshop["mts_id"]) {%>
 				<li><a href="<%=menuItem.m_path+'/edit/'+motoshop["mts_id"]%>/"><i class="fa fa-fw fa-edit"></i> редактировать мотосалон</a></li>
-				<li><a href="javascript:void(0)" class="_js_motoshop_tools" data-action="delete"><i class="fa fa-fw fa-trash-o"></i> удалить мотосалон</a></li>
+				<li><a href="javascript:void(0)" class="js-motoshop-tools" data-action="delete"><i class="fa fa-fw fa-trash-o"></i> удалить мотосалон</a></li>
 				<% }%>
 			</ul>
 		</div>
@@ -23,7 +23,7 @@
 //<!--
 (function($)
 {
-	$('._js_motoshop_tools').click(function (event)
+	$('.js-motoshop-tools').click(function (event)
 	{
 		event.preventDefault();
 		event.stopPropagation();
