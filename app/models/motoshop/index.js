@@ -11,6 +11,7 @@ class Motoshop extends BaseModel
 	/**
 	 * добавляем новый мотосалон
 	 *
+	 * @param u_id
 	 * @param mts_show
 	 * @param mts_name
 	 * @param mts_alias
@@ -19,15 +20,15 @@ class Motoshop extends BaseModel
 	 * @param mts_descrip
 	 * @returns {*}
 	 */
-	add(mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip)
+	add(u_id, mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip)
 	{
-		let sql = `INSERT INTO motoshop (mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip, mts_create_ts, mts_update_ts)
-		VALUES(?,?,?,?,?,?,?,?)`;
+		let sql = `INSERT INTO motoshop (mts_u_id_add, mts_u_id_edit, mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip, mts_create_ts, mts_update_ts)
+		VALUES(?,?,?,?,?,?,?,?,?,?)`;
 
 		//let now_ts  = Moment(dd_start_ts, "DD-MM-YYYY").unix();
 		let now_ts = Moment().unix();
 
-		let sqlData = [mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip, now_ts, now_ts];
+		let sqlData = [u_id, u_id, mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip, now_ts, now_ts];
 		return this.constructor.conn().ins(sql, sqlData)
 			.then(function (res)
 			{
@@ -44,7 +45,7 @@ class Motoshop extends BaseModel
 	 */
 	getMotoshop(mts_id, show = null)
 	{
-		let sql = `SELECT mts_id, mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip, mts_create_ts, mts_update_ts
+		let sql = `SELECT mts_u_id_add, mts_u_id_edit, mts_id, mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip, mts_create_ts, mts_update_ts
 		FROM motoshop
 		WHERE mts_id = ?`;
 
@@ -61,6 +62,7 @@ class Motoshop extends BaseModel
 	/**
 	 * редактируем мотосалон
 	 *
+	 * @param u_id
 	 * @param mts_id
 	 * @param mts_show
 	 * @param mts_name
@@ -70,16 +72,16 @@ class Motoshop extends BaseModel
 	 * @param mts_descrip
 	 * @returns {*}
 	 */
-	edit(mts_id, mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip)
+	edit(u_id, mts_id, mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip)
 	{
-		let sql = `UPDATE motoshop SET mts_show = ?, mts_name = ?, mts_alias = ?, mts_website = ?, mts_email = ?, mts_descrip = ?, 
-		mts_update_ts = ?
+		let sql = `UPDATE motoshop SET mts_u_id_edit = ?, mts_show = ?, mts_name = ?, mts_alias = ?, mts_website = ?, 
+		mts_email = ?, mts_descrip = ?, mts_update_ts = ?
 		WHERE mts_id = ?`;
 
 		//let now_ts  = Moment(dd_start_ts, "DD-MM-YYYY").unix();
 		let now_ts = Moment().unix();
 
-		let sqlData = [mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip, now_ts, mts_id];
+		let sqlData = [u_id, mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip, now_ts, mts_id];
 
 		return this.constructor.conn().upd(sql, sqlData)
 			.then(function ()
@@ -388,7 +390,7 @@ class Motoshop extends BaseModel
 	 */
 	getAllMotoshop(show)
 	{
-		let sql = `SELECT mts_id, mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip, mts_create_ts, mts_update_ts
+		let sql = `SELECT mts_u_id_add, mts_u_id_edit, mts_id, mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip, mts_create_ts, mts_update_ts
 		FROM motoshop
 		WHERE mts_show = ?`;
 
@@ -428,8 +430,8 @@ class Motoshop extends BaseModel
 	 */
 	getMotoshopListByLocId(loc_id, mts_show, limit = 20, offset = 0)
 	{
-		let sql = `SELECT 
-			mts.mts_id, mts.mts_name, mts.mts_alias, mts.mts_website, mts.mts_email, mts.mts_show
+		let sql = `SELECT mts.mts_u_id_add, mts.mts_u_id_edit, mts.mts_id, mts.mts_name, mts.mts_alias, mts.mts_website,
+		    mts.mts_email, mts.mts_show
 			FROM (SELECT NULL) AS z
 			JOIN motoshop AS mts ON(mts.mts_show = ? 
 				AND EXISTS (

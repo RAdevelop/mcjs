@@ -16,6 +16,7 @@ class Motoshop extends Base
 	/**
 	 * добавляем новый мотосалон
 	 *
+	 * @param u_id
 	 * @param mts_show
 	 * @param mts_name
 	 * @param mts_website
@@ -23,11 +24,11 @@ class Motoshop extends Base
 	 * @param mts_descrip
 	 * @returns {*}
 	 */
-	add(mts_show, mts_name, mts_website, mts_email, mts_descrip)
+	add(u_id, mts_show, mts_name, mts_website, mts_email, mts_descrip)
 	{
 		let mts_alias = this.helpers.clearSymbol(this.helpers.translit(mts_name), '-');
 
-		return this.model("motoshop").add(mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip);
+		return this.model("motoshop").add(u_id, mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip);
 	}
 	
 	/**
@@ -71,6 +72,7 @@ class Motoshop extends Base
 	/**
 	 * редактируем мотосалон
 	 *
+	 * @param u_id
 	 * @param mts_id
 	 * @param mts_show
 	 * @param mts_name
@@ -79,10 +81,10 @@ class Motoshop extends Base
 	 * @param mts_descrip
 	 * @returns {*}
 	 */
-	edit(mts_id, mts_show, mts_name, mts_website, mts_email, mts_descrip)
+	edit(u_id, mts_id, mts_show, mts_name, mts_website, mts_email, mts_descrip)
 	{
 		let mts_alias = this.helpers.clearSymbol(this.helpers.translit(mts_name), '-');
-		return this.model("motoshop").edit(mts_id, mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip);
+		return this.model("motoshop").edit(u_id, mts_id, mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip);
 	}
 
 	/**

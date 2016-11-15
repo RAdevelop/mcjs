@@ -227,7 +227,6 @@ class Motoshop extends Base
 	 */
 	addActionPost()
 	{
-		let formData = this.getReqBody();
 		let tplData = this.getParsedBody();
 		
 		let errors = {};
@@ -262,6 +261,7 @@ class Motoshop extends Base
 			.then(function (tplData)
 			{
 				return this.getClass('motoshop').add(
+					this.getUserId(),
 					tplData["b_mts_show"],
 					tplData["s_mts_name"],
 					tplData["link_mts_website"],
@@ -342,6 +342,19 @@ class Motoshop extends Base
 		if (!tplData["i_mts_id"])
 			throw new Errors.HttpStatusError(404, "Not found");
 
+
+		//TODO переписать часть. учесть права пользователя на редактирование указанного магазина
+		/*
+		вызвать return this.getClass('motoshop').getMotoshop(tplData["i_mts_id"], mts_show)
+		.then(function(motoshop){
+
+		 switch (tplData["btn_save_motoshop"])
+		 {
+		 ...
+		 }
+
+		})
+		 */
 		switch (tplData["btn_save_motoshop"])
 		{
 			default:
@@ -415,6 +428,7 @@ class Motoshop extends Base
 			.then(function (tplData)
 			{
 				return this.getClass('motoshop').edit(
+					this.getUserId(),
 					tplData["i_mts_id"],
 					tplData["b_mts_show"],
 					tplData["s_mts_name"],
