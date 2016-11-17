@@ -70,4 +70,43 @@ errors.LimitExceeded = errors.helpers.generateClass("LimitExceeded", {
 	}
 });
 
+
+//HTTP ERRORS
+
+errors.HttpError = errors.helpers.generateClass("HttpError", {
+	//extends: errors.HttpStatusError,
+	globalize: true,
+	args: ['status_code'],
+	generateMessage: function(){
+		this.status = (this.status_code ? this.status_code : 500);
+
+		switch (this.status)
+		{
+			default:
+				this.message = 'Internal Server Error';
+				break;
+			case 400:
+				this.message = 'Bad request';
+				break;
+
+			case 401:
+				this.message = 'Unauthorized';
+				break;
+
+			case 403:
+				this.message = 'Forbidden';
+				break;
+
+			case 404:
+				this.message = 'Not found';
+				break;
+		}
+
+		return this.message;
+	}
+});
+
+//END HTTP ERRORS
+
+
 module.exports = errors;

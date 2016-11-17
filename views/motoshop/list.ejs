@@ -15,8 +15,8 @@
 						<div class="motoshopAddressData">
 							<div><span class="mts-address-website">сайт:</span> <%=address["mts_address_website"]%></div>
 							<div><span class="mts-address">адрес:</span> <%=address["mts_address"]%></div>
-							<div><span class="mts-address-email">e-mail:</span> <ul><li><%-(address["mts_address_phones"].split(',')).join('</li><li>')%></li></ul></div>
-							<div><span class="mts-address-phones">тел.:</span> <%=address["mts_address_email"]%></div>
+							<div><span class="mts-address-email">e-mail:</span> <%=address["mts_address_email"]%></div>
+							<div><span class="mts-address-phones">тел.:</span> <ul><li><%-(address["mts_address_phones"].split(',')).join('</li><li>')%></li></ul></div>
 						</div>
 					</li>
 				<% }); %></ul>

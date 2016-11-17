@@ -1,52 +1,66 @@
 "use strict";
 
 const Errors = require('app/lib/errors');
-//const Promise = require("bluebird");
-//const _ = require('lodash');
-//const _ = require('lodash');
+const Promise = require("bluebird");
 
-const Async = require('async');
+//const Async = require('async');
 const Base = require('app/lib/controller');
 
 class Menu extends Base
 {
-	
-	indexActionGet(cb)
+	/**
+	 * @see Base.routePaths()
+	 * @returns {{index: {^\/?$: Array}}}
+	 */
+	routePaths()
 	{
-		this.setTplFile('admin/menu/index.ejs');
-		
-		const self = this;
-		
-		Async.parallel(
-			this._getDataTasks(),
-			function(err, results)
+		return {
+			"index": {
+				'^\/?$': null,
+			},
+			"add": {
+				'^\/?$': null
+			},
+			"edit": {
+				'^\/?[0-9]+\/?$': ['i_menu_id']
+			}
+		}
+	}
+
+	indexActionGet()
+	{
+		let tplFile = 'admin/menu/index.ejs';
+
+		let tplData = {
+			menuId: "", menuPid:"0", menuAfterId:"0", menuPath:'', menuName: '', menuTitle: '', menuH1: '', menuDesc: '',
+			menuControllerId: null,
+			menuControllerPath: '',
+			menuList: [],
+			controllerList: []
+		};
+
+		return Promise.props({
+			menuList: this.getClass("menu").getAll(),
+			controllerList: this.getClass("router").getAll()
+
+		})
+			.bind(this)
+			.then(function(props)
 			{
-				let tplData = {
-					menuId: "", menuPid:"0", menuAfterId:"0", menuPath:'', menuName: '', menuTitle: '', menuH1: '', menuDesc: '',
-					menuControllerId: null,
-					menuControllerPath: '',
-					menuList: [],
-					controllerList: []
-				};
-				
-				if (err)
-				{
-					self.setTplData(tplData);
-					return cb(err);
-				}
-				
-				tplData.menuList = results[0] || [];
-				tplData.controllerList = results[1] || [];
-				
+				tplData['menuList'] = props.menuList || [];
+				tplData['controllerList'] = props.controllerList || [];
+
 				//экспрот данных в JS на клиента
-				self.getRes().expose(tplData.controllerList, 'controllerList');
-				self.getRes().expose(tplData.menuList, 'menuList');
-				
-				//self.setTplData(tplData, tplPrefix);
-				self.setTplData(tplData);
-				
-				return cb(null);
-				
+				this.getRes().expose(tplData.controllerList, 'controllerList');
+				this.getRes().expose(tplData.menuList, 'menuList');
+
+				this.view.setTplData(tplFile, tplData);
+
+				return Promise.resolve(null);
+			})
+			.catch(function(err)
+			{
+				throw err;
 			});
 	};
 
@@ -57,9 +71,9 @@ class Menu extends Base
 	* @param res
 	* @param next
 	*/
-	editActionGet(cb)
+	editActionGet()
 	{
-		this.setTplFile('admin/menu/index.ejs');
+		let tplFile = 'admin/menu/index.ejs';
 		
 		const self = this;
 		
@@ -70,108 +84,158 @@ class Menu extends Base
 			menuList: [],
 			controllerList: []
 		};
-		
-		
-		let mId = parseInt(self.getArgs().shift(), 10);
-		if(!mId || mId <= 0)
-		{
-			self.setTplData(tplData);
-			return cb(Errors.HttpStatusError(404, "Пункт меню не найден"));
-		}
-		
-		var parallelTasks = [
-			function(cb){
-				setTimeout(function(){
-					
-					self.model("Menu").getById(mId, function(err, mData)
-					{
-						if(err) return cb(err);
-						if(!mData) return cb(new Errors.HttpStatusError(404, "Пункт меню не найден"));
-						
-						tplData.menuId = mData["m_id"];
-						tplData.menuPid = mData["m_pid"];
-						tplData.menuPath = mData["m_path"];
-						tplData.menuName = mData["m_name"];
-						tplData.menuTitle = mData["m_title"];
-						tplData.menuH1 = mData["m_h1"];
-						tplData.menuDesc = mData["m_desc"];
-						tplData.menuControllerId = mData["c_id"];
-						tplData.menuControllerPath = mData["c_path"];
-						
-						return cb(null, tplData);
-					});
-					
-					
-				}, 1);
-			},
-			function(cb){
-				setTimeout(function(){
-					self.model("Menu").getAll(function(err, menuList)
-					{
-						if(err) return cb(err, menuList);
-						
-						return cb(null, menuList);
-					});
-				}, 1);
-			},
-			function(cb){
-				setTimeout(function(){
-					self.model("Router").getAll(function(err, controllerList)
-					{
-						if(err) return cb(err, controllerList);
-						
-						return cb(null, controllerList);
-					});
-				}, 1);
-			}
-		];
-		
-		Async.parallel(parallelTasks,
-			function(err, results)
+
+		let {i_menu_id=null} = this.routeArgs;
+
+		if(!i_menu_id || i_menu_id <= 0)
+			throw new Errors.HttpError404();
+
+		return this.getClass("menu").getById(i_menu_id)
+			.bind(this)
+			.then(function (mData)
 			{
-				if(err) return cb(err);
-				
-				tplData.menuList = results[1] || [];
-				tplData.controllerList = results[2] || [];
-				
+				if (!mData)
+					throw new Errors.HttpError404();
+
+				tplData.menuId = mData["m_id"];
+				tplData.menuPid = mData["m_pid"];
+				tplData.menuPath = mData["m_path"];
+				tplData.menuName = mData["m_name"];
+				tplData.menuTitle = mData["m_title"];
+				tplData.menuH1 = mData["m_h1"];
+				tplData.menuDesc = mData["m_desc"];
+				tplData.menuControllerId = mData["c_id"];
+				tplData.menuControllerPath = mData["c_path"];
+
+				return Promise.resolve(tplData);
+			})
+			.then(function (tplData)
+			{
+				return Promise.props({
+					menuList: this.getClass("menu").getAll(),
+					controllerList: this.getClass("router").getAll()
+				})
+				.then(function(props)
+				{
+					tplData.menuList = props.menuList || [];
+					tplData.controllerList = props.controllerList || [];
+
+					return Promise.resolve(tplData);
+				});
+			})
+			.then(function (tplData)
+			{
 				//экспрот данных в JS на клиента
 				self.getRes().expose(tplData.controllerList, 'controllerList');
 				self.getRes().expose(tplData.menuList, 'menuList');
-				
-				self.setTplData(tplData);
-				return cb(null);
-			}
-		);
+
+				this.view.setTplData(tplFile, tplData);
+
+				return Promise.resolve(null);
+			})
+			.catch(function(err)
+			{
+				throw err;
+			});
+	}
+
+	editActionPost()
+	{
+		let tplData = this.getParsedBody();
+		let btn_save_menu = tplData["btn_save_menu"] || null;
+
+		switch (btn_save_menu)
+		{
+			default:
+
+				if (!tplData["i_menu_id"])
+					throw new Errors.HttpError(404);
+
+				return this.getClass('menu').getById(tplData["i_menu_id"])
+					.bind(this)
+					.then(function (menu)
+					{
+						if (!menu)
+							throw new Errors.HttpError(404);
+
+						switch (btn_save_menu)
+						{
+							default:
+								throw new Errors.HttpError(400);
+								break;
+
+							case 'update':
+								return this.update(tplData);
+								break;
+						}
+					});
+				break;
+
+			case 'add':
+				return this.add(tplData);
+				break;
+		}
 	}
 
 	/**
-	* данные, которые хотим подгрузить (вызываетя в Async-методах)
-	* @returns {*[]} - массив "задач" для Async-методов
-	*/
-	_getDataTasks()
+	 * редактируем пункт меню
+	 *
+	 * @param tplData
+	 * @returns {Promise.<T>}
+	 */
+	update(tplData)
 	{
-		const self = this;
-		return [
-			function(cb)
+		let tplFile = 'admin/menu/index.ejs';
+
+		return Promise.resolve(tplData)
+			.bind(this)
+			.then(function (tplData)
 			{
-				self.model("Menu").getAll(function(err, menuList)
-				{
-					if(err) return cb(err, menuList);
-					
-					return cb(null, menuList);
-				});
-			},
-			function(cb)
+				let errors = {};
+
+				tplData = this.stripTags(tplData, ["s_menu_path", "s_menu_name", "s_menu_title", "s_menu_h1", "t_menu_desc"]);
+
+				tplData["i_menu_pid"] = parseInt(tplData["i_menu_pid"], 10) || 0;
+				tplData["i_menu_after_id"] = parseInt(tplData["i_menu_after_id"], 10) || 0;
+				tplData["i_menu_controller_id"] = parseInt(tplData["i_menu_controller_id"], 10) || 0;
+
+				if (!tplData["s_menu_path"])
+					errors["s_menu_path"] = "Укажите URL меню";
+
+				if (!tplData["s_menu_name"])
+					errors["s_menu_name"] = "Укажите Название меню";
+
+				if (!tplData["s_menu_title"])
+					errors["s_menu_title"] = "Укажите Заголовок страниц";
+
+				if (!tplData["s_menu_h1"])
+					errors["s_menu_h1"] = "Укажите H1 страниц";
+
+				this.parseFormErrors(tplData, errors, 'Ошибки при заполнении формы');
+
+				return Promise.resolve(tplData);
+			})
+			.then(function (tplData)
 			{
-				self.model("Router").getAll(function(err, controllerList)
-				{
-					if(err) return cb(err, controllerList);
-					
-					return cb(null, controllerList);
-				});
-			}
-		];
-	};
+				return this.getClass('menu').updById(tplData["i_menu_id"], tplData["i_menu_pid"], tplData["i_menu_after_id"], tplData["s_menu_path"], tplData["s_menu_name"], tplData["s_menu_title"], tplData["s_menu_h1"], tplData["t_menu_desc"], tplData["i_menu_controller_id"]);
+			})
+			.then(function (tplData)
+			{
+				this.view.setTplData(tplFile, tplData);
+
+				return Promise.resolve(true);
+			})
+			.catch(Errors.ValidationError, function (err) //такие ошибки не уводят со страницы
+			{
+				this.view.setTplData(tplFile, err['data']);
+
+				return Promise.resolve(true);
+			})
+			.catch(function (err)
+			{
+				throw err;
+			});
+	}
 }
 
 //************************************************************************* module.exports

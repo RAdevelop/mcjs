@@ -59,7 +59,8 @@
 					btnId: $dialog.find('#'+btnName),
 					onSuccess: function($respDialog, resp)
 					{
-						if (resp.hasOwnProperty("formError") && resp["formError"].hasOwnProperty("error") && !resp["formError"]["error"])
+						if (resp.hasOwnProperty("formError") && resp["formError"].hasOwnProperty("error") && !resp["formError"]["error"]
+						|| !resp.hasOwnProperty("formError"))
 						{
 							window.location.href = '<%=menuItem.m_path%>';
 							return false;//не показать диалог
@@ -68,6 +69,7 @@
 					},
 					onFail: function ($respDialog, resp)
 					{
+						$respDialog.hide();
 						$dialog.hide();
 						return true;
 					},

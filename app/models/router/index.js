@@ -14,22 +14,22 @@ class Router extends BaseModel
 	* @throws
 	*  DBError
 	*/
-	getAll(cb)
+	getAll()
 	{
-		let sql = "SELECT c_id,	c_pid, c_path, c_name, c_desc, c_level, c_lk, c_rk, REPEAT('&nbsp;', IF(c_level > 1, c_level*2, 0)) AS c_nbsp " +
-			"FROM `controllers` " +
-			"ORDER BY c_lk";
+		let sql = `SELECT c_id,	c_pid, c_path, c_name, c_desc, c_level, c_lk, c_rk, REPEAT('&nbsp;', IF(c_level > 1, c_level*2, 0)) AS c_nbsp
+			FROM controllers
+			ORDER BY c_lk`;
 		
-		this.constructor.conn().ps(sql, [], function(err, res)
-		{
-			if (err) return cb(err, []);
-			//не нашли
-			if(res["info"]["numRows"] == 0) return cb(null, []);
-			
-			//var list = JSON.parse(JSON.stringify(res)) || [];
-			//console.log(list);
-			cb(null, res);
-		});
+		return this.constructor.conn().ps(sql);
+	}
+
+	getById(rId)
+	{
+		var sql = `SELECT c_id,	c_pid, c_path, c_name, c_desc, c_level, c_lk, c_rk 
+		FROM controllers 
+		WHERE c_id = ?`;
+
+		return this.constructor.conn().sRow(sql, [rId]);
 	}
 }
 

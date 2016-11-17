@@ -50,7 +50,7 @@ class Motoshop extends Base
 
 		return this.motoshopData(i_mts_id)
 			.bind(this)
-			.spread(function(motoshop, motoshopList, motoshopLocations, Pages)
+			.spread(function(motoshop, motoshopList, motoshopLocations)
 			{
 				let tplData = {};
 
@@ -81,7 +81,7 @@ class Motoshop extends Base
 	/**
 	 * что показывать - указанный салон, или список ...
 	 *
-	 * @param
+	 * @param i_mts_id
 	 * @returns {Promise}
 	 */
 	motoshopData(i_mts_id)
@@ -98,7 +98,6 @@ class Motoshop extends Base
 	/**
 	 * список мотосалонов для указанной локации
 	 * @param i_loc_id
-	 * @param mts_show
 	 * @returns {*|Promise.<TResult>|{then, fail}}
 	 */
 	motoshopList(i_loc_id)
@@ -167,7 +166,8 @@ class Motoshop extends Base
 	 * выбранный салон
 	 *
 	 * @param i_mts_id
-	 * @returns Promise spread data [trek, motoshopList]
+	 * @param mts_show
+	 * @returns Promise spread data [motoshop, motoshopList]
 	 * @throws Errors.HttpStatusError
 	 */
 	motoshop(i_mts_id, mts_show)
@@ -340,47 +340,42 @@ class Motoshop extends Base
 		let tplData = this.getParsedBody();
 
 		if (!tplData["i_mts_id"])
-			throw new Errors.HttpStatusError(404, "Not found");
+			throw new Errors.HttpError(404);
 
+		return this.getClass('motoshop').getMotoshop(tplData["i_mts_id"])
+			.bind(this)
+			.then(function(motoshop)
+			{
+				if (!motoshop)
+					throw new Errors.HttpError(404);
 
-		//TODO переписать часть. учесть права пользователя на редактирование указанного магазина
-		/*
-		вызвать return this.getClass('motoshop').getMotoshop(tplData["i_mts_id"], mts_show)
-		.then(function(motoshop){
+				switch (tplData["btn_save_motoshop"])
+				{
+					default:
+						throw new Errors.HttpError(400);
+						break;
 
-		 switch (tplData["btn_save_motoshop"])
-		 {
-		 ...
-		 }
+					case 'main':
+						return this.edit(tplData);
+						break;
 
-		})
-		 */
-		switch (tplData["btn_save_motoshop"])
-		{
-			default:
-				throw new Errors.HttpStatusError(400, "Bad request");
-				break;
+					case 'delete':
+						return this.delMotoshop(tplData);
+						break;
 
-			case 'main':
-				return this.edit(tplData);
-				break;
+					case 'add_address':
+						return this.addAddress(tplData);
+						break;
 
-			case 'delete':
-				return this.delMotoshop(tplData);
-				break;
+					case 'del_address':
+						return this.delAddress(tplData);
+						break;
 
-			case 'add_address':
-				return this.addAddress(tplData);
-				break;
-			
-			case 'del_address':
-				return this.delAddress(tplData);
-				break;
-
-			case 'edit_address':
-				return this.editAddress(tplData);
-				break;
-		}
+					case 'edit_address':
+						return this.editAddress(tplData, motoshop);
+						break;
+				}
+			});
 	}
 
 	/**
@@ -393,16 +388,10 @@ class Motoshop extends Base
 	{
 		let tplFile = "motoshop/edit.ejs";
 
-		//TODO написать условие для mts_show - админ, автор = null илначе 1
-		let mts_show = null;
-
-		return this.getClass('motoshop').getMotoshop(tplData["i_mts_id"], mts_show)
+		return Promise.resolve(tplData)
 			.bind(this)
-			.then(function (motoshop)
+			.then(function (tplData)
 			{
-				if (!motoshop)
-					throw new Errors.HttpStatusError(404, "Not found");
-
 				tplData = this.stripTags(tplData, ["s_mts_name", "m_mts_email", "link_mts_website"]);
 				tplData["t_mts_descrip"] = this.cheerio(tplData["t_mts_descrip"]).root().cleanTagEvents().html();
 
@@ -468,16 +457,10 @@ class Motoshop extends Base
 	{
 		let tplFile = "motoshop/edit.ejs";
 
-		//TODO написать условие для mts_show - админ, автор = null илначе 1
-		let mts_show = null;
-
-		return this.getClass('motoshop').getMotoshop(tplData["i_mts_id"], mts_show)
+		return Promise.resolve(tplData)
 			.bind(this)
-			.then(function (motoshop)
+			.then(function (tplData)
 			{
-				if (!motoshop)
-					throw new Errors.HttpStatusError(404, "Not found");
-
 				tplData = this.stripTags(tplData, ["s_mts_address", "s_mts_address_phones", "m_mts_address_email", "link_address_website"]);
 
 				tplData["b_mts_address_show"] = (tplData["b_mts_address_show"] ? '1' : '0');
@@ -542,21 +525,16 @@ class Motoshop extends Base
 	 * редактируем адрес
 	 *
 	 * @param tplData
+	 * @param motoshop
 	 */
-	editAddress(tplData)
+	editAddress(tplData, motoshop)
 	{
 		let tplFile = "motoshop/edit.ejs";
 
-		//TODO написать условие для mts_show - админ, автор = null илначе 1
-		let mts_show = null;
-
-		return this.getClass('motoshop').getMotoshop(tplData["i_mts_id"], mts_show)
+		return Promise.resolve(motoshop)
 			.bind(this)
 			.then(function (motoshop)
 			{
-				if (!motoshop)
-					throw new Errors.HttpStatusError(404, "Not found");
-
 				let found = false;
 
 				motoshop["address_list"].forEach(function (item)
@@ -637,19 +615,8 @@ class Motoshop extends Base
 	{
 		let tplFile = "motoshop/edit.ejs";
 
-		return this.getClass('motoshop').getMotoshop(tplData["i_mts_id"])
+		return this.getClass('motoshop').delMotoshop(tplData["i_mts_id"])
 			.bind(this)
-			.then(function (motoshop)
-			{
-				if (!motoshop)
-					throw new Errors.HttpStatusError(404, "Not found");
-
-				return this.getClass('motoshop').delMotoshop(tplData["i_mts_id"])
-					.then(function ()
-					{
-						return Promise.resolve(tplData);
-					});
-			})
 			.then(function (tplData)
 			{
 				this.view.setTplData(tplFile, tplData);
@@ -672,20 +639,9 @@ class Motoshop extends Base
 	{
 		let tplFile = "motoshop/edit.ejs";
 		
-		return this.getClass('motoshop').getMotoshop(tplData["i_mts_id"])
+		return this.getClass('motoshop').delAddress(tplData["i_mts_id"], tplData["i_mts_address_id"])
 			.bind(this)
-			.then(function (motoshop)
-			{
-				if (!motoshop || !tplData["i_mts_address_id"])
-					throw new Errors.HttpStatusError(404, "Not found");
-				
-				return this.getClass('motoshop').delAddress(tplData["i_mts_id"], tplData["i_mts_address_id"])
-					.then(function ()
-					{
-						return Promise.resolve(tplData);
-					});
-			})
-			.then(function (tplData)
+			.then(function ()
 			{
 				this.view.setTplData(tplFile, tplData);
 

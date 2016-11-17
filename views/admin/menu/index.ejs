@@ -1,13 +1,13 @@
 <%  if(!_isXHR){%><%- layout('layout/default') %><% } -%>
 <div class="page-header">
-    <h1><%= h1 %></h1>
+    <h1><%= _pageH1 %></h1>
 </div>
 <p>admin/menu/index</p>
 <p>TODO</p>
 <p>добавить возможность выбора "роутера" после которого расположить редактируемый (в ветке выбранного родителя).</p>
 <p>иначе, сейчас при каждом редактировании, обновляемый роутер перемещаетя на "первое" место в своей ветке</p>
 <p>не давать возможность выбрать в качестве родителя кого-то из своих потомков!!!!!</p>
-<h2><% if(admin_menu.menuId) {%>Изменить<%} else {%>Добавить<%}%> пункт меню сайта: <%= admin_menu.menuName %></h2>
+<h2><% if(menuId) {%>Изменить<%} else {%>Добавить<%}%> пункт меню сайта: <%= menuName %></h2>
 <% if(formError.error) {%>
 <div class="alert alert-danger">
 <p><%= formError.message %></p>
@@ -21,9 +21,9 @@
 <% }%>
 <div class="col-sm-3" style="border: 1px solid red;">
     <ul>
-    <% admin_menu.menuList.length && admin_menu.menuList.forEach(function(mItem, i){ %>
+    <% menuList.length && menuList.forEach(function(mItem, i){ %>
     <li style="padding-left: <%= (mItem["m_level"] > 1 ? mItem["m_level"] : '') %>0px;">
-        <%  if(mItem["m_id"] ==  admin_menu.menuId) {%>
+        <%  if(mItem["m_id"] ==  menuId) {%>
         <span><%= mItem["m_name"] %></span>
         <%  } else { %>
         <a href="<%= menuItem["m_path"]+'/edit/'+ mItem["m_id"] %>"><%= mItem["m_name"] %></a>
@@ -34,104 +34,105 @@
 </div>
 <div class="col-sm-9" style="border: 1px solid red;">
 <form id="menuEditForm" class="form-horizontal" action="" method="post">
-    <input type="hidden" id="menuId" name="menuId" value="<%= admin_menu.menuId %>"/>
-    <div class="form-group">
-        <label class="col-sm-3 control-label" for="menuPid">Родительское меню</label>
+    <input type="hidden" id="i_menu_id" name="i_menu_id" value="<%= menuId %>"/>
+    <div class="form-group i_menu_pid">
+        <label class="col-sm-3 control-label" for="i_menu_pid">Родительское меню</label>
         <div class="col-sm-9">
-                <select id="menuPid" name="menuPid" class="form-control">
+                <select id="i_menu_pid" name="i_menu_pid" class="form-control">
                 <option value="0">нет родителя</option>
-                    <% admin_menu.menuList.length && admin_menu.menuList.forEach(function(mItem, i){ %>
-                    <option value="<%= mItem["m_id"] %>" <% if (mItem["m_id"] == admin_menu.menuPid) { %>selected="selected"<%}%>  <% if (mItem["m_id"] == admin_menu.menuId) { %>disabled="disabled"<%}%>>
+                    <% menuList.length && menuList.forEach(function(mItem){ %>
+                    <option value="<%= mItem["m_id"] %>" <% if (mItem["m_id"] == menuPid) { %>selected="selected"<%}%>  <% if (mItem["m_id"] == menuId) { %>disabled="disabled"<%}%>>
                         <%- mItem["m_nbsp"] %><%= mItem["m_name"] %>
-                    </option>
-                    <% }) %>
+                    </option><% }) %>
             </select>
         </div>
     </div>
-    <div class="form-group">
-        <label class="col-sm-3 control-label" for="menuAfterId">После какого меню</label>
+    <div class="form-group i_menu_after_id">
+        <label class="col-sm-3 control-label" for="i_menu_after_id">После какого меню</label>
         <div class="col-sm-9">
-            <select id="menuAfterId" name="menuAfterId" class="form-control">
+            <select id="i_menu_after_id" name="i_menu_after_id" class="form-control">
                 <option value="0">в начале</option>
             </select>
         </div>
     </div>
-    <div class="form-group">
-        <label class="col-sm-3 control-label" for="menuControllerId">Укажите роутер </label>
+    <div class="form-group i_menu_controller_id">
+        <label class="col-sm-3 control-label" for="i_menu_controller_id">Укажите роутер</label>
         <div class="col-sm-9">
-            <select id="menuControllerId" name="menuControllerId" class="form-control">
+            <select id="i_menu_controller_id" name="i_menu_controller_id" class="form-control">
                 <option value="0"></option>
-                <% admin_menu.controllerList.length && admin_menu.controllerList.forEach(function(controller){ %>
-                <option value="<%= controller["c_id"] %>" <% if (controller["c_id"] == admin_menu.menuControllerId) { %>selected="selected"<%}%>  >
+                <% controllerList.length && controllerList.forEach(function(controller){ %>
+                <option value="<%= controller["c_id"] %>" <% if (controller["c_id"] == menuControllerId) { %>selected="selected"<%}%>  >
                     <%- controller["c_nbsp"] %><%= controller["c_name"] %>
                 </option>
                 <% }) %>
             </select>
         </div>
     </div>
-    <div class="form-group">
-        <label class="col-sm-3 control-label" for="menuPath">URL меню *</label>
+    <div class="form-group s_menu_path">
+        <label class="col-sm-3 control-label" for="s_menu_path">URL меню</label>
         <div class="col-sm-9">
-            <input type="text" id="menuPath" name="menuPath" value="<%= admin_menu.menuPath %>" maxlength="255" class="form-control" placeholder="url меню" autofocus aria-describedby="menuPathHelpBlock" required/>
+            <input type="text" id="s_menu_path" name="s_menu_path" value="<%= menuPath %>" maxlength="255" class="form-control" placeholder="url меню" autofocus aria-describedby="menuPathHelpBlock" required/>
             <span id="menuPathHelpBlock" class="help-block">пример: /menu/path</span>
         </div>
     </div>
-    <div class="form-group">
-        <label class="col-sm-3 control-label" for="menuName">Название меню</label>
+    <div class="form-group s_menu_name">
+        <label class="col-sm-3 control-label" for="s_menu_name">Название меню</label>
         <div class="col-sm-9">
-        <input type="text" id="menuName" name="menuName" value="<%= admin_menu.menuName %>" maxlength="100" class="form-control" placeholder="Название меню" required autofocus aria-describedby="menuNameHelpBlock"/>
+        <input type="text" id="s_menu_name" name="s_menu_name" value="<%= menuName %>" maxlength="100" class="form-control" placeholder="Название меню" required autofocus aria-describedby="menuNameHelpBlock"/>
             <span id="menuNameHelpBlock" class="help-block">от 3 до 100 символов</span>
         </div>
     </div>
-    <div class="form-group">
-        <label class="col-sm-3 control-label" for="menuTitle">Заголовок страниц</label>
+    <div class="form-group s_menu_title">
+        <label class="col-sm-3 control-label" for="s_menu_title">Заголовок страниц</label>
         <div class="col-sm-9">
-            <input type="text" id="menuTitle" name="menuTitle" value="<%= admin_menu.menuTitle %>" maxlength="255" class="form-control" placeholder="Заголовок страниц" required autofocus aria-describedby="menuTitleHelpBlock"/>
+            <input type="text" id="s_menu_title" name="s_menu_title" value="<%= menuTitle %>" maxlength="255" class="form-control" placeholder="Заголовок страниц" required autofocus aria-describedby="menuTitleHelpBlock"/>
             <span id="menuTitleHelpBlock" class="help-block">&lt;title&gt;&lt;title&gt; от 3 до 255 символов</span>
         </div>
     </div>
-    <div class="form-group">
-        <label class="col-sm-3 control-label" for="menuH1">H1 страниц</label>
+    <div class="form-group s_menu_h1">
+        <label class="col-sm-3 control-label" for="s_menu_h1">H1 страниц</label>
         <div class="col-sm-9">
-            <input type="text" id="menuH1" name="menuH1" value="<%= admin_menu.menuH1 %>" maxlength="100" class="form-control" placeholder="Заголовок страниц" required autofocus aria-describedby="menuH1HelpBlock"/>
+            <input type="text" id="s_menu_h1" name="s_menu_h1" value="<%= menuH1 %>" maxlength="100" class="form-control" placeholder="Заголовок страниц" required autofocus aria-describedby="menuH1HelpBlock"/>
             <span id="menuTitleHelpBlock" class="help-block">&lt;h1&gt;&lt;h1&gt; от 3 до 100 символов</span>
         </div>
     </div>
-    <div class="form-group">
-        <label class="col-sm-3 control-label" for="menuDesc">Описание меню</label>
+    <div class="form-group t_menu_desc">
+        <label class="col-sm-3 control-label" for="t_menu_desc">Описание меню</label>
         <div class="col-sm-9">
-            <textarea rows="5" maxlength="255" id="menuDesc" name="menuDesc" class="form-control" placeholder="Описание роутера"><%= admin_menu.menuDesc %></textarea>
+            <textarea rows="5" maxlength="255" id="t_menu_desc" name="t_menu_desc" class="form-control" placeholder="Описание роутера"><%= menuDesc %></textarea>
             <span id="menuDescHelpBlock" class="help-block">&lt;meta description="" /&gt; до 255 символов</span>
         </div>
     </div>
     <div class="form-group">
         <div class="col-sm-6 col-sm-offset-6">
-            <% if(admin_menu.menuId){%>
-            <button class="btn btn-default" type="submit" name="menuFormBtn" value="upd">Изменить</button>
+            <% if(menuId){%>
+            <input type="hidden" name="btn_save_menu" value="update"/>
+            <button class="btn btn-default" type="submit" id="btn_save_menu">Изменить</button>
             <%} else {%>
-            <button class="btn btn-default" type="submit" name="menuFormBtn" value="add">Добавить</button>
+            <input type="hidden" name="btn_save_motoshop" value="add"/>
+            <button class="btn btn-default" type="submit" id="btn_save_menu">Добавить</button>
             <%} %>
         </div>
     </div>
 </form>
 </div>
 <script type="text/javascript">
-//<!--
-<%-(exported_to_js ? exported_to_js : "") %>
-var MCJS = window["<%= settings["state namespace"] %>"];
 $(function()
 {
-    var menuId = "<%= admin_menu.menuId %>";
-    var menuPid = "<%= admin_menu.menuPid %>";
-    var menuControllerId = "<%= admin_menu.menuControllerId %>";
-    //console.log(MCJS.controllerList); //экспорт данных в JS см. expose
+    var menuId = "<%= menuId %>";
+    var menuPid = "<%= menuPid %>";
+    var menuControllerId = "<%= menuControllerId %>";
+
     var $menuEditForm = $('#menuEditForm');
-    var $menuControllerId = $menuEditForm.find('#menuControllerId');
-    var $menuPath = $menuEditForm.find('#menuPath');
-    var $menuPid = $menuEditForm.find('#menuPid');
-    var $menuAfterId = $menuEditForm.find('#menuAfterId');
+    var $menuControllerId = $menuEditForm.find('#i_menu_controller_id');
+    var $menuPath = $menuEditForm.find('#s_menu_path');
+    var $menuPid = $menuEditForm.find('#i_menu_pid');
+    var $menuAfterId = $menuEditForm.find('#i_menu_after_id');
     var inBegin = '<option value="0">в начале</option>';
-    
+
+
+    $menuEditForm.postRes({btnId: 'btn_save_menu'});
+
     function subMenuItem(pid, mId)
     {
         $menuAfterId.empty().append(inBegin);
@@ -162,15 +163,7 @@ $(function()
     $menuPid.change(function(){
         subMenuItem(this.value, menuId);
     });
-    
-    if(MCJS.formError && MCJS.formError.error == true)
-    {
-        $.each(MCJS.formError.fields,  function(fId, fV)
-        {
-            if(fV) $menuEditForm.find('#'+fId).closest('.form-group').addClass("has-error");
-            else $menuEditForm.find('#'+fId).closest('.form-group').removeClass("has-error");
-        });
-    }
+
 /*
 	$('form#loginForm').submit(function(event){
 		event.preventDefault();
