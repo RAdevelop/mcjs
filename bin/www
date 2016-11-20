@@ -21,15 +21,15 @@ app.set('port', port);
 /**
  * Create HTTP(S) server.
  */
-//const http = require('http');
-const https = require('https');
+const http = require('http');
+//const https = require('https');
 	//mc_cert.key  mc_cert.pem
 let server_opt = {
 	key: fs.readFileSync(path.join(__dirname, '../openssl/mc_cert.key')),
 	cert: fs.readFileSync(path.join(__dirname, '../openssl/mc_cert.pem'))
 };
-const server = https.createServer(server_opt, app);
-//const server = http.createServer(app);
+//const server = https.createServer(server_opt, app);
+const server = http.createServer(app);
 
 const io = require('../app/lib/chat');
 io(server, app);
@@ -109,11 +109,13 @@ function onListening()
 setInterval(function() {
 	//todo замер памяти
 	printMem();
+
 }, 3000);
 
 function printMem()
 {
 	let mem = process.memoryUsage();
+	
 	for (let p in mem)
     {
 		// convert to MB

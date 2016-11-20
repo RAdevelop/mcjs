@@ -266,7 +266,7 @@ class Photo extends User
 	 */
 	countUserAlbums(u_id)
 	{
-		let sql = "SELECT COUNT(a.a_id) AS cnt FROM album AS a WHERE a.u_id = ?;";
+		let sql = `SELECT COUNT(a.a_id) AS cnt FROM album AS a WHERE a.u_id = ?;`;
 
 		return this.constructor.conn().sRow(sql, [u_id])
 			.then(function (res)
@@ -285,17 +285,17 @@ class Photo extends User
 		offset = parseInt(offset, 10) || 0;
 		limit = parseInt(limit, 10) || 10;
 
-		let sql = "SELECT a.a_id, a.u_id, a.a_type_id, a.a_name, a.a_alias, a.a_text, a.a_img_cnt, a.a_create_ts, a.a_update_ts," +
-			"t.a_type_alias, " +
-			" IF(t.a_type_alias = ?, 1, 0) AS a_profile," +
-			" IF(t.a_type_alias = ?, 1, 0) AS a_named," +
-			" ai.ai_id, ai.ai_latitude, ai.ai_longitude, ai.ai_dir" +
-			" FROM (SELECT NULL) AS z" +
-			" JOIN album AS a ON (a.u_id = ?)" +
-			" JOIN album_type AS t ON (t.a_type_id = a.a_type_id)" +
-			" LEFT JOIN album_image AS ai ON (ai.a_id = a.a_id AND ai.u_id = ? AND ai_pos = ?)" +
-			" ORDER BY a.a_update_ts DESC" +
-			" LIMIT "+limit+" OFFSET "+offset+";";
+		let sql = `SELECT a.a_id, a.u_id, a.a_type_id, a.a_name, a.a_alias, a.a_text, a.a_img_cnt, a.a_create_ts, a.a_update_ts,
+			t.a_type_alias,
+			 IF(t.a_type_alias = ?, 1, 0) AS a_profile,
+			 IF(t.a_type_alias = ?, 1, 0) AS a_named,
+			 ai.ai_id, ai.ai_latitude, ai.ai_longitude, ai.ai_dir
+			 FROM (SELECT NULL) AS z
+			 JOIN album AS a ON (a.u_id = ?)
+			 JOIN album_type AS t ON (t.a_type_id = a.a_type_id)
+			 LEFT JOIN album_image AS ai ON (ai.a_id = a.a_id AND ai.u_id = ? AND ai_pos = ?)
+			 ORDER BY a.a_update_ts DESC
+			 LIMIT ${limit} OFFSET ${offset}`;
 
 		return this.constructor.conn().s(sql, [this.constructor.albumProfile, this.constructor.albumNamed,u_id, u_id, 0]);
 	}
@@ -308,13 +308,13 @@ class Photo extends User
 	 */
 	getAlbum(u_id, a_id)
 	{
-		let sql = "SELECT a.a_id, a.u_id, a.a_type_id, a.a_name, a.a_alias, a.a_text, a.a_img_cnt, a.a_create_ts, a.a_update_ts," +
-			"t.a_type_alias," +
-			" IF(t.a_type_alias = ?, 1, 0) AS a_profile," +
-			" IF(t.a_type_alias = ?, 1, 0) AS a_named" +
-			" FROM (SELECT NULL) AS z" +
-			" JOIN album AS a ON (a.a_id = ? AND a.u_id = ?)" +
-			" JOIN album_type AS t ON (t.a_type_id = a.a_type_id);";
+		let sql = `SELECT a.a_id, a.u_id, a.a_type_id, a.a_name, a.a_alias, a.a_text, a.a_img_cnt, a.a_create_ts, a.a_update_ts,
+			t.a_type_alias,
+			 IF(t.a_type_alias = ?, 1, 0) AS a_profile,
+			 IF(t.a_type_alias = ?, 1, 0) AS a_named
+			 FROM (SELECT NULL) AS z
+			 JOIN album AS a ON (a.a_id = ? AND a.u_id = ?)
+			 JOIN album_type AS t ON (t.a_type_id = a.a_type_id);`;
 
 		return this.constructor.conn().sRow(sql, [this.constructor.albumProfile, this.constructor.albumNamed, a_id, u_id]);
 	}
@@ -328,7 +328,7 @@ class Photo extends User
 	 */
 	countAlbumImages(u_id, a_id)
 	{
-		let sql = "SELECT COUNT(ai_id) AS cnt FROM album_image WHERE a_id = ? AND u_id = ?;";
+		let sql = `SELECT COUNT(ai_id) AS cnt FROM album_image WHERE a_id = ? AND u_id = ?;`;
 
 		return this.constructor.conn().sRow(sql, [a_id, u_id])
 			.then(function (res)
@@ -370,7 +370,7 @@ class Photo extends User
 	{
 		//return Promise.resolve(true);
 
-		let sql = "CALL album_image_reorder(?, ?);";
+		let sql = `CALL album_image_reorder(?, ?);`;
 
 		return this.constructor.conn().call(sql, [u_id, a_id])
 			.then(function ()
@@ -389,8 +389,8 @@ class Photo extends User
 	 */
 	updImgText(u_id, a_id, ai_id, ai_text)
 	{
-		let sql = "UPDATE album_image SET ai_text = ?" +
-			"WHERE ai_id = ? AND a_id = ? AND u_id = ?";
+		let sql = `UPDATE album_image SET ai_text = ? 
+		WHERE ai_id = ? AND a_id = ? AND u_id = ?`;
 
 		return this.constructor.conn().upd(sql, [ai_text, ai_id, a_id, u_id]);
 	}
@@ -423,8 +423,8 @@ class Photo extends User
 					setData.push(ai_id, i);
 				});
 
-				let sql = "UPDATE album_image SET ai_pos = " + setOrdi.join(',') + ', ai_pos' +')'.repeat(setOrdi.length) +
-					" WHERE a_id = ? AND u_id = ?";
+				let sql = `UPDATE album_image SET ai_pos = ${setOrdi.join(',')}, ai_pos ${')'.repeat(setOrdi.length)}
+					 WHERE a_id = ? AND u_id = ?`;
 
 				setData.push(a_id, u_id);
 

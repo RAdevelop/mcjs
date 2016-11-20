@@ -1,5 +1,6 @@
 "use strict";
 const Async = require('async');
+//const Promise = require("bluebird");
 const Errors = require('app/lib/errors');
 const Json = require('./menu.js');
 
@@ -18,8 +19,8 @@ module.exports = function site_menu(Classes)
 		
 		//TODO ???
 		//if(req.xhr) return next();
-		
-		menu(Classes, req, res, function(err, menuData)
+
+		menu(Classes, req, function(err, menuData)
 		{
 			if (err) return next(err);
 			
@@ -38,15 +39,17 @@ module.exports = function site_menu(Classes)
 				 console.log("req.originalUrl %s", req.originalUrl);
 				 console.log("req.path %s", req.path);
 				*/
-				return next(new Errors.HttpStatusError(404, "Not Found"));
+
+				return next(new Errors.HttpError(404));
 			}
-			
+
 			return next();
 		});
 	}
 };
 
-function menu(Classes, req, res, cb)
+//function menu(Classes, req, res, cb)
+function menu(Classes, req, cb)
 {
 	let menuData = {};
 	menuData.menuList = [];
@@ -63,7 +66,7 @@ function menu(Classes, req, res, cb)
 			{
 				if(req.xhr) return aCb(null, menuData);
 				
-				Classes.model("Menu").getAll(function(err, menuList)
+				Classes.model("menu").getAll(function(err, menuList)
 				{
 					if (err) return aCb(err, menuData);
 					
@@ -99,7 +102,7 @@ function menu(Classes, req, res, cb)
 				}
 				
 				//если там нет, смотрим тут
-				Classes.model("Menu").getByPath(req.path, function(err, menuItem)
+				Classes.model("menu").getByPath(req.path, function(err, menuItem)
 				{
 					if (err) return aCb(err, menuData);
 					

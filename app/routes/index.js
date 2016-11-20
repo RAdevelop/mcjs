@@ -6,6 +6,12 @@ const router = express.Router();
 
 const UserIsAuth = require('app/middlewares/user/auth.js');
 
+let Controllers = new WeakMap();
+
+let startDate = new Date();
+let memoryUsage;
+let tInterval = null;
+
 module.exports = function(Classes, Control)
 {
 	/*
@@ -39,32 +45,84 @@ module.exports = function(Classes, Control)
 	
 	router.all('*', function(req, res, next)
 	{
-		//let start = new Date();
 
 		let cName = (res.locals.menuItem.c_path[0] == '/') ? res.locals.menuItem.c_path.substr(1) : res.locals.menuItem.c_path;
 		console.log('cName = ' + cName);
+		//let C = new (Control.get(cName))(req, res, Classes);
 
-		let C = new (Control.get(cName))(req, res, Classes);
+		let cn = {[cName]:cName};
+		if (!Controllers.has(cn))
+		{
+			Controllers.set(cn, new (Control.get(cName))(req, res, Classes) );
+		}
 
-		C.callAction()
+		Controllers.get(cn).callAction()
 			.then(function (json)
 			{
-				return C.view.render(json)
+				return Controllers.get(cn).view.render(json)
 					.then(function ()
 					{
-						C = null;
+						calcTimeForGC();
+						//Controllers.get(cn) = null;
 
-						//let end = new Date();
-						//console.log("response time: ", end.getTime() - start.getTime() + " ms");
+						//console.log("response time: ", end.getTime() - startDate.getTime() + " ms");
 					});
 			})
 			.catch(function (err)
 			{
 				Logger.error(err);
-				C = null;
+				//C = null;
 				return next(err);
 			});
 	});
 
 	return router;
 };
+
+tInterval = setInterval(function ()
+{
+	memoryUsage = process.memoryUsage();
+	if (global.gc && memoryUsage['rss']/ 1000000 > 100)
+	{
+		global.gc();
+		//console.log("\n------------------------");
+		//console.log("\ncalcTimeForGC");
+		//console.log("\n------------------------");
+	}
+}, 60000);
+function calcTimeForGC()
+{
+	if (!global.gc || (memoryUsage && ['rss'] && memoryUsage['rss']/ 1000000 <= 100))
+	{
+		clearInterval(tInterval);
+		tInterval = null;
+	}
+}
+
+function v1_calcTimeForGC()
+{
+	let endDate = new Date();
+
+	//--optimize_for_size --max_old_space_size=460 --nouse-idle-notification --expose-gc --gc_interval=100
+	let time = (endDate.getTime() - startDate.getTime()) / 1000 / 60;
+	time = Math.ceil(time);
+	//console.log("\n------------------------ startDate = ", startDate);
+	//console.log("\n------------------------ Math.ceil(time) = ", time);
+
+	if ( time > 1)
+	{
+		startDate = endDate;
+
+		if (global.gc)
+		{
+			let mem = process.memoryUsage();
+			if(mem['rss']/ 1000000 > 100)
+			{
+				global.gc();
+				console.log("\n------------------------");
+				console.log("\ncalcTimeForGC");
+				console.log("\n------------------------");
+			}
+		}
+	}
+}

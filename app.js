@@ -1,7 +1,6 @@
 "use strict";
 require('app-module-path').addPath(__dirname);
 
-//const helpers = require('app/helpers');
 const config = require('app/config');
 
 const express = require('express');
@@ -42,7 +41,7 @@ app.set('state namespace', 'MCJS');//для экспорта данных в б�
 при JSON ответе удаляем ключи (приватные), которые начинаются с _
 например, {_id: value}
  */
-console.log("app.get('env') ", app.get('env'));
+//console.log("app.get('env') ", app.get('env'));
 if (app.get('env') === 'prod' || app.get('env') === 'production')
 {
 	app.set('json replacer', function(key, value)
@@ -55,7 +54,7 @@ if (app.get('env') === 'prod' || app.get('env') === 'production')
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(logger('dev'));
+//app.use(logger('dev'));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -63,7 +62,7 @@ app.use(methodOverride(function(req, res)
 {
 	if (req.body && typeof req.body === 'object' && '_method' in req.body) {
 		// look in urlencoded POST bodies and delete it
-		var method = req.body._method;
+		let method = req.body._method;
 		delete req.body._method;
 		return method;
 	}
@@ -74,7 +73,7 @@ app.use(Session());
 
 //************ routes ****************
 //используетя для экспорта данных в JavaScript в браузер
-var expstate = require('express-state');
+let expstate = require('express-state');
 expstate.extend(app);
 
 //загрузка роутеров

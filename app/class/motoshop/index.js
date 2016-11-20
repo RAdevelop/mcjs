@@ -218,7 +218,7 @@ class Motoshop extends Base
 					return [null, null];
 
 				if (Pages.limitExceeded())
-					return Promise.reject(new FileErrors.HttpStatusError(404, "Not found"));
+					return Promise.reject(new FileErrors.HttpError(404));
 
 				return this.model("motoshop").getMotoshopListByLocId(loc_id, mts_show, Pages.getLimit(), Pages.getOffset())
 					.then(function (list)

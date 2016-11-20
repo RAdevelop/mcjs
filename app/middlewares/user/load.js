@@ -24,7 +24,7 @@ module.exports = function(Classes)
 				{
 					if (!rtid) return asyncCb(null, null);
 					
-					Classes.getClass("user").getUser(rtid)
+					return Classes.getClass("user").getUser(rtid)
 						.then(function (userData)
 						{
 							if (req.session.rtid)
@@ -41,7 +41,7 @@ module.exports = function(Classes)
 							{
 								if (err)
 								{
-									req.session.destroy(function (err)
+									req.session.destroy(function ()//err
 									{
 										delete req.session;
 									});
@@ -54,7 +54,7 @@ module.exports = function(Classes)
 
 								req.session.rtid = userData.u_id;
 
-								Cookie.setUserId(res, userData.u_id)
+								Cookie.setUserId(res, userData.u_id);
 
 								return asyncCb(null, userData);
 							});
@@ -69,7 +69,7 @@ module.exports = function(Classes)
 								case 'NotFoundError':
 								case 'TypeError':
 
-									req.session.destroy(function (err)
+									req.session.destroy(function ()//err
 									{
 										delete req.session;
 									});

@@ -87,23 +87,23 @@ class Menu extends BaseModel
 	*/
 	getAll(cb)
 	{
-		//var self = this;
-		let sql = "SELECT m.m_id, m.m_pid, m.m_path, m.m_name, m.m_title, m.m_h1, m.m_desc, m.m_level, m.m_lk, m.m_rk, REPEAT('&nbsp;', IF(m.m_level > 1, m.m_level*2, 0)) AS m_nbsp, c.c_id, c.c_path " +
-		"FROM `menu` AS m " +
-		"JOIN `controllers` AS c ON(c.c_id = m.c_id) " +
-		"ORDER BY m.m_lk";
+		let sql = `SELECT m.m_id, m.m_pid, m.m_path, m.m_name, m.m_title, m.m_h1, m.m_desc, m.m_level, m.m_lk, m.m_rk, REPEAT('&nbsp;', IF(m.m_level > 1, m.m_level*2, 0)) AS m_nbsp, c.c_id, c.c_path 
+		FROM menu AS m
+		JOIN controllers AS c ON(c.c_id = m.c_id) 
+		ORDER BY m.m_lk`;
 		
 		//this.constructor.conn().ps(sql, [], function(err, res)
-		this.constructor.conn().ps(sql, [], function(err, res)
+		this.constructor.conn().ps(sql, null, function(err, res)
 		{
 			if (err) return cb(err, null);
 			
 			//не нашли
 			if(res["info"]["numRows"] == 0) return cb(null, null);
 			
-			let list = JSON.parse(JSON.stringify(res));
-			
-			cb(null, list);
+			//let list = JSON.parse(JSON.stringify(res));
+			//cb(null, list);
+
+			cb(null, res);
 		});
 	}
 
@@ -140,14 +140,14 @@ class Menu extends BaseModel
 		ORDER BY LENGTH(m.m_path) DESC
 		LIMIT 1`;
 		
-		this.constructor.conn().ps(sql, resPath, function(err, res)
+		this.constructor.conn().sRow(sql, resPath, function(err, res)
 		{
 			if (err) return cb(err);
 			
 			//не нашли
-			if(res["info"]["numRows"] == 0) return cb(null, null);
+			//if(res["info"]["numRows"] == 0) return cb(null, null);
 			
-			cb(null, res[0]);
+			cb(null, res);
 		});
 	}
 }

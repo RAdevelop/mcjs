@@ -380,7 +380,7 @@ class Motoshop extends BaseModel
 		/*console.log(sql);
 		console.log(sqlData);*/
 
-		return this.constructor.conn().s(sql, sqlData);
+		return this.constructor.conn().ps(sql, sqlData);
 	}
 
 	/**

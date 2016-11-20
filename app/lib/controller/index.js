@@ -84,7 +84,7 @@ class Base
 	 */
 	stripTags(formData, fields = [])
 	{
-		const cheerio = this.cheerio;
+		let cheerio = this.cheerio;
 
 		Object.keys(formData).forEach(function (key)
 		{
@@ -95,7 +95,7 @@ class Base
 			formData[key] = cheerio(formData[key]).text().trim();
 
 		});
-
+		cheerio = null;
 		return formData;
 	}
 
@@ -265,11 +265,11 @@ class Base
 		let reqPath = this.getPath();
 
 		//console.log('\n');
-		console.log('actionName = ', actionName);
+		/*console.log('actionName = ', actionName);
 		console.log('routePaths:');
 		console.log(routePaths);
 		console.log('reqPath');
-		console.log(reqPath);
+		console.log(reqPath);*/
 		/*
 		let regExp = new RegExp(this.routePaths().index[0], 'ig');
 
@@ -289,7 +289,7 @@ class Base
 		{
 			regExp = new RegExp(routers[i], 'ig');
 
-			console.log(regExp);
+			//console.log(regExp);
 
 			/*
 			console.log(routers[i]);
@@ -310,8 +310,7 @@ class Base
 					//this.routeArgs = Helpers.varsValidate(tmpArgs);
 					this.routeArgs = tmpArgs;
 				}
-				console.log("this.routeArgs");
-				console.log(this.routeArgs);
+				console.log("this.routeArgs = ", this.routeArgs);
 				console.log('\n');
 				return true;
 			}
