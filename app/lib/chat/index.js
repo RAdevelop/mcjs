@@ -26,7 +26,7 @@ writerRedis.on('error', function(err){
 	Logger.error('writerRedis Client', err);
 });
 //TODO
-var chanel = 'rooms';
+let chanel = 'rooms';
 
 module.exports = function(http, app)
 {
@@ -75,7 +75,7 @@ module.exports = function(http, app)
 
 //	return io;
 
-	var nsp = io.of('/'+chanel);
+	let nsp = io.of('/'+chanel);
 	nsp.on('connection', function(socket){
 		
 		socket.on('error', function(err){
@@ -122,7 +122,7 @@ module.exports = function(http, app)
 		//readerRedis.on('message', function (channel, message) {
 		readerRedis.on('messageBuffer', function (channel, message)
 		{
-			var msg = msgpack.decode(message);
+			let msg = msgpack.decode(message);
 			console.log('');
 			Logger.debug('channel: %s', channel);
 			Logger.info(msg);

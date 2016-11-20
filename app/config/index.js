@@ -18,8 +18,8 @@ var config = {
 		resave           : false, // do not automatically write to the session store
 		secret           : 'varRy Sicret str0ka',
 		cookie           : {
-			secure: true
-			,httpOnly: true
+			secure: true//true
+			,httpOnly: true//true
 			,path: '/'
 			//,maxAge: 86400000 //in milliseconds
 		}

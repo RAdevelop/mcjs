@@ -22,25 +22,45 @@ $(function(){
 
 	//TODO добавить ip или домен сайта
 	//var chat = io('//192.168.0.91:5003/rooms');
-	var chat = io('//'+window.location.host+'/rooms');
+	//var chat = io('//'+window.location.host+'/rooms');
+	var opts = {
+		//"multiplex":false,
+		//"reconnection": false,
+		//"transport": 'ws'
+	};
+	//console.log(opts);
+	var chat = io('/rooms', opts);
+
 
 	chat.on('connect', function(){
+
 		console.log('on connection event');
 		chat.emit('chat:user:connected', {"userName": navigator.userAgent}, function(data){});
+
 	}).on('connecting', function () {
+
 		console.log('connecting');
+
 	}).on('reconnect', function () {
+
 		console.log('reconnected ');
+
 	}).on('reconnecting', function () {
+
 		console.log('reconnecting');
 	})
 	.on('reconnect_error', function(err){
+
 		console.log('on reconnect_error event');
 		console.log(err);
+
 	}).on('reconnect_failed', function(err){
+
 		console.log('on reconnect_failed event');
 		console.log(err);
+
 	}).on('error', function(err){
+
 		console.log('on error event');
 		console.log(err);
 
@@ -79,7 +99,7 @@ $(function(){
 			$msg.val('');
 
 			chat.emit('chat:msg:send', msg, function(data){
-				//if(data) console.log('сообщение получено серверкром');
+				//if(data) console.log('сообщение получено сервером');
 			});
 		}
 		return false;

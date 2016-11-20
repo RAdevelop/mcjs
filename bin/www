@@ -21,18 +21,20 @@ app.set('port', port);
 /**
  * Create HTTP(S) server.
  */
-const http = require('http');
-//const https = require('https');
-	//mc_cert.key  mc_cert.pem
+//const http = require('http');
+const https = require('https');
+
 let server_opt = {
-	key: fs.readFileSync(path.join(__dirname, '../openssl/mc_cert.key')),
-	cert: fs.readFileSync(path.join(__dirname, '../openssl/mc_cert.pem'))
+	key: config.ssl.key,
+	cert: config.ssl.cert
 };
-//const server = https.createServer(server_opt, app);
-const server = http.createServer(app);
+
+const server = https.createServer(server_opt, app);
+//const server = http.createServer(app);
 
 const io = require('../app/lib/chat');
 io(server, app);
+
 
 /**
  * Listen on provided port, on all network interfaces.
