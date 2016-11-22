@@ -202,7 +202,7 @@
 	}
 
 	McTinymce.tinymce = null;
-	McTinymce.vers = '4.4.2';
+	McTinymce.vers = '4.4.3';
 	McTinymce.baseURL = function (vers)
 	{
 		return '/js/tinymce/'+vers;

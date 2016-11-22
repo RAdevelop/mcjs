@@ -264,7 +264,7 @@ class News extends BaseModel
 	{
 		let sql = `SELECT ni.ni_id, ni.n_id, ni.ni_create_ts, ni.ni_update_ts, ni.ni_latitude, ni.ni_longitude, ni.ni_dir, ni.ni_pos, ni.ni_name
 			FROM news_image AS ni
-			JOIN news_list AS e ON (n.n_id = ni.n_id)
+			JOIN news_list AS n ON (n.n_id = ni.n_id)
 			WHERE ni.ni_id = ?`;
 
 		return this.constructor.conn().sRow(sql, [ni_id]);

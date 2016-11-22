@@ -21,9 +21,6 @@ const Session = require('app/middlewares/session');
 
 const app = express();
 
-//const LRU = require('lru-cache');
-//engine.cache = LRU(100);
-//app.disable('view cache');
 
 app.engine('ejs', engine);
 
@@ -36,6 +33,13 @@ app.set('title', 'MC JS');
 app.set('x-powered-by', false);
 app.set('state local', 'exported_to_js');//для экспорта данных в бразуер для JS
 app.set('state namespace', 'MCJS');//для экспорта данных в бразуер для JS
+
+//if (app.get('env') === 'prod' || app.get('env') === 'production')  {
+const LRU = require('lru-cache');
+engine.cache = LRU(100);
+app.enable('view cache');
+//app.disable('view cache');
+//}
 
 /*
 при JSON ответе удаляем ключи (приватные), которые начинаются с _
