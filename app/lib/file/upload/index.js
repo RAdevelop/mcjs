@@ -406,9 +406,12 @@ class UploadFile extends File
 				return moveCb(err);
 			}
 
+			//права для папки и файлов
+			let mode = 0o755;//0o755  0o711
+
 			if (errCode == 'ENOENT')//если такой директории нет, создадим ее
 			{
-				FS.mkdir(file["fullPathUploadDir"], 0o711, true, function(err){ //0o755
+				FS.mkdir(file["fullPathUploadDir"], 0o755, true, function(err){
 					if (err)
 					{
 						if (!File.isForbiddenDir(file.path))
@@ -421,7 +424,7 @@ class UploadFile extends File
 						return moveCb(err);
 					}
 
-					self.moveFile(file, function(err, file)
+					self.moveFile(file, 0o755, function(err, file)
 					{
 						if (err)
 							return moveCb(err);
@@ -432,7 +435,7 @@ class UploadFile extends File
 			}
 			else
 			{
-				self.moveFile(file, function(err, file)
+				self.moveFile(file, 0o755, function(err, file)
 				{
 					if (err)
 						return moveCb(err);
@@ -443,12 +446,16 @@ class UploadFile extends File
 		});
 	}
 
-	moveFile(file, cb)
+	moveFile(file, mode, cb)
 	{
 		let error = false;
 
 		let rStream = FS.createReadStream(file.path);
-		let wStream = FS.createWriteStream(file["fullFilePath"]);
+		let options = {
+			"mode": mode,
+			"flags": "w"
+		};
+		let wStream = FS.createWriteStream(file["fullFilePath"], options);
 
 		this.res.on('close', function()
 		{
