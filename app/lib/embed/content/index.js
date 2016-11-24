@@ -213,7 +213,8 @@ class EmbedContent
 				res.on('close', function()
 				{
 					res.destroy();
-					return reject(new Error("соединение разорвано"));//TODO
+					return reject(new Errors.HttpError(502));
+					//return reject(new Error("соединение разорвано"));
 				});
 
 				//res.pipe(writableStream);

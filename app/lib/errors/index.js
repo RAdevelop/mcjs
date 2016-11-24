@@ -83,8 +83,11 @@ errors.HttpError = errors.helpers.generateClass("HttpError", {
 		switch (this.status)
 		{
 			default:
-				this.message = 'Internal Server Error';
+			case 500:
+				this.message = 'Internal Server Error'; //внутренняя ошибка сервера
 				break;
+
+			//4xx
 			case 400:
 				this.message = 'Bad request';
 				break;
@@ -99,6 +102,41 @@ errors.HttpError = errors.helpers.generateClass("HttpError", {
 
 			case 404:
 				this.message = 'Not found';
+				break;
+
+			//5xx
+			case 501:
+				this.message = 'Not Implemented';// не реализовано
+				break;
+			case 502:
+				this.message = 'Bad Gateway';// плохой, ошибочный шлюз
+				break;
+			case 503:
+				this.message = 'Service Unavailable';//сервис недоступен
+				break;
+			case 504:
+				this.message = 'Gateway Timeout';//шлюз не отвечает
+				break;
+			case 505:
+				this.message = 'HTTP Version Not Supported';//версия HTTP не поддерживается
+				break;
+			case 506:
+				this.message = 'Variant Also Negotiates';//вариант тоже проводит согласование
+				break;
+			case 507:
+				this.message = 'Insufficient Storage';//переполнение хранилища.
+				break;
+			case 508:
+				this.message = 'Loop Detected';//обнаружено бесконечное перенаправление
+				break;
+			case 509:
+				this.message = 'Bandwidth Limit Exceeded';//исчерпана пропускная ширина канала.
+				break;
+			case 510:
+				this.message = 'Not Extended';//не расширено.
+				break;
+			case 511:
+				this.message = 'Network Authentication Required';//требуется сетевая аутентификация
 				break;
 		}
 

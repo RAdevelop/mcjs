@@ -24,6 +24,8 @@ const app = express();
 
 app.engine('ejs', engine);
 
+app.set(config.b_closing, false);
+
 // view engine setup
 app.set('root_dir', __dirname);
 app.set('document_root', path.join(__dirname, '/public'));
@@ -54,6 +56,18 @@ if (app.get('env') === 'prod' || app.get('env') === 'production')
 		return value;
 	});
 }
+
+app.use(function(req, res, next) {
+
+	//config.b_closing = true in bin/www
+	//console.log('app.get(config.b_closing) = ', app.get(config.b_closing));
+	if (!app.get(config.b_closing))
+	return	next();
+
+	console.log('app.get(config.b_closing) = ', app.get(config.b_closing));
+	res.append("Connection", "close");
+	res.status(502).send("Server is in the process of restarting");
+});
 
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -91,7 +105,7 @@ catch 404 and forward to error handler
 поэтому первым аргументом Error не передается
  */
 app.use(function(req, res, next) {
-	next(new Errors.HttpStatusError(404, "Not Found"));
+	next(new Errors.HttpError(404));
 });
 
 //после роутеров

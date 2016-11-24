@@ -676,7 +676,8 @@ iframe.iframeVideoEmbed {
 }
 
 /* ipad */
-@media (min-device-width: 768px) and (max-device-width: 1024px) {
+/*@media (min-device-width: 768px) and (max-device-width: 1024px)*/
+@media (min-width: 768px) and (max-width: 1043px) {
   .navbar-header {
     float: none;
   }
@@ -868,6 +869,7 @@ iframe.iframeVideoEmbed {
   max-height: 248px;*/
   max-width: 216px;
   max-height: 162px;
+  /*@media (max-width: 1024px)*/
 }
 .albums .albumList .album .albumImg {
   position: relative;
@@ -944,7 +946,7 @@ iframe.iframeVideoEmbed {
   padding: 5px;
   border-top: 1px dotted #fff;
 }
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
   .albums .albumList .album {
     max-width: calc(33%);
     max-width: -moz-calc(33%);
@@ -991,6 +993,8 @@ iframe.iframeVideoEmbed {
   max-height: calc(162px);
   max-height: -moz-calc(162px);
   max-height: -webkit-calc(162px);
+  /*@media (max-width: 1024px)*/
+  /*@media (max-width: 768px)*/
 }
 .albums .imageList .image img {
   cursor: move;
@@ -998,7 +1002,7 @@ iframe.iframeVideoEmbed {
   width: -moz-calc(100%);
   width: -webkit-calc(100%);
 }
-@media (max-width: 1024px) {
+@media (max-width: 992px) {
   .albums .imageList .image {
     max-width: calc(32%);
     max-width: -moz-calc(32%);
@@ -1010,9 +1014,9 @@ iframe.iframeVideoEmbed {
 }
 @media (max-width: 768px) {
   .albums .imageList .image {
-    max-width: calc(50%);
-    max-width: -moz-calc(50%);
-    max-width: -webkit-calc(50%);
+    max-width: calc(47%);
+    max-width: -moz-calc(47%);
+    max-width: -webkit-calc(47%);
     max-height: calc(162px);
     max-height: -moz-calc(162px);
     max-height: -webkit-calc(162px);
@@ -1029,6 +1033,10 @@ iframe.iframeVideoEmbed {
   }
 }
 
+.albumImageDialog {
+  /*@media (min-width: 768px)*/
+  /*@media (max-width: 1024px)*/
+}
 .albumImageDialog .modal-header {
   padding: 15px 10px 5px 10px;
 }
@@ -1099,7 +1107,7 @@ iframe.iframeVideoEmbed {
     margin: 10px auto;
   }
 }
-@media (max-width: 1024px) {
+@media (max-width: 992px) {
   .albumImageDialog .modal-body .imageModalBody, .albumImageDialog .modal-body .imageModalContent {
     min-width: calc(100%);
     min-width: -moz-calc(100%);
