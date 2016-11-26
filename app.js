@@ -24,7 +24,7 @@ const app = express();
 
 app.engine('ejs', engine);
 
-app.set(config.b_closing, false);
+app.set(config.server_closing, false);
 
 // view engine setup
 app.set('root_dir', __dirname);
@@ -36,12 +36,12 @@ app.set('x-powered-by', false);
 app.set('state local', 'exported_to_js');//для экспорта данных в бразуер для JS
 app.set('state namespace', 'MCJS');//для экспорта данных в бразуер для JS
 
-//if (app.get('env') === 'prod' || app.get('env') === 'production')  {
-const LRU = require('lru-cache');
-engine.cache = LRU(100);
-app.enable('view cache');
-//app.disable('view cache');
-//}
+if (app.get('env') === 'prod' || app.get('env') === 'production')  {
+	const LRU = require('lru-cache');
+	engine.cache = LRU(100);
+	app.enable('view cache');
+	//app.disable('view cache');
+}
 
 /*
 при JSON ответе удаляем ключи (приватные), которые начинаются с _
@@ -57,16 +57,23 @@ if (app.get('env') === 'prod' || app.get('env') === 'production')
 	});
 }
 
+//типа при аккуратном выключении сервера
 app.use(function(req, res, next) {
 
-	//config.b_closing = true in bin/www
-	//console.log('app.get(config.b_closing) = ', app.get(config.b_closing));
-	if (!app.get(config.b_closing))
+	//config.server_closing = true in bin/www
+	if (!app.get(config.server_closing))
 	return	next();
 
-	console.log('app.get(config.b_closing) = ', app.get(config.b_closing));
+	//console.log('app.get(config.server_closing) = ', app.get(config.server_closing));
 	res.append("Connection", "close");
-	res.status(502).send("Server is in the process of restarting");
+	res.status(502);
+
+	let s = "Server is in the process of restarting";
+
+	if (req.xhr)
+	return res.json(s);
+	
+	res.send(s);
 });
 
 // uncomment after placing your favicon in /public
@@ -76,7 +83,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(methodOverride(function(req, res)
+app.use(methodOverride(function(req)//, res
 {
 	if (req.body && typeof req.body === 'object' && '_method' in req.body) {
 		// look in urlencoded POST bodies and delete it

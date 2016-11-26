@@ -12,7 +12,7 @@ let document_root = Path.join(__dirname, '../../public');
  */
 var config = {
 	port: 3000,
-	b_closing: 'b_closing', //просто название переменной для app.set(name, value)
+	server_closing: 'server_closing', //название переменной для app.set(name, value) при выключении или перезагрузки сервера
 	document_root: document_root,
 	session:  {
 		saveUninitialized: true, // saved new sessions

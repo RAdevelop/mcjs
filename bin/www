@@ -114,11 +114,10 @@ function onListening()
 function _shutdownService(sigName)
 {
 	console.log("Received kill signal ("+sigName+"), shutting down gracefully.");
-	app.set(config.b_closing, true);
+	app.set(config.server_closing, true);
 	server.close(function _onServerClose()
 	{
 		console.log("Closed out remaining connections.");
-		//app.set(config.b_closing, true);
 		process.exit()
 	});
 
@@ -126,7 +125,7 @@ function _shutdownService(sigName)
 	{
 		console.error("Could not close connections in time, forcefully shutting down");
 		process.exit(1);
-	}, 30000);//30 sec
+	}, 5000);//5 sec
 }
 process.on('SIGINT', function _SIGINT()
 {
