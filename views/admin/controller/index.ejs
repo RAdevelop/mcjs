@@ -1,124 +1,123 @@
-<%  if(!_isXHR){%><%- layout('layout/index') %><% } -%>
+<%  if(!_isXHR){%><%- layout('layout/default') %><% } -%>
 <div class="page-header">
-    <h1><%= h1 %></h1>
+    <h1><%= _pageH1 %></h1>
 </div>
 <p>admin/controller/index</p>
 <p>TODO</p>
 <p>добавить возможность выбора "роутера" после которого расположить редактируемый (в ветке выбранного родителя).</p>
 <p>иначе, сейчас при каждом редактировании, обновляемый роутер перемещаетя на "первое" место в своей ветке</p>
 <p>не давать возможность выбрать в качестве родителя кого-то из своих потомков!!!!!</p>
-<h2><% if(controllerId) {%>Изменить<%} else {%>Добавить<%}%> роутер: <%= controllerName %></h2>
+<h2><% if(ui_controller_id) {%>Изменить<%} else {%>Добавить<%}%> контроллер: <%= s_controller_name %></h2>
 
-<div class="panel-group" id="accordionRouter" role="tablist" aria-multiselectable="true">
-    <div class="panel panel-default">
-        <div class="panel-heading" role="tab" id="controllerForm">
-            <h4 class="panel-title">
-                <a role="button" data-toggle="collapse" data-parent="#accordionRouter" href="#controllerFormBody" aria-expanded="true" aria-controls="controllerFormBody">
-                   Редактировать роутер
-                </a>
-            </h4>
-        </div>
-        <div id="controllerFormBody" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="controllerForm">
-            <div class="panel-body">
-                <% if(formError.error) {%>
-                <p><%= formError.message %></p>
-                <ul>
-                    <% for (var f in  formError.fields){
-                        if(!formError.fields[f]) continue;
-                    %><li><%=formError.fields[f] %></li><%
-                    } %>
-                </ul>
-                <% }%>
-                <form id="controllerEditForm" class="form-horizontal" action="<%= _reqOriginalUrl %>" method="post">
-                    <input type="hidden" id="controllerId" name="controllerId" value="<%= controllerId %>"/>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label" for="controllerPid">Укажите родительский роутер</label>
-                        <div class="col-sm-9">
-                            <select id="controllerPid" name="controllerPid" class="form-control">
-                                <option value="0">нет родителя</option>
-                                <% controllerList.forEach(function(controller, i){%>
-                                <option value="<%= controller["c_id"] %>" <% if(controllerPid == controller["c_id"]){%>selected="selected"<%}%> <% if(controllerId == controller["c_id"]){%>disabled="disabled"<%}%> >
-                                    <%- controller["c_nbsp"] %><%= controller["c_name"] %>
-                                </option>
-                                <% }) %>
-                            </select>
+
+<ul class="nav nav-pills nav-justified" role="tablist">
+    <li class="active" role="presentation"><a href="#base" aria-controls="base" role="tab" data-toggle="tab"><i class="fa fa-cog"></i> Основные параметры</a></li>
+    <% if (_action == 'edit') { %>
+    <li role="presentation"><a href="#methods" aria-controls="contacts" role="tab" data-toggle="tab"><i class="fa fa-cogs"></i> Метод</a></li>
+    <% }%>
+</ul>
+<!-- Tab panes -->
+<div class="panel panel-default">
+    <div class="panel-body tab-content">
+        <div role="tabpanel" class="tab-pane active" id="base">
+            <div id="controllerFormBody" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="controllerForm">
+                <div class="panel-body">
+                    <form id="controllerEditForm" class="form-horizontal" action="<%= _reqOriginalUrl %>" method="post">
+                        <input type="hidden" id="ui_controller_id" name="ui_controller_id" value="<%= ui_controller_id %>"/>
+                        <div class="form-group ui_controller_pid">
+                            <label class="col-sm-3 control-label" for="ui_controller_pid">Укажите родительский роутер</label>
+                            <div class="col-sm-9">
+                                <select id="ui_controller_pid" name="ui_controller_pid" class="form-control">
+                                    <option value="0">нет родителя</option>
+                                    <% controllerList.forEach(function(controller){%>
+                                    <option value="<%= controller["c_id"] %>" <% if(ui_controller_pid == controller["c_id"]){%>selected="selected"<%}%> <% if(ui_controller_id == controller["c_id"]){%>disabled="disabled"<%}%> >
+                                        <%- controller["c_nbsp"] %><%= controller["c_name"] %>
+                                    </option>
+                                    <% }) %>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label" for="cAfterId">После какого роутера</label>
-                        <div class="col-sm-9">
-                            <select id="cAfterId" name="cAfterId" class="form-control">
-                                <option value="0">в начале</option>
-                            </select>
+                        <div class="form-group ui_controller_after_id">
+                            <label class="col-sm-3 control-label" for="ui_controller_after_id">После какого роутера</label>
+                            <div class="col-sm-9">
+                                <select id="ui_controller_after_id" name="ui_controller_after_id" class="form-control">
+                                    <option value="0">в начале</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label" for="controllerPath">"Путь" роутера</label>
-                        <div class="col-sm-9">
-                            <input type="text" id="controllerPath" name="controllerPath" value="<%= controllerPath %>" maxlength="255" class="form-control" placeholder="&quot;Путь&quot; роутера" required autofocus aria-describedby="controllerPathHelpBlock"/>
-                            <span id="controllerPathHelpBlock" class="help-block">пример: /path/to/controller</span>
+                        <div class="form-group s_controller_path">
+                            <label class="col-sm-3 control-label" for="s_controller_path">"Путь" роутера</label>
+                            <div class="col-sm-9">
+                                <input type="text" id="s_controller_path" name="s_controller_path" value="<%= s_controller_path %>" maxlength="255" class="form-control" placeholder="&quot;Путь&quot; роутера" required autofocus aria-describedby="s_controller_pathHelpBlock"/>
+                                <span id="s_controller_pathHelpBlock" class="help-block">пример: /path/to/controller</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label" for="controllerName">Название роутера</label>
-                        <div class="col-sm-9">
-                            <input type="text" id="controllerName" name="controllerName" value="<%= controllerName %>" maxlength="100" class="form-control" placeholder="Название роутера" required autofocus aria-describedby="controllerNameHelpBlock"/>
-                            <span id="controllerNameHelpBlock" class="help-block">от 3 до 100 символов</span>
+                        <div class="form-group s_controller_name">
+                            <label class="col-sm-3 control-label" for="s_controller_name">Название роутера</label>
+                            <div class="col-sm-9">
+                                <input type="text" id="s_controller_name" name="s_controller_name" value="<%= s_controller_name %>" maxlength="100" class="form-control" placeholder="Название роутера" required autofocus aria-describedby="s_controller_nameHelpBlock"/>
+                                <span id="s_controller_nameHelpBlock" class="help-block">от 3 до 100 символов</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label" for="controllerDesc">Описание роутера</label>
-                        <div class="col-sm-9">
-                            <textarea rows="5" id="controllerDesc" name="controllerDesc" class="form-control" placeholder="Описание роутера"><%= controllerDesc %></textarea>
+                        <div class="form-group t_controller_desc">
+                            <label class="col-sm-3 control-label" for="t_controller_desc">Описание роутера</label>
+                            <div class="col-sm-9">
+                                <textarea rows="5" id="t_controller_desc" name="t_controller_desc" class="form-control" placeholder="Описание роутера"><%= t_controller_desc %></textarea>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-6 col-sm-offset-6">
-                            <% if(controllerId){%>
-                            <button class="btn btn-default" type="submit" name="controllerFormBtn" value="upd">Изменить</button>
-                            <%} else {%>
-                            <button class="btn btn-default" type="submit" name="controllerFormBtn" value="add">Добавить</button>
-                            <%} %>
+                        <div class="form-group">
+                            <div class="col-sm-6 col-sm-offset-6">
+                                <% if(ui_controller_id){%>
+                                <input type="hidden" name="btn_controller_save" value="update" />
+                                <button class="btn btn-default" type="submit" name="btn_controller_form">Изменить</button>
+                                <%} else {%>
+                                <input type="hidden" name="btn_controller_save" value="add" />
+                                <button class="btn btn-default" type="submit" name="btn_controller_form">Добавить</button>
+                                <%} %>
+                            </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
+        <% if (_action == 'edit') { %>
+        <div role="tabpanel" class="tab-pane active" id="methods">
+            <%- include methods.ejs %>
+        </div>
+        <% } %>
     </div>
-    <%- include methods.ejs %>
 </div>
-
 <script type="text/javascript">
 //<!--
-<%-(exported_to_js ? exported_to_js : "") %>
-
-var MCJS = window["<%= settings["state namespace"] %>"];
-var controllerId = "<%= controllerId %>";
-var controllerPid = "<%= controllerPid %>";
-
-$(function()
+var ui_controller_id = "<%= ui_controller_id %>";
+var ui_controller_pid = "<%= ui_controller_pid %>";
+(function($)
 {
     var $controllerEditForm = $('#controllerEditForm');
-    var $controllerPid = $controllerEditForm.find('#controllerPid');
-    var $cAfterId = $controllerEditForm.find('#cAfterId');
+    var $ui_controller_pid = $controllerEditForm.find('#ui_controller_pid');
+    var $ui_controller_after_id = $controllerEditForm.find('#ui_controller_after_id');
     var inBegin = '<option value="0">в начале</option>';
-    
-    function subControllerItem(pid, rId)
+
+    $controllerEditForm.postRes({btnId: 'btn_controller_form'});
+
+    var controllerList = MCJS["controllerList"] || [];
+
+    function subControllerItem(pid, cId)
     {
-        $cAfterId.empty().append(inBegin);
+        $ui_controller_after_id.empty().append(inBegin);
 
         if(this.value == "0") return;
         var rOption = '';
         var j = 0;
-        for(var i in MCJS.controllerList)
+        for(var i in controllerList)
         {
             j = parseInt(i, 10)+1;
-            var rItem = MCJS.controllerList[i];
+            var rItem = controllerList[i];
 
-            if(rId == rItem["c_id"]) continue;
+            if(cId == rItem["c_id"]) continue;
 
             var selected = '';//selected="selected"
-            if(MCJS.controllerList[j] && MCJS.controllerList[j]["c_id"] == rId)
+            if(controllerList[j] && controllerList[j]["c_id"] == cId)
                 selected = 'selected="selected"';
 
             if(rItem["c_pid"] == pid)
@@ -126,36 +125,17 @@ $(function()
                 rOption += '<option value="'+rItem["c_id"]+'" '+selected+' >после '+rItem["c_name"]+'</option>';
             }
         }
-        $cAfterId.append(rOption);
+        $ui_controller_after_id.append(rOption);
     }
 
-    subControllerItem(controllerPid, controllerId);
+    subControllerItem(ui_controller_pid, ui_controller_id);
     
-    $controllerPid.change(function(){
-        subControllerItem(this.value, controllerId);
+    $ui_controller_pid.change(function(){
+        subControllerItem(this.value, ui_controller_id);
     });
-/*
-	$('form#loginForm').submit(function(event){
-		event.preventDefault();
 
-		var formData = $(this).serialize();
-
-		$.ajax({
-			url: "/login",
-			method: "POST",
-			data: formData,
-			dataType: "json"
-		})
-		.done(function(data) {
-			console.log( data );
-			//alert(data.title);
-		})
-		.fail(function(data) {
-			console.log( data );
-		});
-		return false;
-	});*/
-});
+})(jQuery);
 //-->
 </script>
+<p style="color: red;">TODO</p>
 <script type="text/javascript" src="/js/jquery/admin/controller.js"></script>

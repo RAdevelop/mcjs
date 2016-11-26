@@ -1,79 +1,287 @@
 "use strict";
-const _ = require('lodash');
-const Async = require('async');
+"use strict";
+
 const Errors = require('app/lib/errors');
+const Promise = require("bluebird");
 
-const Template = require('app/lib/template');
-const Models = require('app/models');
+//const Async = require('async');
+const Base = require('app/lib/controller');
 
-function defaultData(){
-	var tplData = {
-		controllerId: "", controllerPid:"0", controllerPath:'', controllerName: '', controllerDesc: '',
-		controllerList: [], methodsList: [],
-		cAfterId: 0,
-		h1: 'Router start page',
-		s_rm_method: ""
-	};
-	
-	tplData.formError = {
-		message: '',
-		error: false,
-		fields: {
-			controllerPid: null,
-			controllerPath: null,
-			controllerName: null,
-			controllerDesc: null
+class Controller extends Base
+{
+	/**
+	 * @see Base.routePaths()
+	 * @returns {{index: {^\/?$: Array}}}
+	 */
+	routePaths()
+	{
+		return {
+			"index": {
+				'^\/?$': null,
+			},
+			"add": {
+				'^\/?$': null
+			},
+			"edit": {
+				'^\/?[0-9]+\/?$': ['ui_controller_id']
+			}
 		}
-	};
-	return tplData;
+	}
+
+	indexActionGet()
+	{
+		let tplData = {
+			ui_controller_id: "", ui_controller_pid:"0", s_controller_path:'', s_controller_name: '', t_controller_desc: '',
+			controllerList: [], methodsList: [],
+			ui_controller_after_id: 0,
+			s_cm_method: ""
+		};
+
+		return this.getClass("controller").getAll()
+			.bind(this)
+			.then(function(controllerList)
+			{
+				let tplFile = 'admin/controller/index.ejs';
+
+				tplData['controllerList'] = controllerList || [];
+
+				//экспрот данных в JS на клиента
+				this.getRes().expose(tplData.controllerList, 'controllerList');
+
+				this.view.setTplData(tplFile, tplData);
+
+				return Promise.resolve(null);
+			})
+			.catch(function(err)
+			{
+				throw err;
+			});
+	}
+
+	/**
+	 * показываем страницу для Роутера по его id
+	 *
+	 * @param req
+	 * @param res
+	 * @param next
+	 */
+	editActionGet()
+	{
+		let tplFile = 'admin/controller/index.ejs';
+		let {ui_controller_id=null} = this.routeArgs;
+
+		if(!ui_controller_id)
+			throw new Errors.HttpError(404);
+
+		let tplData = {
+			ui_controller_id: ui_controller_id, ui_controller_pid:"0", s_controller_path:'', s_controller_name: '', t_controller_desc: '',
+			controllerList: [], methodsList: [],
+			ui_controller_after_id: 0,
+			s_cm_method: ""
+		};
+
+		return this.getClass("controller").getById(ui_controller_id)
+			.bind(this)
+			.then(function (cData)
+			{
+				if (!cData)
+					throw new Errors.HttpError(404);
+
+				tplData.ui_controller_id = cData["c_id"];
+				tplData.ui_controller_pid = cData["c_pid"];
+				tplData.s_controller_path = cData["c_path"];
+				tplData.s_controller_name = cData["c_name"];
+				tplData.t_controller_desc = cData["c_desc"];
+
+				return Promise.resolve(tplData);
+			})
+			.then(function (tplData)
+			{
+				return Promise.props({
+					methodsList: this.getClass("controller").getAllMethods(ui_controller_id),
+					controllerList: this.getClass("controller").getAll()
+				})
+					.then(function(props)
+					{
+						tplData.methodsList = props.methodsList || [];
+						tplData.controllerList = props.controllerList || [];
+
+						return Promise.resolve(tplData);
+					});
+			})
+			.then(function (tplData)
+			{
+				//экспрот данных в JS на клиента
+				this.getRes().expose(tplData.controllerList, 'controllerList');
+				this.getRes().expose(tplData.methodsList, 'methodsList');
+
+				this.view.setTplData(tplFile, tplData);
+
+				return Promise.resolve(null);
+			})
+			.catch(function(err)
+			{
+				throw err;
+			});
+	}
+
+	/**
+	 * обновляем данные для контроллера по его id
+	 *
+	 */
+	editActionPost()
+	{
+		let tplData = this.getParsedBody();
+		let btn_save = tplData["btn_controller_save"] || null;
+
+		switch (btn_save)
+		{
+			default:
+
+				if (!tplData["ui_controller_id"])
+					throw new Errors.HttpError(404);
+
+				return this.getClass('controller').getById(tplData["ui_controller_id"])
+					.bind(this)
+					.then(function (controller)
+					{
+						if (!controller)
+							throw new Errors.HttpError(404);
+
+						switch (btn_save)
+						{
+							default:
+								throw new Errors.HttpError(400);
+								break;
+
+							case 'update':
+								return this.update(tplData);
+								break;
+
+							case 'add_method':
+								return this.addMethod(tplData);
+								break;
+						}
+					});
+				break;
+
+			case 'add':
+				return this.add(tplData);
+				break;
+		}
+	}
+
+	/**
+	 * редактируем основные данные контроллера
+	 *
+	 * @param tplData
+	 * @returns {Promise.<T>}
+	 */
+	update(tplData)
+	{
+		let tplFile = 'admin/controller/index.ejs';
+
+		return Promise.resolve(tplData)
+			.bind(this)
+			.then(function (tplData)
+			{
+				let errors = {};
+
+				tplData = this.stripTags(tplData, ["s_controller_path", "s_controller_name", "t_controller_desc"]);
+
+				tplData["ui_controller_pid"]        = parseInt(tplData["ui_controller_pid"], 10)        || 0;
+				tplData["ui_controller_after_id"]   = parseInt(tplData["ui_controller_after_id"], 10)   || 0;
+
+
+				if (!tplData["s_controller_path"])
+					errors["s_controller_path"] = "Укажите путь";
+
+				if (!tplData["s_controller_name"])
+					errors["s_controller_name"] = "Укажите название";
+
+				this.parseFormErrors(tplData, errors);
+
+				return Promise.resolve(tplData);
+			})
+			.then(function (tplData)
+			{
+				return this.getClass('controller').updById(tplData["ui_controller_id"], tplData["ui_controller_pid"], tplData["ui_controller_after_id"], tplData["s_controller_path"], tplData["s_controller_name"], tplData["t_controller_desc"]);
+			})
+			.then(function (tplData)
+			{
+				this.view.setTplData(tplFile, tplData);
+
+				return Promise.resolve(true);
+			})
+			.catch(Errors.ValidationError, function (err) //такие ошибки не уводят со страницы
+			{
+				this.view.setTplData(tplFile, err['data']);
+
+				return Promise.resolve(true);
+			})
+			.catch(function (err)
+			{
+				throw err;
+			});
+	}
+
+	/**
+	 * создаем метод, и связываем его с редактируемым контроллером
+	 * 
+	 * @param tplData
+	 */
+	addMethod(tplData)
+	{
+		let tplFile = 'admin/controller/index.ejs';
+		
+		return Promise.resolve(tplData)
+			.bind(this)
+			.then(function (tplData)
+			{
+				let errors = {};
+				
+				tplData = this.stripTags(tplData, ["s_cm_method"]);
+
+				if (!tplData["s_cm_method"] || !(tplData["s_cm_method"].search(/^(get|post)_[a-zA-Z_]{3,33}$/ig) != -1))
+					errors["s_cm_method"] = "Укажите метод";
+
+				this.parseFormErrors(tplData, errors);
+				
+				return Promise.resolve(tplData);
+			})
+			.then(function (tplData)
+			{
+				return this.getClass('controller').addMethod(tplData["ui_controller_id"], tplData["s_cm_method"])
+					.then(function (cm_id)
+					{
+						tplData["ui_cm_id"] = cm_id;
+						return Promise.resolve(tplData);
+					});
+			})
+			.then(function (tplData)
+			{
+				console.log(tplData);
+				this.view.setTplData(tplFile, tplData);
+				
+				return Promise.resolve(true);
+			})
+			.catch(Errors.ValidationError, function (err) //такие ошибки не уводят со страницы
+			{
+				this.view.setTplData(tplFile, err['data']);
+				
+				return Promise.resolve(true);
+			})
+			.catch(function (err)
+			{
+				throw err;
+			});
+	}
 }
 
-/*console.log(req.originalUrl); // '/admin/new'
-console.log(req.baseUrl); // '/admin'
-console.log(req.path); // '/new'*/
+//************************************************************************* module.exports
+//писать после class Name....{}
+module.exports = Controller;
 
-/**
- * путь к файлу шаблона
- * @type {string}
- */
-var tplFile = 'admin/controller/index.ejs';
-
-/**
- * показываем стартовую страницу для Роутеров
- *
- * @param req
- * @param res
- * @param next
- */
-exports.main = function(req, res, next) 
-{
-	var tplData = defaultData();
-	tplData.title = res.app.settings.title + ' | Router start page';
-	
-	Async.waterfall(
-		[function(asyncCb) //список роутеров
-		{
-			Models.get("Router").getAll(function(err, controllerList)
-			{
-				if(err) return asyncCb(err, tplData);
-				
-				tplData.controllerList = controllerList;
-				asyncCb(null, tplData);
-			});
-		}], 
-		function(err, tplData)
-		{
-			//Models.end();
-			if(err) return next(err);
-			
-			//экспрот данных в JS на клиента
-			res.expose(tplData.controllerList, 'controllerList');
-			
-			var View = new Template(req, res, next, Models);
-			View.render(tplFile, tplData);
-		}
-	);
-};
 /**
  * добавляем роутер
  *
@@ -110,7 +318,7 @@ exports.add = function(req, res, next)
 		},
 		function(tplData, asyncCb) //добавление в БД
 		{
-			Models.get("Router").add(tplData.controllerPid, tplData.cAfterId, tplData.controllerPath, tplData.controllerName, tplData.controllerDesc, function(err, rId)
+			Models.get("Router").add(tplData.ui_controller_pid, tplData.ui_controller_after_id, tplData.s_controller_path, tplData.s_controller_name, tplData.t_controller_desc, function(err, rId)
 			{
 				if(err)
 				{
@@ -195,11 +403,11 @@ exports.edit = function(req, res, next)
 					
 					if(!rData) return cb(Errors.HttpStatusError(404, "Роутер не найден"));
 					
-					tplData.controllerId = rData["c_id"];
-					tplData.controllerPid = rData["c_pid"];
-					tplData.controllerPath = rData["c_path"];
-					tplData.controllerName = rData["c_name"];
-					tplData.controllerDesc = rData["c_desc"];
+					tplData.ui_controller_id = rData["c_id"];
+					tplData.ui_controller_pid = rData["c_pid"];
+					tplData.s_controller_path = rData["c_path"];
+					tplData.s_controller_name = rData["c_name"];
+					tplData.t_controller_desc = rData["c_desc"];
 					
 					return cb(null, tplData);
 				});
@@ -259,8 +467,8 @@ exports.update = function(req, res, next)
 	tplData.title = res.app.settings.title + ' | Router start page';
 	tplData = _.assign(tplData, req.body);
 	
-	tplData.controllerId = parseInt(tplData.controllerId, 10);
-	if(!tplData.controllerId || tplData.controllerId <= 0) return next(new Errors.HttpStatusError(404, "Роутер не найден"));
+	tplData.ui_controller_id = parseInt(tplData.ui_controller_id, 10);
+	if(!tplData.ui_controller_id || tplData.ui_controller_id <= 0) return next(new Errors.HttpStatusError(404, "Роутер не найден"));
 	
 	Async.waterfall(
 		[
@@ -286,7 +494,7 @@ exports.update = function(req, res, next)
 			},
 			function(tplData, asyncCb) //
 			{
-				Models.get("Router").getById(tplData.controllerId, function(err, rData)
+				Models.get("Router").getById(tplData.ui_controller_id, function(err, rData)
 				{
 					if(err) return asyncCb(err, null);
 					return asyncCb(null, tplData);
@@ -294,7 +502,7 @@ exports.update = function(req, res, next)
 			},
 			function(tplData, asyncCb)
 			{
-				Models.get("Router").updById(tplData.controllerId, tplData.controllerPid, tplData.cAfterId, tplData.controllerPath, tplData.controllerName, tplData.controllerDesc, function(err, rId)
+				Models.get("Router").updById(tplData.ui_controller_id, tplData.ui_controller_pid, tplData.ui_controller_after_id, tplData.s_controller_path, tplData.s_controller_name, tplData.t_controller_desc, function(err, rId)
 				{
 					if(err)
 					{
@@ -342,7 +550,7 @@ exports.update = function(req, res, next)
 				}
 			}
 			else if (tplData)
-			return res.redirect(req.baseUrl+'/'+tplData.controllerId+'/edit');
+			return res.redirect(req.baseUrl+'/'+tplData.ui_controller_id+'/edit');
 			
 			//экспрот данных в JS на клиента
 			res.expose(tplData.controllerList, 'controllerList');
@@ -370,7 +578,7 @@ exports.addMethod = function(req, res, next)
 		error: false,
 		fields: {
 			i_controller_id: null,
-			s_rm_method: null
+			s_cm_method: null
 		}
 	};
 	
@@ -383,10 +591,10 @@ exports.addMethod = function(req, res, next)
 				if (!req._reqbody["i_controller_id"])
 					formErrs["i_controller_id"] = "Не указан роутер";
 				else
-					tplData.controllerId = tplData["i_controller_id"];
+					tplData.ui_controller_id = tplData["i_controller_id"];
 				
-				if (!req._reqbody["s_rm_method"] || !(tplData["s_rm_method"].search(/^[a-zA-Z][a-zA-Z_]{2,33}$/ig) != -1))
-					formErrs["s_rm_method"] = "Не указан метод";
+				if (!req._reqbody["s_cm_method"] || !(tplData["s_cm_method"].search(/^[a-zA-Z][a-zA-Z_]{2,33}$/ig) != -1))
+					formErrs["s_cm_method"] = "Не указан метод";
 				
 				var kErr = Object.keys(formErrs);
 				if (kErr.length > 0)
@@ -405,7 +613,7 @@ exports.addMethod = function(req, res, next)
 			},
 			function(tplData, asyncCb) //добавим метод
 			{
-				Models.get("Router").addMethod(tplData.i_controller_id, tplData.s_rm_method, function(err, rmId)
+				Models.get("Router").addMethod(tplData.i_controller_id, tplData.s_cm_method, function(err, rmId)
 				{
 					
 					tplData.rmId = null;
@@ -535,47 +743,47 @@ exports.delMethod = function(req, res, next)
 
 function controllerFormValidation(tplData, cb)
 {
-	tplData.controllerPid = tplData.controllerPid.toLowerCase().trim();
+	tplData.ui_controller_pid = tplData.ui_controller_pid.toLowerCase().trim();
 	
-	tplData.cAfterId = tplData.cAfterId.toLowerCase().trim();
-	tplData.cAfterId = parseInt(tplData.cAfterId, 10);
-	tplData.cAfterId = (tplData.cAfterId < 0 ? 0 : tplData.cAfterId);
+	tplData.ui_controller_after_id = tplData.ui_controller_after_id.toLowerCase().trim();
+	tplData.ui_controller_after_id = parseInt(tplData.ui_controller_after_id, 10);
+	tplData.ui_controller_after_id = (tplData.ui_controller_after_id < 0 ? 0 : tplData.ui_controller_after_id);
 	
-	tplData.controllerPath = tplData.controllerPath.toLowerCase().trim().replace("\\", "/");
+	tplData.s_controller_path = tplData.s_controller_path.toLowerCase().trim().replace("\\", "/");
 	
-	tplData.controllerPath = tplData.controllerPath.split("/");
+	tplData.s_controller_path = tplData.s_controller_path.split("/");
 	
-	if (tplData.controllerPath[tplData.controllerPath.length-1] == "")
-	tplData.controllerPath.pop();
+	if (tplData.s_controller_path[tplData.s_controller_path.length-1] == "")
+	tplData.s_controller_path.pop();
 	
-	tplData.controllerPath = tplData.controllerPath.join("/");
+	tplData.s_controller_path = tplData.s_controller_path.join("/");
 	
-	tplData.controllerName = tplData.controllerName.trim();
-	tplData.controllerDesc = tplData.controllerDesc.trim();
+	tplData.s_controller_name = tplData.s_controller_name.trim();
+	tplData.t_controller_desc = tplData.t_controller_desc.trim();
 	
 	var formFields = {
-		controllerPid: tplData.controllerPid,
-		cAfterId: tplData.cAfterId,
-		controllerPath: tplData.controllerPath,
-		controllerName: tplData.controllerName
+		ui_controller_pid: tplData.ui_controller_pid,
+		ui_controller_after_id: tplData.ui_controller_after_id,
+		s_controller_path: tplData.s_controller_path,
+		s_controller_name: tplData.s_controller_name
 	};
 	
 	var validRules = {
-		controllerPid: 'required|numeric',
-		controllerPath: ['required','regex:/^\/([0-9a-zA-Z_-]+\/?)+$/'],
-		controllerName: 'required|min:3|max:100'
+		ui_controller_pid: 'required|numeric',
+		s_controller_path: ['required','regex:/^\/([0-9a-zA-Z_-]+\/?)+$/'],
+		s_controller_name: 'required|min:3|max:100'
 	};
 	
 	var validator = new ValidatorJs(formFields, validRules, {
-		"required.controllerPid": "Родитель не указан",
-		"numeric.controllerPid": "Родитель не указан",
+		"required.ui_controller_pid": "Родитель не указан",
+		"numeric.ui_controller_pid": "Родитель не указан",
 				
-		"required.controllerPath": "Путь указан не верно",
-		"regex.controllerPath": "Путь указан не верно",
+		"required.s_controller_path": "Путь указан не верно",
+		"regex.s_controller_path": "Путь указан не верно",
 		
-		"required.controllerName": "Название не верно указано",
-		"min.controllerName": "Название указано не верно",
-		"max.controllerName": "Название указано не верно",
+		"required.s_controller_name": "Название не верно указано",
+		"min.s_controller_name": "Название указано не верно",
+		"max.s_controller_name": "Название указано не верно",
 	});
 
 	
@@ -588,9 +796,9 @@ function controllerFormValidation(tplData, cb)
 	{
 		var inputErrors = new Errors.ValidationError('Ошибка при заполнении фомры');
 		
-		if(validator.errors.has('controllerPid'))     inputErrors.addError(new Errors.ValidationError(validator.errors.first('controllerPid'),'', 'controllerPid'));
-		if(validator.errors.has('controllerPath'))    inputErrors.addError(new Errors.ValidationError(validator.errors.first('controllerPath'),'', 'controllerPath'));
-		if(validator.errors.has('controllerName'))    inputErrors.addError(new Errors.ValidationError(validator.errors.first('controllerName'),'', 'controllerName'));
+		if(validator.errors.has('ui_controller_pid'))     inputErrors.addError(new Errors.ValidationError(validator.errors.first('ui_controller_pid'),'', 'ui_controller_pid'));
+		if(validator.errors.has('s_controller_path'))    inputErrors.addError(new Errors.ValidationError(validator.errors.first('s_controller_path'),'', 's_controller_path'));
+		if(validator.errors.has('s_controller_name'))    inputErrors.addError(new Errors.ValidationError(validator.errors.first('s_controller_name'),'', 's_controller_name'));
 		
 		return cb(inputErrors, tplData);
 	}

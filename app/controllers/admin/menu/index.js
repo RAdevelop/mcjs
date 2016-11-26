@@ -62,7 +62,7 @@ class Menu extends Base
 			{
 				throw err;
 			});
-	};
+	}
 
 	/**
 	* показываем страницу для меню по его id
@@ -88,14 +88,14 @@ class Menu extends Base
 		let {i_menu_id=null} = this.routeArgs;
 
 		if(!i_menu_id || i_menu_id <= 0)
-			throw new Errors.HttpError404();
+			throw new Errors.HttpError(404);
 
 		return this.getClass("menu").getById(i_menu_id)
 			.bind(this)
 			.then(function (mData)
 			{
 				if (!mData)
-					throw new Errors.HttpError404();
+					throw new Errors.HttpError(404);
 
 				tplData.menuId = mData["m_id"];
 				tplData.menuPid = mData["m_pid"];

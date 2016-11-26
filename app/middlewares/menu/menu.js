@@ -92,6 +92,17 @@ let menu = {
 		
 		m_id: null,m_pid: null,m_level: null,m_lk: null,m_rk: null,c_id: null
 	},
+	"/admin/controller":{
+		c_path: '/admin/controller',
+		m_path: '/admin/controller',
+		m_name: 'Контроллеры (роутеры) сайта',
+		m_title: 'Контроллеры (роутеры) сайта',
+		m_h1: 'Контроллеры (роутеры) сайта',
+		m_desc: 'Контроллеры (роутеры) сайта',
+		m_nbsp: '',
+
+		m_id: null,m_pid: null,m_level: null,m_lk: null,m_rk: null,c_id: null
+	},
 	/*
 	
 	"m_path":{

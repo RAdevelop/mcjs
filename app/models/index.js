@@ -1,6 +1,6 @@
 'use strict';
 /**
- * Created by RA on 20.07.2016.
+ * mysqldump --user=mc -p  mcjs > mc.sql --routines --events
  */
 
 const Path = require('path');
@@ -73,7 +73,6 @@ const Models = (function()
 
 					if (model && !_require.has(model))
 						_require.set(model,  require(file));
-
 				}
 				else
 				{
@@ -104,6 +103,7 @@ const Models = (function()
 		{
 			if (!_require.has(model))
 			{
+				//console.log("\n"+model);
 				_require.set(model, require('app/models/'+model) );
 			}
 			

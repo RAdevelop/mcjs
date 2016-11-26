@@ -1,7 +1,5 @@
 "use strict";
-/**
- * Created by RA on 07.02.2016.
- */
+
 //const IORedis = require('ioredis'); TODO может быть придется использовать для кеширования
 const BaseModel = require('app/lib/db');
 

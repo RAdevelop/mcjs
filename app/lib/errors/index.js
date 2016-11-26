@@ -76,69 +76,73 @@ errors.LimitExceeded = errors.helpers.generateClass("LimitExceeded", {
 errors.HttpError = errors.helpers.generateClass("HttpError", {
 	//extends: errors.HttpStatusError,
 	globalize: true,
-	args: ['status_code'],
+	args: ['status_code','message'],
 	generateMessage: function(){
+
 		this.status = (this.status_code ? this.status_code : 500);
 
+		let message = 'Internal Server Error'; //внутренняя ошибка сервера;
 		switch (this.status)
 		{
 			default:
 			case 500:
-				this.message = 'Internal Server Error'; //внутренняя ошибка сервера
 				break;
 
 			//4xx
 			case 400:
-				this.message = 'Bad request';
+				message = 'Bad request';
 				break;
 
 			case 401:
-				this.message = 'Unauthorized';
+				message = 'Unauthorized';
 				break;
 
 			case 403:
-				this.message = 'Forbidden';
+				message = 'Forbidden';
 				break;
 
 			case 404:
-				this.message = 'Not found';
+				message = 'Not found';
 				break;
 
 			//5xx
 			case 501:
-				this.message = 'Not Implemented';// не реализовано
+				message = 'Not Implemented';// не реализовано
 				break;
 			case 502:
-				this.message = 'Bad Gateway';// плохой, ошибочный шлюз
+				message = 'Bad Gateway';// плохой, ошибочный шлюз
 				break;
 			case 503:
-				this.message = 'Service Unavailable';//сервис недоступен
+				message = 'Service Unavailable';//сервис недоступен
 				break;
 			case 504:
-				this.message = 'Gateway Timeout';//шлюз не отвечает
+				message = 'Gateway Timeout';//шлюз не отвечает
 				break;
 			case 505:
-				this.message = 'HTTP Version Not Supported';//версия HTTP не поддерживается
+				message = 'HTTP Version Not Supported';//версия HTTP не поддерживается
 				break;
 			case 506:
-				this.message = 'Variant Also Negotiates';//вариант тоже проводит согласование
+				message = 'Variant Also Negotiates';//вариант тоже проводит согласование
 				break;
 			case 507:
-				this.message = 'Insufficient Storage';//переполнение хранилища.
+				message = 'Insufficient Storage';//переполнение хранилища.
 				break;
 			case 508:
-				this.message = 'Loop Detected';//обнаружено бесконечное перенаправление
+				message = 'Loop Detected';//обнаружено бесконечное перенаправление
 				break;
 			case 509:
-				this.message = 'Bandwidth Limit Exceeded';//исчерпана пропускная ширина канала.
+				message = 'Bandwidth Limit Exceeded';//исчерпана пропускная ширина канала.
 				break;
 			case 510:
-				this.message = 'Not Extended';//не расширено.
+				message = 'Not Extended';//не расширено.
 				break;
 			case 511:
-				this.message = 'Network Authentication Required';//требуется сетевая аутентификация
+				message = 'Network Authentication Required';//требуется сетевая аутентификация
 				break;
 		}
+
+		if (!this.message)
+			this.message = message;
 
 		return this.message;
 	}

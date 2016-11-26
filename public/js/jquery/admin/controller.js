@@ -1,47 +1,69 @@
 /**
  * Created by RA on 28.02.2016.
  */
-$(function()
+(function($)
 {
-	var $rmFormBody = $('#controllerMethodsFormBody');
-	var $rmAddForm = $('#rmAddForm');
-	var $rmName = $rmAddForm.find('#s_rm_method');
-	var $btnAddMethod = $rmAddForm.find('#btn_add_rm_method');
+	var $cmFormBody = $('#controllerMethodsFormBody');
+	var $cmAddForm = $('#cmAddForm');
+	var $cmName = $cmAddForm.find('#s_cm_method');
 	
-	function add_click(event)
+	$cmAddForm.postRes({btnId: 'btn_add_cmethod',
+		onSuccess: function($dialog, respData)
+		{
+			//console.log(respData);
+			$cmName.val('');
+
+			if ($cmFormBody.find('#cmDelForm'+respData['ui_cm_id']).length)
+				return true;
+
+			var methodForm = '<div class="col-md-3 ">' +
+				'<form id="cmDelForm'+respData['ui_cm_id']+'" class="form-inline" action="'+$cmAddForm.attr('action')+'" method="post">' +
+				'<input type="hidden" id="ui_controller_id" name="ui_controller_id" value="'+respData['ui_controller_id']+'"/>' +
+				'<input type="hidden" id="ui_cm_id" name="ui_cm_id" value="'+respData['ui_cm_id']+'"/>' +
+				'<div class="form-group col-sm-12">' + respData['s_cm_method'] +
+				' <button class="btn btn-primary btn-xs" type="button" name="btn_controller_save"  value="delete_method" style="float: right;">удалить</button>' +
+				'</div></form></div>';
+
+			$cmFormBody.find('.js-methodsList').prepend(methodForm);
+
+			return true;
+		}
+	});
+	
+	/*function add_click(event)
 	{
 		event.preventDefault();
 		
-		var formData = $rmAddForm.serialize();
+		var formData = $cmAddForm.serialize();
 		
 		$.ajax({
-				url: $rmAddForm.attr('action'),
+				url: $cmAddForm.attr('action'),
 				method: "POST",
 				data: formData,
 				dataType: "json"
 			})
 			.done(function(data)
 			{
-				if(data.formError.error == true)
+				if(respData['formError.error == true)
 				{
-					var $formHtml = $(data.html).find('#rmAddForm');
-					$rmAddForm.html($formHtml.html());
-					$rmAddForm.find('#btn_add_rm_method').bind('click', add_click);
+					var $formHtml = $(respData['html).find('#cmAddForm');
+					$cmAddForm.html($formHtml.html());
+					$cmAddForm.find('#btn_add_rm_method').bind('click', add_click);
 				}
 				else
 				{
-					$rmAddForm.find('.form-group').removeClass("has-error");
-					$rmAddForm.find('.formError').hide();
-					$rmName.val('');
+					$cmAddForm.find('.form-group').removeClass("has-error");
+					$cmAddForm.find('.formError').hide();
+					$cmName.val('');
 				var methodForm = '<div class="col-md-3 ">' +
-					'<form id="rmDelForm<%= method'+data.rmId+'" class="form-inline" action="<%= _reqOriginalUrl %>/method/del" method="post">' +
-					'<input type="hidden" id="i_controller_id" name="i_controller_id" value="'+data.controllerId+'"/>' +
-					'<input type="hidden" id="i_method_id" name="i_method_id" value="'+data.rmId+'"/>' +
+					'<form id="cmDelForm<%= method'+respData['cm_id+'" class="form-inline" action="<%= _reqOriginalUrl %>/method/del" method="post">' +
+					'<input type="hidden" id="i_controller_id" name="i_controller_id" value="'+respData['controllerId+'"/>' +
+					'<input type="hidden" id="i_method_id" name="i_method_id" value="'+respData['cm_id+'"/>' +
 					'<div class="form-group col-sm-12">' +
-					data.s_rm_method+' <button class="btn btn-primary btn-xs" type="button" name="btn_del_rm_method" id="btn_del_rm_method'+data.rmId+'" value="del" style="float: right;">удалить</button>' +
+					respData['s_cm_method+' <button class="btn btn-primary btn-xs" type="button" name="btn_del_cm_method" id="btn_del_cm_method'+respData['cm_id+'" value="del" style="float: right;">удалить</button>' +
 					'</div></form></div>';
 					
-					$rmFormBody.find('.methodsList').prepend(methodForm);
+					$cmFormBody.find('.js-methodsList').prepend(methodForm);
 				}
 			})
 			.fail(function(data)
@@ -50,21 +72,17 @@ $(function()
 			}
 		);
 		return false;
-	}
-	
-	$btnAddMethod.click(add_click);
+	}*/
 	
 	//Delete action
 	
-	var $btnDelMethod = $('button[name="btn_del_rm_method"]');
-	var $formDelMethod;
-	$btnDelMethod.click(function(event)
+	var $btnDelMethod = $('button[name="btn_del_cm_method"]');
+	var $formDelMethod = $cmFormBody.find('form[id^="cmDelForm"]'); //начинается с cmDelForm
+	$btnDelMethod.submit(function(event)
 	{
 		event.preventDefault();
-		
-		$formDelMethod = $(this).closest('form[id^="rmDelForm"]'); //начинается с rmDelForm 
-		
-		var formData = $formDelMethod.serialize();
+		var $self = $(this);
+		var formData = $self.serialize();
 		
 		$.ajax({
 				url: $formDelMethod.attr('action'),
@@ -74,9 +92,9 @@ $(function()
 			})
 			.done(function(data)
 			{				
-				if(!data.formError.error)
+				if(!respData['formError.error'])
 				{
-					$formDelMethod.parent().remove();
+					$self.parent().remove();
 				}
 			})
 			.fail(function(data)
@@ -87,4 +105,4 @@ $(function()
 		
 		return false;
 	});
-});
+})(jQuery);

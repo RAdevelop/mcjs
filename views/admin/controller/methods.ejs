@@ -1,53 +1,52 @@
-<div class="panel panel-default">
-    <div class="panel-heading" role="tab" id="controllerMethodsForm">
-        <h4 class="panel-title">
-            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordionRouter" href="#controllerMethodsFormBody" aria-expanded="false" aria-controls="controllerMethodsFormBody">Методы роутера</a>
-        </h4>
-    </div>
-    <div id="controllerMethodsFormBody" class="panel-collapse collapse" role="tabpanel" aria-labelledby="controllerMethodsForm">
-        <div class="panel-body">
-            <div class="col-sm-12">
-            <form id="rmAddForm" class="form-inline" action="<%= _reqOriginalUrl %>/method/add" method="post">
-                <input type="hidden" id="i_controller_id" name="i_controller_id" value="<%= controllerId %>"/>
-                <div class="form-group <%=(formError.fields['s_rm_method'] ? ' has-error ' : '')%>>">
-                    <label for="s_rm_method">Имя метода</label>
+<div id="controllerMethodsFormBody" class="row">
+    <p>при создании нового метода обязательно добавить в процедуру привязку этого метода в группе админов+m_id</p>
+    <p>доступ пользователя будет определяться по:</p>
+    <p>ug_id (id группы юзеров), m_id (id меню), c_id (id контроллера), cm_id (id метода)</p>
+    <p>для установки прав сделать отдельный интерфейс</p>
+    <p>логика наверное такая (поиск по m_id + cm_method!?!?!):</p>
+    <ul>
+        <li>выбрать все группы, в которых состоит пользователь (ug_id)</li>
+        <li>для каждой группы получить данные о том, для каких (m_id, c_id, cm_id, cm_method) есть связь с какой-либо группой, в которой состоит пользователь</li>
+        <li>и если в итоге найдена запись для u_id, m_id, cm_method (cm_id), значит разрешаем это действие пользователю</li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li>а может стоит методы именовать так:</li>
+        <li>get_index, post_index</li>
+        <li>get_edit, post_edit и так далее</li>
+        <li>тогда по http методам (GET, POST) сможем получать на что пришел запрос/действие, и проверять права на это действие для текущего пунтка меню и пользователя</li>
+        <li></li>
+    </ul>
+    <div class="panel-body">
+        <div class="col-sm-12">
+            <form id="cmAddForm" class="form-inline" action="<%= _reqOriginalUrl %>/" method="post">
+                <input type="hidden" id="ui_controller_id" name="ui_controller_id" value="<%= ui_controller_id %>"/>
+                <div class="form-group s_cm_method">
+                    <label for="s_cm_method">Имя метода</label>
                     <div class="input-group">
-                        <input type="text" class="form-control" id="s_rm_method" name="s_rm_method" value="<%= s_rm_method %>" maxlength="33" required placeholder="Имя метода"/>
-                        <div class="input-group-addon">примеры: add | edit | view</div>
+                        <input type="text" class="form-control" id="s_cm_method" name="s_cm_method" value="<%= s_cm_method %>" maxlength="33" required placeholder="Имя метода"/>
+                        <div class="input-group-addon">примеры: post_add | get_edit | get_index</div>
                     </div>
                 </div>
-                <button class="btn btn-primary" type="button" name="btn_add_rm_method" id="btn_add_rm_method" value="add">Добавить</button>
-                <% if(formError.error) {%>
-                <div class="formError form-group has-error">
-                    <div class="form-control"><%= formError.message %> <% for (var f in  formError.fields){ if(!formError.fields[f]) continue; %><%=formError.fields[f] %>;<% } %></div>
-                </div>
-                <% } %>
+                <input type="hidden" name="btn_controller_save" value="add_method" />
+                <button class="btn btn-primary" type="button" name="btn_add_cmethod" id="btn_add_cmethod" value="add">Добавить</button>
             </form>
+        </div>
+        <hr />
+        <h5>Список методов:</h5>
+        <div class="row js-methodsList">
+            <% methodsList.forEach(function(method){ %>
+            <div class="col-md-3 " style="border: 1px solid red;">
+                <form id="cmDelForm<%= method["cm_id"] %>" class="form-inline" action="<%= _reqOriginalUrl %>/" method="post">
+                    <input type="hidden" id="ui_controller_id" name="ui_controller_id" value="<%= ui_controller_id %>"/>
+                    <input type="hidden" id="ui_cm_method_id" name="ui_cm_method_id" value="<%= method["cm_id"] %>"/>
+                    <input type="hidden" name="btn_controller_save" value="delete_method" />
+                    <div class="form-group col-sm-12">
+                        <%= method["cm_method"] %> <button class="btn btn-primary btn-xs" type="button" name="btn_del_cm_method" id="btn_del_cm_method<%= method["cm_id"] %>" value="del" style="float: right;">удалить</button>
+                    </div>
+                </form>
             </div>
-            
-            <hr />
-            <div class="alert alert-danger" role="alert"> <strong>Oh snap!</strong> Change a few things up and try submitting again. </div>
-
-            <div class="alert alert-danger alert-dismissible" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <strong>Warning!</strong> Better check yourself, you're not looking too good.
-            </div>
-            
-            <h5>Список методов:</h5>
-            <div class="row methodsList">
-                <% methodsList.forEach(function(method, i){%>
-                <div class="col-md-3 " style="border: 1px solid red;">
-                    <form id="rmDelForm<%= method["rm_id"] %>" class="form-inline" action="<%= _reqOriginalUrl %>/method/del" method="post">
-                        <input type="hidden" id="i_controller_id" name="i_controller_id" value="<%= controllerId %>"/>
-                        <input type="hidden" id="i_method_id" name="i_method_id" value="<%= method["rm_id"] %>"/>
-                        <div class="form-group col-sm-12">
-                            <%= method["rm_method"] %> <button class="btn btn-primary btn-xs" type="button" name="btn_del_rm_method" id="btn_del_rm_method<%= method["rm_id"] %>" value="del" style="float: right;">удалить</button>
-                        </div>
-                    </form>
-                </div>
-                <% }) %>
-            </div>
-            </div>
+            <% }) %>
         </div>
     </div>
 </div>

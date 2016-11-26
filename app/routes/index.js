@@ -35,14 +35,14 @@ module.exports = function(Classes, Control)
 	router.use('/admin*', UserIsAuth);
 	
 	//router.use('/admin/menu', require('app/routes/admin/menu'));//TODO переписать на контроллеры
-	router.use('/admin/controller', require('app/routes/admin/controller')); //TODO переписать на контроллеры
+	//router.use('/admin/controller', require('app/routes/admin/controller')); //TODO переписать на контроллеры
 	
 	/*****************************************************/
 	
 	//GET home page.
 	
 	//именно после верхних роутеров, которых нет в меню (в БД)
-	
+	//TODO наверное после '*', добавить миддле варе для проверки прав юзера у текущего пункта меню
 	router.all('*', function(req, res, next)
 	{
 

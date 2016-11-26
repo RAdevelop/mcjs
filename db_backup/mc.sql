@@ -1,8 +1,8 @@
--- MySQL dump 10.16  Distrib 10.1.14-MariaDB, for osx10.11 (x86_64)
+-- MySQL dump 10.16  Distrib 10.1.19-MariaDB, for osx10.11 (x86_64)
 --
--- Host: localhost    Database: mcjs
+-- Host: mcjs    Database: mcjs
 -- ------------------------------------------------------
--- Server version	10.1.14-MariaDB
+-- Server version	10.1.19-MariaDB
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -80,7 +80,7 @@ CREATE TABLE `album_image` (
 
 LOCK TABLES `album_image` WRITE;
 /*!40000 ALTER TABLE `album_image` DISABLE KEYS */;
-INSERT INTO `album_image` VALUES (1,1,1,1471983315,1471983317,NULL,NULL,'','/user/photo/0/1/1/6512bd43d9caa6e02c990b0a82652dca',6,'_gp_2126.gallery_full_top_fullscreen.jpg',0),(2,2,1,1471983496,1471983499,NULL,NULL,'','/user/photo/0/2/2/b6d767d2f8ed5d21a44b0e5886680cb9',12,'26-dani-pedrosa-esp_gp_3449.gallery_full_top_fullscreen.jpg',0),(3,2,1,1471983496,1471983499,NULL,NULL,'','/user/photo/0/2/3/37693cfc748049e45d87b8c7d8b9aacd',11,'25-maverick-vinales-esp_gp_3613.gallery_full_top_fullscreen.jpg',0),(4,2,1,1471983496,1471983499,NULL,NULL,'','/user/photo/0/2/4/1ff1de774005f8da13f42943881c655f',10,'29-andrea-iannone-ita-46-valentino-rossi-ita_gp_3090.gallery_full_top_fullscreen.jpg',0),(8,4,1,1471983631,1471983634,NULL,NULL,'','/user/photo/0/4/8/642e92efb79421734881b53e1e1b18b6',10,'93-marc-marquez-esp_gp_4858.gallery_full_top_fullscreen.jpg',0),(9,4,1,1471983631,1471983635,NULL,NULL,'','/user/photo/0/4/9/f457c545a9ded88f18ecee47145a72c0',8,'99-jorge-lorenzo-esp_5n27532.gallery_full_top_fullscreen.jpg',0),(10,4,1,1471983631,1471983634,NULL,NULL,'','/user/photo/0/4/10/1068c6e4c8051cfd4e9ea8072e3189e2',9,'99-jorge-lorenzo-esp_gp_3592_0.gallery_full_top_fullscreen.jpg',0),(11,4,1,1471985839,1471985840,NULL,NULL,'','/user/photo/0/4/11/17d63b1625c816c22647a73e1482372b',7,'vertical.jpg',0),(12,4,1,1472020026,1472020031,NULL,NULL,'','/user/photo/0/4/12/b9228e0962a78b84f3d5d92f4faa000b',3,'25-maverick-vinales-esp_gp_3613.gallery_full_top_fullscreen.jpg',0),(13,4,1,1472020026,1472020031,NULL,NULL,'','/user/photo/0/4/13/0deb1c54814305ca9ad266f53bc82511',5,'29-andrea-iannone-ita-46-valentino-rossi-ita_gp_3090.gallery_full_top_fullscreen.jpg',0),(14,4,1,1472020026,1472020031,NULL,NULL,'','/user/photo/0/4/14/66808e327dc79d135ba18e051673d906',4,'46-valentino-rossi-ita_5n27825.gallery_full_top_fullscreen.jpg',0),(15,4,1,1472020026,1472020031,NULL,NULL,'','/user/photo/0/4/15/42e7aaa88b48137a16a1acd04ed91125',6,'45-scott-redding-eng_gp_0163.gallery_full_top_fullscreen.jpg',0),(16,4,1,1472020026,1472020031,NULL,NULL,'','/user/photo/0/4/16/8fe0093bb30d6f8c31474bd0764e6ac0',2,'26-dani-pedrosa-esp_gp_3449.gallery_full_top_fullscreen.jpg',0),(17,4,1,1472020410,1472020414,55.97101972,37.25511169,'','/user/photo/0/4/17/41ae36ecb9b3eee609d05b90c14222fb',1,'IMG_20160613_194702.jpg',0),(18,4,1,1472729714,1472729715,NULL,NULL,'','/user/photo/0/4/18/d1f255a373a3cef72e03aa9d980c7eca',0,'vertical.jpg',0),(19,2,1,1473116771,1473116771,NULL,NULL,'','/user/photo/0/2/19/c0e190d8267e36708f955d7ab048990d',8,'Русский Форсаж.jpg',0),(20,1,1,1473116797,1473116804,55.97101972,37.25511169,'','/user/photo/0/1/20/da4fb5c6e93e74d3df8527599fa62642',5,'IMG_20160613_194702.jpg',0),(21,1,1,1473159422,1473159423,NULL,NULL,'','/user/photo/0/1/21/4c56ff4ce4aaf9573aa5dff913df997a',4,'motogp.jpg',0),(22,2,1,1473409631,1473409632,NULL,NULL,'alert(\"RA\");alert(\"AD\");','/user/photo/0/2/22/bcbe3365e6ac95ea2c0343a2395834dd',9,'N8AbgYhfPGI.jpg',0),(23,2,1,1473409631,1473409636,55.97101972,37.25511169,'','/user/photo/0/2/23/115f89503138416a242f40fb7d7f338e',7,'IMG_20160613_194702.jpg',0),(24,1,1,1473531121,1473531123,NULL,NULL,'','/user/photo/0/1/24/c8ffe9a587b126f152ed3d89a146b445',3,'99-jorge-lorenzo-esp_gp_3592_0.gallery_full_top_fullscreen.jpg',0),(25,2,1,1473532485,1473532488,NULL,NULL,'','/user/photo/0/2/25/d1c38a09acc34845c6be3a127a5aacaf',6,'_gp_2126.gallery_full_top_fullscreen.jpg',0),(26,2,1,1473532485,1473532488,NULL,NULL,'','/user/photo/0/2/26/9cfdf10e8fc047a44b08ed031e1f0ed1',5,'_gp_5790_e.gallery_full_top_fullscreen.jpg',0),(28,2,1,1473764363,1473764364,NULL,NULL,'','/user/photo/0/2/28/74db120f0a8e5646ef5a30154e9f6deb',4,'banda.jpg',0),(31,2,1,1473764888,1473764888,NULL,NULL,'','/user/photo/0/2/31/9b04d152845ec0a378394003c96da594',2,'vertical.jpg',0),(32,1,1,1473858657,1473858659,NULL,NULL,'','/user/photo/0/1/32/65ded5353c5ee48d0b7d48c591b8f430',2,'vetal_sega.jpg',0),(34,2,1,1473865023,1473865025,NULL,NULL,'sdf','/user/photo/0/2/34/289dff07669d7a23de0ef88d2f7129e7',3,'99-jorge-lorenzo-esp_5n27532.gallery_full_top_fullscreen.jpg',0),(35,1,1,1473865047,1473865049,NULL,NULL,'','/user/photo/0/1/35/7f1de29e6da19d22b51c68001e7e0e54',1,'46-valentino-rossi-ita_5n27825.gallery_full_top_fullscreen.jpg',0),(36,2,1,1473885968,1473885970,NULL,NULL,'','/user/photo/0/2/36/01161aaa0b6d1345dd8fe4e481144d84',0,'vetal_sega.jpg',0),(37,1,1,1473886058,1473886060,NULL,NULL,'','/user/photo/0/1/37/3988c7f88ebcb58c6ce932b957b6f332',0,'99-jorge-lorenzo-esp_5n27532.gallery_full_top_fullscreen.jpg',1),(38,2,1,1476111546,1476111547,NULL,NULL,'x','/user/photo/0/2/38/ac1dd209cbcc5e5d1c6e28598e8cbbe8',1,'_gp_5790_e.gallery_full_top_fullscreen.jpg',0);
+INSERT INTO `album_image` VALUES (1,1,1,1471983315,1471983317,NULL,NULL,'','/user/photo/0/1/1/6512bd43d9caa6e02c990b0a82652dca',6,'_gp_2126.gallery_full_top_fullscreen.jpg',0),(2,2,1,1471983496,1471983499,NULL,NULL,'','/user/photo/0/2/2/b6d767d2f8ed5d21a44b0e5886680cb9',12,'26-dani-pedrosa-esp_gp_3449.gallery_full_top_fullscreen.jpg',0),(3,2,1,1471983496,1471983499,NULL,NULL,'','/user/photo/0/2/3/37693cfc748049e45d87b8c7d8b9aacd',11,'25-maverick-vinales-esp_gp_3613.gallery_full_top_fullscreen.jpg',0),(4,2,1,1471983496,1471983499,NULL,NULL,'','/user/photo/0/2/4/1ff1de774005f8da13f42943881c655f',10,'29-andrea-iannone-ita-46-valentino-rossi-ita_gp_3090.gallery_full_top_fullscreen.jpg',0),(8,4,1,1471983631,1471983634,NULL,NULL,'','/user/photo/0/4/8/642e92efb79421734881b53e1e1b18b6',10,'93-marc-marquez-esp_gp_4858.gallery_full_top_fullscreen.jpg',0),(9,4,1,1471983631,1471983635,NULL,NULL,'','/user/photo/0/4/9/f457c545a9ded88f18ecee47145a72c0',8,'99-jorge-lorenzo-esp_5n27532.gallery_full_top_fullscreen.jpg',0),(10,4,1,1471983631,1471983634,NULL,NULL,'','/user/photo/0/4/10/1068c6e4c8051cfd4e9ea8072e3189e2',9,'99-jorge-lorenzo-esp_gp_3592_0.gallery_full_top_fullscreen.jpg',0),(11,4,1,1471985839,1471985840,NULL,NULL,'','/user/photo/0/4/11/17d63b1625c816c22647a73e1482372b',7,'vertical.jpg',0),(12,4,1,1472020026,1472020031,NULL,NULL,'','/user/photo/0/4/12/b9228e0962a78b84f3d5d92f4faa000b',3,'25-maverick-vinales-esp_gp_3613.gallery_full_top_fullscreen.jpg',0),(13,4,1,1472020026,1472020031,NULL,NULL,'','/user/photo/0/4/13/0deb1c54814305ca9ad266f53bc82511',5,'29-andrea-iannone-ita-46-valentino-rossi-ita_gp_3090.gallery_full_top_fullscreen.jpg',0),(14,4,1,1472020026,1472020031,NULL,NULL,'','/user/photo/0/4/14/66808e327dc79d135ba18e051673d906',4,'46-valentino-rossi-ita_5n27825.gallery_full_top_fullscreen.jpg',0),(15,4,1,1472020026,1472020031,NULL,NULL,'','/user/photo/0/4/15/42e7aaa88b48137a16a1acd04ed91125',6,'45-scott-redding-eng_gp_0163.gallery_full_top_fullscreen.jpg',0),(16,4,1,1472020026,1472020031,NULL,NULL,'','/user/photo/0/4/16/8fe0093bb30d6f8c31474bd0764e6ac0',2,'26-dani-pedrosa-esp_gp_3449.gallery_full_top_fullscreen.jpg',0),(17,4,1,1472020410,1472020414,55.97101972,37.25511169,'','/user/photo/0/4/17/41ae36ecb9b3eee609d05b90c14222fb',0,'IMG_20160613_194702.jpg',0),(18,4,1,1472729714,1472729715,NULL,NULL,'','/user/photo/0/4/18/d1f255a373a3cef72e03aa9d980c7eca',1,'vertical.jpg',0),(19,2,1,1473116771,1473116771,NULL,NULL,'','/user/photo/0/2/19/c0e190d8267e36708f955d7ab048990d',8,'Русский Форсаж.jpg',0),(20,1,1,1473116797,1473116804,55.97101972,37.25511169,'','/user/photo/0/1/20/da4fb5c6e93e74d3df8527599fa62642',5,'IMG_20160613_194702.jpg',0),(21,1,1,1473159422,1473159423,NULL,NULL,'','/user/photo/0/1/21/4c56ff4ce4aaf9573aa5dff913df997a',4,'motogp.jpg',0),(22,2,1,1473409631,1473409632,NULL,NULL,'alert(\"RA\");alert(\"AD\");','/user/photo/0/2/22/bcbe3365e6ac95ea2c0343a2395834dd',9,'N8AbgYhfPGI.jpg',0),(23,2,1,1473409631,1473409636,55.97101972,37.25511169,'','/user/photo/0/2/23/115f89503138416a242f40fb7d7f338e',7,'IMG_20160613_194702.jpg',0),(24,1,1,1473531121,1473531123,NULL,NULL,'','/user/photo/0/1/24/c8ffe9a587b126f152ed3d89a146b445',3,'99-jorge-lorenzo-esp_gp_3592_0.gallery_full_top_fullscreen.jpg',0),(25,2,1,1473532485,1473532488,NULL,NULL,'','/user/photo/0/2/25/d1c38a09acc34845c6be3a127a5aacaf',6,'_gp_2126.gallery_full_top_fullscreen.jpg',0),(26,2,1,1473532485,1473532488,NULL,NULL,'','/user/photo/0/2/26/9cfdf10e8fc047a44b08ed031e1f0ed1',5,'_gp_5790_e.gallery_full_top_fullscreen.jpg',0),(28,2,1,1473764363,1473764364,NULL,NULL,'','/user/photo/0/2/28/74db120f0a8e5646ef5a30154e9f6deb',4,'banda.jpg',0),(31,2,1,1473764888,1473764888,NULL,NULL,'','/user/photo/0/2/31/9b04d152845ec0a378394003c96da594',2,'vertical.jpg',0),(32,1,1,1473858657,1473858659,NULL,NULL,'','/user/photo/0/1/32/65ded5353c5ee48d0b7d48c591b8f430',2,'vetal_sega.jpg',0),(34,2,1,1473865023,1473865025,NULL,NULL,'sdf','/user/photo/0/2/34/289dff07669d7a23de0ef88d2f7129e7',3,'99-jorge-lorenzo-esp_5n27532.gallery_full_top_fullscreen.jpg',0),(35,1,1,1473865047,1473865049,NULL,NULL,'','/user/photo/0/1/35/7f1de29e6da19d22b51c68001e7e0e54',1,'46-valentino-rossi-ita_5n27825.gallery_full_top_fullscreen.jpg',0),(36,2,1,1473885968,1473885970,NULL,NULL,'','/user/photo/0/2/36/01161aaa0b6d1345dd8fe4e481144d84',0,'vetal_sega.jpg',0),(37,1,1,1473886058,1473886060,NULL,NULL,'','/user/photo/0/1/37/3988c7f88ebcb58c6ce932b957b6f332',0,'99-jorge-lorenzo-esp_5n27532.gallery_full_top_fullscreen.jpg',1),(38,2,1,1476111546,1476111547,NULL,NULL,'x','/user/photo/0/2/38/ac1dd209cbcc5e5d1c6e28598e8cbbe8',1,'_gp_5790_e.gallery_full_top_fullscreen.jpg',0);
 /*!40000 ALTER TABLE `album_image` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -140,6 +140,55 @@ LOCK TABLES `controllers` WRITE;
 /*!40000 ALTER TABLE `controllers` DISABLE KEYS */;
 INSERT INTO `controllers` VALUES (1,0,'/admin','Админ стартовая страница','Админ стартовая страница',1,17,22),(4,1,'/admin/router','Роутер','Роутер стартовая страница',2,20,21),(5,1,'/admin/menu','Меню сайта','Меню сайта',2,18,19),(6,0,'/news','Новости','Новости',1,15,16),(7,0,'/blog','Блог','Блог',1,13,14),(8,0,'/events','События','События',1,11,12),(9,0,'/chat','Чат','Чат',1,9,10),(10,0,'/mototreki','МотоТреки','МотоТреки',1,7,8),(11,0,'/motoshop','МотоСалоны','МотоСалоны',1,5,6),(12,0,'/admoto','Объявления','Объявления',1,3,4),(13,0,'/user','Пользователи','Пользователи',1,1,2);
 /*!40000 ALTER TABLE `controllers` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `controllers_methods`
+--
+
+DROP TABLE IF EXISTS `controllers_methods`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `controllers_methods` (
+  `cm_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
+  `cm_method` varchar(33) NOT NULL,
+  PRIMARY KEY (`cm_id`),
+  UNIQUE KEY `method` (`cm_method`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `controllers_methods`
+--
+
+LOCK TABLES `controllers_methods` WRITE;
+/*!40000 ALTER TABLE `controllers_methods` DISABLE KEYS */;
+INSERT INTO `controllers_methods` VALUES (2,'add'),(3,'delete'),(5,'postadd'),(6,'post_add'),(4,'update'),(1,'view');
+/*!40000 ALTER TABLE `controllers_methods` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `controllers_vs_methods`
+--
+
+DROP TABLE IF EXISTS `controllers_vs_methods`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `controllers_vs_methods` (
+  `c_id` smallint(5) unsigned NOT NULL,
+  `cm_id` smallint(5) unsigned NOT NULL,
+  PRIMARY KEY (`c_id`,`cm_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `controllers_vs_methods`
+--
+
+LOCK TABLES `controllers_vs_methods` WRITE;
+/*!40000 ALTER TABLE `controllers_vs_methods` DISABLE KEYS */;
+INSERT INTO `controllers_vs_methods` VALUES (1,1),(1,2),(1,3),(1,4),(1,5),(1,6);
+/*!40000 ALTER TABLE `controllers_vs_methods` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -453,7 +502,7 @@ CREATE TABLE `motoshop` (
   PRIMARY KEY (`mts_id`),
   KEY `mts_show` (`mts_show`),
   KEY `mts_name` (`mts_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -462,7 +511,7 @@ CREATE TABLE `motoshop` (
 
 LOCK TABLES `motoshop` WRITE;
 /*!40000 ALTER TABLE `motoshop` DISABLE KEYS */;
-INSERT INTO `motoshop` VALUES (2,'MegaMoto','megamoto','megamoto.ru','moto@megamoto.ru','<p>Мегамото &ndash; один из самых популярных мотосалонов Москвы по продаже новой и б/у мототехники. Наш салон успешно работает с 2006 года. Мы специализируемся на продаже мототехники различных популярных марок - Ducati, Harley-Davidson, BigDog, Aprilia, Honda, Kawasaki, Yamaha, Suzuki, BMW которую у нас можно купить очень выгодно. Все мотоциклы полносильные и без пробега по России. Всегда в наличии новые скутера, экипировка, мотошлемы, масла, расходники, аккумуляторы и аксессуары, а также мотозапчасти и тюнинг. Вся мототехника прошла 100% таможенную очистку и предпродажную подготовку и имеют полный пакет документов для постановки на учет в ГИББД Р.Ф. Мотосалон б/у модели в Москве реализует с технической гарантией! Японский аукцион мотоциклов позволяет воплотить в реальность!</p>',1477768677,1477775884,1,0,0),(3,'SagaMoto','sagamoto','sagamoto.by','sagamoto@tut.by','<p>Компания &laquo;SagaMoto&raquo; является одним из крупнейших поставщиков мототехники в Республику Беларусь, которая осуществляет продажи скутеров, мопедов макси скутеров, мотоциклов с 2006 года. Компания зарекомендовала себя надежным и удобным поставщиком, предоставляющая только качественную технику из Японии и Китая.</p>\r\n<p>В настоящий момент наши магазины находятся в Минске, Гомеле, Слуцке, Бобруйске, Молодечно. В наших магазинах вашему вниманию предлагается большой выбор скутеров с пробегом (б/у скутеров) и новых скутеров, макси скутеров, мотоциклов и другой техники, регулярно поставляемой напрямую из Японии.</p>\r\n<p>Мы предлагаем:</p>\r\n<ul>\r\n<li>Скутеры новые и с пробегом</li>\r\n<li>Максискутеры новые и с пробегом</li>\r\n<li>Мотоциклы</li>\r\n<li>Квадроциклы</li>\r\n<li>Шлемы</li>\r\n<li>Мотоперчатки</li>\r\n<li>Защита</li>\r\n<li>Продажа мотозапчастей</li>\r\n<li>Покупка в кредит</li>\r\n</ul>',1477769711,1477775876,1,0,0),(4,'Grancom','grancom','grancom.by','sale@grancom.by','<p>Наша миссия - лидерство на рынке продаж японкой мототехники, профессиональное представление интересов инвесторов и удовлетворение всех участников проектов от заказчиков до конечных пользователей.</p>\r\n<p>Основными направлениями деятельности компании являются:</p>\r\n<ul>\r\n<li>оптовая и розничная торговля мототехникой и запасными частями ведущих мировых производителей;</li>\r\n<li>оказание услуг и выполнение ремонтных работ японской мототехники (консультирование, диагностика, ремонт, консервация, тюнинг);</li>\r\n<li>оптовая и розничная торговля спортивной одеждой и обувью для волейбола, чирлидинга и спортивных танцев ведущих мировых производителей;</li>\r\n</ul>\r\n<p>Мы предлагаем:</p>\r\n<ul>\r\n<li>Мототехнику</li>\r\n<li>Квадроциклы</li>\r\n<li>Мотоаксессуары</li>\r\n<li>Мотоэкипировку</li>\r\n<li>Запасные части</li>\r\n<li>А так же товары для спорта и активного отдыха.</li>\r\n</ul>',1477769929,1477775870,1,0,0),(5,'MotoMir-V','motomir-v','www.motomir-v.ru','motomir1@akicompany.ru','<p>&laquo;МОТОМИР&raquo; является официальным дилером брендов Kawasaki, Arctic Cat, ABM. Осуществляет полный комплекс услуг, связанный с сервисным, гарантийным и послегарантийным обслуживанием квадроциклов Arctic Cat, ABM, Honda, Kymco, гидроциклов Kawasaki, квадроциклов и скутеров Stels, мотоциклов Kawasaki, Patron, Kymco.</p>\r\n<p>В салонах &laquo;МОТОМИР&raquo; представлен широкий модельный ряд аксессуаров, экипировки и запчастей.</p>\r\n<p>В каждом магазине-салоне постоянно действуют спецпредложения, с помощью которых у Вас есть прекрасная возможность купить модели представленных мировых брендов по выгодной цене.</p>',1477770228,1477775863,1,0,0),(6,'Mr.Moto','mrmoto','mr-moto.ru','mrmoto@mail.ru','<p>Компания Mr.Moto основана в 1998 году мотоциклистами для мотоциклистов. В мотосалоне предоставлен большой выбор мотоциклов с крупнейших японских и американских аукционов. Покупая у нас мотоцикл, Вы получаете двухнедельную гарантию без ограничения пробега, а также возможность обслуживать мотоцикл в нашем сервисе, с широкой программой скидок. В отделе запчастей и аксессуаров консультанты помогут вам подобрать необходимые запчасти, у вас не возникнет необходимости заказывать расходные материалы.</p>',1477771778,1478121383,1,0,0),(7,'ProRacing','proracing','proracing.su','service@proracing.su','<p>Мотосервис &laquo;PRORACING&raquo; - это сеть профессиональных тех-центров в Москве по обслуживанию и ремонту мотоциклов и мототехники. Наша специализация &ndash; ремонт, техническое обслуживание и покраска мотоциклов, квадроциклов, мотовездеходов, ATV и UTV, снегоходов и макси скутеров.</p>\r\n<p>Наши мото сервисы проводят все виды работ по ремонту мототехники и располагают для этого всем необходимым оборудованием: профессиональный инструмент, подъемники, компьютерный диагностический комплекс, покрасочные камеры, парк специализированных мотоэвакуаторов.</p>',1477905936,1477905936,1,0,0),(8,'Мото31','moto31','moto31.ru','sale@moto31.ru','<p>Мотомагазин &laquo;Мото31&raquo; предлагает купить в Белгороде мото-шлемы, экипировку, мотозапчасти, тюнинг на мотоцикл. В интернет-магазине &laquo;Мото31&raquo; широко представлены мотоциклы б.у. из Японии, в том числе марок: Honda, Yamaha, Kawasaki, Suzuki. Все мотоциклы, поступившие в Белгород, прошли предпродажную подготовку и готовы к эксплуатации в Белгороде и Белгородской области.</p>\r\n<p>Наш мото-салон готов предложить в Белгороде и различные виды мото-товаров. И начинающий мотоциклист и уже состоявшиеся байкеры Белгорода найдут для себя любые мотозапчасти и аксессуары на мотоцикл. Если Вы любите мотокросс и свой внедорожный мотоцикл, тоже останетесь довольны нашим ассортиментом тюнинга в Белгороде.</p>\r\n<p>В мотомагазине &laquo;Мото31&raquo; в Белгороде Вы можете купить такие товары как: мото-масла, масло в вилку, мотошины, мото-наклейки, мото-ручки, мото-сальники вилки, аккумуляторы, свечи, фильтры, смазка цепи, оригинальные запчасти для мотоциклов Honda, Suzuki, Kawasaki, Yamaha, грузики руля, зеркала, подножки. Если Вам понравилась предлагаемая нами моторезина, позвоните в наш мотомагазин в Белгороде.</p>',1478639124,1478639124,1,0,0),(9,'BikeMoto','bikemoto','bikemoto.ru','info@bikemoto.ru','<p>Сотрудники мотосалона &laquo;Байкмото&raquo; &mdash; бывшие спортсмены и просто увлеченные мотоциклами люди, в повседневной жизни эксплуатирующие мототехнику. Поэтому в &laquo;Байкмото&raquo; очень хорошо понимают нужды и потребности единомышленников-мотоциклистов.</p>\r\n<p>Мотосервис &laquo;БайкМото&raquo; предоставляет полный спектр услуг по ремонту и обслуживанию мототехники:</p>\r\n<ul>\r\n<li>хранение мотоциклов</li>\r\n<li>диагностика</li>\r\n<li>техническое обслуживание</li>\r\n<li>локальный ремонт</li>\r\n<li>предпродажная подготовка</li>\r\n<li>покраска и аэрография</li>\r\n<li>тюнинг мотоциклов</li>\r\n<li>сборка мотоциклов по индивидуальному заказу (кастомайзинг)</li>\r\n<li>и многое другое&hellip;</li>\r\n</ul>',1479243081,1479243081,1,1,1);
+INSERT INTO `motoshop` VALUES (2,'MegaMoto','megamoto','megamoto.ru','moto@megamoto.ru','<p>Мегамото &ndash; один из самых популярных мотосалонов Москвы по продаже новой и б/у мототехники. Наш салон успешно работает с 2006 года. Мы специализируемся на продаже мототехники различных популярных марок - Ducati, Harley-Davidson, BigDog, Aprilia, Honda, Kawasaki, Yamaha, Suzuki, BMW которую у нас можно купить очень выгодно. Все мотоциклы полносильные и без пробега по России. Всегда в наличии новые скутера, экипировка, мотошлемы, масла, расходники, аккумуляторы и аксессуары, а также мотозапчасти и тюнинг. Вся мототехника прошла 100% таможенную очистку и предпродажную подготовку и имеют полный пакет документов для постановки на учет в ГИББД Р.Ф. Мотосалон б/у модели в Москве реализует с технической гарантией! Японский аукцион мотоциклов позволяет воплотить в реальность!</p>',1477768677,1477775884,1,0,0),(5,'MotoMir-V','motomir-v','www.motomir-v.ru','motomir1@akicompany.ru','<p>&laquo;МОТОМИР&raquo; является официальным дилером брендов Kawasaki, Arctic Cat, ABM. Осуществляет полный комплекс услуг, связанный с сервисным, гарантийным и послегарантийным обслуживанием квадроциклов Arctic Cat, ABM, Honda, Kymco, гидроциклов Kawasaki, квадроциклов и скутеров Stels, мотоциклов Kawasaki, Patron, Kymco.</p>\r\n<p>В салонах &laquo;МОТОМИР&raquo; представлен широкий модельный ряд аксессуаров, экипировки и запчастей.</p>\r\n<p>В каждом магазине-салоне постоянно действуют спецпредложения, с помощью которых у Вас есть прекрасная возможность купить модели представленных мировых брендов по выгодной цене.</p>',1477770228,1477775863,1,0,0),(6,'Mr.Moto','mrmoto','mr-moto.ru','mrmoto@mail.ru','<p>Компания Mr.Moto основана в 1998 году мотоциклистами для мотоциклистов. В мотосалоне предоставлен большой выбор мотоциклов с крупнейших японских и американских аукционов. Покупая у нас мотоцикл, Вы получаете двухнедельную гарантию без ограничения пробега, а также возможность обслуживать мотоцикл в нашем сервисе, с широкой программой скидок. В отделе запчастей и аксессуаров консультанты помогут вам подобрать необходимые запчасти, у вас не возникнет необходимости заказывать расходные материалы.</p>',1477771778,1478121383,1,0,0),(7,'ProRacing','proracing','proracing.su','service@proracing.su','<p>Мотосервис &laquo;PRORACING&raquo; - это сеть профессиональных тех-центров в Москве по обслуживанию и ремонту мотоциклов и мототехники. Наша специализация &ndash; ремонт, техническое обслуживание и покраска мотоциклов, квадроциклов, мотовездеходов, ATV и UTV, снегоходов и макси скутеров.</p>\r\n<p>Наши мото сервисы проводят все виды работ по ремонту мототехники и располагают для этого всем необходимым оборудованием: профессиональный инструмент, подъемники, компьютерный диагностический комплекс, покрасочные камеры, парк специализированных мотоэвакуаторов.</p>',1477905936,1477905936,1,0,0),(8,'Мото31','moto31','moto31.ru','sale@moto31.ru','<p>Мотомагазин &laquo;Мото31&raquo; предлагает купить в Белгороде мото-шлемы, экипировку, мотозапчасти, тюнинг на мотоцикл. В интернет-магазине &laquo;Мото31&raquo; широко представлены мотоциклы б.у. из Японии, в том числе марок: Honda, Yamaha, Kawasaki, Suzuki. Все мотоциклы, поступившие в Белгород, прошли предпродажную подготовку и готовы к эксплуатации в Белгороде и Белгородской области.</p>\r\n<p>Наш мото-салон готов предложить в Белгороде и различные виды мото-товаров. И начинающий мотоциклист и уже состоявшиеся байкеры Белгорода найдут для себя любые мотозапчасти и аксессуары на мотоцикл. Если Вы любите мотокросс и свой внедорожный мотоцикл, тоже останетесь довольны нашим ассортиментом тюнинга в Белгороде.</p>\r\n<p>В мотомагазине &laquo;Мото31&raquo; в Белгороде Вы можете купить такие товары как: мото-масла, масло в вилку, мотошины, мото-наклейки, мото-ручки, мото-сальники вилки, аккумуляторы, свечи, фильтры, смазка цепи, оригинальные запчасти для мотоциклов Honda, Suzuki, Kawasaki, Yamaha, грузики руля, зеркала, подножки. Если Вам понравилась предлагаемая нами моторезина, позвоните в наш мотомагазин в Белгороде.</p>',1478639124,1478639124,1,0,0),(9,'BikeMoto','bikemoto','bikemoto.ru','info@bikemoto.ru','<p>Сотрудники мотосалона &laquo;Байкмото&raquo; &mdash; бывшие спортсмены и просто увлеченные мотоциклами люди, в повседневной жизни эксплуатирующие мототехнику. Поэтому в &laquo;Байкмото&raquo; очень хорошо понимают нужды и потребности единомышленников-мотоциклистов.</p>\r\n<p>Мотосервис &laquo;БайкМото&raquo; предоставляет полный спектр услуг по ремонту и обслуживанию мототехники:</p>\r\n<ul>\r\n<li>хранение мотоциклов</li>\r\n<li>диагностика</li>\r\n<li>техническое обслуживание</li>\r\n<li>локальный ремонт</li>\r\n<li>предпродажная подготовка</li>\r\n<li>покраска и аэрография</li>\r\n<li>тюнинг мотоциклов</li>\r\n<li>сборка мотоциклов по индивидуальному заказу (кастомайзинг)</li>\r\n<li>и многое другое&hellip;</li>\r\n</ul>',1479243081,1479579966,1,1,1),(11,'Grancom','grancom','grancom.by','sale@grancom.by','<p>Наша миссия - лидерство на рынке продаж японкой мототехники, профессиональное представление интересов инвесторов и удовлетворение всех участников проектов от заказчиков до конечных пользователей.</p>\r\n<p>Основными направлениями деятельности компании являются:</p>\r\n<ul>\r\n<li>оптовая и розничная торговля мототехникой и запасными частями ведущих мировых производителей;</li>\r\n<li>оказание услуг и выполнение ремонтных работ японской мототехники (консультирование, диагностика, ремонт, консервация, тюнинг);</li>\r\n<li>оптовая и розничная торговля спортивной одеждой и обувью для волейбола, чирлидинга и спортивных танцев ведущих мировых производителей;</li>\r\n</ul>\r\n<p>Мы предлагаем:</p>\r\n<ul>\r\n<li>Мототехнику</li>\r\n<li>Квадроциклы</li>\r\n<li>Мотоаксессуары</li>\r\n<li>Мотоэкипировку</li>\r\n<li>Запасные части</li>\r\n<li>А так же товары для спорта и активного отдыха.</li>\r\n</ul>',1479408202,1479408202,1,1,1),(13,'SagaMoto','sagamoto','sagamoto.by','sagamoto@tut.by','',1479408532,1479408532,1,1,1),(14,'Grancom','grancom','grancom.by','sale@grancom.by','',1479408681,1479410604,1,1,1);
 /*!40000 ALTER TABLE `motoshop` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -491,7 +540,7 @@ CREATE TABLE `motoshop_address` (
   `mts_address_show` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`mts_address_id`),
   KEY `mts_id` (`mts_id`,`mts_address_show`,`mts_address_location_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -500,7 +549,7 @@ CREATE TABLE `motoshop_address` (
 
 LOCK TABLES `motoshop_address` WRITE;
 /*!40000 ALTER TABLE `motoshop_address` DISABLE KEYS */;
-INSERT INTO `motoshop_address` VALUES (2,2,'megamoto.ru','moto@megamoto.ru','+7 (495) 506-507-1','Россия, Москва, 5-я Кабельная улица, 2с1',55.73791169,37.71646322,'55&deg; 44&prime;16&Prime;N','37&deg; 42&prime;59&Prime;E',278,'70,278',1477768777,1477768777,1),(3,3,'sagamoto.by','sagamoto@tut.by','+375 29 776 17 33','Беларусь, Минск, улица Тимирязева, 114к8',53.93420200,27.46065400,'53&deg; 56&prime;3&Prime;N','27&deg; 27&prime;38&Prime;E',347,'187,347',1477769766,1477769766,1),(4,4,'grancom.by','sale@grancom.by','+375 (29) 162 93 33, +375 (29) 767 35 55','Беларусь, Минск, улица Платонова, 34',53.91216000,27.59917400,'53&deg; 54&prime;44&Prime;N','27&deg; 35&prime;57&Prime;E',347,'187,347',1477769982,1477769982,1),(5,5,'www.motomir-v.ru','motomir1@akicompany.ru','+7 (473) 247-25-27,  +7 (473) 229-25-26, +7 (473) 229-35-27','Россия, Воронеж, улица Машиностроителей, 8',51.68200000,39.16810000,'51&deg; 40&prime;55&Prime;N','39&deg; 10&prime;5&Prime;E',348,'70,348',1477770299,1478034686,1),(6,6,'mr-moto.ru','mrmoto@mail.ru','8 (499) 181-20-28, 8 (499) 181-42-55, 8 (499) 181-29-11','Россия, Москва, улица Сергея Эйзенштейна, 1',55.82975500,37.64618400,'55&deg; 49&prime;47&Prime;N','37&deg; 38&prime;46&Prime;E',278,'70,278',1477772241,1477905763,1),(7,6,'mr-moto.ru','mrmoto@mail.ru','8 (903) 215-28-63','Россия, Москва, Неманский проезд, 4к2',55.81406700,37.39246400,'55&deg; 48&prime;51&Prime;N','37&deg; 23&prime;33&Prime;E',278,'70,278',1477772312,1478121256,1),(8,6,'mr-moto.ru','mrmoto@mail.ru','8 (909) 988-18-25, 8 (906) 778-03-26','Россия, Москва, улица Нижние Мнёвники, 110',55.76522500,37.47200000,'55&deg; 45&prime;55&Prime;N','37&deg; 28&prime;19&Prime;E',278,'70,278',1477772361,1477772361,1),(9,6,'mr-moto.ru','mrmoto@mail.ru','8 (499) 245-45-93, 8 (905) 598-31-56','Россия, Москва, Фрунзенская набережная, 16к1',55.73017700,37.59244600,'55&deg; 43&prime;49&Prime;N','37&deg; 35&prime;33&Prime;E',278,'70,278',1477772402,1477772402,1),(10,6,'mr-moto.ru','mrmoto@mail.ru','8 (964) 771-87-21','Россия, Москва, Каширское шоссе, 61к3А',55.61727100,37.71568600,'55&deg; 37&prime;2&Prime;N','37&deg; 42&prime;56&Prime;E',278,'70,278',1477772448,1477772448,1),(11,6,'mr-moto.ru','mrmoto@mail.ru','8-964-771-94-33, 8-964-636-86-71','Россия, Москва, Сколковское шоссе, 31Б',55.70613992,37.40351468,'55&deg; 42&prime;22&Prime;N','37&deg; 24&prime;13&Prime;E',278,'70,278',1477772555,1477772555,1),(12,6,'mr-moto.ru','mrmoto@mail.ru','8 (964) 771-87-54','Россия, Москва, 5-я Кабельная улица, 2с1',55.73772500,37.71682700,'55&deg; 44&prime;16&Prime;N','37&deg; 43&prime;1&Prime;E',278,'70,278',1477772607,1477772607,1),(13,7,'proracing.su','service@proracing.su','+7 (495) 401-7761','Россия, Москва, Самокатная улица, 4с13',55.75662900,37.67565700,'55&deg; 45&prime;24&Prime;N','37&deg; 40&prime;32&Prime;E',278,'70,278',1477905996,1477908343,1),(14,7,'proracing.su','service@proracing.su','+7 (495) 401-7761','Россия, Москва, Тюменский проезд, 5с2',55.80967600,37.74097400,'55&deg; 48&prime;35&Prime;N','37&deg; 44&prime;28&Prime;E',278,'70,278',1477906118,1477906168,1),(15,8,'moto31.ru','sale@moto31.ru','+7 (920) 580-77-77','Россия, Белгородская область, Белгородский район, село Беломестное, ул. Западная 11',50.64866265,36.59094169,'50&deg; 38&prime;55&Prime;N','36&deg; 35&prime;27&Prime;E',350,'70,284,349,350',1478639887,1478639887,1),(16,9,'bikemoto.ru','info@bikemoto.ru','+7 (495) 649 98 85, +7 (926) 006 49 02','Россия, Москва, Скотопрогонная улица, 35с7',55.72812900,37.69662400,'55&deg; 43&prime;41&Prime;N','37&deg; 41&prime;48&Prime;E',278,'70,278',1479243140,1479243140,1);
+INSERT INTO `motoshop_address` VALUES (2,2,'megamoto.ru','moto@megamoto.ru','+7 (495) 506-507-1','Россия, Москва, 5-я Кабельная улица, 2с1',55.73791169,37.71646322,'55&deg; 44&prime;16&Prime;N','37&deg; 42&prime;59&Prime;E',278,'70,278',1477768777,1477768777,1),(5,5,'www.motomir-v.ru','motomir1@akicompany.ru','+7 (473) 247-25-27,  +7 (473) 229-25-26, +7 (473) 229-35-27','Россия, Воронеж, улица Машиностроителей, 8',51.68200000,39.16810000,'51&deg; 40&prime;55&Prime;N','39&deg; 10&prime;5&Prime;E',348,'70,348',1477770299,1478034686,1),(6,6,'mr-moto.ru','mrmoto@mail.ru','8 (499) 181-20-28, 8 (499) 181-42-55, 8 (499) 181-29-11','Россия, Москва, улица Сергея Эйзенштейна, 1',55.82975500,37.64618400,'55&deg; 49&prime;47&Prime;N','37&deg; 38&prime;46&Prime;E',278,'70,278',1477772241,1477905763,1),(7,6,'mr-moto.ru','mrmoto@mail.ru','8 (903) 215-28-63','Россия, Москва, Неманский проезд, 4к2',55.81406700,37.39246400,'55&deg; 48&prime;51&Prime;N','37&deg; 23&prime;33&Prime;E',278,'70,278',1477772312,1478121256,1),(8,6,'mr-moto.ru','mrmoto@mail.ru','8 (909) 988-18-25, 8 (906) 778-03-26','Россия, Москва, улица Нижние Мнёвники, 110',55.76522500,37.47200000,'55&deg; 45&prime;55&Prime;N','37&deg; 28&prime;19&Prime;E',278,'70,278',1477772361,1477772361,1),(9,6,'mr-moto.ru','mrmoto@mail.ru','8 (499) 245-45-93, 8 (905) 598-31-56','Россия, Москва, Фрунзенская набережная, 16к1',55.73017700,37.59244600,'55&deg; 43&prime;49&Prime;N','37&deg; 35&prime;33&Prime;E',278,'70,278',1477772402,1477772402,1),(10,6,'mr-moto.ru','mrmoto@mail.ru','8 (964) 771-87-21','Россия, Москва, Каширское шоссе, 61к3А',55.61727100,37.71568600,'55&deg; 37&prime;2&Prime;N','37&deg; 42&prime;56&Prime;E',278,'70,278',1477772448,1477772448,1),(11,6,'mr-moto.ru','mrmoto@mail.ru','8-964-771-94-33, 8-964-636-86-71','Россия, Москва, Сколковское шоссе, 31Б',55.70613992,37.40351468,'55&deg; 42&prime;22&Prime;N','37&deg; 24&prime;13&Prime;E',278,'70,278',1477772555,1477772555,1),(12,6,'mr-moto.ru','mrmoto@mail.ru','8 (964) 771-87-54','Россия, Москва, 5-я Кабельная улица, 2с1',55.73772500,37.71682700,'55&deg; 44&prime;16&Prime;N','37&deg; 43&prime;1&Prime;E',278,'70,278',1477772607,1477772607,1),(13,7,'proracing.su','service@proracing.su','+7 (495) 401-7761','Россия, Москва, Самокатная улица, 4с13',55.75662900,37.67565700,'55&deg; 45&prime;24&Prime;N','37&deg; 40&prime;32&Prime;E',278,'70,278',1477905996,1477908343,1),(14,7,'proracing.su','service@proracing.su','+7 (495) 401-7761','Россия, Москва, Тюменский проезд, 5с2',55.80967600,37.74097400,'55&deg; 48&prime;35&Prime;N','37&deg; 44&prime;28&Prime;E',278,'70,278',1477906118,1477906168,1),(15,8,'moto31.ru','sale@moto31.ru','+7 (920) 580-77-77','Россия, Белгородская область, Белгородский район, село Беломестное, ул. Западная 11',50.64866265,36.59094169,'50&deg; 38&prime;55&Prime;N','36&deg; 35&prime;27&Prime;E',350,'70,284,349,350',1478639887,1478639887,1),(16,9,'bikemoto.ru','info@bikemoto.ru','+7 (495) 649 98 85, +7 (926) 006 49 02','Россия, Москва, Скотопрогонная улица, 35с7',55.72812900,37.69662400,'55&deg; 43&prime;41&Prime;N','37&deg; 41&prime;48&Prime;E',278,'70,278',1479243140,1479580195,1),(18,11,'grancom.by','sale@grancom.by','+375 (29) 162 93 33, +375 (29) 767 35 55','Беларусь, Минск, улица Платонова, 34',53.91216000,27.59917400,'53&deg; 54&prime;44&Prime;N','27&deg; 35&prime;57&Prime;E',347,'187,347',1479408227,1479408227,0),(20,13,'sagamoto.by','sagamoto@tut.by','+375 29 776 17 33','Беларусь, Минск, улица Тимирязева, 114к8',53.93420200,27.46065400,'53&deg; 56&prime;3&Prime;N','27&deg; 27&prime;38&Prime;E',347,'187,347',1479408567,1479409001,1),(21,14,'grancom.by','sale@grancom.by','+375 (29) 162 93 33, +375 (29) 767 35 55','Беларусь, Минск, улица Платонова, 34',53.91216000,27.59917400,'53&deg; 54&prime;44&Prime;N','27&deg; 35&prime;57&Prime;E',347,'187,347',1479408702,1479408702,1);
 /*!40000 ALTER TABLE `motoshop_address` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -525,7 +574,7 @@ CREATE TABLE `motoshop_address_locations` (
 
 LOCK TABLES `motoshop_address_locations` WRITE;
 /*!40000 ALTER TABLE `motoshop_address_locations` DISABLE KEYS */;
-INSERT INTO `motoshop_address_locations` VALUES (2,70),(2,278),(3,187),(3,347),(4,187),(4,347),(5,70),(5,348),(6,70),(6,278),(7,70),(7,278),(8,70),(8,278),(9,70),(9,278),(10,70),(10,278),(11,70),(11,278),(12,70),(12,278),(13,70),(13,278),(14,70),(14,278),(15,70),(15,284),(15,349),(15,350),(16,70),(16,278);
+INSERT INTO `motoshop_address_locations` VALUES (2,70),(2,278),(5,70),(5,348),(6,70),(6,278),(7,70),(7,278),(8,70),(8,278),(9,70),(9,278),(10,70),(10,278),(11,70),(11,278),(12,70),(12,278),(13,70),(13,278),(14,70),(14,278),(15,70),(15,284),(15,349),(15,350),(16,70),(16,278),(18,187),(18,347),(20,187),(20,347),(21,187),(21,347);
 /*!40000 ALTER TABLE `motoshop_address_locations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -628,77 +677,26 @@ INSERT INTO `roles` VALUES (1,0,'root','Супер Администратор','
 UNLOCK TABLES;
 
 --
--- Table structure for table `roles_routers_methods`
+-- Table structure for table `roles_ controllers_methods`
 --
 
-DROP TABLE IF EXISTS `roles_routers_methods`;
+DROP TABLE IF EXISTS `roles_ controllers_methods`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `roles_routers_methods` (
+CREATE TABLE `roles_ controllers_methods` (
   `rl_id` smallint(5) unsigned NOT NULL,
-  `rvsm_id` smallint(5) unsigned NOT NULL,
-  PRIMARY KEY (`rl_id`,`rvsm_id`)
+  `cm_id` smallint(5) unsigned NOT NULL,
+  PRIMARY KEY (`rl_id`,`cm_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `roles_routers_methods`
+-- Dumping data for table `roles_ controllers_methods`
 --
 
-LOCK TABLES `roles_routers_methods` WRITE;
-/*!40000 ALTER TABLE `roles_routers_methods` DISABLE KEYS */;
-/*!40000 ALTER TABLE `roles_routers_methods` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `router_methods`
---
-
-DROP TABLE IF EXISTS `router_methods`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `router_methods` (
-  `rm_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  `rm_method` varchar(33) NOT NULL,
-  PRIMARY KEY (`rm_id`),
-  UNIQUE KEY `method` (`rm_method`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `router_methods`
---
-
-LOCK TABLES `router_methods` WRITE;
-/*!40000 ALTER TABLE `router_methods` DISABLE KEYS */;
-INSERT INTO `router_methods` VALUES (2,'add'),(3,'delete'),(4,'update'),(1,'view');
-/*!40000 ALTER TABLE `router_methods` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `routers_vs_methods`
---
-
-DROP TABLE IF EXISTS `routers_vs_methods`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `routers_vs_methods` (
-  `rvsm_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  `c_id` smallint(5) unsigned NOT NULL,
-  `rm_id` smallint(5) unsigned NOT NULL,
-  PRIMARY KEY (`rvsm_id`),
-  UNIQUE KEY `c_rm_id` (`c_id`,`rm_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `routers_vs_methods`
---
-
-LOCK TABLES `routers_vs_methods` WRITE;
-/*!40000 ALTER TABLE `routers_vs_methods` DISABLE KEYS */;
-INSERT INTO `routers_vs_methods` VALUES (13,1,1),(14,1,2),(15,1,3),(16,1,4);
-/*!40000 ALTER TABLE `routers_vs_methods` ENABLE KEYS */;
+LOCK TABLES `roles_ controllers_methods` WRITE;
+/*!40000 ALTER TABLE `roles_ controllers_methods` DISABLE KEYS */;
+/*!40000 ALTER TABLE `roles_ controllers_methods` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -756,7 +754,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1479243148,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1479155039,'RoLex',1);
+INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1480177652,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1480112018,'RoLex',1);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1013,6 +1011,78 @@ BEGIN
         END IF;
         
     COMMIT;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `controllers_method_create` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`mc`@`%` PROCEDURE `controllers_method_create`(IN cId INT, IN cMethod VARCHAR(33), OUT cmId INT)
+BEGIN
+    
+	DECLARE ER_DUP_ENTRY, done INT DEFAULT 0 ;
+  
+	DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1; 
+	DECLARE CONTINUE HANDLER FOR SQLSTATE '23000' SET ER_DUP_ENTRY = 1;
+	DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK ;
+	
+	START TRANSACTION ;
+	SET ER_DUP_ENTRY = 0;
+	
+	SELECT cm_id INTO cmId 
+	FROM `controllers_methods`
+	WHERE cm_method = cMethod;
+		
+	IF done = 1 THEN
+		INSERT INTO `controllers_methods`
+		SET cm_method = cMethod;
+		
+		SET cmId = last_insert_id();
+        
+        INSERT INTO `controllers_vs_methods`
+        SET c_id = cId, cm_id = cmId;
+        
+	END IF;
+	
+	COMMIT;
+    END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `controllers_method_del` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`mc`@`%` PROCEDURE `controllers_method_del`(IN cId INT, IN cmId INT)
+BEGIN
+	
+	START TRANSACTION ;
+	
+	DELETE FROM `controllers_vs_methods`
+	WHERE c_id = cId AND cm_id = cmId;
+	
+    DELETE FROM `roles_controllers_methods`
+	WHERE c_id = cId AND cm_id = cmId;
+    
+	COMMIT;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1386,18 +1456,18 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`mc`@`%` PROCEDURE `controller_update`(IN inId INT, IN inPid INT, IN inAfterId INT, IN inPath VARCHAR(255), IN inName VARCHAR(100), IN inDesc TEXT, OUT res INT)
+CREATE DEFINER=`mc`@`%` PROCEDURE `controller_update`(IN inId INT, IN inPid INT, IN inAftecId INT, IN inPath VARCHAR(255), IN inName VARCHAR(100), IN inDesc TEXT, OUT res INT)
 BEGIN
-	DECLARE rPid, rId, rLk, rRk, bIntoSelf INT DEFAULT 0;
+	DECLARE cPid, cId, cLk, cRk, bIntoSelf INT DEFAULT 0;
 	
 	DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
 	SET res=0;
 	
 	
 	SELECT 
-	c_lk, c_rk INTO rLk, rRk
+	c_lk, c_rk INTO cLk, cRk
 	FROM `controllers`
 	WHERE c_id = inId;
 	
@@ -1408,8 +1478,8 @@ BEGIN
 		WHERE inPid IN
 		(SELECT c_id 
 		FROM `controllers`
-		WHERE c_lk >= rLk
-		AND c_rk <= rRk)
+		WHERE c_lk >= cLk
+		AND c_rk <= cRk)
 	) INTO bIntoSelf;
 	
 	START TRANSACTION;
@@ -1429,7 +1499,7 @@ BEGIN
 		CALL controller_move(inId, inPid, res);
 		
 		IF res=1 THEN
-			CALL controller_after(inId, inAfterId, res);
+			CALL controller_after(inId, inAftecId, res);
 		END IF;	
 		
 		IF res=0 THEN
@@ -2833,958 +2903,6 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `role_after` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
-DELIMITER ;;
-CREATE DEFINER=`mc`@`%` PROCEDURE `role_after`(IN f_id INT, IN t_id INT, OUT res INT)
-BEGIN
-DECLARE f_lft,f_rgt,f_lev,t_lft,t_rgt,t_lev,done INT DEFAULT 0;
-DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done=1;
-DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
-SET res=0;
-START TRANSACTION;
-SET done=0;
-SELECT rl_lk,rl_rk,rl_level
-INTO f_lft,f_rgt,f_lev
-FROM `roles`
-WHERE rl_id=f_id;
-IF t_id>0 THEN
-SELECT rl_lk,rl_rk,rl_level
-INTO t_lft,t_rgt,t_lev
-FROM `roles`
-WHERE rl_level=f_lev AND rl_id=t_id;
-IF NOT done THEN
-SELECT rl_lk,rl_rk,rl_level
-INTO t_lft,t_rgt,t_lev
-FROM `roles`
-WHERE rl_level=f_lev AND rl_lk>t_rgt AND rl_rk>t_rgt
-ORDER BY rl_lk ASC
-LIMIT 1;
-IF done THEN
-SET t_lft = t_rgt+1;
-SET t_rgt = t_lft+1;
-SET done=0;
-END IF;
-END IF;
-ELSE
-SELECT rl_lk,rl_rk,rl_level
-INTO t_lft,t_rgt,t_lev
-FROM `roles`
-WHERE rl_lk<f_lft AND rl_rk>f_rgt AND rl_level<f_lev
-ORDER BY rl_level DESC
-LIMIT 1;
-IF NOT done THEN
-SELECT rl_lk,rl_rk,rl_level
-INTO t_lft,t_rgt,t_lev
-FROM `roles`
-WHERE rl_level=f_lev AND rl_lk>t_lft AND rl_rk<t_rgt
-ORDER BY rl_lk ASC
-LIMIT 1;
-ELSE
-SET done=0;
-SELECT rl_lk,rl_rk,rl_level
-INTO t_lft,t_rgt,t_lev
-FROM `roles`
-WHERE rl_level=f_lev
-ORDER BY rl_lk ASC
-LIMIT 1;
-END IF;
-END IF;
-IF NOT done THEN
-SET t_rgt=t_lft;
-SET t_lft=t_lft-1;
-CALL `role_relocate`(f_lft,f_rgt,f_lev,t_lft,t_rgt,t_lev-1,res);
-END IF;
-IF res=0 THEN
-ROLLBACK;
-ELSE
-COMMIT;
-END IF;
-END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `role_create` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
-DELIMITER ;;
-CREATE DEFINER=`mc`@`%` PROCEDURE `role_create`(IN inRolePid INT, IN inAfterId INT, IN inRolePath VARCHAR(255), IN inRoleName VARCHAR(100), IN inRoleDesc TEXT, OUT last_ins_id INT)
-BEGIN
-	DECLARE i_level INT DEFAULT 1;
-	DECLARE i_right_key INT DEFAULT 1;
-	DECLARE res INT DEFAULT 0;
-	DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
-	 
-	SET last_ins_id=0;
-	SET res=0;
-	START TRANSACTION;
-	
-	SELECT IF(ISNULL(MAX(rl_rk)+1), 1, MAX(rl_rk)+1 ) INTO i_right_key
-	FROM `roles`;
-	
-	INSERT INTO `roles`
-	SET 
-	rl_level	= i_level, 
-	rl_lk	= i_right_key, 
-	rl_rk	= i_right_key + 1,
-	rl_path	= inRolePath,
-	rl_name	= inRoleName,
-	rl_desc  = inRoleDesc;
-	
-	SELECT LAST_INSERT_ID() INTO last_ins_id;
-	
-	IF last_ins_id>0 THEN
-		CALL `role_move`(last_ins_id, inRolePid, res);
-		IF res=1 THEN
-			CALL `role_after`(last_ins_id, inAfterId, res);
-		END IF;	
-		
-		IF res=0 THEN
-			ROLLBACK;
-			SET last_ins_id=0;
-		ELSE
-			COMMIT;
-		END IF;
-	ELSE 
-		ROLLBACK;
-	END IF;
-END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `role_down` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
-DELIMITER ;;
-CREATE DEFINER=`mc`@`%` PROCEDURE `role_down`(IN p_id INT, OUT res INT)
-BEGIN
-DECLARE f_lft,f_rgt,f_lev,t_lft,t_rgt,t_lev INT DEFAULT 0;
-SET res=0;
-SELECT rl_lk,i_rl_rk,rl_level
-INTO f_lft,f_rgt,f_lev
-FROM `roles`
-WHERE rl_id=p_id;
-SELECT rl_lk,rl_rk,rl_level
-INTO t_lft,t_rgt,t_lev
-FROM `roles`
-WHERE rl_lk<f_lft AND rl_rk>f_rgt AND rl_level<f_lev
-ORDER BY rl_level DESC
-LIMIT 1;
-IF t_rgt-t_lft>f_rgt-f_lft THEN
-IF f_rgt+1<t_rgt THEN
-SELECT rl_lk,rl_rk,rl_level
-INTO t_lft,t_rgt,t_lev
-FROM `roles`
-WHERE rl_level=f_lev AND rl_lk>t_lft AND rl_rk<t_rgt AND rl_lk>f_rgt
-ORDER BY rl_lk ASC
-LIMIT 1;
-SET t_lft=t_rgt;
-SET t_rgt=t_rgt+1;
-ELSE
-SELECT rl_lk,rl_rk,rl_level
-INTO t_lft,t_rgt,t_lev
-FROM `roles`
-WHERE rl_level=f_lev AND rl_lk>t_lft AND rl_rk<t_rgt
-ORDER BY rl_lk ASC
-LIMIT 1;
-SET t_rgt=t_lft;
-SET t_lft=t_lft-1;
-END IF;
-CALL `role_relocate`(f_lft,f_rgt,f_lev,t_lft,t_rgt,t_lev-1,res);
-END IF;
-END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `role_move` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
-DELIMITER ;;
-CREATE DEFINER=`mc`@`%` PROCEDURE `role_move`(IN f_id INT, IN t_id INT, OUT res INT)
-BEGIN
-  DECLARE f_lft
-  , f_rgt
-  , f_lev
-  , t_lft
-  , t_rgt
-  , t_lev
-  , done INT DEFAULT 0 ;
-  DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1 ;
-  DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK ;
-  SET res = 0 ;
-  SET max_sp_recursion_depth = 1 ;
-  START TRANSACTION ;
-  SET done = 0 ;
-  SELECT 
-    rl_lk
-    , rl_rk
-    , rl_level INTO f_lft
-    , f_rgt
-    , f_lev 
-  FROM
-    `roles` 
-  WHERE rl_id = f_id ;
-  IF t_id = 0 
-  THEN 
-  SELECT 
-    IFNULL(MIN(rl_lk), 1) - 1
-    , IFNULL(MAX(rl_rk), 2) + 1
-    , 0 INTO t_lft
-    , t_rgt
-    , t_lev 
-  FROM
-    `roles` ;
-  ELSE 
-  SELECT 
-    rl_lk
-    , rl_rk
-    , rl_level INTO t_lft
-    , t_rgt
-    , t_lev 
-  FROM
-    `roles` 
-  WHERE rl_id = t_id ;
-  END IF ;
-  IF NOT done 
-  THEN 
-  UPDATE 
-    `roles` 
-  SET
-    rl_pid = t_id 
-  WHERE rl_id = f_id ;
-  CALL `role_relocate` (
-    f_lft
-    , f_rgt
-    , f_lev
-    , t_lft
-    , t_rgt
-    , t_lev
-    , res
-  ) ;
-  END IF ;
-  IF res = 0 
-  THEN ROLLBACK ;
-  ELSE COMMIT ;
-  END IF ;
-END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `role_relocate` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
-DELIMITER ;;
-CREATE DEFINER=`mc`@`%` PROCEDURE `role_relocate`(IN f_lft INT, IN f_rgt INT, IN f_lev INT, IN t_lft INT, IN t_rgt INT, IN t_lev INT, OUT res INT)
-BEGIN
-DECLARE count_pos,mv_level,mv_pos INT DEFAULT 0;
-DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
-SET res=0;
-START TRANSACTION;
-IF f_lft<f_rgt AND t_lft<t_rgt AND (f_lft>t_rgt OR f_rgt<t_rgt) THEN
-SET count_pos=f_rgt-f_lft+1;
-SET mv_level=f_lev-t_lev-1;
-
-IF f_lft>t_rgt THEN
-SET mv_pos=f_lft-t_rgt+count_pos;
-UPDATE `roles`
-SET
-rl_rk = rl_rk+count_pos,
-rl_lk = IF(rl_lk > t_lft, rl_lk+count_pos, rl_lk)
-WHERE rl_rk >= t_rgt;
-UPDATE `roles`
-SET rl_rk = rl_rk - mv_pos
-WHERE rl_lk >= (f_lft + count_pos) AND rl_rk <= (f_rgt + count_pos);
-UPDATE `roles`
-SET
-rl_lk = rl_lk - mv_pos,
-rl_level = rl_level - mv_level
-WHERE rl_lk >= (f_lft+count_pos) AND rl_rk <= (t_rgt+count_pos);
-UPDATE `roles`
-SET
-rl_rk = rl_rk - count_pos,
-rl_lk = IF(rl_lk > (f_rgt+count_pos), rl_lk - count_pos, rl_lk)
-WHERE rl_rk > (f_rgt+count_pos);
-ELSE
-SET mv_pos = f_lft - t_rgt;
-UPDATE `roles`
-SET
-rl_rk = rl_rk + count_pos,
-rl_lk = IF(rl_lk > t_lft, rl_lk + count_pos, rl_lk)
-WHERE rl_rk >= t_rgt;
-UPDATE `roles`
-SET rl_lk = rl_lk - mv_pos
-WHERE rl_lk >= f_lft AND rl_rk <= f_rgt;
-UPDATE `roles`
-SET
-rl_rk = rl_rk - mv_pos,
-rl_level = rl_level - mv_level
-WHERE rl_lk >= t_rgt AND rl_rk <= f_rgt;
-UPDATE `roles`
-SET rl_rk = rl_rk - count_pos,
-rl_lk = IF(rl_lk > f_rgt, rl_lk - count_pos, rl_lk)
-WHERE rl_rk>f_rgt;
-END IF;
-END IF;
-SET res=1;
-COMMIT;
-END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `role_up` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
-DELIMITER ;;
-CREATE DEFINER=`mc`@`%` PROCEDURE `role_up`(IN p_id INT, OUT res INT)
-BEGIN
-DECLARE f_lft,f_rgt,f_lev,t_lft,t_rgt,t_lev INT DEFAULT 0;
-SET res=0;
-SELECT rl_lk,rl_rk,rl_level
-INTO f_lft,f_rgt,f_lev
-FROM `roles`
-WHERE rl_id=p_id;
-SELECT rl_lk,rl_rk,rl_level
-INTO t_lft,t_rgt,t_lev
-FROM `roles`
-WHERE rl_lk<f_lft AND rl_rk>f_rgt AND rl_level<f_lev
-ORDER BY rl_level DESC
-LIMIT 1;
-IF t_rgt-t_lft>f_rgt-f_lft THEN
-IF f_lft-1>t_lft THEN
-SELECT rl_lk,rl_rk,rl_level
-INTO t_lft,t_rgt,t_lev
-FROM `roles`
-WHERE rl_level=f_lev AND rl_lk>t_lft AND rl_rk<t_rgt AND rl_rk<f_lft
-ORDER BY rl_rk DESC
-LIMIT 1;
-SET t_rgt=t_lft;
-SET t_lft=t_lft-1;
-ELSE
-SELECT rl_lk,rl_rk,rl_level
-INTO t_lft,t_rgt,t_lev
-FROM `roles`
-WHERE rl_level=f_lev AND rl_lk>t_lft AND rl_rk<t_rgt
-ORDER BY rl_rk DESC
-LIMIT 1;
-SET t_lft=t_rgt;
-SET t_rgt=t_rgt+1;
-END IF;
-CALL `role_relocate`(f_lft,f_rgt,f_lev,t_lft,t_rgt,t_lev-1,res);
-END IF;
-END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `role_update` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
-DELIMITER ;;
-CREATE DEFINER=`mc`@`%` PROCEDURE `role_update`(IN inRoleId INT, IN inRolePid INT, IN inAfterId INT, IN inRolePath VARCHAR(255), IN inRoleName VARCHAR(100), IN inRoleDesc TEXT, OUT res INT)
-BEGIN
-	DECLARE rPid, rId, rLk, rRk, bIntoSelf INT DEFAULT 0;
-	
-	DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
-	SET res=0;
-	
-	
-	SELECT 
-	rl_lk, rl_rk INTO rLk, rRk
-	FROM `roles`
-	WHERE rl_id = inRoleId;
-	
-	
-	SELECT EXISTS (
-		SELECT 1 
-		FROM `roles`
-		WHERE inRolePid IN
-		(SELECT rl_id 
-		FROM `roles`
-		WHERE rl_lk >= rLk
-		AND rl_rk <= rRk)
-	) INTO bIntoSelf;
-	
-	START TRANSACTION;
-	
-	UPDATE `roles`
-	SET
-	rl_path	= inRolePath,
-	rl_name	= inRoleName,
-	rl_desc  = inRoleDesc
-	WHERE rl_id = inRoleId;
-	
-	
-	IF bIntoSelf=1 THEN
-		SET res = 1;
-		COMMIT;
-	ELSE
-		CALL menu_move(inRoleId, inRolePid, res);
-		
-		IF res=1 THEN
-			CALL menu_after(inRoleId, inAfterId, res);
-			
-		END IF;	
-		
-		IF res=0 THEN
-		
-			ROLLBACK;
-		ELSE
-			COMMIT;
-		END IF;
-	END IF;
-END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `router_after` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
-DELIMITER ;;
-CREATE DEFINER=`mc`@`%` PROCEDURE `router_after`(IN f_id INT, IN t_id INT, OUT res INT)
-BEGIN
-DECLARE f_lft,f_rgt,f_lev,t_lft,t_rgt,t_lev,done INT DEFAULT 0;
-DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done=1;
-DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
-SET res=0;
-START TRANSACTION;
-SET done=0;
-SELECT r_lk,r_rk,r_level
-INTO f_lft,f_rgt,f_lev
-FROM `routers`
-WHERE r_id=f_id;
-IF t_id>0 THEN
-SELECT r_lk,r_rk,r_level
-INTO t_lft,t_rgt,t_lev
-FROM `routers`
-WHERE r_level=f_lev AND r_id=t_id;
-IF NOT done THEN
-SELECT r_lk,r_rk,r_level
-INTO t_lft,t_rgt,t_lev
-FROM `routers`
-WHERE r_level=f_lev AND r_lk>t_rgt AND r_rk>t_rgt
-ORDER BY r_lk ASC
-LIMIT 1;
-IF done THEN
-SET t_lft = t_rgt+1;
-SET t_rgt = t_lft+1;
-SET done=0;
-END IF;
-END IF;
-ELSE
-SELECT r_lk,r_rk,r_level
-INTO t_lft,t_rgt,t_lev
-FROM `routers`
-WHERE r_lk<f_lft AND r_rk>f_rgt AND r_level<f_lev
-ORDER BY r_level DESC
-LIMIT 1;
-IF NOT done THEN
-SELECT r_lk,r_rk,r_level
-INTO t_lft,t_rgt,t_lev
-FROM `routers`
-WHERE r_level=f_lev AND r_lk>t_lft AND r_rk<t_rgt
-ORDER BY r_lk ASC
-LIMIT 1;
-ELSE
-SET done=0;
-SELECT r_lk,r_rk,r_level
-INTO t_lft,t_rgt,t_lev
-FROM `routers`
-WHERE r_level=f_lev
-ORDER BY r_lk ASC
-LIMIT 1;
-END IF;
-END IF;
-IF NOT done THEN
-SET t_rgt=t_lft;
-SET t_lft=t_lft-1;
-CALL `router_relocate`(f_lft,f_rgt,f_lev,t_lft,t_rgt,t_lev-1,res);
-END IF;
-IF res=0 THEN
-ROLLBACK;
-ELSE
-COMMIT;
-END IF;
-END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `router_create` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
-DELIMITER ;;
-CREATE DEFINER=`mc`@`%` PROCEDURE `router_create`(IN inRouterPid INT, IN inAfterId INT, IN inRouterPath VARCHAR(255), IN inRouterName VARCHAR(100), IN inRouterDesc TEXT, OUT last_ins_id INT)
-BEGIN
-	DECLARE i_level INT DEFAULT 1;
-	DECLARE i_right_key INT DEFAULT 1;
-	DECLARE res INT DEFAULT 0;
-	DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
-	 
-	SET last_ins_id=0;
-	SET res=0;
-	START TRANSACTION;
-	
-	SELECT IF(ISNULL(MAX(r_rk)+1), 1, MAX(r_rk)+1 ) INTO i_right_key
-	FROM `routers`;
-	INSERT INTO `routers`
-	SET 
-	r_level	= i_level, 
-	r_lk	= i_right_key, 
-	r_rk	= i_right_key + 1,
-	r_path	= inRouterPath,
-	r_name	= inRouterName,
-	r_desc  = inRouterDesc;
-	
-	SELECT LAST_INSERT_ID() INTO last_ins_id;
-	
-	IF last_ins_id>0 THEN
-		CALL router_move(last_ins_id, inRouterPid, res);
-		IF res=1 THEN
-			CALL router_after(last_ins_id, inAfterId, res);
-		END IF;	
-		
-		IF res=0 THEN
-			ROLLBACK;
-			SET last_ins_id=0;
-		ELSE
-			COMMIT;
-		END IF;
-	ELSE 
-		ROLLBACK;
-	END IF;
-END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `router_down` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
-DELIMITER ;;
-CREATE DEFINER=`mc`@`%` PROCEDURE `router_down`(IN p_id INT, OUT res INT)
-BEGIN
-DECLARE f_lft,f_rgt,f_lev,t_lft,t_rgt,t_lev INT DEFAULT 0;
-SET res=0;
-SELECT r_lk,i_r_rk,r_level
-INTO f_lft,f_rgt,f_lev
-FROM `routers`
-WHERE r_id=p_id;
-SELECT r_lk,r_rk,r_level
-INTO t_lft,t_rgt,t_lev
-FROM `routers`
-WHERE r_lk<f_lft AND r_rk>f_rgt AND r_level<f_lev
-ORDER BY r_level DESC
-LIMIT 1;
-IF t_rgt-t_lft>f_rgt-f_lft THEN
-IF f_rgt+1<t_rgt THEN
-SELECT r_lk,r_rk,r_level
-INTO t_lft,t_rgt,t_lev
-FROM `routers`
-WHERE r_level=f_lev AND r_lk>t_lft AND r_rk<t_rgt AND r_lk>f_rgt
-ORDER BY r_lk ASC
-LIMIT 1;
-SET t_lft=t_rgt;
-SET t_rgt=t_rgt+1;
-ELSE
-SELECT r_lk,r_rk,r_level
-INTO t_lft,t_rgt,t_lev
-FROM `routers`
-WHERE r_level=f_lev AND r_lk>t_lft AND r_rk<t_rgt
-ORDER BY r_lk ASC
-LIMIT 1;
-SET t_rgt=t_lft;
-SET t_lft=t_lft-1;
-END IF;
-CALL `router_relocate`(f_lft,f_rgt,f_lev,t_lft,t_rgt,t_lev-1,res);
-END IF;
-END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `router_method_create` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
-DELIMITER ;;
-CREATE DEFINER=`mc`@`%` PROCEDURE `router_method_create`(IN rmMethod VARCHAR(33), OUT rmId INT)
-BEGIN
-    
-	DECLARE ER_DUP_ENTRY, done INT DEFAULT 0 ;
-  
-	DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1; 
-	DECLARE CONTINUE HANDLER FOR SQLSTATE '23000' SET ER_DUP_ENTRY = 1;
-	DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK ;
-	
-	START TRANSACTION ;
-	SET ER_DUP_ENTRY = 0;
-	
-	SELECT rm_id INTO rmId 
-	FROM `router_methods`
-	WHERE rm_method = rmMethod;
-		
-	IF done = 1 THEN
-		INSERT INTO `router_methods`
-		SET rm_method = rmMethod;
-		
-		SET rmId = last_insert_id();
-	END IF;
-	
-	COMMIT;
-    END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `router_method_del` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
-DELIMITER ;;
-CREATE DEFINER=`mc`@`%` PROCEDURE `router_method_del`(IN rId INT, IN rmId INT)
-BEGIN
-	DECLARE rvsmId INT DEFAULT 0 ;
-	START TRANSACTION ;
-	select rvsm_id INTO rvsmId
-	FROM `routers_vs_methods`
-	WHERE r_id = rId AND rm_id = rmId;
-	
-	DELETE FROM `routers_vs_methods`
-	WHERE rvsm_id = rvsmId;
-	DELETE FROM `roles_routers_methods`
-	WHERE rvsm_id = rvsmId;
-	COMMIT;
-    END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `router_move` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
-DELIMITER ;;
-CREATE DEFINER=`mc`@`%` PROCEDURE `router_move`(IN f_id INT, IN t_id INT, OUT res INT)
-BEGIN
-DECLARE f_lft,f_rgt,f_lev,t_lft,t_rgt,t_lev,done INT DEFAULT 0;
-DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done=1;
-DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
-SET res=0;
-SET max_sp_recursion_depth=1;
-START TRANSACTION;
-SET done=0;
-SELECT r_lk,r_rk,r_level
-INTO f_lft,f_rgt,f_lev
-FROM `routers`
-WHERE r_id=f_id;
-IF t_id=0 THEN
-SELECT IFNULL(MIN(r_lk),1)-1,IFNULL(MAX(r_rk),2)+1,0
-INTO t_lft,t_rgt,t_lev
-FROM `routers`;
-ELSE
-SELECT r_lk,r_rk,r_level
-INTO t_lft,t_rgt,t_lev
-FROM `routers`
-WHERE r_id=t_id;
-END IF;
-IF NOT done THEN
-UPDATE `routers`
-SET r_pid=t_id
-WHERE r_id=f_id;
-CALL `router_relocate`(f_lft,f_rgt,f_lev,t_lft,t_rgt,t_lev,res);
-END IF;
-IF res=0 THEN
-ROLLBACK;
-ELSE
-COMMIT;
-END IF;
-END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `router_relocate` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
-DELIMITER ;;
-CREATE DEFINER=`mc`@`%` PROCEDURE `router_relocate`(IN f_lft INT, IN f_rgt INT, IN f_lev INT, IN t_lft INT, IN t_rgt INT, IN t_lev INT, OUT res INT)
-BEGIN
-DECLARE count_pos,mv_level,mv_pos INT DEFAULT 0;
-DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
-SET res=0;
-START TRANSACTION;
-IF f_lft<f_rgt AND t_lft<t_rgt AND (f_lft>t_rgt OR f_rgt<t_rgt) THEN
-SET count_pos=f_rgt-f_lft+1;
-SET mv_level=f_lev-t_lev-1;
-
-IF f_lft>t_rgt THEN
-SET mv_pos=f_lft-t_rgt+count_pos;
-UPDATE `routers`
-SET
-r_rk = r_rk+count_pos,
-r_lk = IF(r_lk > t_lft, r_lk+count_pos, r_lk)
-WHERE r_rk >= t_rgt;
-UPDATE `routers`
-SET r_rk = r_rk - mv_pos
-WHERE r_lk >= (f_lft + count_pos) AND r_rk <= (f_rgt + count_pos);
-UPDATE `routers`
-SET
-r_lk = r_lk - mv_pos,
-r_level = r_level - mv_level
-WHERE r_lk >= (f_lft+count_pos) AND r_rk <= (t_rgt+count_pos);
-UPDATE `routers`
-SET
-r_rk = r_rk - count_pos,
-r_lk = IF(r_lk > (f_rgt+count_pos), r_lk - count_pos, r_lk)
-WHERE r_rk > (f_rgt+count_pos);
-ELSE
-SET mv_pos = f_lft - t_rgt;
-UPDATE `routers`
-SET
-r_rk = r_rk + count_pos,
-r_lk = IF(r_lk > t_lft, r_lk + count_pos, r_lk)
-WHERE r_rk >= t_rgt;
-UPDATE `routers`
-SET r_lk = r_lk - mv_pos
-WHERE r_lk >= f_lft AND r_rk <= f_rgt;
-UPDATE `routers`
-SET
-r_rk = r_rk - mv_pos,
-r_level = r_level - mv_level
-WHERE r_lk >= t_rgt AND r_rk <= f_rgt;
-UPDATE `routers`
-SET r_rk = r_rk - count_pos,
-r_lk = IF(r_lk > f_rgt, r_lk - count_pos, r_lk)
-WHERE r_rk>f_rgt;
-END IF;
-END IF;
-SET res=1;
-COMMIT;
-END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `router_up` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
-DELIMITER ;;
-CREATE DEFINER=`mc`@`%` PROCEDURE `router_up`(IN p_id INT, OUT res INT)
-BEGIN
-DECLARE f_lft,f_rgt,f_lev,t_lft,t_rgt,t_lev INT DEFAULT 0;
-SET res=0;
-SELECT r_lk,r_rk,r_level
-INTO f_lft,f_rgt,f_lev
-FROM `routers`
-WHERE r_id=p_id;
-SELECT r_lk,r_rk,r_level
-INTO t_lft,t_rgt,t_lev
-FROM `routers`
-WHERE r_lk<f_lft AND r_rk>f_rgt AND r_level<f_lev
-ORDER BY r_level DESC
-LIMIT 1;
-IF t_rgt-t_lft>f_rgt-f_lft THEN
-IF f_lft-1>t_lft THEN
-SELECT r_lk,r_rk,r_level
-INTO t_lft,t_rgt,t_lev
-FROM `routers`
-WHERE r_level=f_lev AND r_lk>t_lft AND r_rk<t_rgt AND r_rk<f_lft
-ORDER BY r_rk DESC
-LIMIT 1;
-SET t_rgt=t_lft;
-SET t_lft=t_lft-1;
-ELSE
-SELECT r_lk,r_rk,r_level
-INTO t_lft,t_rgt,t_lev
-FROM `routers`
-WHERE r_level=f_lev AND r_lk>t_lft AND r_rk<t_rgt
-ORDER BY r_rk DESC
-LIMIT 1;
-SET t_lft=t_rgt;
-SET t_rgt=t_rgt+1;
-END IF;
-CALL `router_relocate`(f_lft,f_rgt,f_lev,t_lft,t_rgt,t_lev-1,res);
-END IF;
-END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `router_update` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
-DELIMITER ;;
-CREATE DEFINER=`mc`@`%` PROCEDURE `router_update`(IN inRouterId INT, IN inRouterPid INT, IN inAfterId INT, IN inRouterPath VARCHAR(255), IN inRouterName VARCHAR(100), IN inRouterDesc TEXT, OUT res INT)
-BEGIN
-	DECLARE rPid, rId, rLk, rRk, bIntoSelf INT DEFAULT 0;
-	
-	DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
-	SET res=0;
-	
-	
-	SELECT 
-	r_lk, r_rk INTO rLk, rRk
-	FROM `routers`
-	WHERE r_id = inRouterId;
-	
-	
-	SELECT EXISTS (
-		SELECT 1 
-		FROM `routers`
-		WHERE inRouterPid IN
-		(SELECT r_id 
-		FROM `routers`
-		WHERE r_lk >= rLk
-		AND r_rk <= rRk)
-	) INTO bIntoSelf;
-	
-	START TRANSACTION;
-	
-	UPDATE `routers`
-	SET
-	r_path	= inRouterPath,
-	r_name	= inRouterName,
-	r_desc	= inRouterDesc
-	WHERE r_id = inRouterId;
-	
-	
-	if bIntoSelf=1 THEN
-		SET res = 1;
-		Commit;
-	ELSE
-		CALL router_move(inRouterId, inRouterPid, res);
-		
-		IF res=1 THEN
-			CALL router_after(inRouterId, inAfterId, res);
-		END IF;	
-		
-		IF res=0 THEN
-			ROLLBACK;
-		ELSE
-			COMMIT;
-		END IF;
-	END IF;
-END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -3795,4 +2913,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-11-16  0:02:59
+-- Dump completed on 2016-11-26 19:53:39
