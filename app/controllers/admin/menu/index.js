@@ -41,8 +41,7 @@ class Menu extends Base
 
 		return Promise.props({
 			menuList: this.getClass("menu").getAll(),
-			controllerList: this.getClass("router").getAll()
-
+			controllerList: this.getClass("controller").getAll()
 		})
 			.bind(this)
 			.then(function(props)
@@ -113,7 +112,7 @@ class Menu extends Base
 			{
 				return Promise.props({
 					menuList: this.getClass("menu").getAll(),
-					controllerList: this.getClass("router").getAll()
+					controllerList: this.getClass("controller").getAll()
 				})
 				.then(function(props)
 				{
@@ -459,7 +458,7 @@ exports.edit = function(req, res, next)
 		},
 		function(cb){
 			setTimeout(function(){
-				Models.get("Router").getAll(function(err, controllerList)
+				Models.get("controller").getAll(function(err, controllerList)
 				{
 					if(err) return cb(err, controllerList);
 					
@@ -698,7 +697,7 @@ function getDataTasks()
 		},
 		function(cb)
 		{
-			Models.get("Router").getAll(function(err, controllerList)
+			Models.get("controller").getAll(function(err, controllerList)
 			{
 				if(err) return cb(err, controllerList);
 				

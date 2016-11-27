@@ -35,7 +35,7 @@
 
 /* ipad */
 /*@media (min-device-width: 768px) and (max-device-width: 1024px)*/
-@media (min-width: 768px) and (max-width: 1043px)
+@media (min-width: $screen-sm) and (max-width: 1043px)
 {
   .navbar-header {
     float: none;
@@ -76,11 +76,16 @@
 }
 /* END ipad */
 
-@media (max-device-width: 768px) and (orientation : landscape)
+@media (max-device-width: $screen-sm) and (orientation : landscape)
 {
   .navbar-fixed-bottom .navbar-collapse,
   .navbar-fixed-top .navbar-collapse
   {
     max-height: 211px;
   }
+}
+
+.open .dropdown-menu .selected
+{
+  background-color: #F0F0F0;
 }

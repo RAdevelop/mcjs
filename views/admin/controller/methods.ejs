@@ -1,4 +1,4 @@
-<div id="controllerMethodsFormBody" class="row">
+<div id="controllerMethodsFormBody" class="">
     <p>при создании нового метода обязательно добавить в процедуру привязку этого метода в группе админов+m_id</p>
     <p>доступ пользователя будет определяться по:</p>
     <p>ug_id (id группы юзеров), m_id (id меню), c_id (id контроллера), cm_id (id метода)</p>
@@ -16,10 +16,16 @@
         <li>get_edit, post_edit и так далее</li>
         <li>тогда по http методам (GET, POST) сможем получать на что пришел запрос/действие, и проверять права на это действие для текущего пунтка меню и пользователя</li>
         <li></li>
+        <li>что доступно ГОСТЮ, то доступно всем - наследование прав от ГОСТЯ к авторизованныю юзерам до админа</li>
+        <li>наследование снизу вверх. у группы высталять флаг, b_on_register = 1</li>
+        <li>при регистрации нового юзера, он автоматом вступает в такие группы</li>
+        <li>по умолчанию считать что вошедший на сайт пользователь - гость:</li>
+        <li>например: if (!u_id) ug = 'guest'</li>
+        <li></li>
     </ul>
-    <div class="panel-body">
-        <div class="col-sm-12">
-            <form id="cmAddForm" class="form-inline" action="<%= _reqOriginalUrl %>/" method="post">
+    <div class="row">
+        <div class="col-md-12">
+            <form id="cmAddForm" class="form-inline" action="<%= _reqOriginalUrl %>" method="post">
                 <input type="hidden" id="ui_controller_id" name="ui_controller_id" value="<%= ui_controller_id %>"/>
                 <div class="form-group s_cm_method">
                     <label for="s_cm_method">Имя метода</label>
@@ -32,21 +38,21 @@
                 <button class="btn btn-primary" type="button" name="btn_add_cmethod" id="btn_add_cmethod" value="add">Добавить</button>
             </form>
         </div>
-        <hr />
-        <h5>Список методов:</h5>
-        <div class="row js-methodsList">
-            <% methodsList.forEach(function(method){ %>
-            <div class="col-md-3 " style="border: 1px solid red;">
-                <form id="cmDelForm<%= method["cm_id"] %>" class="form-inline" action="<%= _reqOriginalUrl %>/" method="post">
-                    <input type="hidden" id="ui_controller_id" name="ui_controller_id" value="<%= ui_controller_id %>"/>
-                    <input type="hidden" id="ui_cm_method_id" name="ui_cm_method_id" value="<%= method["cm_id"] %>"/>
-                    <input type="hidden" name="btn_controller_save" value="delete_method" />
-                    <div class="form-group col-sm-12">
-                        <%= method["cm_method"] %> <button class="btn btn-primary btn-xs" type="button" name="btn_del_cm_method" id="btn_del_cm_method<%= method["cm_id"] %>" value="del" style="float: right;">удалить</button>
-                    </div>
-                </form>
-            </div>
-            <% }) %>
+    </div>
+    <hr />
+    <h5>Список методов:</h5>
+    <div class="row js-methodsList">
+        <% methodsList.forEach(function(method){ %>
+        <div class="col-md-3 " style="border: 1px solid red;">
+            <form id="cmDelForm<%= method["cm_id"] %>" class="form-inline" action="<%= _reqOriginalUrl %>/" method="post">
+                <input type="hidden" id="ui_controller_id" name="ui_controller_id" value="<%= ui_controller_id %>"/>
+                <input type="hidden" id="ui_cm_method_id" name="ui_cm_method_id" value="<%= method["cm_id"] %>"/>
+                <input type="hidden" name="btn_controller_save" value="delete_method" />
+                <div class="input-group ">
+                    <input type="text" class="input" value="<%= method["cm_method"] %>"/> <button class="btn btn-primary btn-xs" type="button" name="btn_del_cm_method" id="btn_del_cm_method<%= method["cm_id"] %>" value="del" style="float: right;">удалить</button>
+                </div>
+            </form>
         </div>
+        <% }) %>
     </div>
 </div>

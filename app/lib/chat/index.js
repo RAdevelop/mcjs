@@ -27,7 +27,8 @@ writerRedis.on('error', function(err){
 });*/
 
 const IORedis = require('app/lib/ioredis');
-let redisOpts = {keyPrefix:"chat", password: AppConfig.redis.password};
+let writerRedisOpts = {keyPrefix:"chat", password: AppConfig.redis.password};
+let readerRedisOts = {keyPrefix:"chat", password: AppConfig.redis.password, return_buffers: true};
 //TODO
 //let chanel = 'rooms';
 let chanel = 'chats';
@@ -132,13 +133,13 @@ module.exports = function(http, app)
 		console.log('nsp.on connection');
 		//console.log(socket);
 
-		let readerRedis = new IORedis(redisOpts);
+		let readerRedis = new IORedis(readerRedisOts);
 		readerRedis.on('error', function(err)
 		{
 			Logger.error('readerRedis Client', err);
 		});
 
-		let writerRedis = new IORedis(redisOpts);
+		let writerRedis = new IORedis(writerRedisOpts);
 		writerRedis.on('error', function(err){
 			Logger.error('writerRedis Client', err);
 		});
@@ -157,18 +158,27 @@ module.exports = function(http, app)
 			cb && cb();
 		});
 		
-		socket.on('disconnect', function(){
+		socket.on('disconnect', function(msg){
 
+			console.log('msg =', msg);
 			return readerRedis
 				.unsubscribe(chanel)
 				.then(function ()
 				{
-					return readerRedis.quit().then(function ()
+					readerRedis.removeListener('readerRedis', _messageBuffer);
+
+					return readerRedis.quit()
+					.then(function ()
 					{
 						Logger.info('readerRedis.unsubscribe ');
 
 						Logger.info('Socket  disconnected from "/'+chanel+'"');//это срабатывает... может быть тут надо будет вызывать событие leave()...?
+						return Promise.resolve();
 					});
+				})
+				.then(function ()
+				{
+					return writerRedis.quit();
 				})
 				.catch(function (err)
 				{
@@ -216,9 +226,8 @@ module.exports = function(http, app)
 			writerRedis.publish(chanel, msgpack.encode(data));
 			cb(true);
 		});
-		
-		//readerRedis.on('message', function (channel, message) {
-		readerRedis.on('messageBuffer', function (channel, message)
+
+		function _messageBuffer(channel, message)
 		{
 			//переслали сообщение в чат (канал) через редис потом на клиента
 			let msg = msgpack.decode(message);
@@ -226,7 +235,10 @@ module.exports = function(http, app)
 			console.info('channel: %s, msg: %j', channel, msg);
 			//Logger.info(msg);
 			socket.emit('chat:msg:get', msg);
-		});
+		}
+		//readerRedis.on('message', function (channel, message) {
+		//readerRedis.on('messageBuffer', _messageBuffer);
+		readerRedis.addListener('messageBuffer', _messageBuffer);
 	})
 	.on('error', function (err)
 	{

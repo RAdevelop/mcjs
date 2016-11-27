@@ -192,8 +192,14 @@ class Controller extends Base
 				tplData["ui_controller_pid"]        = parseInt(tplData["ui_controller_pid"], 10)        || 0;
 				tplData["ui_controller_after_id"]   = parseInt(tplData["ui_controller_after_id"], 10)   || 0;
 
+				tplData["s_controller_path"] = tplData["s_controller_path"].trim().split("/");
 
-				if (!tplData["s_controller_path"])
+				if (tplData["s_controller_path"][tplData["s_controller_path"].length-1] == "")
+					tplData["s_controller_path"].pop();
+
+				tplData["s_controller_path"] = tplData["s_controller_path"].join("/").toLowerCase();
+
+				if (!tplData["s_controller_path"] || !(tplData["s_controller_path"].search(/^\/([0-9a-zA-Z_-]+\/?){3,}$/ig) != -1))
 					errors["s_controller_path"] = "Укажите путь";
 
 				if (!tplData["s_controller_name"])
@@ -260,7 +266,6 @@ class Controller extends Base
 			})
 			.then(function (tplData)
 			{
-				console.log(tplData);
 				this.view.setTplData(tplFile, tplData);
 				
 				return Promise.resolve(true);
@@ -787,11 +792,6 @@ function controllerFormValidation(tplData, cb)
 	});
 
 	
-	/*
-	 console.log(validator.passes());
-	 console.log(validator.fails());
-	 console.log(validator.errors.all());
-	 */
 	if(validator.fails())
 	{
 		var inputErrors = new Errors.ValidationError('Ошибка при заполнении фомры');

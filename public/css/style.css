@@ -729,6 +729,10 @@ iframe.iframeVideoEmbed {
     max-height: 211px;
   }
 }
+.open .dropdown-menu .selected {
+  background-color: #F0F0F0;
+}
+
 .uploadWrapper .uploadifive-queue {
   margin: 0px auto;
   width: 100%;
