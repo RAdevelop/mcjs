@@ -129,7 +129,7 @@ CREATE TABLE `controllers` (
   PRIMARY KEY (`c_id`),
   UNIQUE KEY `path` (`c_path`),
   KEY `lrk_level` (`c_lk`,`c_rk`,`c_level`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COMMENT='храним информацию о роутерах проекта';
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8 COMMENT='храним информацию о роутерах проекта';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -138,7 +138,7 @@ CREATE TABLE `controllers` (
 
 LOCK TABLES `controllers` WRITE;
 /*!40000 ALTER TABLE `controllers` DISABLE KEYS */;
-INSERT INTO `controllers` VALUES (1,0,'/admin','Админ стартовая страница','Админ стартовая страница',1,17,22),(4,1,'/admin/router','Роутер','Роутер стартовая страница',2,20,21),(5,1,'/admin/menu','Меню сайта','Меню сайта',2,18,19),(6,0,'/news','Новости','Новости',1,15,16),(7,0,'/blog','Блог','Блог',1,13,14),(8,0,'/events','События','События',1,11,12),(9,0,'/chat','Чат','Чат',1,9,10),(10,0,'/mototreki','МотоТреки','МотоТреки',1,7,8),(11,0,'/motoshop','МотоСалоны','МотоСалоны',1,5,6),(12,0,'/admoto','Объявления','Объявления',1,3,4),(13,0,'/user','Пользователи','Пользователи',1,1,2);
+INSERT INTO `controllers` VALUES (1,0,'/admin','Админ стартовая страница','Админ стартовая страница',1,17,24),(4,1,'/admin/router','Роутер','Роутер стартовая страница',2,20,21),(5,1,'/admin/menu','Меню сайта','Меню сайта',2,18,19),(6,0,'/news','Новости','Новости',1,15,16),(7,0,'/blog','Блог','Блог',1,13,14),(8,0,'/events','События','События',1,11,12),(9,0,'/chat','Чат','Чат',1,9,10),(10,0,'/mototreki','МотоТреки','МотоТреки',1,7,8),(11,0,'/motoshop','МотоСалоны','МотоСалоны',1,5,6),(12,0,'/admoto','Объявления','Объявления',1,3,4),(13,0,'/user','Пользователи','Пользователи',1,1,2),(20,1,'/admin/users/groups','Группы пользователей','Группы пользователей',2,22,23);
 /*!40000 ALTER TABLE `controllers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -405,7 +405,7 @@ CREATE TABLE `menu` (
   UNIQUE KEY `mpath` (`m_path`),
   KEY `lrk_level` (`m_lk`,`m_rk`,`m_level`),
   KEY `cid` (`c_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COMMENT='храним информацию о меню сайта (не админка)';
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COMMENT='храним информацию о меню сайта (не админка)';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -414,7 +414,7 @@ CREATE TABLE `menu` (
 
 LOCK TABLES `menu` WRITE;
 /*!40000 ALTER TABLE `menu` DISABLE KEYS */;
-INSERT INTO `menu` VALUES (1,0,'/chat','Чат','Чат','Чат','Чат',1,9,10,9),(2,0,'/news','Новости','Новости','Новости','Новости',1,7,8,6),(3,0,'/user','МотоСоседи','МотоСоседи','МотоСоседи','МотоСоседи',1,1,2,13),(4,0,'/blog','Блог','Блог','Блог','Блог',1,5,6,7),(5,0,'/events','МотоСобытия','МотоСобытия','МотоСобытия','МотоСобытия',1,11,12,8),(7,0,'/mototreki','МотоТреки','МотоТреки','МотоТреки','МотоТреки',1,15,16,10),(8,0,'/motosaloni','МотоСалоны','МотоСалоны','МотоСалоны','МотоСалоны',1,13,14,11),(9,0,'/admoto','Объявления','Объявления','Объявления','Объявления',1,3,4,12);
+INSERT INTO `menu` VALUES (1,0,'/chat','Чат','Чат','Чат','Чат',1,9,10,9),(2,0,'/news','Новости','Новости','Новости','Новости',1,7,8,6),(3,0,'/user','МотоСоседи','МотоСоседи','МотоСоседи','МотоСоседи',1,1,2,13),(4,0,'/blog','Блог','Блог','Блог','Блог',1,5,6,7),(5,0,'/events','МотоСобытия','МотоСобытия','МотоСобытия','МотоСобытия',1,11,12,8),(7,0,'/mototreki','МотоТреки','МотоТреки','МотоТреки','МотоТреки',1,15,16,10),(8,0,'/motosaloni','МотоСалоны','МотоСалоны','МотоСалоны','МотоСалоны',1,13,14,11),(9,0,'/admoto','Объявления','Объявления','Объявления','Объявления',1,3,4,12),(10,0,'/admin/users/groups','Группы пользователей','Группы пользователей','Группы пользователей','Группы пользователей',1,17,18,20);
 /*!40000 ALTER TABLE `menu` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -754,7 +754,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1480177652,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1480112018,'RoLex',1);
+INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1480363569,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1480112018,'RoLex',1);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1190,7 +1190,7 @@ BEGIN
 	SET res=0;
 	START TRANSACTION;
 	
-	SELECT IF(ISNULL(MAX(r_rk)+1), 1, MAX(r_rk)+1 ) INTO i_right_key
+	SELECT IF(ISNULL(MAX(c_rk)+1), 1, MAX(c_rk)+1 ) INTO i_right_key
 	FROM `controllers`;
 	
 	INSERT INTO `controllers`
@@ -2913,4 +2913,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-11-26 19:53:39
+-- Dump completed on 2016-11-28 23:07:42

@@ -8,7 +8,7 @@
 <h2><% if(ui_controller_id) {%>Изменить<%} else {%>Добавить<%}%> контроллер: <%= s_controller_name %></h2>
 <div class="row">
     <div class="col-xs-2">
-        <div class="open">
+        <div class="col-xs-12 open">
             <ul class="dropdown-menu">
                 <% controllerList.forEach(function(controller){%>
                 <li>
@@ -31,7 +31,7 @@
                 <div role="tabpanel" class="tab-pane active" id="base">
                     <div id="controllerFormBody" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="controllerForm">
                         <div class="panel-body">
-                            <form id="controllerEditForm" class="form-horizontal" action="<%= _reqOriginalUrl %>" method="post">
+                            <form id="controllerEditForm" class="form-horizontal" action="<%= menuItem['m_path'] %>/edit/" method="post">
                                 <input type="hidden" id="ui_controller_id" name="ui_controller_id" value="<%= ui_controller_id %>"/>
                                 <div class="form-group ui_controller_pid">
                                     <label class="col-sm-3 control-label" for="ui_controller_pid">Укажите родительский контроллер</label>
@@ -110,7 +110,14 @@ var ui_controller_pid = "<%= ui_controller_pid %>";
     var $ui_controller_after_id = $controllerEditForm.find('#ui_controller_after_id');
     var inBegin = '<option value="0">в начале</option>';
 
-    $controllerEditForm.postRes({btnId: 'btn_controller_form'});
+    $controllerEditForm.postRes({btnId: 'btn_controller_form',
+        onSuccess: function($dialog, respData)
+        {
+            //console.log(respData);
+            window.location.href = $controllerEditForm.attr('action')+respData['ui_controller_id'];
+            return false;
+        }
+    });
 
     var controllerList = MCJS["controllerList"] || [];
 

@@ -19,10 +19,8 @@ class Controller extends Base
 			"index": {
 				'^\/?$': null,
 			},
-			"add": {
-				'^\/?$': null
-			},
 			"edit": {
+				'^\/?$': null,
 				'^\/?[0-9]+\/?$': ['ui_controller_id']
 			}
 		}
@@ -133,6 +131,7 @@ class Controller extends Base
 	{
 		let tplData = this.getParsedBody();
 		let btn_save = tplData["btn_controller_save"] || null;
+		
 
 		switch (btn_save)
 		{
@@ -165,10 +164,85 @@ class Controller extends Base
 					});
 				break;
 
+			//добавляем новый контроллер в БД
 			case 'add':
 				return this.add(tplData);
 				break;
 		}
+	}
+
+	/**
+	 * добавляем новый контроллер в БД
+	 *
+	 * @param tplData
+	 * @returns {Promise.<T>}
+	 */
+	add(tplData)
+	{
+		let tplFile = 'admin/controller/index.ejs';
+
+		return Promise.resolve(tplData)
+			.bind(this)
+			.then(function (tplData)
+			{
+				let errors = {};
+
+				tplData = this.stripTags(tplData, ["s_controller_path", "s_controller_name", "t_controller_desc"]);
+
+				tplData["ui_controller_pid"]        = parseInt(tplData["ui_controller_pid"], 10)        || 0;
+				tplData["ui_controller_after_id"]   = parseInt(tplData["ui_controller_after_id"], 10)   || 0;
+
+				tplData["s_controller_path"] = tplData["s_controller_path"].trim().split("/");
+
+				if (tplData["s_controller_path"][tplData["s_controller_path"].length-1] == "")
+					tplData["s_controller_path"].pop();
+
+				tplData["s_controller_path"] = tplData["s_controller_path"].join("/").toLowerCase();
+
+				if (!tplData["s_controller_path"] || !(tplData["s_controller_path"].search(/^\/([0-9a-zA-Z_-]+\/?){3,}$/ig) != -1))
+					errors["s_controller_path"] = "Укажите путь";
+
+				if (!tplData["s_controller_name"])
+					errors["s_controller_name"] = "Укажите название";
+
+				this.parseFormErrors(tplData, errors);
+
+				return Promise.resolve(tplData);
+			})
+			.then(function (tplData)
+			{
+				return this.getClass('controller').add(tplData["ui_controller_pid"], tplData["ui_controller_after_id"], tplData["s_controller_path"], tplData["s_controller_name"], tplData["t_controller_desc"])
+					.then(function (c_id)
+					{
+						tplData['ui_controller_id'] = c_id;
+					});
+			})
+			.then(function (tplData)
+			{
+				this.view.setTplData(tplFile, tplData);
+
+				return Promise.resolve(true);
+			})
+			.catch(Errors.AlreadyInUseError, Errors.ValidationError, function (err) //такие ошибки не уводят со страницы
+			{
+				if (err.name == 'AlreadyInUseError')
+				{
+					tplData.formError.message = 'Такой контроллер уже существует';
+					tplData.formError.fields['s_controller_path'] = "Укажите путь";
+					tplData.formError.error = true;
+					tplData.formError.errorName = err.name;
+
+					err['data'] = tplData;
+					//console.log(err);
+				}
+
+				this.view.setTplData(tplFile, err['data']);
+				return Promise.resolve(true);
+			})
+			.catch(function (err)
+			{
+				throw err;
+			});
 	}
 
 	/**
@@ -383,281 +457,6 @@ exports.add = function(req, res, next)
 	});
 };
 
-/**
- * показываем страницу для Роутера по его id
- *
- * @param req
- * @param res
- * @param next
- */
-exports.edit = function(req, res, next)
-{	
-	var tplData = defaultData();
-	tplData.title = res.app.settings.title + ' | Router start page';
-	
-	var rId = parseInt(req.params.id, 10);
-	if(!rId || rId <= 0) return next(Errors.HttpStatusError(404, "Роутер не найден"));
-	
-	var parallelTasks = [
-		function(cb){
-			setTimeout(function()
-			{
-				Models.get("Router").getById(rId, function(err, rData)
-				{
-					if(err) return cb(err);
-					
-					if(!rData) return cb(Errors.HttpStatusError(404, "Роутер не найден"));
-					
-					tplData.ui_controller_id = rData["c_id"];
-					tplData.ui_controller_pid = rData["c_pid"];
-					tplData.s_controller_path = rData["c_path"];
-					tplData.s_controller_name = rData["c_name"];
-					tplData.t_controller_desc = rData["c_desc"];
-					
-					return cb(null, tplData);
-				});
-			}, 1);
-		},
-		function(cb){
-			setTimeout(function(){
-				Models.get("Router").getAll(function(err, controllerList)
-				{
-					if(err) return cb(err, tplData);
-					
-					cb(null, controllerList);
-				});
-			}, 1);
-		},
-		function(cb){
-			setTimeout(function(){
-				Models.get("Router").getAllMethods(rId, function(err, mList)
-				{
-					if(err) return cb(err, mList);
-					
-					return cb(null, mList);
-				});
-			}, 1);
-		}
-	];
-	
-	Async.parallel(parallelTasks,
-		function(err, results)
-		{
-			//Models.end();
-			if(err) return next(err);
-			
-			tplData = results[0] || tplData;
-			tplData.controllerList = results[1] || [];
-			tplData.methodsList = results[2] || [];
-			
-			//экспрот данных в JS на клиента
-			res.expose(tplData.controllerList, 'controllerList');
-			res.expose(tplData.methodsList, 'methodsList');
-			
-			var View = new Template(req, res, next, Models);
-			View.render(tplFile, tplData);
-		}
-	);
-};
-/**
- * обновляем данные для Роутера по его id
- *
- * @param req
- * @param res
- * @param next
- */
-exports.update = function(req, res, next)
-{	
-	var tplData = defaultData();
-	tplData.title = res.app.settings.title + ' | Router start page';
-	tplData = _.assign(tplData, req.body);
-	
-	tplData.ui_controller_id = parseInt(tplData.ui_controller_id, 10);
-	if(!tplData.ui_controller_id || tplData.ui_controller_id <= 0) return next(new Errors.HttpStatusError(404, "Роутер не найден"));
-	
-	Async.waterfall(
-		[
-			function(asyncCb) //валидация формы
-			{
-				controllerFormValidation(tplData, function(err, tplData)
-				{
-					if(err)
-					{
-						Models.get("Router").getAll(function(err2, controllerList)
-						{
-							if(err2) return asyncCb(err2, tplData);
-							
-							tplData.controllerList = controllerList;
-							
-							return asyncCb(err, tplData);
-						});
-					}
-					else
-						return asyncCb(err, tplData);
-					
-				});
-			},
-			function(tplData, asyncCb) //
-			{
-				Models.get("Router").getById(tplData.ui_controller_id, function(err, rData)
-				{
-					if(err) return asyncCb(err, null);
-					return asyncCb(null, tplData);
-				});
-			},
-			function(tplData, asyncCb)
-			{
-				Models.get("Router").updById(tplData.ui_controller_id, tplData.ui_controller_pid, tplData.ui_controller_after_id, tplData.s_controller_path, tplData.s_controller_name, tplData.t_controller_desc, function(err, rId)
-				{
-					if(err)
-					{
-						Models.get("Router").getAll(function(err2, controllerList)
-						{
-							if(err2) return asyncCb(err2, tplData);
-							
-							tplData.controllerList = controllerList;
-							
-							return asyncCb(err, tplData);
-						});
-					}
-					else
-					return asyncCb(err, tplData);
-				});
-			}
-		],
-		function (err, tplData)
-		{
-			//Models.end();
-			//console.log(err);
-			/*
-			 нужно проверять тип шибки. в зависимости от типа ошибки,
-			 принимать решение,вызывать ли next(err) или обработать ситуацию
-			 */
-			if(err)
-			{
-				tplData.formError.error = true;
-				tplData.formError.message = err.message;
-				switch (err.name)
-				{
-					default:
-						return  next(err);
-					break;
-					
-					case 'ValidationError':
-						
-						for(var i in err.errors)
-							tplData.formError.fields[err.errors[i].field] = err.errors[i].message;
-					break;
-					
-					case 'DbErrDuplicateEntry':
-						tplData.formError.message = "Роутер с таким путем уже есть!";
-					break;
-				}
-			}
-			else if (tplData)
-			return res.redirect(req.baseUrl+'/'+tplData.ui_controller_id+'/edit');
-			
-			//экспрот данных в JS на клиента
-			res.expose(tplData.controllerList, 'controllerList');
-			
-			var View = new Template(req, res, next, Models);
-			View.render(tplFile, tplData);
-		}
-	);
-};
-
-/**
- * добавляем метод к рутеру (ajax)
- * @param req
- * @param res
- * @param next
- */
-exports.addMethod = function(req, res, next)
-{
-	var tplData = _.assign({}, req.body);
-	//req._reqbody;
-	tplData.methodsList = [];
-	
-	tplData.formError = {
-		message: '',
-		error: false,
-		fields: {
-			i_controller_id: null,
-			s_cm_method: null
-		}
-	};
-	
-	Async.waterfall(
-		[
-			function(asyncCb) //провека формы
-			{
-				var formErrs = {};
-				
-				if (!req._reqbody["i_controller_id"])
-					formErrs["i_controller_id"] = "Не указан роутер";
-				else
-					tplData.ui_controller_id = tplData["i_controller_id"];
-				
-				if (!req._reqbody["s_cm_method"] || !(tplData["s_cm_method"].search(/^[a-zA-Z][a-zA-Z_]{2,33}$/ig) != -1))
-					formErrs["s_cm_method"] = "Не указан метод";
-				
-				var kErr = Object.keys(formErrs);
-				if (kErr.length > 0)
-				{
-					tplData.formError.error = true;
-					tplData.formError.message = "Ошибка заполнения формы";
-					
-					kErr.forEach(function(e, i){
-						tplData.formError.fields[e] = formErrs[e];
-					});
-					
-					return asyncCb(new Errors.ValidationError(tplData.formError.message), tplData);
-				}
-				
-				return asyncCb(null, tplData);
-			},
-			function(tplData, asyncCb) //добавим метод
-			{
-				Models.get("Router").addMethod(tplData.i_controller_id, tplData.s_cm_method, function(err, rmId)
-				{
-					
-					tplData.rmId = null;
-					
-					if (err) return asyncCb(err, tplData);
-					
-					tplData.rmId = rmId;
-					return asyncCb(null, tplData);
-				});
-			}
-		],
-		function(err, tplData)
-		{
-			//Models.end();
-			//console.log(err);
-			if(err)
-			{
-				tplData.formError.error = true;
-				
-				switch (err.name)
-				{
-					default:
-						tplData.formError.message = "Ошибка заполнения формы. Попробуйте позже";
-						break;
-					
-					case 'DbErrDuplicateEntry':
-						tplData.formError.message = "Такой метод уже есть у роутера.";
-						break;
-					case 'ValidationError':
-						
-						break;
-				}
-			}
-			
-			var View = new Template(req, res, next, Models);
-			View.render('admin/controller/methods.ejs', tplData);
-		}
-	);
-};
 
 /**
  * удаляем (отвязываем) метод от рутера (AJAX)

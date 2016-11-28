@@ -81,6 +81,42 @@ class Controller extends BaseModel
 	}
 
 	/**
+	 * добавляем новый контроллер в БД
+	 *
+	 * @param cPid
+	 * @param cAfterId
+	 * @param cPath
+	 * @param cName
+	 * @param cDesc
+	 * @returns {*}
+	 */
+	add(cPid, cAfterId, cPath, cName, cDesc)
+	{
+		let sql = `CALL controller_create(?, ?, ?, ?, ?,@c_id); SELECT @c_id AS c_id FROM DUAL;`;
+
+		let sqlData = [cPid, cAfterId, cPath, cName, cDesc];
+
+		return this.constructor.conn().multis(sql, sqlData)
+			.bind(this)
+			.then(function (res)
+			{
+				let c_id = (res[1][0] && res[1][0]["c_id"] ? res[1][0]["c_id"] : 0);
+
+				if (!c_id)
+					throw new Errors.HttpError(500, 'не удалось создать контроллер');
+
+				return Promise.resolve(c_id);
+			})
+			.catch(function (err)
+			{
+				if (err.name == 'DbErrDuplicateEntry')
+				throw new Errors.AlreadyInUseError();
+
+				throw err;
+			});
+	}
+
+	/**
 	* добавляем метод в общий список, и привязываем его к указанному контроллеру
 	 *
 	* @param c_id

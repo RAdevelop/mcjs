@@ -49,6 +49,26 @@ class Menu extends Base
 		return this.model('menu').updById(menuId, menuPid, menuAfterId, menuPath, menuName, menuTitle, menuH1, menuDesc, menuControllerId);
 	}
 
+	/**
+	 * добавляем в БД пункт меню
+	 * 
+	 * @param mPid
+	 * @param mAfterId
+	 * @param mPath
+	 * @param mName
+	 * @param mTitle
+	 * @param mH1
+	 * @param mDesc
+	 * @param mCId
+	 * @throws
+	 *  DbError
+	 *
+	 */
+	add(mPid, mAfterId, mPath, mName, mTitle, mH1, mDesc, mCId)
+	{
+		return this.model('menu').add(mPid, mAfterId, mPath, mName, mTitle, mH1, mDesc, mCId);
+	}
+
 }
 //************************************************************************* module.exports
 //писать после class Name....{}

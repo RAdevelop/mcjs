@@ -10,7 +10,7 @@ const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const methodOverride = require('method-override');
+//const methodOverride = require('method-override');
 const Errors = require('app/lib/errors');
 
 /**********************/
@@ -83,7 +83,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(methodOverride(function(req)//, res
+/*app.use(methodOverride(function(req)//, res
 {
 	if (req.body && typeof req.body === 'object' && '_method' in req.body) {
 		// look in urlencoded POST bodies and delete it
@@ -91,7 +91,7 @@ app.use(methodOverride(function(req)//, res
 		delete req.body._method;
 		return method;
 	}
-}));
+}));*/
 app.use(cookieParser(config.session.secret));
 //app.use(Errors.middleware.crashProtector());
 app.use(Session());

@@ -1,6 +1,7 @@
 "use strict";
 
 //const IORedis = require('ioredis'); TODO может быть придется использовать для кеширования
+const Errors = require('app/lib/errors');
 const BaseModel = require('app/lib/db');
 
 class Menu extends BaseModel
@@ -15,23 +16,26 @@ class Menu extends BaseModel
 	 * @param mH1
 	 * @param mDesc
 	 * @param mCId
-	 * @param cb
 	 * @throws
 	 *  DbError
 	 *
 	 */
-	 add(mPid, mAfterId, mPath, mName, mTitle, mH1, mDesc, mCId, cb)
+	 add(mPid, mAfterId, mPath, mName, mTitle, mH1, mDesc, mCId)
 	 {
 		 mAfterId = mAfterId || 0;
 		 let sql = 'CALL menu_create(?, ?, ?, ?, ?, ?, ?, ?, @last_ins_id); SELECT @last_ins_id AS m_id FROM DUAL;';
 		 let sqlData = [mPid, mAfterId, mPath, mName, mTitle, mH1, mDesc, mCId];
 
-		 this.constructor.conn().multis(sql, sqlData, function(err, res)
-		 {
-			 if(err) return cb(err);
+		 return this.constructor.conn().multis(sql, sqlData)
+			 .then(function(res)
+			 {
+				 let m_id = (res[1][0] && res[1][0]["m_id"] ? res[1][0]["m_id"] : 0);
 
-			 cb(null, res[1][0]["m_id"]);
-		 });
+				 if (!m_id)
+					 throw new Errors.HttpError(500, 'не удалось создать меню');
+
+				 return Promise.resolve(m_id);
+			 });
 	 }
 	
 	/**

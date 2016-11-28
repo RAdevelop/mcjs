@@ -32,6 +32,11 @@ class Controller extends Base
 		return this.model('controller').updById(c_id, c_pid, c_after_id, c_path, c_name, c_desc);
 	}
 
+	add(c_pid, c_after_id, c_path, c_name, c_desc)
+	{
+		return this.model('controller').add(c_pid, c_after_id, c_path, c_name, c_desc);
+	}
+
 	/**
 	 * добавляем метод в общий список, и привязываем его к указанному контроллеру
 	 *

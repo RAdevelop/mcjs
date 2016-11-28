@@ -142,7 +142,7 @@ class Menu extends Base
 	{
 		let tplData = this.getParsedBody();
 		let btn_save_menu = tplData["btn_save_menu"] || null;
-
+		
 		switch (btn_save_menu)
 		{
 			default:
@@ -174,6 +174,82 @@ class Menu extends Base
 				return this.add(tplData);
 				break;
 		}
+	}
+
+	/**
+	 * добавляем новый контроллер в БД
+	 *
+	 * @param tplData
+	 * @returns {Promise.<T>}
+	 */
+	add(tplData)
+	{
+		let tplFile = 'admin/controller/index.ejs';
+
+
+
+		return Promise.resolve(tplData)
+			.bind(this)
+			.then(function (tplData)
+			{
+				let errors = {};
+
+				tplData = this.stripTags(tplData, ["s_menu_path", "s_menu_name", "s_menu_title", "s_menu_h1", "t_menu_desc"]);
+
+				tplData["i_menu_pid"] = parseInt(tplData["i_menu_pid"], 10) || 0;
+				tplData["i_menu_after_id"] = parseInt(tplData["i_menu_after_id"], 10) || 0;
+				tplData["i_menu_controller_id"] = parseInt(tplData["i_menu_controller_id"], 10) || 0;
+
+				if (!tplData["s_menu_path"])
+					errors["s_menu_path"] = "Укажите URL меню";
+
+				if (!tplData["s_menu_name"])
+					errors["s_menu_name"] = "Укажите Название меню";
+
+				if (!tplData["s_menu_title"])
+					errors["s_menu_title"] = "Укажите Заголовок страниц";
+
+				if (!tplData["s_menu_h1"])
+					errors["s_menu_h1"] = "Укажите H1 страниц";
+
+				this.parseFormErrors(tplData, errors, 'Ошибки при заполнении формы');
+
+				return Promise.resolve(tplData);
+			})
+			.then(function (tplData)
+			{
+				return this.getClass('menu').add(tplData["i_menu_pid"], tplData["i_menu_after_id"], tplData["s_menu_path"], tplData["s_menu_name"], tplData["s_menu_title"], tplData["s_menu_h1"], tplData["t_menu_desc"], tplData["i_menu_controller_id"])
+					.then(function (menuId)
+					{
+						tplData['menuId'] = menuId;
+					});
+			})
+			.then(function (tplData)
+			{
+				this.view.setTplData(tplFile, tplData);
+
+				return Promise.resolve(true);
+			})
+			.catch(Errors.AlreadyInUseError, Errors.ValidationError, function (err) //такие ошибки не уводят со страницы
+			{
+				if (err.name == 'AlreadyInUseError')
+				{
+					tplData.formError.message = 'Такой пункт меню уже существует';
+					tplData.formError.fields['s_menu_path'] = "Укажите URL меню";
+					tplData.formError.error = true;
+					tplData.formError.errorName = err.name;
+
+					err['data'] = tplData;
+					//console.log(err);
+				}
+
+				this.view.setTplData(tplFile, err['data']);
+				return Promise.resolve(true);
+			})
+			.catch(function (err)
+			{
+				throw err;
+			});
 	}
 
 	/**
