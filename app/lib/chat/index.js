@@ -121,7 +121,7 @@ module.exports = function(http, app)
 		if(!socket.handshake.session.rtid)
 		{
 			//let error = new Error('error:authentication');
-			let error = new Errors('error:authentication');
+			let error = new Error('error:authentication');
 
 			return next(error);
 

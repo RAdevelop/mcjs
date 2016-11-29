@@ -6,12 +6,12 @@ const Base = require('app/lib/class');
 
 class Menu extends Base
 {
-	getAll()
+	getAll(is_admin_menu = null, all = true)
 	{
 		const self = this;
 		return new Promise(function (resolve, reject)
 		{
-			self.model('menu').getAll(function(err, menuList)
+			self.model('menu').getAll(is_admin_menu, all, function(err, menuList)
 			{
 				if (err)
 					return reject(err);

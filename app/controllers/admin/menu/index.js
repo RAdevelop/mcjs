@@ -186,8 +186,6 @@ class Menu extends Base
 	{
 		let tplFile = 'admin/controller/index.ejs';
 
-
-
 		return Promise.resolve(tplData)
 			.bind(this)
 			.then(function (tplData)
@@ -221,7 +219,8 @@ class Menu extends Base
 				return this.getClass('menu').add(tplData["i_menu_pid"], tplData["i_menu_after_id"], tplData["s_menu_path"], tplData["s_menu_name"], tplData["s_menu_title"], tplData["s_menu_h1"], tplData["t_menu_desc"], tplData["i_menu_controller_id"])
 					.then(function (menuId)
 					{
-						tplData['menuId'] = menuId;
+						tplData['i_menu_id'] = menuId;
+						return Promise.resolve(tplData);
 					});
 			})
 			.then(function (tplData)
@@ -292,7 +291,11 @@ class Menu extends Base
 			})
 			.then(function (tplData)
 			{
-				return this.getClass('menu').updById(tplData["i_menu_id"], tplData["i_menu_pid"], tplData["i_menu_after_id"], tplData["s_menu_path"], tplData["s_menu_name"], tplData["s_menu_title"], tplData["s_menu_h1"], tplData["t_menu_desc"], tplData["i_menu_controller_id"]);
+				return this.getClass('menu').updById(tplData["i_menu_id"], tplData["i_menu_pid"], tplData["i_menu_after_id"], tplData["s_menu_path"], tplData["s_menu_name"], tplData["s_menu_title"], tplData["s_menu_h1"], tplData["t_menu_desc"], tplData["i_menu_controller_id"])
+					.then(function ()
+					{
+						return Promise.resolve(tplData);
+					});
 			})
 			.then(function (tplData)
 			{

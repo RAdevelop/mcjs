@@ -1,5 +1,10 @@
 <ul class="nav navbar-nav">
-<% menuSite.forEach(function(item){ %><li <%- (menuItem && menuItem['m_id'] == item["m_id"] ? 'class="active"': '')%> ><a href="<%= item["m_path"] %>/"><%=item["m_name"]%></a></li><% }); %>
+<% menuSite.forEach(function(item)
+{
+	let css_class = (menuItem && menuItem['m_id'] == item["m_id"] ? 'active': '');
+	%><li class="<%- css_class%>" >
+		<a href="<%= item["m_path"] %>/"><%=item["m_name"]%></a></li><%
+	}); %>
 </ul>
 <!--
 <ul class="nav navbar-nav">

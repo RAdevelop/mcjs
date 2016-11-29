@@ -70,12 +70,15 @@ class Menu extends BaseModel
 	 updById(mId, mPid, mAfterId, mPath, mName, mTitle, mH1, mDesc, mCId)
 	 {
 		 mAfterId = mAfterId || 0;
-		 let sql = `CALL menu_update(?, ?, ?, ?, ?, ?, ?, ?, ?, @res);`;
+		 let sql = `CALL menu_update(?, ?, ?, ?, ?, ?, ?, ?, ?, @res); SELECT @res AS res FROM DUAL;`;
 		 let sqlData = [mId, mPid, mAfterId, mPath, mName, mTitle, mH1, mDesc, mCId];
 		 
-		 return this.constructor.conn().call(sql, sqlData)
-			 .then(function (mId)
+		 return this.constructor.conn().multis(sql, sqlData)
+			 .then(function (res)
 			 {
+				 if (!(res[1][0] && res[1][0]["res"]))
+					 throw new Errors.HttpError(500, 'не удалось обновить меню');
+
 				return Promise.resolve(mId);
 			 });
 	 }
@@ -87,14 +90,35 @@ class Menu extends BaseModel
 	* @throws
 	*  DBError
 	*/
-	getAll(cb)
+	getAll(is_admin_menu = null, all = true, cb)
 	{
-		let sql = `SELECT m.m_id, m.m_pid, m.m_path, m.m_name, m.m_title, m.m_h1, m.m_desc, m.m_level, m.m_lk, m.m_rk, REPEAT('&nbsp;', IF(m.m_level > 1, m.m_level*2, 0)) AS m_nbsp, c.c_id, c.c_path 
+		let where = [];
+		if (null === is_admin_menu)
+		{
+			//is_admin_menu = '0,1';
+			where.push('IN(0,1)');
+		}
+		else
+		{
+			is_admin_menu = parseInt(is_admin_menu, 10);
+			is_admin_menu = (is_admin_menu ? 1 : 0);
+			where.push('= '+is_admin_menu);
+		}
+
+		if (!all)
+			where.push('m.m_level > 1');
+
+		where = where.join(' AND ');
+
+		let sql = `SELECT m.m_id, m.m_pid, m.m_path, m.m_name, m.m_title, m.m_h1, m.m_desc, m.m_level, m.m_lk, m.m_rk, REPEAT('&nbsp;', IF(m.m_level > 1, (m.m_level-1)*2, 0)) AS m_nbsp, m.m_is_admin, 
+		c.c_id, c.c_path 
 		FROM menu AS m
-		JOIN controllers AS c ON(c.c_id = m.c_id) 
+		JOIN controllers AS c ON(c.c_id = m.c_id)
+		 WHERE m.m_is_admin ${where}
 		ORDER BY m.m_lk`;
-		
-		//this.constructor.conn().ps(sql, [], function(err, res)
+
+		//console.log(sql);
+
 		this.constructor.conn().ps(sql, null, function(err, res)
 		{
 			if (err) return cb(err, null);
@@ -115,7 +139,7 @@ class Menu extends BaseModel
 	 * @param cb
 	 * @throws DbError
 	 */
-	getByPath(mPath, cb)
+	getByPath(mPath, is_admin_menu = null, cb)
 	{
 		let resPath = [];
 		let pHolders = [];
@@ -133,15 +157,27 @@ class Menu extends BaseModel
 			pHolders.push('?');
 			cnt--;
 		});
+
+		if (null === is_admin_menu)
+		{
+			is_admin_menu = '0,1';
+		}
+		else
+		{
+			is_admin_menu = parseInt(is_admin_menu, 10);
+			is_admin_menu = (is_admin_menu ? 1 : 0);
+		}
 		
 		let sql = `SELECT m.m_id, m.m_pid, m.m_path, m.m_name, m.m_title, m.m_h1, m.m_desc, m.m_level, m.m_lk, m.m_rk, 
-		REPEAT('&nbsp;', IF(m.m_level > 1, m.m_level*2, 0)) AS m_nbsp, c.c_id, c.c_path
-		FROM \`menu\` AS m
-		JOIN \`controllers\` AS c ON(c.c_id = m.c_id)
-		WHERE m.m_path IN(${pHolders.join(',')} )
+		REPEAT('&nbsp;', IF(m.m_level > 1, m.m_level*2, 0)) AS m_nbsp, m.m_is_admin, c.c_id, c.c_path
+		FROM menu AS m
+		JOIN controllers AS c ON(c.c_id = m.c_id)
+		WHERE m.m_is_admin IN(${is_admin_menu}) AND m.m_path IN(${pHolders.join(',')} )
 		ORDER BY LENGTH(m.m_path) DESC
 		LIMIT 1`;
-		
+
+		//console.log(sql);
+
 		this.constructor.conn().sRow(sql, resPath, function(err, res)
 		{
 			if (err) return cb(err);

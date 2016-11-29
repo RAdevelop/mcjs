@@ -15,7 +15,7 @@ class Controller extends BaseModel
 	*/
 	getAll()
 	{
-		let sql = `SELECT c_id,	c_pid, c_path, c_name, c_desc, c_level, c_lk, c_rk, REPEAT('&nbsp;', IF(c_level > 1, c_level*2, 0)) AS c_nbsp
+		let sql = `SELECT c_id,	c_pid, c_path, c_name, c_desc, c_level, c_lk, c_rk, REPEAT('&nbsp;', IF(c_level > 1, (c_level-1)*2, 0)) AS c_nbsp
 			FROM controllers
 			ORDER BY c_lk`;
 		
@@ -64,11 +64,26 @@ class Controller extends BaseModel
 	 */
 	updById(c_id, cPid, cAfterId, cPath, cName, cDesc)
 	{
-		let sql = `CALL controller_update(?, ?, ?, ?, ?, ?,@res);`;
+		let sql = `CALL controller_update(?, ?, ?, ?, ?, ?,@res); SELECT @res AS res FROM DUAL;`;
 
 		let sqlData = [c_id, cPid, cAfterId, cPath, cName, cDesc];
 
-		return this.constructor.conn().call(sql, sqlData);
+		return this.constructor.conn().call(sql, sqlData)
+			.bind(this)
+			.then(function (res)
+			{
+				if (!(res[1][0] && res[1][0]["res"]))
+					throw new Errors.HttpError(500, 'не удалось обновить контроллер');
+
+				return Promise.resolve(c_id);
+			})
+			.catch(function (err)
+			{
+				if (err.name == 'DbErrDuplicateEntry')
+					throw new Errors.AlreadyInUseError();
+
+				throw err;
+			});
 
 		/*sql = 'SELECT @res AS res FROM DUAL;'
 		 self.db.q(sql, function(err, res)

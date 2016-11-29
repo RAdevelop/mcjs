@@ -33,8 +33,18 @@ class Registration extends Base
 	 */
 	indexActionGet()
 	{
-		if (this.getUserId())
-			return this.getRes().redirect('back');
+		/*if (this.getUserId())
+			return this.getRes().redirect('back');*/
+
+		if(this.getUserId())
+		{
+			return Promise.resolve()
+				.bind(this)
+				.then(function ()
+				{
+					return this.getRes().redirect('back');
+				});
+		}
 		
 		let tplData = {
 			m_email: '',

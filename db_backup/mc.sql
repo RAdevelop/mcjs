@@ -138,7 +138,7 @@ CREATE TABLE `controllers` (
 
 LOCK TABLES `controllers` WRITE;
 /*!40000 ALTER TABLE `controllers` DISABLE KEYS */;
-INSERT INTO `controllers` VALUES (1,0,'/admin','Админ стартовая страница','Админ стартовая страница',1,17,24),(4,1,'/admin/router','Роутер','Роутер стартовая страница',2,20,21),(5,1,'/admin/menu','Меню сайта','Меню сайта',2,18,19),(6,0,'/news','Новости','Новости',1,15,16),(7,0,'/blog','Блог','Блог',1,13,14),(8,0,'/events','События','События',1,11,12),(9,0,'/chat','Чат','Чат',1,9,10),(10,0,'/mototreki','МотоТреки','МотоТреки',1,7,8),(11,0,'/motoshop','МотоСалоны','МотоСалоны',1,5,6),(12,0,'/admoto','Объявления','Объявления',1,3,4),(13,0,'/user','Пользователи','Пользователи',1,1,2),(20,1,'/admin/users/groups','Группы пользователей','Группы пользователей',2,22,23);
+INSERT INTO `controllers` VALUES (1,0,'/admin','Админка','Админ стартовая страница',1,19,26),(4,1,'/admin/controller','Контроллеры (роутеры) сайта','Контроллеры (роутеры) сайта',2,22,23),(5,1,'/admin/menu','Меню сайта','Меню сайта',2,20,21),(6,21,'/news','Новости','Новости',2,16,17),(7,21,'/blog','Блог','Блог',2,14,15),(8,21,'/events','События','События',2,12,13),(9,21,'/chat','Чат','Чат',2,10,11),(10,21,'/mototreki','МотоТреки','МотоТреки',2,8,9),(11,21,'/motoshop','МотоСалоны','МотоСалоны',2,6,7),(12,21,'/admoto','Объявления','Объявления',2,4,5),(13,21,'/user','Пользователи','Пользователи',2,2,3),(20,1,'/admin/users/groups','Группы пользователей','Группы пользователей',2,24,25),(21,0,'/home','Главная страница','Главная страница',1,1,18);
 /*!40000 ALTER TABLE `controllers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -400,12 +400,14 @@ CREATE TABLE `menu` (
   `m_lk` smallint(5) unsigned NOT NULL,
   `m_rk` smallint(5) unsigned NOT NULL,
   `c_id` smallint(5) unsigned NOT NULL,
+  `m_is_admin` tinyint(1) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`m_id`),
   UNIQUE KEY `m_name` (`m_name`),
   UNIQUE KEY `mpath` (`m_path`),
+  KEY `cid` (`c_id`),
   KEY `lrk_level` (`m_lk`,`m_rk`,`m_level`),
-  KEY `cid` (`c_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COMMENT='храним информацию о меню сайта (не админка)';
+  KEY `adm_level` (`m_is_admin`,`m_level`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 COMMENT='храним информацию о меню сайта (не админка)';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -414,7 +416,7 @@ CREATE TABLE `menu` (
 
 LOCK TABLES `menu` WRITE;
 /*!40000 ALTER TABLE `menu` DISABLE KEYS */;
-INSERT INTO `menu` VALUES (1,0,'/chat','Чат','Чат','Чат','Чат',1,9,10,9),(2,0,'/news','Новости','Новости','Новости','Новости',1,7,8,6),(3,0,'/user','МотоСоседи','МотоСоседи','МотоСоседи','МотоСоседи',1,1,2,13),(4,0,'/blog','Блог','Блог','Блог','Блог',1,5,6,7),(5,0,'/events','МотоСобытия','МотоСобытия','МотоСобытия','МотоСобытия',1,11,12,8),(7,0,'/mototreki','МотоТреки','МотоТреки','МотоТреки','МотоТреки',1,15,16,10),(8,0,'/motosaloni','МотоСалоны','МотоСалоны','МотоСалоны','МотоСалоны',1,13,14,11),(9,0,'/admoto','Объявления','Объявления','Объявления','Объявления',1,3,4,12),(10,0,'/admin/users/groups','Группы пользователей','Группы пользователей','Группы пользователей','Группы пользователей',1,17,18,20);
+INSERT INTO `menu` VALUES (1,11,'/chat','Чат','Чат','Чат','Чат',2,10,11,9,0),(2,11,'/news','Новости','Новости','Новости','Новости',2,8,9,6,0),(3,11,'/user','МотоСоседи','МотоСоседи','МотоСоседи','МотоСоседи',2,2,3,13,0),(4,11,'/blog','Блог','Блог','Блог','Блог',2,6,7,7,0),(5,11,'/events','МотоСобытия','МотоСобытия','МотоСобытия','МотоСобытия',2,12,13,8,0),(7,11,'/mototreki','МотоТреки','МотоТреки','МотоТреки','МотоТреки',2,16,17,10,0),(8,11,'/motosaloni','МотоСалоны','МотоСалоны','МотоСалоны','МотоСалоны',2,14,15,11,0),(9,11,'/admoto','Объявления','Объявления','Объявления','Объявления',2,4,5,12,0),(10,12,'/admin/users/groups','Группы пользователей','Группы пользователей','Группы пользователей','Группы пользователей',2,24,25,20,1),(11,0,'/','Главная страница','Главная страница','Главная страница','Главная страница',1,1,18,21,0),(12,0,'/admin','Админка','Админка','Админка главная страница','Админка главная страница',1,19,26,1,1),(13,12,'/admin/menu','Меню сайта','Меню сайта','Меню сайта','Меню сайта',2,20,21,5,1),(14,12,'/admin/controller','Контроллеры (роутеры) сайта','Контроллеры (роутеры) сайта','Контроллеры (роутеры) сайта','Контроллеры (роутеры) сайта',2,22,23,4,1);
 /*!40000 ALTER TABLE `menu` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -754,7 +756,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1480363569,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1480112018,'RoLex',1);
+INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1480453643,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1480421307,'RoLex',1);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2661,11 +2663,12 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8 */ ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_VALUE_ON_ZERO' */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE DEFINER=`mc`@`%` PROCEDURE `menu_update`(IN inMenuId INT, IN inMenuPid INT, IN inAfterId INT, IN inMenuPath VARCHAR(255), IN inMenuName VARCHAR(100), IN inMenuTitle TEXT, IN inMenuH1 TEXT, IN inMenuDesc TEXT, IN inCId INT, OUT res INT)
 BEGIN
 	DECLARE rPid, rId, rLk, rRk, bIntoSelf INT DEFAULT 0;
+    DECLARE isAdmin INT DEFAULT 1;
 	
 	DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
 	SET res=0;
@@ -2675,7 +2678,6 @@ BEGIN
 	m_lk, m_rk INTO rLk, rRk
 	FROM `menu`
 	WHERE m_id = inMenuId;
-	
 	
 	SELECT EXISTS (
 		SELECT 1 
@@ -2711,6 +2713,16 @@ BEGIN
 		IF res=1 THEN
 			CALL menu_after(inMenuId, inAfterId, res);
 			
+            SELECT 
+			m_is_admin INTO isAdmin
+			FROM `menu`
+			WHERE m_id = inMenuPid;
+            
+            UPDATE `menu`
+			SET
+			m_is_admin	= isAdmin
+			WHERE m_id = inMenuId;
+            
 		END IF;	
 		
 		IF res=0 THEN
@@ -2913,4 +2925,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-11-28 23:07:42
+-- Dump completed on 2016-11-30  0:07:44

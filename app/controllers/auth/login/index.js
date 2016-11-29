@@ -35,8 +35,18 @@ class Login extends Base
 	 */
 	indexActionGet()
 	{
+		/*if(this.getUserId())
+			return this.getRes().redirect('back');*/
+
 		if(this.getUserId())
-			return this.getRes().redirect('back');
+		{
+			return Promise.resolve()
+				.bind(this)
+				.then(function ()
+				{
+					return this.getRes().redirect('back');
+				});
+		}
 		
 		if (this.getArgs().length > 0)
 			throw new Errors.HttpStatusError(404, "Not Found");

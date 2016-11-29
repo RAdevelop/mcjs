@@ -22,20 +22,17 @@ module.exports = function(Classes, Control)
 	 });
 	
 	 */
-	
-	//router.use(Classes.setReqRes());
-	router.use(require('app/middlewares/_reqbody'));
 
+	router.use(require('app/middlewares/_reqbody'));
 	router.use(require('app/middlewares/user/load.js')(Classes));
-	router.use(require('app/middlewares/menu/site.js')(Classes));
-	
-	router.use('/chat', require('app/routes/chat'));
-	
+
 	//сработает для всех адресов site.com/admin*
 	router.use('/admin*', UserIsAuth);
+
+	router.use(require('app/middlewares/menu/site.js')(Classes));
+
 	
-	//router.use('/admin/menu', require('app/routes/admin/menu'));//TODO переписать на контроллеры
-	//router.use('/admin/controller', require('app/routes/admin/controller')); //TODO переписать на контроллеры
+	router.use('/chat', require('app/routes/chat'));
 	
 	/*****************************************************/
 	
@@ -43,6 +40,10 @@ module.exports = function(Classes, Control)
 	
 	//именно после верхних роутеров, которых нет в меню (в БД)
 	//TODO наверное после '*', добавить миддле варе для проверки прав юзера у текущего пункта меню
+	//а возможно лучше добавить в класс /app/lib/controller/index.js
+	//и проверять по имени метода разрешенного.. get_edit post_edit post_add get_index ...
+	//и если права есть, то права на владение редактируемого объекта проверять в контроллере
+	//например, редактировать фотоальбом может только его владелец u_id
 	router.all('*', function(req, res, next)
 	{
 
@@ -63,7 +64,7 @@ module.exports = function(Classes, Control)
 					.then(function ()
 					{
 						calcTimeForGC();
-						//Controllers.get(cn) = null;
+						//Controllers.get(cn) = null;  //так как Controllers это WeakMap то пока закомментим = null
 
 						//console.log("response time: ", end.getTime() - startDate.getTime() + " ms");
 					});
@@ -71,7 +72,7 @@ module.exports = function(Classes, Control)
 			.catch(function (err)
 			{
 				Logger.error(err);
-				//C = null;
+				//C = null; //так как Controllers это WeakMap то пока закомментим = null
 				return next(err);
 			});
 	});

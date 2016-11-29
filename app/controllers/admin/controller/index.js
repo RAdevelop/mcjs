@@ -215,6 +215,7 @@ class Controller extends Base
 					.then(function (c_id)
 					{
 						tplData['ui_controller_id'] = c_id;
+						return Promise.resolve(tplData);
 					});
 			})
 			.then(function (tplData)
@@ -285,7 +286,11 @@ class Controller extends Base
 			})
 			.then(function (tplData)
 			{
-				return this.getClass('controller').updById(tplData["ui_controller_id"], tplData["ui_controller_pid"], tplData["ui_controller_after_id"], tplData["s_controller_path"], tplData["s_controller_name"], tplData["t_controller_desc"]);
+				return this.getClass('controller').updById(tplData["ui_controller_id"], tplData["ui_controller_pid"], tplData["ui_controller_after_id"], tplData["s_controller_path"], tplData["s_controller_name"], tplData["t_controller_desc"])
+					.then(function ()
+					{
+						return Promise.resolve(tplData);
+					});
 			})
 			.then(function (tplData)
 			{

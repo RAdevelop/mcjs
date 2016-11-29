@@ -16,7 +16,7 @@
             <ul class="dropdown-menu">
                 <% menuList.forEach(function(mItem){%>
                 <li>
-                    <a class="<% if(menuId == mItem["m_id"]){%>selected<%}%>" href="<%= [menuItem['m_path'], 'edit', mItem["m_id"]].join('/') %>/"><%- mItem["c_nbsp"] %><%= mItem["m_name"] %></a>
+                    <a class="<% if(menuId == mItem["m_id"]){%>selected<%}%>" href="<%= [menuItem['m_path'], 'edit', mItem["m_id"]].join('/') %>/"><%- mItem["m_nbsp"] %><%= mItem["m_name"] %></a>
                 </li>
                 <% }) %>
             </ul>
@@ -127,7 +127,7 @@ $(function()
         onSuccess: function ($dialog, respData)
         {
             //console.log(respData);
-            window.location.href = $controllerEditForm.attr('action')+respData['menuId'];
+            window.location.href = $menuEditForm.attr('action')+respData['i_menu_id'];
             return false;
         }
     });

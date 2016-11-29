@@ -235,6 +235,9 @@ Template.prototype.render = function(json = false)
 					if(err)
 						return reject(err);
 
+					if (self.res.headersSent) //TODO ??? надо ли тут это???
+						return resolve(true);
+
 					self.setController(null);
 					self.res.send(html);
 					return resolve();

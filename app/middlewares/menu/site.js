@@ -10,13 +10,20 @@ console.log('----');*/
 
 let m = Json.menu();
 
-module.exports = function site_menu(Classes)
+module.exports = function siteMenu(Classes)
 {
 	return function(req, res, next)
 	{
 		res.locals.menuSite = [];
 		res.locals.menuItem = null;
-		
+
+/*
+		console.log("req.method %s", req.method);
+		console.log("req.baseUrl %s", req.baseUrl);
+		console.log("req.originalUrl %s", req.originalUrl);
+		console.log("req.path %s", req.path);
+*/
+
 		//TODO ???
 		//if(req.xhr) return next();
 
@@ -51,6 +58,17 @@ module.exports = function site_menu(Classes)
 //function menu(Classes, req, res, cb)
 function menu(Classes, req, cb)
 {
+	let path = req.path.split('/');
+
+	/*console.log("path = ", path);
+
+	path.forEach(function(item, i)
+	{
+		if (item == '') path.splice(i, 1);
+	});*/
+
+	let is_admin_menu = (path[1] && path[1].toLowerCase() == 'admin' ? 1 : 0);
+
 	let menuData = {};
 	menuData.menuList = [];
 	menuData.menuItem = null;
@@ -64,13 +82,14 @@ function menu(Classes, req, cb)
 		[
 			function (aCb)
 			{
-				if(req.xhr) return aCb(null, menuData);
+				if(req.xhr)
+					return aCb(null, menuData);
 				
-				Classes.model("menu").getAll(function(err, menuList)
+				Classes.model("menu").getAll(is_admin_menu, false, function(err, menuList)
 				{
 					if (err) return aCb(err, menuData);
 					
-					menuData.menuList = menuList;
+					menuData.menuList = menuList || [];
 					return aCb(null, menuData);
 				});
 			},
@@ -102,9 +121,10 @@ function menu(Classes, req, cb)
 				}
 				
 				//если там нет, смотрим тут
-				Classes.model("menu").getByPath(req.path, function(err, menuItem)
+				Classes.model("menu").getByPath(req.path, is_admin_menu, function(err, menuItem)
 				{
-					if (err) return aCb(err, menuData);
+					if (err)
+						return aCb(err, menuData);
 					
 					menuData.menuItem = menuItem;
 					return aCb(null, menuData);
