@@ -22,7 +22,7 @@ class Motoshop extends Base
 	 * @param mts_website
 	 * @param mts_email
 	 * @param mts_descrip
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	add(u_id, mts_show, mts_name, mts_website, mts_email, mts_descrip)
 	{
@@ -36,7 +36,7 @@ class Motoshop extends Base
 	 * 
 	 * @param mts_id
 	 * @param mts_show
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	getMotoshop(mts_id, mts_show = null)
 	{
@@ -62,7 +62,7 @@ class Motoshop extends Base
 	 * @param mts_id
 	 * @param show
 	 * @param location_id
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	getMotoshopAddressList(mts_id, show = null, location_id = null)
 	{
@@ -79,7 +79,7 @@ class Motoshop extends Base
 	 * @param mts_website
 	 * @param mts_email
 	 * @param mts_descrip
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	edit(u_id, mts_id, mts_show, mts_name, mts_website, mts_email, mts_descrip)
 	{
@@ -161,7 +161,7 @@ class Motoshop extends Base
 	 * удаляем мотосалон
 	 *
 	 * @param mts_id
-	 * @returns {*|Promise.<*>}
+	 * @returns {Promise}
 	 */
 	delMotoshop(mts_id)
 	{
@@ -173,7 +173,7 @@ class Motoshop extends Base
 	 *
 	 * @param mts_id
 	 * @param mts_address_id
-	 * @returns {*|Promise.<*>}
+	 * @returns {Promise}
 	 */
 	delAddress(mts_id, mts_address_id)
 	{
@@ -183,7 +183,7 @@ class Motoshop extends Base
 	/**
 	 * список локаций, к которым привязан мотосалон (включая родительские районы, города, страны..)
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	getMotoshopLocations(show)
 	{
@@ -193,7 +193,7 @@ class Motoshop extends Base
 	/**
 	 * список мотосалонов
 	 *
-	 * @returns {Promise.<TResult>|*}
+	 * @returns {Promise}
 	 */
 	getAllMotoshop(show)
 	{
@@ -205,7 +205,7 @@ class Motoshop extends Base
 	 * @param loc_id
 	 * @param mts_show
 	 * @param Pages
-	 * @returns {*|Promise.<TResult>|{then, fail}}
+	 * @returns {Promise}
 	 */
 	getMotoshopListByLocId(loc_id, mts_show, Pages)
 	{

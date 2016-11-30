@@ -1,0 +1,163 @@
+<%  if(!_isXHR){%><%- layout('layout/default') %><% } -%>
+<h1><%= _pageH1 %></h1>
+<p>TODO</p>
+<h2><% if(ui_ug_id) {%>Изменить<%} else {%>Добавить<%}%> группу: <%= s_ug_name %></h2>
+<div class="row">
+    <div class="col-xs-3">
+        <div class="col-xs-12 open">
+            <ul class="dropdown-menu">
+                <% userGroupsList.forEach(function(user_group){%>
+                <li>
+                    <a class="<% if(ui_ug_id == user_group["ug_id"]){%>selected<%}%>" href="<%= [menuItem['m_path'], 'edit', user_group["ug_id"]].join('/') %>/"><%- user_group["ug_nbsp"] %><%= user_group["ug_name"] %></a>
+                </li>
+                <% }) %>
+            </ul>
+        </div>
+    </div>
+    <div class="col-xs-9">
+        <ul class="nav nav-pills nav-justified" role="tablist">
+            <li class="active" role="presentation"><a href="#base" aria-controls="base" role="tab" data-toggle="tab"><i class="fa fa-cog"></i> Основные параметры</a></li>
+            <% if (_action == 'edit') { %>
+            <li role="presentation"><a href="#methods" aria-controls="contacts" role="tab" data-toggle="tab"><i class="fa fa-cogs"></i> Метод</a></li>
+            <% }%>
+        </ul>
+        <!-- Tab panes -->
+        <div class="panel panel-default">
+            <div class="panel-body tab-content">
+                <div role="tabpanel" class="tab-pane active" id="base">
+                    <div id="userGroupFormBody" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="userGroupForm">
+                        <div class="panel-body">
+                            <form id="userGroupEditForm" class="form-horizontal" action="<%= menuItem['m_path'] %>/edit/" method="post">
+                                <input type="hidden" id="ui_ug_id" name="ui_ug_id" value="<%= ui_ug_id %>"/>
+                                <div class="form-group b_ug_on_register">
+                                    <label class="col-sm-3 control-label" for="b_ug_on_register">Назначается при регистрации пользователя?</label>
+                                    <div class="col-sm-9 checkbox">
+                                        <label><input type="checkbox" name="b_ug_on_register" <% if (b_ug_on_register == '1'){ %>checked="checked"<%}%> />да</label>
+                                    </div>
+                                </div>
+                                <div class="form-group ui_ug_pid">
+                                    <label class="col-sm-3 control-label" for="ui_ug_pid">Укажите родительскую группу</label>
+                                    <div class="col-sm-9">
+                                        <select id="ui_ug_pid" name="ui_ug_pid" class="form-control">
+                                            <option value="0">нет родителя</option>
+                                            <% userGroupsList.forEach(function(user_group){%>
+                                            <option value="<%= user_group["ug_id"] %>" <% if(ui_ug_pid == user_group["ug_id"]){%>selected="selected"<%}%> <% if(ui_ug_id == user_group["ug_id"]){%>disabled="disabled"<%}%> >
+                                                <%- user_group["ug_nbsp"] %><%= user_group["ug_name"] %>
+                                            </option>
+                                            <% }) %>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group ui_ug_after_id">
+                                    <label class="col-sm-3 control-label" for="ui_ug_after_id">После какой группы</label>
+                                    <div class="col-sm-9">
+                                        <select id="ui_ug_after_id" name="ui_ug_after_id" class="form-control">
+                                            <option value="0">в начале</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group s_ug_path">
+                                    <label class="col-sm-3 control-label" for="s_ug_path">"alias" группы</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" id="s_ug_path" name="s_ug_path" value="<%= s_ug_path %>" maxlength="100" class="form-control" placeholder="&quot;Путь&quot; группы" required autofocus aria-describedby="s_ug_pathHelpBlock"/>
+                                        <span id="s_ug_pathHelpBlock" class="help-block">пример: admin, user, guest, moderator...</span>
+                                    </div>
+                                </div>
+                                <div class="form-group s_ug_name">
+                                    <label class="col-sm-3 control-label" for="s_ug_name">Название группы</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" id="s_ug_name" name="s_ug_name" value="<%= s_ug_name %>" maxlength="255" class="form-control" placeholder="Название группы" required autofocus aria-describedby="s_ug_nameHelpBlock"/>
+                                        <span id="s_ug_nameHelpBlock" class="help-block">от 3 до 255 символов</span>
+                                    </div>
+                                </div>
+                                <div class="form-group t_ug_desc">
+                                    <label class="col-sm-3 control-label" for="t_ug_desc">Описание группы</label>
+                                    <div class="col-sm-9">
+                                        <textarea rows="5" id="t_ug_desc" name="t_ug_desc" class="form-control" placeholder="Описание группы"><%= t_ug_desc %></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-6 col-sm-offset-6">
+                                        <% if(ui_ug_id){%>
+                                        <input type="hidden" name="btn_ug_save" value="update" />
+                                        <button class="btn btn-default" type="submit" name="btn_user_group_form">Изменить</button>
+                                        <%} else {%>
+                                        <input type="hidden" name="btn_ug_save" value="add" />
+                                        <button class="btn btn-default" type="submit" name="btn_user_group_form">Добавить</button>
+                                        <%} %>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <% if (_action == 'edit') { %>
+                <div role="tabpanel" class="tab-pane" id="methods">
+                    include methods.ejs
+                </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+//<!--
+var ui_ug_id = "<%= ui_ug_id %>";
+var ui_ug_pid = "<%= ui_ug_pid %>";
+(function($)
+{
+    var $userGroupEditForm = $('#userGroupEditForm');
+    var $ui_ug_pid = $userGroupEditForm.find('#ui_ug_pid');
+    var $ui_ug_after_id = $userGroupEditForm.find('#ui_ug_after_id');
+    var inBegin = '<option value="0">в начале</option>';
+
+    $userGroupEditForm.postRes({btnId: 'btn_user_group_form',
+        onSuccess: function($dialog, respData)
+        {
+            //console.log(respData);
+            window.location.href = $userGroupEditForm.attr('action')+respData['ui_ug_id'];
+            return false;
+        }
+    });
+
+    var userGroupsList = MCJS["userGroupsList"] || [];
+
+    function subUserGroupItem(pid, ugId)
+    {
+        $ui_ug_after_id.empty().append(inBegin);
+
+        if(this.value == "0") return;
+        var rOption = '';
+        var j = 0;
+        for(var i in userGroupsList)
+        {
+            j = parseInt(i, 10)+1;
+            var rItem = userGroupsList[i];
+
+            if(ugId == rItem["ug_id"])
+                continue;
+
+            var selected = '';//selected="selected"
+            if(userGroupsList[j] && userGroupsList[j]["ug_id"] == ugId)
+                selected = 'selected="selected"';
+
+            if(rItem["ug_pid"] == pid)
+            {
+                rOption += '<option value="'+rItem["ug_id"]+'" '+selected+' >после '+rItem["ug_name"]+'</option>';
+            }
+        }
+        $ui_ug_after_id.append(rOption);
+    }
+
+    subUserGroupItem(ui_ug_pid, ui_ug_id);
+    
+    $ui_ug_pid.change(function(){
+        subUserGroupItem(this.value, ui_ug_id);
+    });
+
+})(jQuery);
+//-->
+</script>
+<p style="color: red;">TODO</p>
+script type="text/javascript" src="/js/jquery/admin/user_group.js"></script

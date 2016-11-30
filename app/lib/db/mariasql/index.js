@@ -70,7 +70,7 @@ class MariaSQL
 	 * @param sql - строка запроса
 	 * @param sqlData - массив данных для запроса
 	 * @param cb - колбэк ф-ция (если указана, вызывается она, иначе врзвращается {Promise})
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	s(sql, sqlData = [], cb = null)
 	{
@@ -132,7 +132,7 @@ class MariaSQL
 	 * @param sql - строка запроса
 	 * @param sqlData - массив данных для запроса
 	 * @param cb - колбэк ф-ция (если указана, вызывается она, иначе врзвращается {Promise})
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	ps(sql, sqlData = [], cb = null)
 	{
@@ -198,7 +198,7 @@ class MariaSQL
 	 * @param sql - строка запроса
 	 * @param sqlData - массив данных для запроса
 	 * @param cb - колбэк ф-ция (если указана, вызывается она, иначе врзвращается {Promise})
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 * {
 	 *  numRows: '0',
 	 *  affectedRows: '1',
@@ -243,7 +243,7 @@ class MariaSQL
 	 * @param sql - строка запроса
 	 * @param sqlData - массив данных для запроса
 	 * @param cb - колбэк ф-ция (если указана, вызывается она, иначе врзвращается {Promise})
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	del(sql, sqlData = [], cb = null)
 	{
@@ -290,7 +290,7 @@ class MariaSQL
 	 * @param sql - строка запроса
 	 * @param sqlData - массив данных для запроса
 	 * @param cb - колбэк ф-ция (если указана, вызывается она, иначе врзвращается {Promise})
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	ins(sql, sqlData = [], cb = null)
 	{
@@ -335,7 +335,7 @@ class MariaSQL
 	 * @param sql
 	 * @param sqlData
 	 * @param cb
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	call(sql, sqlData = [], cb = null)
 	{
@@ -370,7 +370,7 @@ class MariaSQL
 	 * @param sql
 	 * @param sqlData
 	 * @param cb
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	multis(sql, sqlData = [], cb = null)
 	{

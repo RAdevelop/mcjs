@@ -83,7 +83,7 @@ class Location extends Base
 	 * @param lng
 	 * @param kind
 	 * @param fullName
-	 * @returns {*|Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	addLocation(inPid = 0, inName, lat, lng, kind, fullName)
 	{
@@ -98,7 +98,7 @@ class Location extends Base
 	 * 2) и метод bind(this)
 	 *
 	 * @param s_location
-	 * @returns {Promise.<TResult>|*}
+	 * @returns {Promise}
 	 */
 	geoCoder(s_location)
 	{
@@ -206,7 +206,7 @@ class Location extends Base
 	 * получаем данные локации по ее id
 	 *
 	 * @param loc_id
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	getLocationById(loc_id)
 	{

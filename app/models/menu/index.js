@@ -82,14 +82,14 @@ class Menu extends BaseModel
 				return Promise.resolve(mId);
 			 });
 	 }
-	 
+
 	/**
-	* получаем спиок пунктов меню
-	*
-	* @param cb
-	* @throws
-	*  DBError
-	*/
+	 * получаем спиок пунктов меню
+	 *
+	 * @param is_admin_menu
+	 * @param all
+	 * @param cb
+	 */
 	getAll(is_admin_menu = null, all = true, cb)
 	{
 		let where = [];
@@ -136,6 +136,7 @@ class Menu extends BaseModel
 	/**
 	 * получаем данные пункта меню по его path
 	 * @param mPath
+	 * @param is_admin_menu
 	 * @param cb
 	 * @throws DbError
 	 */
@@ -152,7 +153,7 @@ class Menu extends BaseModel
 		
 		let cnt = mPath.length;
 		
-		mPath.forEach(function(item, i){
+		mPath.forEach(function(){
 			resPath.push('/'+(mPath.slice( 0, cnt)).join('/'));
 			pHolders.push('?');
 			cnt--;

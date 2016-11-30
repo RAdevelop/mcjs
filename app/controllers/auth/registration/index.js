@@ -20,7 +20,7 @@ class Registration extends Base
 			},
 			"confirm": {
 				'^\/?$': null,
-				'^\/?[0-9A-Za-z]{32,255}\/?$': ['s_key'],
+				'^\/?[0-9A-Za-z]{32,255}\/?$': ['s_key']
 			}
 		}
 	}
@@ -29,7 +29,7 @@ class Registration extends Base
 	 *
 	 * форма регистрации
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	indexActionGet()
 	{
@@ -60,7 +60,7 @@ class Registration extends Base
 	 * 
 	 * отправка запроса на регисистрацию
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	indexActionPost()
 	{
@@ -218,7 +218,7 @@ class Registration extends Base
 	/**
 	 * страница подтверждения регистрации
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	confirmActionGet()
 	{

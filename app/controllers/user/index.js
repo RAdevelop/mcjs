@@ -27,12 +27,12 @@ class User extends Base
 	/**
 	 * показываем страницу пользователя (свою, или выбранного)
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	indexActionGet()
 	{
 		if (!this.isAuthorized())
-			throw new Errors.HttpStatusError(401, "Unauthorized");
+			throw new Errors.HttpError(401);
 
 		console.log("this.routeArgs;");
 		console.log(this.routeArgs);
@@ -57,10 +57,10 @@ class User extends Base
 			.then(function (userData)
 			{
 				if (!userData || !userData.u_id)
-					throw new Errors.HttpStatusError(404, "Not found");
+					throw new Errors.HttpError(404);
 
 				return this.getClass('user/photo').getAlbumList(this.getUserId(), u_id, new Pages(1, 4))
-					.spread(function (albums, Pages)
+					.spread(function (albums)//, Pages
 					{
 						return [userData, albums];
 					});

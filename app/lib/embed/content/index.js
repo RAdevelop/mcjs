@@ -74,7 +74,7 @@ class EmbedContent
 	/**
 	 * кодировка страницы в запросе sendRequest()
 	 * @param charset
-	 * @returns {VideoEmbed}
+	 * @returns {EmbedContent}
 	 */
 	setCharsetEncoding(charset)
 	{
@@ -89,7 +89,7 @@ class EmbedContent
 
 	/**
 	 * название сайта, к которому обратились
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	setVideoHosting(hostName)
 	{
@@ -343,7 +343,7 @@ class EmbedContent
 	/**
 	 * для ВК дополнительная обработка данных
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 * @private
 	 */
 	_vkontakte()
@@ -374,7 +374,7 @@ class EmbedContent
 
 	/**
 	 * пытаемся получить данные видео для последующей вставке в <iframe...>
-	 * @returns {Promise.<TResult>|*}
+	 * @returns {Promise}
 	 */
 	getContent()
 	{
@@ -406,11 +406,10 @@ class EmbedContent
 	/**
 	 * статичный метод. вызываем в контроллерах
 	 *
-	 * @param cb
 	 * @param tplData
 	 * @param tplFile
 	 * @param Controller
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	static content(tplData, tplFile, Controller)
 	{

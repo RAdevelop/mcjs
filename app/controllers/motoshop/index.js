@@ -23,7 +23,7 @@ class Motoshop extends Base
 				'^\/?[0-9]+\/page\/[1-9]+[0-9]*\/?$': ['i_loc_id', ,'i_page'],
 				'^\/?[0-9]+\/\\S+\/?$': ['i_mts_id','s_mts_alias'],
 				'^\/?[0-9]+\/?$': ['i_loc_id'],
-				'^\/?$': null,
+				'^\/?$': null
 			},
 			"add": {
 				'^\/?$': null
@@ -39,7 +39,7 @@ class Motoshop extends Base
 
 	/**
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	indexActionGet()
 	{
@@ -97,8 +97,9 @@ class Motoshop extends Base
 
 	/**
 	 * список мотосалонов для указанной локации
+	 * 
 	 * @param i_loc_id
-	 * @returns {*|Promise.<TResult>|{then, fail}}
+	 * @returns {Promise}
 	 */
 	motoshopList(i_loc_id)
 	{
@@ -115,7 +116,7 @@ class Motoshop extends Base
 			{
 				//если не нашли список салонов
 				if (!props.list[0])
-					throw new Errors.HttpStatusError(404, "Not found");
+					throw new Errors.HttpError(404);
 
 				let tplData = {};
 				tplData.motoshopList = props.list[0];
@@ -223,7 +224,7 @@ class Motoshop extends Base
 	/**
 	 * добавляем новый трек
 	 *
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	addActionPost()
 	{
@@ -333,7 +334,7 @@ class Motoshop extends Base
 	/**
 	 * обновляем данные
 	 *
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	editActionPost()
 	{

@@ -42,7 +42,7 @@ Mailer.prototype.transporter = function(){
 
 /**
  * отправка почты
- * @param opts - параметры для отправки письма
+ * @param params - параметры для отправки письма
  * {
 		to:'email@address.com',
 		subject: 'тема письма',
@@ -50,7 +50,7 @@ Mailer.prototype.transporter = function(){
 		tplData: {данные для шалона, если нужно}
 	}
  * @param callback
- * @returns {*}
+ * @returns {Promise}
  * @throws
  *  errors.ArgumentError
  *  Error
@@ -101,7 +101,7 @@ Mailer.prototype.send = function (params, callback){
 		};
 
 		//пытаемся отправить письмо
-		self.transporter().sendMail(mailOptions, function (err, info){
+		self.transporter().sendMail(mailOptions, function (err){//, info
 
 			if(err) return callback(err);
 			//console.log(info);

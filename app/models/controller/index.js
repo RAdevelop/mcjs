@@ -24,8 +24,9 @@ class Controller extends BaseModel
 
 	/**
 	 * контролеер по его id
-	 * @param rId
-	 * @returns {*}
+	 *
+	 * @param c_id
+	 * @returns {Promise}
 	 */
 	getById(c_id)
 	{
@@ -39,8 +40,8 @@ class Controller extends BaseModel
 	/**
 	 * получаем список пользовательских методов, достыпных для контроллера
 	 *
-	 * @param сId
-	 * @returns {Promise.<TResult>}
+	 * @param c_id
+	 * @returns {Promise}
 	 */
 	getAllMethods(c_id)
 	{
@@ -60,7 +61,7 @@ class Controller extends BaseModel
 	 * @param cPath
 	 * @param cName
 	 * @param cDesc
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	updById(c_id, cPid, cAfterId, cPath, cName, cDesc)
 	{
@@ -103,7 +104,7 @@ class Controller extends BaseModel
 	 * @param cPath
 	 * @param cName
 	 * @param cDesc
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	add(cPid, cAfterId, cPath, cName, cDesc)
 	{
@@ -162,103 +163,7 @@ module.exports = Controller;
 
 /**  ****************************************************            OOLD VERSION
  * Created by RA on 07.02.2016.
- */
-
-/*
- User.prototype.auth - такой определение метода будет работать только, если потом создать объект new User()
- User.auth - а так не обязательно создавать объект new User. что-то вроде статичного метода
- */
-//let _ = require('lodash');
-
-/////////***** module.exports
-/*
-module.exports = function(db)
-{
-	Router.db = db;
-	return Router;
-};
-
-/!**
- * модель пользователя
- * @param obj
- * @constructor
- *!/
-function Router()
-{
-}
-
-/!**
- * добавляем в БД роутер
- * @param rPid
- * @param cPath
- * @param cName
- * @param cDesc
- * @param cb
- * @throws
- *  Errors.data.SQLError
- *  
- *!/
-Router.add = function(cPid cAfterId,, cPath, cName, cDesc, cb)
-{
-	let sql = 'CALL controller_create(?, ?, ?, ?, ?, @last_ins_id);';
-	let sqlData = [cPid cAfterId,, cPath, cName, cDesc];
-	
-	let self = this;
-	this.db.q(sql, sqlData, function(err, res)
-	{
-		if(err) return cb(err);
-		
-		sql = 'SELECT @last_ins_id AS c_id FROM DUAL;';
-		self.db.q(sql, function(err, res)
-		{
-			if(err) return cb(err);
-			
-			cb(null, res[0]["c_id"]);
-		});
-	});
-};
-
-
-
-
-/!**
- * добавляем метод в общим список, и привязываем его к указанному роутеру
- * @param rId
- * @param cm_method
- * @param cb
- *!/
-Router.addMethod = function(c_id, cm_method, cb)
-{
-	let sql = 'CALL routes_method_create(?, @rmId);';
-	let sqlData = [cm_method];
-	
-	let self = this;
-	this.db.q(sql, sqlData, function(err, res)
-	{
-		if(err) return cb(err);
-		
-		sql = 'SELECT @rmId AS cm_id FROM DUAL;';
-		self.db.q(sql, function(err, res)
-		{
-			if(err) return cb(err);
-			
-			let rmId = res[0]["cm_id"];
-			
-			sql = 'INSERT INTO `routers_vs_methods` SET c_id = ?, cm_id = ?;';
-			
-			sqlData = [c_id, rmId];
-			self.db.q(sql, sqlData, function(err, res)
-			{
-				if(err) return cb(err);
-				
-				return cb(null, rmId);
-			});
-			
-		});
-	});
-};
-
-/!**
+ *
  * отвязываем метод от указанного роутера
  * @param rId
  * @param cm_method

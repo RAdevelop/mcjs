@@ -1,8 +1,8 @@
 "use strict";
 
-const Errors = require('app/lib/errors');
+//const Errors = require('app/lib/errors');
 const Moment = require('moment'); //работа со временем
-//const Promise = require("bluebird");
+const Promise = require("bluebird");
 
 const BaseModel = require('app/lib/db');
 
@@ -19,9 +19,10 @@ class Mototrek extends BaseModel
 	 * @param s_mtt_address
 	 * @param f_mtt_lat
 	 * @param f_mtt_lng
+	 * @param location_id
 	 * @param gps_lat,
 	 * @param gps_lng
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	add(s_mtt_name, t_mtt_descrip, s_mtt_website, m_mtt_email, s_mtt_phones, s_mtt_address, f_mtt_lat, f_mtt_lng, location_id, gps_lat, gps_lng)
 	{
@@ -93,9 +94,10 @@ class Mototrek extends BaseModel
 	 * @param s_mtt_address
 	 * @param f_mtt_lat
 	 * @param f_mtt_lng
+	 * @param location_id
 	 * @param gps_lat
 	 * @param gps_lng
-	 * @returns {*} i_mtt_id
+	 * @returns {Promise} i_mtt_id
 	 */
 	edit(i_mtt_id, s_mtt_name, t_mtt_descrip, s_mtt_website, m_mtt_email, s_mtt_phones, s_mtt_address, f_mtt_lat, f_mtt_lng, location_id, gps_lat, gps_lng)
 	{
@@ -164,7 +166,7 @@ class Mototrek extends BaseModel
 	 * данные трека по его id
 	 *
 	 * @param mtt_id
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	getById(mtt_id)
 	{
@@ -180,7 +182,7 @@ class Mototrek extends BaseModel
 	/**
 	 * список локаций, к которым привязан трек (включая родительские районы, города, страны..)
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	getLocations()
 	{
@@ -202,7 +204,7 @@ class Mototrek extends BaseModel
 	/**
 	 * список всех треков
 	 *
-	 * @returns {Promise.<TResult>|*}
+	 * @returns {Promise}
 	 */
 	getAll()
 	{

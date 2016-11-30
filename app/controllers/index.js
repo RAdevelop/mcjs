@@ -37,7 +37,7 @@ const Control = (function()
 
 
 	//храним экземпляры объектов new ClassName()
-	let _classes = new WeakMap();
+	//let _classes = new WeakMap();
 
 	//храним вызов require(file_path)
 	let _require = new Map();

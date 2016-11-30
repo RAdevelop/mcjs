@@ -3,7 +3,6 @@
 const Errors = require('app/lib/errors');
 const Promise = require("bluebird");
 
-//const Async = require('async');
 const Base = require('app/lib/controller');
 
 class Menu extends Base
@@ -16,7 +15,7 @@ class Menu extends Base
 	{
 		return {
 			"index": {
-				'^\/?$': null,
+				'^\/?$': null
 			},
 			"add": {
 				'^\/?$': null
@@ -66,9 +65,6 @@ class Menu extends Base
 	/**
 	* показываем страницу для меню по его id
 	*
-	* @param req
-	* @param res
-	* @param next
 	*/
 	editActionGet()
 	{

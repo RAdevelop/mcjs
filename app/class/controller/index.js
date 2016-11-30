@@ -1,7 +1,7 @@
 "use strict";
 
-const Errors = require('app/lib/errors');
-const Promise = require("bluebird");
+//const Errors = require('app/lib/errors');
+//const Promise = require("bluebird");
 const Base = require('app/lib/class');
 
 class Controller extends Base
@@ -19,8 +19,8 @@ class Controller extends Base
 	/**
 	 * получаем список пользовательских методов, достыпных для контроллера
 	 *
-	 * @param сId
-	 * @returns {Promise.<TResult>}
+	 * @param c_id
+	 * @returns {Promise}
 	 */
 	getAllMethods(c_id)
 	{

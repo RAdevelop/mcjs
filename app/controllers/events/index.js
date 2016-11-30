@@ -42,7 +42,7 @@ class Events extends Base
 	/**
 	 * главная страница
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	indexActionGet()
 	{
@@ -166,7 +166,9 @@ class Events extends Base
 	 * список событий
 	 *
 	 * @param tplData
-	 * @param routeArgs
+	 * @param startDate
+	 * @param endDate
+	 * @param l_id
 	 */
 	eventList(tplData, startDate, endDate, l_id)
 	{
@@ -175,7 +177,7 @@ class Events extends Base
 			.then(function (eventList)
 			{
 				if (!eventList || !eventList.length)
-					throw new Errors.HttpStatusError(404, "Not found");
+					throw new Errors.HttpError(404);
 
 				return this.getClass("events").getLocations()
 					.then(function (eventLocations)
@@ -214,8 +216,9 @@ class Events extends Base
 
 	/**
 	 *
-	 * @param start_ts
-	 * @param end_ts
+	 * @param tplData
+	 * @param startDate
+	 * @param endDate
 	 * @param l_id
 	 * @returns
 	 */
@@ -248,7 +251,7 @@ class Events extends Base
 							i++;
 							eDelta = 86400*i;
 						}
-						while (eStartTs + eDelta < eEndTs)
+						while (eStartTs + eDelta < eEndTs);
 
 						eventDates.push(eEndTs*1000);
 					}
@@ -326,7 +329,7 @@ class Events extends Base
 	/**
 	 * добавляем новый трек
 	 *
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	addActionPost()
 	{
@@ -496,7 +499,7 @@ class Events extends Base
 	/**
 	 * редактируем трек по его id
 	 *
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	editActionPost()
 	{
@@ -507,7 +510,7 @@ class Events extends Base
 			return EmbedContent.content(tplData, tplFile, this);
 
 		if (!tplData["i_event_id"] || !tplData["btn_save_event"])
-			throw new Errors.HttpStatusError(404, "Not found");
+			throw new Errors.HttpError(404);
 
 		//console.log(tplData);
 		switch(tplData["btn_save_event"])
@@ -627,6 +630,7 @@ class Events extends Base
 	 * сорхранение позиций фотографий после их сортировке на клиенте
 	 *
 	 * @param tplData
+	 * @param tplFile
 	 */
 	sortImg(tplData, tplFile)
 	{
@@ -692,7 +696,7 @@ class Events extends Base
 	/**
 	 * добавляем фотографи к событию
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	uploadActionPost()
 	{
@@ -744,7 +748,8 @@ class Events extends Base
 	 * удаление фотографии пользователем
 	 *
 	 * @param tplData
-	 * @returns {*}
+	 * @param tplFile
+	 * @returns {Promise}
 	 */
 	delImg(tplData, tplFile)
 	{
@@ -753,7 +758,7 @@ class Events extends Base
 			.then(function (tplData)
 			{
 				if (!tplData["i_ei_id"])
-					throw new Errors.HttpStatusError(400, 'Bad request');
+					throw new Errors.HttpError(400);
 
 				return this.getClass('events').delImage(this.getUserId(), tplData["i_event_id"], tplData["i_ei_id"])
 					.then(function ()

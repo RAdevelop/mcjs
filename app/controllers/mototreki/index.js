@@ -32,7 +32,7 @@ class Mototreki extends Base
 	/**
 	 * главная страница
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	indexActionGet()
 	{
@@ -244,7 +244,7 @@ class Mototreki extends Base
 	/**
 	 * добавляем новый трек
 	 *
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	addActionPost()
 	{
@@ -374,7 +374,7 @@ class Mototreki extends Base
 	/**
 	 * редактируем трек по его id
 	 *
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	editActionPost()
 	{
@@ -383,7 +383,7 @@ class Mototreki extends Base
 		let tplData = this.getParsedBody();
 
 		if (!tplData["i_mtt_id"])
-			throw new Errors.HttpStatusError(404, "Not found");
+			throw new Errors.HttpError(404);
 
 
 		return this.getClass('mototrek').get(tplData["i_mtt_id"])
@@ -391,7 +391,7 @@ class Mototreki extends Base
 			.then(function (trek)
 			{
 				if (!trek)
-					throw new Errors.HttpStatusError(404, "Not found");
+					throw new Errors.HttpError(404);
 
 				tplData = this.stripTags(tplData, ["s_mtt_name", "m_mtt_email", "s_mtt_address", "s_mtt_website", "s_mtt_phones"]);
 				tplData["t_mtt_descrip"] = this.cheerio(tplData["t_mtt_descrip"]).root().cleanTagEvents().html();
@@ -477,7 +477,7 @@ class Mototreki extends Base
 	/**
 	 * просмотр треков на карте
 	 *
-	 * @returns {Promise.<T>}
+	 * @returns {Promise}
 	 */
 	mapActionGet()
 	{

@@ -1,7 +1,7 @@
 "use strict";
 
 //const Errors = require('app/lib/errors');
-const Promise = require("bluebird");
+//const Promise = require("bluebird");
 const Base = require('app/lib/class');
 
 class Mototrek extends Base
@@ -18,7 +18,7 @@ class Mototrek extends Base
 	 * @param f_mtt_lat
 	 * @param f_mtt_lng
 	 * @param location_id
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	add(s_mtt_name, t_mtt_descrip = '', s_mtt_website = '', m_mtt_email = '', s_mtt_phones = '', s_mtt_address, f_mtt_lat, f_mtt_lng, location_id)
 	{
@@ -40,7 +40,7 @@ class Mototrek extends Base
 	 * @param f_mtt_lat
 	 * @param f_mtt_lng
 	 * @param location_id
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	edit(i_mtt_id, s_mtt_name, t_mtt_descrip = '', s_mtt_website = '', m_mtt_email = '', s_mtt_phones = '', s_mtt_address, f_mtt_lat, f_mtt_lng, location_id)
 	{
@@ -53,7 +53,7 @@ class Mototrek extends Base
 	 * данные трека по его id
 	 *
 	 * @param mtt_id
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	get(mtt_id)
 	{
@@ -63,7 +63,7 @@ class Mototrek extends Base
 	/**
 	 * список всех треков
 	 *
-	 * @returns {Promise.<TResult>|*}
+	 * @returns {Promise}
 	 */
 	getAll()
 	{
@@ -73,7 +73,7 @@ class Mototrek extends Base
 	/**
 	 * список локаций, к которым привязан трек (включая родительские районы, города, страны..)
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	getLocations()
 	{

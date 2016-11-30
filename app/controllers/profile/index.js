@@ -36,12 +36,12 @@ class Profile extends Base
 	/**
 	 * показываем страницу пользователя (свою, или выбранного)
 	 * 
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	indexActionGet()
 	{
 		if (!this.isAuthorized())
-			throw new Errors.HttpStatusError(401, "Unauthorized");
+			throw new Errors.HttpError(401);
 
 		return this.getUser(this.getUserId())
 			.bind(this)
@@ -65,7 +65,7 @@ class Profile extends Base
 	/**
 	 * обновляем данные пользователя (свою, или выбранного)
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	/*indexActionPost()
 	{
@@ -95,12 +95,12 @@ class Profile extends Base
 	/**
 	 * профиль пользователя. формы редактирования данных
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	editActionGet()
 	{
 		if (!this.isAuthorized())
-		throw new Errors.HttpStatusError(401, "Unauthorized");
+		throw new Errors.HttpError(401);
 
 		let tplFile = 'user/profile/edit.ejs';
 
@@ -129,7 +129,7 @@ class Profile extends Base
 	/**
 	 * обновляем данные пользователя в ЛК
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	editActionPost()
 	{
@@ -164,7 +164,7 @@ class Profile extends Base
 	/**
 	 * обработка запросов по изменению данных (например, смена емейла...)
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	changeActionGet()
 	{
@@ -619,7 +619,7 @@ class Profile extends Base
 	/**
 	 * загружаем новую аву
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	avaActionPost()
 	{

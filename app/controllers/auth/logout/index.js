@@ -6,8 +6,7 @@ class Logout extends Base
 {
 	/**
 	 *
-	 * @param cb
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	indexActionPost()
 	{

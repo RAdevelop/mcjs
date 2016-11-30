@@ -76,6 +76,7 @@ class Profile extends User
 	 * создаем ключ для последующей отправке на подтверждение смены емейла
 	 *
 	 * @param user
+	 * @param new_mail
 	 * @param cb
 	 */
 	createReqChangeMailKey(user, new_mail, cb)
@@ -172,7 +173,7 @@ class Profile extends User
 	 * @param f_lat
 	 * @param f_lng
 	 * @param location_id
-	 * @return Promise
+	 * @return {Promise}
 	 */
 	updLocation(u_id, f_lat, f_lng, location_id)
 	{
@@ -183,7 +184,7 @@ class Profile extends User
 		let sqlData = [u_id, location_id, f_lat, f_lng];
 
 		return this.constructor.conn().ins(sql, sqlData)
-			.then(function (res)
+			.then(function ()
 			{
 				return Promise.resolve(location_id);
 			});

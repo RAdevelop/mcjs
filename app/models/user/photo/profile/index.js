@@ -1,7 +1,7 @@
 "use strict";
 
-const Errors = require('app/lib/errors');
-const Moment = require('moment'); //работа со временем
+//const Errors = require('app/lib/errors');
+//const Moment = require('moment'); //работа со временем
 const Promise = require("bluebird");
 
 const UserPhoto = require('app/models/user/photo');
@@ -12,7 +12,7 @@ class UserPhotoProfile extends UserPhoto
 	 * получаем фотографию профиля пользователя
 	 *
 	 * @param u_id
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	getUserAva(u_id)
 	{

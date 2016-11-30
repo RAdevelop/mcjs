@@ -29,7 +29,7 @@ class ProfilePhoto extends Base
 	/!**
 	 * показываем страницу пользователя (свою, или выбранного)
 	 * @param cb
-	 * @returns {*}
+	 * @returns {Promise}
 	 *!/
 	indexActionGet(cb)
 	{
@@ -77,7 +77,7 @@ class ProfilePhoto extends Base
 	 * @param cb
 	 * @param tplData
 	 * @param isAjax
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 *!/
 	albumList(cb, tplData, isAjax = false)
 	{
@@ -264,7 +264,7 @@ class ProfilePhoto extends Base
 	 * обработка POST событий над формами
 	 *
 	 * @param tplData
-	 * @returns {*}
+	 * @returns {Promise}
 	 *!/
 	albumPostActions(tplData)
 	{
@@ -320,7 +320,7 @@ class ProfilePhoto extends Base
 	 * создание фотоальбома
 	 *
 	 * @param tplData
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 *!/
 	addNamedAlbum(tplData)
 	{
@@ -365,7 +365,7 @@ class ProfilePhoto extends Base
 	 * радактирование названия и описания фотоальбома
 	 *
 	 * @param tplData
-	 * @returns {*}
+	 * @returns {Promise}
 	 *!/
 	editAlbum(tplData)
 	{
@@ -421,7 +421,7 @@ class ProfilePhoto extends Base
 	 * обновляем описание фотографии
 	 *
 	 * @param tplData
-	 * @returns {*}
+	 * @returns {Promise}
 	 *!/
 	updImgText(tplData)
 	{
@@ -441,7 +441,7 @@ class ProfilePhoto extends Base
 	 * удаление фотографии пользователем
 	 *
 	 * @param tplData
-	 * @returns {*}
+	 * @returns {Promise}
 	 *!/
 	delImg(tplData)
 	{
@@ -465,7 +465,7 @@ class ProfilePhoto extends Base
 	 * загружаем новую фотографю в альбом
 	 *
 	 * @param cb
-	 * @returns {*}
+	 * @returns {Promise}
 	 *!/
 	uploadActionPost(cb)
 	{

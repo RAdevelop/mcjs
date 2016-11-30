@@ -17,7 +17,7 @@ class Location extends BaseModel
 	 * @param lng
 	 * @param kind
 	 * @param fullName
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	addLocation(inPid = 0, inName, lat, lng, kind, fullName)
 	{
@@ -35,7 +35,7 @@ class Location extends BaseModel
 	 * получаем данные локации по ее id
 	 *
 	 * @param loc_id
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	getLocationById(loc_id)
 	{

@@ -1,10 +1,8 @@
 "use strict";
-"use strict";
 
 const Errors = require('app/lib/errors');
 const Promise = require("bluebird");
 
-//const Async = require('async');
 const Base = require('app/lib/controller');
 
 class Controller extends Base
@@ -17,7 +15,7 @@ class Controller extends Base
 	{
 		return {
 			"index": {
-				'^\/?$': null,
+				'^\/?$': null
 			},
 			"edit": {
 				'^\/?$': null,
@@ -26,6 +24,10 @@ class Controller extends Base
 		}
 	}
 
+	/**
+	 *
+	 * @returns {Promise}
+	 */
 	indexActionGet()
 	{
 		let tplData = {
@@ -57,11 +59,8 @@ class Controller extends Base
 	}
 
 	/**
-	 * показываем страницу для Роутера по его id
-	 *
-	 * @param req
-	 * @param res
-	 * @param next
+	 * показываем страницу для контроллера по его id
+	 * @returns {Promise}
 	 */
 	editActionGet()
 	{
@@ -125,14 +124,13 @@ class Controller extends Base
 
 	/**
 	 * обновляем данные для контроллера по его id
-	 *
+	 * @returns {Promise}
 	 */
 	editActionPost()
 	{
 		let tplData = this.getParsedBody();
 		let btn_save = tplData["btn_controller_save"] || null;
 		
-
 		switch (btn_save)
 		{
 			default:
@@ -175,7 +173,7 @@ class Controller extends Base
 	 * добавляем новый контроллер в БД
 	 *
 	 * @param tplData
-	 * @returns {Promise.<T>}
+	 * @returns {Promise}
 	 */
 	add(tplData)
 	{
@@ -250,7 +248,7 @@ class Controller extends Base
 	 * редактируем основные данные контроллера
 	 *
 	 * @param tplData
-	 * @returns {Promise.<T>}
+	 * @returns {Promise}
 	 */
 	update(tplData)
 	{
@@ -314,6 +312,7 @@ class Controller extends Base
 	 * создаем метод, и связываем его с редактируемым контроллером
 	 * 
 	 * @param tplData
+	 * @returns {Promise}
 	 */
 	addMethod(tplData)
 	{
@@ -367,108 +366,12 @@ class Controller extends Base
 module.exports = Controller;
 
 /**
- * добавляем роутер
- *
- * @param req
- * @param res
- * @param next
- */
-exports.add = function(req, res, next) 
-{
-	var tplData = defaultData();
-	tplData.title = res.app.settings.title + ' | Router start page';
-	tplData = _.assign(tplData, req.body);
-	
-	Async.waterfall(
-	[
-		function(asyncCb) //валидация формы
-		{
-			controllerFormValidation(tplData, function(err, tplData)
-			{
-				if(err)
-				{
-					Models.get("Router").getAll(function(err2, controllerList)
-					{
-						if(err2) return asyncCb(err2, controllerList);
-						
-						tplData.controllerList = controllerList;
-						
-						return asyncCb(err, controllerList);
-					});
-				}
-				else 
-				return asyncCb(null, tplData);
-			});
-		},
-		function(tplData, asyncCb) //добавление в БД
-		{
-			Models.get("Router").add(tplData.ui_controller_pid, tplData.ui_controller_after_id, tplData.s_controller_path, tplData.s_controller_name, tplData.t_controller_desc, function(err, rId)
-			{
-				if(err)
-				{
-					Models.get("Router").getAll(function(err2, controllerList)
-					{
-						if(err2) return asyncCb(err2, tplData);
-						
-						tplData.controllerList = controllerList;
-						
-						return asyncCb(err, tplData);
-					});
-				}
-				else
-				return asyncCb(null, rId);
-			});
-		}
-	], function (err, rId)
-	{
-		//Models.end();
-		//tplData.formError = false;
-		/*
-		 нужно проверять тип шибки. в зависимости от типа ошибки,
-		 принимать решение,вызывать ли next(err) или обработать ситуацию
-		 */
-		
-		if(err)
-		{
-			tplData.formError.error = true;
-			tplData.formError.message = err.message;
-			
-			switch (err.name)
-			{
-				default:
-					return  next(err);
-					break;
-				
-				case 'ValidationError':
-					
-					for(var i in err.errors)
-						tplData.formError.fields[err.errors[i].field] = err.errors[i].message;
-					break;
-				
-				case 'DbErrDuplicateEntry':
-					
-					tplData.formError.message = "Роутер с таким путем уже есть!";
-					break;
-			}
-		}
-		else if (rId)
-		return res.redirect(req.baseUrl+'/'+rId+'/edit');
-		
-		//экспрот данных в JS на клиента
-		res.expose(tplData.controllerList, 'controllerList');
-		
-		var View = new Template(req, res, next, Models);
-		View.render(tplFile, tplData);
-	});
-};
-
-
-/**
  * удаляем (отвязываем) метод от рутера (AJAX)
  * @param req
  * @param res
  * @param next
  */
+/*
 exports.delMethod = function(req, res, next)
 {
 	var tplData = _.assign({}, req.body);
@@ -546,94 +449,4 @@ exports.delMethod = function(req, res, next)
 			res.json(tplData);
 		}
 	);  
-};
-
-//////////////////
-
-function controllerFormValidation(tplData, cb)
-{
-	tplData.ui_controller_pid = tplData.ui_controller_pid.toLowerCase().trim();
-	
-	tplData.ui_controller_after_id = tplData.ui_controller_after_id.toLowerCase().trim();
-	tplData.ui_controller_after_id = parseInt(tplData.ui_controller_after_id, 10);
-	tplData.ui_controller_after_id = (tplData.ui_controller_after_id < 0 ? 0 : tplData.ui_controller_after_id);
-	
-	tplData.s_controller_path = tplData.s_controller_path.toLowerCase().trim().replace("\\", "/");
-	
-	tplData.s_controller_path = tplData.s_controller_path.split("/");
-	
-	if (tplData.s_controller_path[tplData.s_controller_path.length-1] == "")
-	tplData.s_controller_path.pop();
-	
-	tplData.s_controller_path = tplData.s_controller_path.join("/");
-	
-	tplData.s_controller_name = tplData.s_controller_name.trim();
-	tplData.t_controller_desc = tplData.t_controller_desc.trim();
-	
-	var formFields = {
-		ui_controller_pid: tplData.ui_controller_pid,
-		ui_controller_after_id: tplData.ui_controller_after_id,
-		s_controller_path: tplData.s_controller_path,
-		s_controller_name: tplData.s_controller_name
-	};
-	
-	var validRules = {
-		ui_controller_pid: 'required|numeric',
-		s_controller_path: ['required','regex:/^\/([0-9a-zA-Z_-]+\/?)+$/'],
-		s_controller_name: 'required|min:3|max:100'
-	};
-	
-	var validator = new ValidatorJs(formFields, validRules, {
-		"required.ui_controller_pid": "Родитель не указан",
-		"numeric.ui_controller_pid": "Родитель не указан",
-				
-		"required.s_controller_path": "Путь указан не верно",
-		"regex.s_controller_path": "Путь указан не верно",
-		
-		"required.s_controller_name": "Название не верно указано",
-		"min.s_controller_name": "Название указано не верно",
-		"max.s_controller_name": "Название указано не верно",
-	});
-
-	
-	if(validator.fails())
-	{
-		var inputErrors = new Errors.ValidationError('Ошибка при заполнении фомры');
-		
-		if(validator.errors.has('ui_controller_pid'))     inputErrors.addError(new Errors.ValidationError(validator.errors.first('ui_controller_pid'),'', 'ui_controller_pid'));
-		if(validator.errors.has('s_controller_path'))    inputErrors.addError(new Errors.ValidationError(validator.errors.first('s_controller_path'),'', 's_controller_path'));
-		if(validator.errors.has('s_controller_name'))    inputErrors.addError(new Errors.ValidationError(validator.errors.first('s_controller_name'),'', 's_controller_name'));
-		
-		return cb(inputErrors, tplData);
-	}
-	
-	return cb(null, tplData);
-}
-
-/**
- * данные, которые хотим подгрузить (вызываетя в Async-методах)
- * @returns {*[]} - массив "задач" для Async-методов
- */
-/*
-function getDataTasks(rId)
-{
-	return [function(cb)
-	{
-		Models.get("Router").getAll(function(err, controllerList)
-		{
-			if(err) return asyncCb(err, tplData);
-			tplData.controllerList = controllerList;
-			
-			asyncCb(null, tplData);
-		});
-	},
-	function(cb)
-	{
-		Models.get("Router").getAllMethods(rId, function(err, mList)
-		{
-			if(err) return cb(err, mList);
-			
-			return cb(null, mList);
-		});
-	}];
 };*/

@@ -18,7 +18,7 @@ class Motoshop extends BaseModel
 	 * @param mts_website
 	 * @param mts_email
 	 * @param mts_descrip
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	add(u_id, mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip)
 	{
@@ -41,7 +41,7 @@ class Motoshop extends BaseModel
 	 *
 	 * @param mts_id
 	 * @param show
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	getMotoshop(mts_id, show = null)
 	{
@@ -70,7 +70,7 @@ class Motoshop extends BaseModel
 	 * @param mts_website
 	 * @param mts_email
 	 * @param mts_descrip
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	edit(u_id, mts_id, mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip)
 	{
@@ -104,7 +104,7 @@ class Motoshop extends BaseModel
 	 * @param gps_lat
 	 * @param gps_lng
 	 * @param location_id
-	 * @returns {Promise.<*>}
+	 * @returns {Promise}
 	 */
 	addAddress(mts_id, mts_address_show, mts_address_website, mts_address_email, mts_address_phones, mts_address, mts_address_lat, mts_address_lng, gps_lat, gps_lng, location_id)
 	{
@@ -179,7 +179,7 @@ class Motoshop extends BaseModel
 	 * @param gps_lat
 	 * @param gps_lng
 	 * @param location_id
-	 * @returns {Promise.<*>}
+	 * @returns {Promise}
 	 */
 	editAddress(mts_address_id, mts_address_show, mts_address_website, mts_address_email, mts_address_phones, mts_address, mts_address_lat, mts_address_lng, gps_lat, gps_lng, location_id)
 	{
@@ -240,7 +240,9 @@ class Motoshop extends BaseModel
 	 * список адресов для указанного (-ых) салона
 	 *
 	 * @param mts_id
-	 * @returns {*}
+	 * @param show
+	 * @param location_id
+	 * @returns {Promise}
 	 */
 	getMotoshopAddressList(mts_id, show = null, location_id = null)
 	{
@@ -286,7 +288,7 @@ class Motoshop extends BaseModel
 	 * удаляем мотосалон
 	 *
 	 * @param mts_id
-	 * @returns {*|Promise.<*>}
+	 * @returns {Promise}
 	 */
 	delMotoshop(mts_id)
 	{
@@ -340,7 +342,7 @@ class Motoshop extends BaseModel
 	 *
 	 * @param mts_id
 	 * @param mts_address_id
-	 * @returns {*|Promise.<*>}
+	 * @returns {Promise}
 	 */
 	delAddress(mts_id, mts_address_id)
 	{
@@ -353,13 +355,13 @@ class Motoshop extends BaseModel
 	/**
 	 * список локаций, к которым привязан мотосалон (включая родительские районы, города, страны..)
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	getMotoshopLocations(show)
 	{
 		let kinds = ['country','province','locality'];
 
-		let inIds = this.constructor.placeHoldersForIn(kinds)
+		let inIds = this.constructor.placeHoldersForIn(kinds);
 
 		let sqlData = [show, show];
 		sqlData = sqlData.concat(kinds);
@@ -386,7 +388,7 @@ class Motoshop extends BaseModel
 	/**
 	 * список мотосалонов
 	 *
-	 * @returns {Promise.<TResult>|*}
+	 * @returns {Promise}
 	 */
 	getAllMotoshop(show)
 	{
@@ -424,9 +426,12 @@ class Motoshop extends BaseModel
 
 	/**
 	 * список мотосалонов для указанной локации
-	 * @param i_loc_id
+	 * 
+	 * @param loc_id
 	 * @param mts_show
-	 * @returns {*|Promise.<TResult>|{then, fail}}
+	 * @param limit
+	 * @param offset
+	 * @returns {Promise}
 	 */
 	getMotoshopListByLocId(loc_id, mts_show, limit = 20, offset = 0)
 	{

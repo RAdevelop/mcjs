@@ -22,7 +22,7 @@ class Events extends Base
 	 * @param i_location_id
 	 * @param dd_start_ts
 	 * @param dd_end_ts
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	add(i_u_id, s_e_title, t_e_notice, t_e_text, s_e_address, f_e_lat, f_e_lng, i_location_id, dd_start_ts, dd_end_ts)
 	{
@@ -46,7 +46,7 @@ class Events extends Base
 	 * @param i_location_id
 	 * @param dd_start_ts
 	 * @param dd_end_ts
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	edit(i_e_id, i_u_id, s_e_title, t_e_notice, t_e_text, s_e_address, f_e_lat, f_e_lng, i_location_id, dd_start_ts, dd_end_ts)
 	{
@@ -60,7 +60,7 @@ class Events extends Base
 	 * данные события по его id
 	 *
 	 * @param e_id
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	get(e_id)
 	{
@@ -70,11 +70,11 @@ class Events extends Base
 	/**
 	 * список событий за указанный интервал дат (в формете timestamp)
 	 *
-	 * @param start_ts
+	 * @param date_ts
 	 * @param end_ts
 	 * @param l_id - id месторасположения
 	 *
-	 * @returns {*|Promise.<TResult>|*}
+	 * @returns {Promise}
 	 */
 	getEvents(date_ts, end_ts = null, l_id = null)
 	{
@@ -107,11 +107,11 @@ class Events extends Base
 	/**
 	 * список дат событий за указанный интервал дат (в формете timestamp)
 	 *
-	 * @param start_ts
+	 * @param date_ts
 	 * @param end_ts
 	 * @param l_id - id месторасположения
 	 *
-	 * @returns {*|Promise.<TResult>|*}
+	 * @returns {Promise}
 	 */
 	getEventsDate(date_ts, end_ts, l_id = null)
 	{
@@ -129,7 +129,7 @@ class Events extends Base
 	/**
 	 * список локаций, к которым привязаны события (включая родительские районы, города, страны..)
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	getLocations()
 	{
@@ -142,7 +142,7 @@ class Events extends Base
 	 * @param u_id
 	 * @param req
 	 * @param res
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	uploadImage(u_id, req, res)
 	{
@@ -241,7 +241,7 @@ class Events extends Base
 	 * получаем данные для указанной фотографии
 	 *
 	 * @param ei_id
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	getImage(ei_id)
 	{
@@ -303,7 +303,7 @@ class Events extends Base
 	 * @param e_id
 	 * @param ei_id
 	 * @param file
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	delImage(u_id, e_id, ei_id, file = {})
 	{
@@ -361,7 +361,7 @@ class Events extends Base
 	 *
 	 * @param e_id
 	 * @param ei_pos
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	sortImgUpd(e_id, ei_pos)
 	{
@@ -373,7 +373,7 @@ class Events extends Base
 	 *
 	 * @param u_id
 	 * @param e_id
-	 * @returns {Promise.<*>}
+	 * @returns {Promise}
 	 */
 	delEvent(u_id, e_id)
 	{
@@ -388,7 +388,7 @@ class Events extends Base
 				let dir = Path.join(FileUpload.getDocumentRoot, FileUpload.getUploadConfig('events')["pathUpload"], FileUpload.getAlbumUri(e_id));
 
 				return FileUpload.deleteDir(dir, true)
-					.then(function (done)
+					.then(function ()
 					{
 						return Promise.resolve(event);
 					});

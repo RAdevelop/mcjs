@@ -50,7 +50,7 @@ class User extends Base
 	 * данные пользователя
 	 *
 	 * @param u_id
-	 * @returns {Promise.<TResult>|*}
+	 * @returns {Promise}
 	 */
 	getUser(u_id)
 	{
@@ -81,7 +81,7 @@ class User extends Base
 	 * список пользователей
 	 *
 	 * @param Pages
-	 * @returns {Promise.<TResult>|*} [users, users_cnt, Pages]
+	 * @returns {Promise} [users, users_cnt, Pages]
 	 */
 	getUsers(Pages)
 	{
@@ -127,7 +127,7 @@ class User extends Base
 								return [users, users_ids];
 							});
 					})
-					.spread(function (users, users_ids)
+					.spread(function (users)
 					{
 						/*console.log('\nusers_ids');
 						console.log(users);

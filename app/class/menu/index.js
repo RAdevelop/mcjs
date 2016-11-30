@@ -24,7 +24,7 @@ class Menu extends Base
 	/**
 	 * данные меню по id
 	 * @param m_id
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	getById(m_id)
 	{

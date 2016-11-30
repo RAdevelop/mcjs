@@ -16,7 +16,7 @@ class UserPhotoProfile extends UserPhoto
 	 * @param req
 	 * @param res
 	 *
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	uploadProfile(u_id, req, res)
 	{
@@ -102,7 +102,7 @@ class UserPhotoProfile extends UserPhoto
 	 * получаем фотографию профиля пользователя
 	 *
 	 * @param u_id
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	getUserAva(u_id)
 	{
@@ -124,8 +124,8 @@ class UserPhotoProfile extends UserPhoto
 	/**
 	 * получаем аватарки указанных юзеров
 	 *
-	 * @param user_ids
-	 * @returns {Promise.<TResult>}
+	 * @param users_ids
+	 * @returns {Promise}
 	 */
 	getUsersAva(users_ids = [])
 	{
@@ -134,7 +134,7 @@ class UserPhotoProfile extends UserPhoto
 			{
 				let sizeParams = FileUpload.getUploadConfig('user_ava').sizeParams;
 
-				Object.keys(ava).forEach(function (i, item)
+				Object.keys(ava).forEach(function (i)
 				{
 					ava[i] = Object.assign(ava[i], FileUpload.getPreviews(sizeParams, ava[i], "ai_dir")["obj"]);
 				});

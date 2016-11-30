@@ -86,13 +86,13 @@ class Photo extends User
 		let now_ts = Moment().unix();
 
 		return this.constructor.conn().upd(sql, [a_name, a_alias, a_text, now_ts, a_id, u_id, a_type_id])
-			.then(function (res)
+			.then(function ()
 			{
 				return Promise.resolve(a_id)
 			});
 	}
 
-	createAlbumUploaded(u_id)
+	createAlbumUploaded()
 	{
 		this.constructor.albumUploaded;
 	}
@@ -119,7 +119,7 @@ class Photo extends User
 	 * @param a_name
 	 * @param a_alias
 	 * @param a_text
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	editAlbumNamed(u_id, a_id, a_name, a_alias, a_text)
 	{
@@ -160,7 +160,7 @@ class Photo extends User
 	 *
 	 * @param u_id
 	 * @param fileData
-	 * @returns {Promise.<TResult>|*}
+	 * @returns {Promise}
 	 */
 	addPhoto(u_id, fileData)
 	{
@@ -181,7 +181,7 @@ class Photo extends User
 	 *
 	 * @param a_id
 	 * @param u_id
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 * @private
 	 */
 	_insImage(a_id, u_id)
@@ -205,7 +205,8 @@ class Photo extends User
 	 * @param ai_dir
 	 * @param ai_name
 	 * @param posUpd
-	 * @returns {Promise.<TResult>|*}
+	 * @param ai_profile
+	 * @returns {Promise}
 	 */
 	updImage(u_id, a_id, ai_id, ai_latitude, ai_longitude, ai_text, ai_dir, ai_name, posUpd = true, ai_profile = 0)
 	{
@@ -226,7 +227,7 @@ class Photo extends User
 	 * @param u_id
 	 * @param a_id
 	 * @param ai_id
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	delImage(u_id, a_id, ai_id)
 	{
@@ -262,7 +263,7 @@ class Photo extends User
 	 * подсчитываем кол-во альбомов пользователя
 	 *
 	 * @param u_id
-	 * @returns {*|Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	countUserAlbums(u_id)
 	{
@@ -278,7 +279,9 @@ class Photo extends User
 	/**
 	 * список фотоальбомов пользователя
 	 * @param u_id
-	 * @returns {*}
+	 * @param offset
+	 * @param limit
+	 * @returns {Promise}
 	 */
 	getAlbumList(u_id, offset = 0, limit = 10)
 	{
@@ -304,7 +307,7 @@ class Photo extends User
 	 * выбранный альбом пользователя
 	 * @param u_id
 	 * @param a_id
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	getAlbum(u_id, a_id)
 	{
@@ -324,7 +327,7 @@ class Photo extends User
 	 *
 	 * @param u_id
 	 * @param a_id
-	 * @returns {*|Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	countAlbumImages(u_id, a_id)
 	{
@@ -342,7 +345,7 @@ class Photo extends User
 	 *
 	 * @param u_id
 	 * @param a_id
-	 * @param start
+	 * @param offset
 	 * @param limit
 	 */
 	getAlbumImages(u_id, a_id, offset = 0, limit = 10)
@@ -401,7 +404,7 @@ class Photo extends User
 	 * @param u_id
 	 * @param a_id
 	 * @param ai_pos - id фоток
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	updSortImg(u_id, a_id, ai_pos)
 	{
@@ -436,8 +439,9 @@ class Photo extends User
 	/**
 	 * удаляем указанное событие
 	 *
-	 * @param e_id
-	 * @returns {Promise.<*>}
+	 * @param a_id
+	 * @param u_id
+	 * @returns {Promise}
 	 */
 	delAlbum(a_id, u_id)
 	{

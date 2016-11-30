@@ -31,7 +31,7 @@ class Login extends Base
 
 	/**
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	indexActionGet()
 	{
@@ -65,7 +65,7 @@ class Login extends Base
 	/**
 	 * авторизация
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	indexActionPost()
 	{
@@ -92,7 +92,7 @@ class Login extends Base
 	
 	/**
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	resetActionGet()
 	{

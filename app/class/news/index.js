@@ -19,7 +19,7 @@ class News extends Base
 	 * @param dt_show_ts
 	 * @param n_show
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	add(i_u_id, s_n_title, t_n_notice, t_n_text, dt_show_ts, n_show = 0)
 	{
@@ -39,7 +39,7 @@ class News extends Base
 	 * @param dt_show_ts
 	 * @param n_show
 	 *
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	edit(i_n_id, i_u_id, s_n_title, t_n_notice, t_n_text, dt_show_ts, n_show = 0)
 	{
@@ -53,7 +53,7 @@ class News extends Base
 	 *
 	 * @param n_id
 	 * @param n_show
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	get(n_id, n_show = null)
 	{
@@ -66,7 +66,7 @@ class News extends Base
 	 * @param Pages
 	 * @param n_show
 	 *
-	 * @returns {*|Promise.<TResult>|*}
+	 * @returns {Promise}
 	 */
 	getNews(Pages, n_show = null)
 	{
@@ -80,7 +80,7 @@ class News extends Base
 					return [null, Pages];
 
 				if (Pages.limitExceeded())
-					return Promise.reject(new FileErrors.HttpStatusError(404, "Not found"));
+					return Promise.reject(new FileErrors.HttpError(404));
 
 				return this.model('news').getNews(Pages.getLimit(), Pages.getOffset(), n_show)
 					.then(function (newsList)
@@ -110,7 +110,7 @@ class News extends Base
 	 * @param u_id
 	 * @param req
 	 * @param res
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	uploadImage(u_id, req, res)
 	{
@@ -209,7 +209,7 @@ class News extends Base
 	 * получаем данные для указанной фотографии
 	 *
 	 * @param ni_id
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	getImage(ni_id)
 	{
@@ -271,7 +271,7 @@ class News extends Base
 	 * @param n_id
 	 * @param ni_id
 	 * @param file
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	delImage(u_id, n_id, ni_id, file = {})
 	{
@@ -329,7 +329,7 @@ class News extends Base
 	 *
 	 * @param n_id
 	 * @param ni_pos
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	sortImgUpd(n_id, ni_pos)
 	{
@@ -341,7 +341,7 @@ class News extends Base
 	 *
 	 * @param u_id
 	 * @param n_id
-	 * @returns {Promise.<*>}
+	 * @returns {Promise}
 	 */
 	delEvent(u_id, n_id)
 	{
@@ -356,7 +356,7 @@ class News extends Base
 				let dir = Path.join(FileUpload.getDocumentRoot, FileUpload.getUploadConfig('news')["pathUpload"], FileUpload.getAlbumUri(n_id));
 
 				return FileUpload.deleteDir(dir, true)
-					.then(function (done)
+					.then(function ()
 					{
 						return Promise.resolve(news);
 					});

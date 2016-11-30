@@ -24,7 +24,7 @@ class Events extends BaseModel
 	 * @param gps_lng
 	 * @param dd_start_ts
 	 * @param dd_end_ts
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	add(i_u_id, s_e_title, e_alias, t_e_notice, t_e_text, s_e_address, f_e_lat, f_e_lng, i_location_id, gps_lat, gps_lng, dd_start_ts, dd_end_ts)
 	{
@@ -101,7 +101,7 @@ class Events extends BaseModel
 	 * @param gps_lng
 	 * @param dd_start_ts
 	 * @param dd_end_ts
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	edit(i_e_id, i_u_id, s_e_title, e_alias, t_e_notice, t_e_text, s_e_address, f_e_lat, f_e_lng, i_location_id, gps_lat, gps_lng, dd_start_ts, dd_end_ts)
 	{
@@ -162,7 +162,7 @@ class Events extends BaseModel
 	 * данные события по его id
 	 *
 	 * @param e_id
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	getById(e_id)
 	{
@@ -180,7 +180,7 @@ class Events extends BaseModel
 	/**
 	 * список локаций, к которым привязано событие (включая родительские районы, города, страны..)
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	getLocations()
 	{
@@ -207,7 +207,7 @@ class Events extends BaseModel
 	 * @param end_ts
 	 * @param l_id - id месторасположения
 	 *
-	 * @returns {Promise.<TResult>|*}
+	 * @returns {Promise}
 	 */
 	getEvents(start_ts, end_ts = null, l_id = null)
 	{
@@ -246,7 +246,7 @@ class Events extends BaseModel
 	 * @param end_ts
 	 * @param l_id - id месторасположения
 	 *
-	 * @returns {Promise.<TResult>|*}
+	 * @returns {Promise}
 	 */
 	getEventsDate(start_ts, end_ts, l_id = null)
 	{
@@ -273,7 +273,7 @@ class Events extends BaseModel
 	 * @private
 	 *
 	 * @param e_id
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 * @private
 	 */
 	_insImage(e_id)
@@ -291,7 +291,7 @@ class Events extends BaseModel
 	 *
 	 * @param u_id
 	 * @param fileData
-	 * @returns {Promise.<TResult>|*}
+	 * @returns {Promise}
 	 */
 	addPhoto(u_id, fileData)
 	{
@@ -315,7 +315,7 @@ class Events extends BaseModel
 	 * @param ei_dir
 	 * @param ei_name
 	 * @param posUpd
-	 * @returns {Promise.<TResult>|*}
+	 * @returns {Promise}
 	 */
 	updImage(e_id, ei_id, ei_latitude, ei_longitude, ei_dir, ei_name, posUpd = true)
 	{
@@ -335,7 +335,7 @@ class Events extends BaseModel
 	 *
 	 * @param e_id
 	 * @param ei_id
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	delImage(e_id, ei_id)
 	{
@@ -386,7 +386,7 @@ class Events extends BaseModel
 	 * кол-вл фоток в событии
 	 *
 	 * @param e_id
-	 * @returns {*|Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	countAlbumImages(e_id)
 	{
@@ -404,7 +404,7 @@ class Events extends BaseModel
 	 *
 	 * @param e_id
 	 * @param ei_pos - id фоток
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	updSortImg(e_id, ei_pos)
 	{
@@ -440,7 +440,7 @@ class Events extends BaseModel
 	 * удаляем указанное событие
 	 *
 	 * @param e_id
-	 * @returns {Promise.<*>}
+	 * @returns {Promise}
 	 */
 	delEvent(e_id)
 	{

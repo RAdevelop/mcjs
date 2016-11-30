@@ -10,7 +10,6 @@ const EmbedContent = require("app/lib/embed/content");
 //const Moment = require('moment'); //работа со временем
 const Base = require('app/lib/controller');
 
-
 let limit_per_page = 1;
 
 class News extends Base
@@ -39,7 +38,7 @@ class News extends Base
 	/**
 	 * главная страница
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	indexActionGet()
 	{
@@ -62,6 +61,7 @@ class News extends Base
 	 * @param tplData
 	 * @param i_news_id
 	 * @param s_alias
+	 * @returns {Promise}
 	 * @throws Errors.HttpStatusError
 	 */
 	news(tplData, i_news_id, s_alias)
@@ -71,7 +71,7 @@ class News extends Base
 			.then(function (news)
 			{
 				if (!news || news["n_alias"] != s_alias)
-					throw new Errors.HttpStatusError(404, "Not found");
+					throw new Errors.HttpError(404);
 
 				return Promise.resolve(news);
 			})
@@ -121,7 +121,7 @@ class News extends Base
 	 * список событий
 	 *
 	 * @param tplData
-	 * @param routeArgs
+	 * @returns {Promise}
 	 */
 	newsList(tplData)
 	{
@@ -170,7 +170,7 @@ class News extends Base
 
 	/**
 	 * форма добавления новости
-	 *
+	 * @returns {Promise}
 	 */
 	addActionGet()
 	{
@@ -195,17 +195,14 @@ class News extends Base
 	}
 
 	/**
-	 * добавляем новый трек
+	 * добавляем новость
 	 *
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	addActionPost()
 	{
 		//let formData = this.getReqBody();
 		let tplData = this.getParsedBody();
-
-		//console.log(tplData);
-
 		let errors = {};
 
 		tplData = this.stripTags(tplData, ["dt_show_ts", "s_n_title","t_n_notice"]);
@@ -267,21 +264,21 @@ class News extends Base
 
 	/**
 	 * форма редактирования новости
-	 *
+	 * @returns {Promise}
 	 */
 	editActionGet()
 	{
 		let {i_news_id} = this.routeArgs;
 
 		if (!i_news_id)
-			throw new Errors.HttpStatusError(404, "Not found");
+			throw new Errors.HttpError(404);
 
 		return this.getClass('news').get(i_news_id, null)
 			.bind(this)
 			.then(function (news)
 			{
 				if (!news)
-					throw new Errors.HttpStatusError(404, "Not found");
+					throw new Errors.HttpError(404);
 
 				return Promise.resolve(news);
 			})
@@ -321,7 +318,7 @@ class News extends Base
 	/**
 	 * редактируем новость по его id
 	 *
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	editActionPost()
 	{
@@ -332,7 +329,7 @@ class News extends Base
 			return EmbedContent.content(tplData, tplFile, this);
 
 		if (!tplData["i_news_id"] || !tplData["btn_save_news"])
-			throw new Errors.HttpStatusError(404, "Not found");
+			throw new Errors.HttpError(404);
 
 		//console.log(tplData);
 		switch(tplData["btn_save_news"])
@@ -354,6 +351,12 @@ class News extends Base
 		}
 	}
 
+	/**
+	 *
+	 * @param tplData
+	 * @param tplFile
+	 * @returns {Promise}
+	 */
 	editNews(tplData, tplFile)
 	{
 		return this.getClass('news').get(tplData["i_news_id"])
@@ -361,7 +364,7 @@ class News extends Base
 			.then(function (news)
 			{
 				if (!news)
-					throw new Errors.HttpStatusError(404, "Not found");
+					throw new Errors.HttpError(404);
 
 				return Promise.resolve(true);
 			})
@@ -426,6 +429,8 @@ class News extends Base
 	 * сорхранение позиций фотографий после их сортировке на клиенте
 	 *
 	 * @param tplData
+	 * @param tplFile
+	 * @returns {Promise}
 	 */
 	sortImg(tplData, tplFile)
 	{
@@ -457,7 +462,7 @@ class News extends Base
 	/**
 	 * добавляем фотографи к событию
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	uploadActionPost()
 	{
@@ -509,7 +514,8 @@ class News extends Base
 	 * удаление фотографии пользователем
 	 *
 	 * @param tplData
-	 * @returns {*}
+	 * @param tplFile
+	 * @returns {Promise}
 	 */
 	delImg(tplData, tplFile)
 	{
@@ -518,7 +524,7 @@ class News extends Base
 			.then(function (tplData)
 			{
 				if (!tplData["i_ni_id"])
-					throw new Errors.HttpStatusError(400, 'Bad request');
+					throw new Errors.HttpError(400);
 
 				return this.getClass('news').delImage(this.getUserId(), tplData["i_news_id"], tplData["i_ni_id"])
 					.then(function ()
@@ -543,7 +549,7 @@ class News extends Base
 	 *
 	 * @param tplData
 	 * @param tplFile
-	 * @returns {Promise.<T>}
+	 * @returns {Promise}
 	 */
 	delNews(tplData, tplFile)
 	{

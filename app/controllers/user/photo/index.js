@@ -30,26 +30,26 @@ class UserPhoto extends Base
 	/**
 	 * показываем страницу пользователя (свою, или выбранного)
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	indexActionGet()
 	{
 		//if (!this.isAuthorized())
-		//	throw new Errors.HttpStatusError(401, "Unauthorized");
+		//	throw new Errors.HttpError(401);
 		
 		let xhr = this.getReq().xhr;
 		let {i_u_id=this.getUserId(), i_a_id} = this.routeArgs;
 
 		return Promise.resolve(xhr)
 			.bind(this)
-			.then(function (xhr)
+			.then(function ()
 			{
 				return this.getUser(i_u_id)
 					.bind(this)
 					.then(function (userData)
 					{
 						if (!userData["u_id"])
-							throw new Errors.HttpStatusError(404, "Not found");
+							throw new Errors.HttpError(404);
 
 						userData["u_is_owner"] = (this.getUserId() == i_u_id);
 
@@ -79,9 +79,10 @@ class UserPhoto extends Base
 	/**
 	 * список фотоальбомов пользователя
 	 *
+	 * @param i_u_id
 	 * @param tplData
 	 * @param isAjax
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	albumList(i_u_id, tplData, isAjax = false)
 	{
@@ -135,6 +136,7 @@ class UserPhoto extends Base
 	/**
 	 * просмотр фотоальбома
 	 *
+	 * @param i_u_id
 	 * @param tplData
 	 * @param isAjax
 	 */
@@ -150,7 +152,7 @@ class UserPhoto extends Base
 					.then(function (album)
 					{
 						if (!album)
-							return Promise.reject(new Errors.HttpStatusError(404, "Not found"));
+							return Promise.reject(new Errors.HttpError(404));
 
 						tplData["album"] = album;
 						return Promise.resolve(tplData);
@@ -260,12 +262,12 @@ class UserPhoto extends Base
 	 * обработка POST событий над формами
 	 *
 	 * @param tplData
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	albumPostActions(tplData)
 	{
 		if (!tplData["btn_save_album"])
-			throw new Errors.HttpStatusError(400, "Bad request");
+			throw new Errors.HttpError(400);
 
 		switch(tplData["btn_save_album"])
 		{
@@ -273,7 +275,7 @@ class UserPhoto extends Base
 				tplData.formError.error = true;
 				tplData.formError.message = 'Невереные данные';
 
-				throw new Errors.HttpStatusError(400, tplData.formError.message);
+				throw new Errors.HttpError(400, tplData.formError.message);
 				break;
 
 			case 'add_album':
@@ -323,14 +325,14 @@ class UserPhoto extends Base
 	 * создание фотоальбома
 	 *
 	 * @param tplData
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	addNamedAlbum(tplData)
 	{
 		let errors = {};
 
 		if (!tplData["i_u_id"] || tplData["i_u_id"] != this.getUserId())
-			throw new Errors.HttpStatusError(400, 'Bad request');
+			throw new Errors.HttpError(400);
 
 		tplData = this.stripTags(tplData, ["s_album_name", "t_album_text"]);
 
@@ -360,7 +362,7 @@ class UserPhoto extends Base
 	 * радактирование названия и описания фотоальбома
 	 *
 	 * @param tplData
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	editAlbum(tplData)
 	{
@@ -369,7 +371,7 @@ class UserPhoto extends Base
 		tplData = this.stripTags(tplData, ["s_album_name", "t_album_text"]);
 		
 		if (!tplData["i_a_id"] || !tplData.hasOwnProperty("s_album_name") || !tplData.hasOwnProperty("t_album_text"))
-			throw new Errors.HttpStatusError(400, 'Bad request');
+			throw new Errors.HttpError(400);
 
 		if (tplData["s_album_name"] == '')
 			errors["s_album_name"] = 'Укажите название альбома';
@@ -405,12 +407,12 @@ class UserPhoto extends Base
 	 * обновляем описание фотографии
 	 *
 	 * @param tplData
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	updImgText(tplData)
 	{
 		if (!tplData["i_a_id"] || !tplData["i_ai_id"] || !tplData.hasOwnProperty("t_ai_text"))
-			return new Errors.HttpStatusError(400, 'Bad request');
+			return new Errors.HttpError(400);
 
 		tplData = this.stripTags(tplData, ["t_ai_text"]);
 
@@ -425,12 +427,12 @@ class UserPhoto extends Base
 	 * удаление фотографии пользователем
 	 *
 	 * @param tplData
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	delImg(tplData)
 	{
 		if (!tplData["i_a_id"] || !tplData["i_ai_id"])
-			throw new Errors.HttpStatusError(400, 'Bad request');
+			throw new Errors.HttpError(400);
 
 		return this.getClass('user/photo').delImage(this.getUserId(), tplData["i_a_id"], tplData["i_ai_id"])
 			.then(function ()
@@ -440,14 +442,14 @@ class UserPhoto extends Base
 			.catch(Errors.io.FileNotFoundError, function(err)
 			{
 				Logger.error(err);
-				throw new Errors.HttpStatusError(404, 'Фотография не найдена');
+				throw new Errors.HttpError(404, 'Фотография не найдена');
 			});
 	}
 
 	/**
 	 * загружаем новую фотографю в альбом
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	uploadActionPost()
 	{
@@ -500,12 +502,12 @@ class UserPhoto extends Base
 	 * удаление указанного альбома
 	 *
 	 * @param tplData
-	 * @returns {Promise.<T>}
+	 * @returns {Promise}
 	 */
 	delAlbum(tplData)
 	{
 		if (!tplData["i_a_id"])
-			throw new Errors.HttpStatusError(400, 'Bad request');
+			throw new Errors.HttpError(400);
 
 		return this.getClass('user/photo').delAlbum(this.getUserId(), tplData["i_a_id"])
 			.then(function ()

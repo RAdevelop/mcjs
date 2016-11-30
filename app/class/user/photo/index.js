@@ -9,15 +9,13 @@ const User = require('app/class/user');
 
 class UserPhoto extends User
 {
-
-
 	/**
 	 * создаем именованный фотоальбом пользователю
 	 *
 	 * @param u_id
 	 * @param a_name
 	 * @param a_text
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	addNamedAlbum(u_id, a_name, a_text)
 	{
@@ -33,7 +31,7 @@ class UserPhoto extends User
 	 * @param a_id
 	 * @param a_name
 	 * @param a_text
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	editAlbumNamed(u_id, a_id, a_name, a_text)
 	{
@@ -43,15 +41,13 @@ class UserPhoto extends User
 		return this.model('user/photo').editAlbumNamed(u_id, a_id, a_name, a_alias, a_text);
 	}
 
-	
-
 	/**
 	 * список фотоальбомов пользователя
 	 *
 	 * @param u_id
 	 * @param owner_u_id - чей альбом запросил
 	 * @param Pages
-	 * @returns {Promise.<TResult>|*}
+	 * @returns {Promise}
 	 */
 	getAlbumList(u_id, owner_u_id, Pages)
 	{
@@ -65,7 +61,7 @@ class UserPhoto extends User
 					return [null, Pages];
 
 				if (Pages.limitExceeded())
-					return Promise.reject(new FileErrors.HttpStatusError(404, "Not found"));
+					return Promise.reject(new FileErrors.HttpError(404));
 
 				return this.model('user/photo').getAlbumList(owner_u_id, Pages.getOffset(), Pages.getLimit())
 					.then(function (albums)
@@ -94,7 +90,7 @@ class UserPhoto extends User
 	 * @param u_id - кто запросил
 	 * @param owner_u_id - чей альбом запросил
 	 * @param a_id
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	getAlbum(u_id, owner_u_id, a_id)
 	{
@@ -118,12 +114,12 @@ class UserPhoto extends User
 	 * @param u_id
 	 * @param a_id
 	 * @param Pages
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	getAlbumImages(u_id, a_id, Pages)
 	{
 		if (Pages.limitExceeded())
-			return Promise.reject(new FileErrors.HttpStatusError(404, "Not found"));
+			return Promise.reject(new FileErrors.HttpError(404));
 		
 		return this.model('user/photo').getAlbumImages(u_id, a_id, Pages.getOffset(), Pages.getLimit())
 			.then(function (images)
@@ -158,7 +154,7 @@ class UserPhoto extends User
 	 * @param u_id
 	 * @param req
 	 * @param res
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	uploadImage(u_id, req, res)
 	{
@@ -247,7 +243,7 @@ class UserPhoto extends User
 	 * @param u_id - кто запрсил
 	 * @param owner_u_id - чью фото запросил
 	 * @param ai_id
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	getImage(u_id, owner_u_id, ai_id)
 	{
@@ -275,7 +271,7 @@ class UserPhoto extends User
 	 * @param a_id
 	 * @param ai_id
 	 * @param file
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	delImage(u_id, a_id, ai_id, file = {})
 	{
@@ -345,7 +341,7 @@ class UserPhoto extends User
 	 * @param u_id
 	 * @param a_id
 	 * @param ai_pos
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	sortImgUpd(u_id, a_id, ai_pos)
 	{
@@ -356,8 +352,8 @@ class UserPhoto extends User
 	 * удаление указанного альбома
 	 *
 	 * @param u_id
-	 * @param e_id
-	 * @returns {Promise.<*>}
+	 * @param a_id
+	 * @returns {Promise}
 	 */
 	delAlbum(u_id, a_id)
 	{
@@ -371,7 +367,7 @@ class UserPhoto extends User
 				let dir = Path.join(FileUpload.getDocumentRoot, FileUpload.getUploadConfig('user_photo')["pathUpload"], FileUpload.getAlbumUri(a_id));
 
 				return FileUpload.deleteDir(dir, true)
-					.then(function (done)
+					.then(function ()
 					{
 						return Promise.resolve(album);
 					});

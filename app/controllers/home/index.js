@@ -10,7 +10,7 @@ class Home extends Base
 {
 	/**
 	 *
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	indexActionGet()
 	{
@@ -24,9 +24,9 @@ class Home extends Base
 
 				return Promise.resolve(null);
 			})
-			.catch(Errors.NotFoundError, function(err)
+			.catch(Errors.NotFoundError, function()
 			{
-				throw new Errors.HttpStatusError(404, "Not found");
+				throw new Errors.HttpError(404);
 			})
 			.catch(function(err)
 			{

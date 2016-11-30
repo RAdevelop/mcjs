@@ -80,7 +80,7 @@ class Base
 	 * удаляем html теги для указанных полей (fields)
 	 * @param formData
 	 * @param fields
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	stripTags(formData, fields = [])
 	{
@@ -520,8 +520,7 @@ class Base
 		*/
 		if (u_id == this.getUserId())
 		{
-			let user = {};
-			user = (this.getReq()._user ? this.getReq()._user : {u_id: null});
+			let user = (this.getReq()._user ? this.getReq()._user : {u_id: null});
 			//return user;
 			return Promise.resolve(user);
 		}

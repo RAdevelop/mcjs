@@ -10,8 +10,8 @@ class Helpers
 {
 	static loadRouters(app, dir, maxDepth, mountPath)
 	{
-		var maxDepth = maxDepth || 0;
-		var mountPath = mountPath || '/';
+		maxDepth = maxDepth || 0;
+		mountPath = mountPath || '/';
 		//if (maxDepth > 3) return; //TODO ???
 
 		var file, fileInfo;
@@ -25,7 +25,7 @@ class Helpers
 			if(!routers || !routers.length)
 			return Logger.error('Empty routers (call from helpers.loadRouters) in dir %j', {"dir":dir});
 
-			routers.forEach(function(item, i)
+			routers.forEach(function(item)
 			{
 				file = path.join(dir, item);
 				fileInfo = path.parse(file);
@@ -244,14 +244,13 @@ class Helpers
 
 	static roundNumber(rnum, rlength)
 	{
-		var newnumber = Math.round(rnum * Math.pow(10, rlength)) / Math.pow(10, rlength);
-		return newnumber;
+		return Math.round(rnum * Math.pow(10, rlength)) / Math.pow(10, rlength);
 	}
 
 	static getDecimal(num)
 	{
-		var str = "" + num;
-		var zeroPos = str.indexOf(".");
+		let str = "" + num;
+		let zeroPos = str.indexOf(".");
 		if (zeroPos == -1) return 0;
 		str = str.slice(zeroPos);
 		return +str;
@@ -259,7 +258,7 @@ class Helpers
 
 	static nl2br(str, is_xhtml)
 	{
-		var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br ' + '/>' : '<br>'; // Adjust comment to avoid issue on phpjs.org display
+		let breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br ' + '/>' : '<br>'; // Adjust comment to avoid issue on phpjs.org display
 
 		return (str+'').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
 	}
@@ -295,7 +294,7 @@ class Helpers
 	 * @param str - строка для проверки
 	 * @param safe - строка символов, которые надо оставить
 	 * @param del - удалять или нет
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	static clearSymbol(str, safe = '', del = true)
 	{

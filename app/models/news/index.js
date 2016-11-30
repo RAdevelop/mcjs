@@ -18,8 +18,7 @@ class News extends BaseModel
 	 * @param t_n_text
 	 * @param dt_show_ts
 	 * @param n_show
-	 *
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	add(i_u_id, s_n_title, n_alias, t_n_notice, t_n_text, dt_show_ts, n_show)
 	{
@@ -53,7 +52,7 @@ class News extends BaseModel
 	 * @param dt_show_ts
 	 * @param n_show
 	 *
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	edit(i_n_id, i_u_id, s_n_title, n_alias, t_n_notice, t_n_text, dt_show_ts, n_show)
 	{
@@ -81,7 +80,7 @@ class News extends BaseModel
 	 *
 	 * @param n_id
 	 * @param n_show
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	getById(n_id, n_show = null)
 	{
@@ -102,14 +101,13 @@ class News extends BaseModel
 
 		return this.constructor.conn().sRow(sql, sqlData);
 	}
-
-
+	
 	/**
 	 * кол-во новостей
 	 *
 	 * @param n_show
 	 *
-	 * @returns {*|Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	countNews(n_show = null)
 	{
@@ -139,7 +137,7 @@ class News extends BaseModel
 	 * @param i_limit
 	 * @param i_offset
 	 * @param n_show
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	getNews(i_limit = 20, i_offset = 0, n_show = null)
 	{
@@ -178,7 +176,7 @@ class News extends BaseModel
 	 * @private
 	 *
 	 * @param n_id
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 * @private
 	 */
 	_insImage(n_id)
@@ -196,7 +194,7 @@ class News extends BaseModel
 	 *
 	 * @param u_id
 	 * @param fileData
-	 * @returns {Promise.<TResult>|*}
+	 * @returns {Promise}
 	 */
 	addPhoto(u_id, fileData)
 	{
@@ -220,7 +218,7 @@ class News extends BaseModel
 	 * @param ni_dir
 	 * @param ni_name
 	 * @param posUpd
-	 * @returns {Promise.<TResult>|*}
+	 * @returns {Promise}
 	 */
 	updImage(n_id, ni_id, ni_latitude, ni_longitude, ni_dir, ni_name, posUpd = true)
 	{
@@ -240,7 +238,7 @@ class News extends BaseModel
 	 *
 	 * @param n_id
 	 * @param ni_id
-	 * @returns {Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	delImage(n_id, ni_id)
 	{
@@ -291,7 +289,7 @@ class News extends BaseModel
 	 * кол-вл фоток в новости
 	 *
 	 * @param n_id
-	 * @returns {*|Promise.<TResult>}
+	 * @returns {Promise}
 	 */
 	countAlbumImages(n_id)
 	{
@@ -309,7 +307,7 @@ class News extends BaseModel
 	 *
 	 * @param n_id
 	 * @param ni_pos - id фоток
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	updSortImg(n_id, ni_pos)
 	{
@@ -345,7 +343,7 @@ class News extends BaseModel
 	 * удаляем указанную новость
 	 *
 	 * @param n_id
-	 * @returns {Promise.<*>}
+	 * @returns {Promise}
 	 */
 	delNews(n_id)
 	{

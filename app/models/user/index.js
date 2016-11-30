@@ -168,7 +168,6 @@ class User extends BaseModel
 	/**
 	 * получаем данные о населенном пункте пользователя
 	 * @param u_id
-	 * @param cb
 	 */
 	getUserLocation(u_id)
 	{
@@ -308,7 +307,7 @@ class User extends BaseModel
 	 *
 	 * @param offset
 	 * @param limit
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	getUsers(offset, limit)
 	{

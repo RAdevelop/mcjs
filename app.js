@@ -81,8 +81,8 @@ app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(express.static(path.join(__dirname, 'public')));
 //app.use(logger('dev'));
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+//app.use(bodyParser.json());
+//app.use(bodyParser.urlencoded({ extended: false }));//true
 /*app.use(methodOverride(function(req)//, res
 {
 	if (req.body && typeof req.body === 'object' && '_method' in req.body) {
@@ -95,6 +95,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser(config.session.secret));
 //app.use(Errors.middleware.crashProtector());
 app.use(Session());
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));//true
 
 //************ routes ****************
 //используетя для экспорта данных в JavaScript в браузер

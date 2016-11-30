@@ -445,7 +445,8 @@ class File
 	 * удаляем указанную директорию
 	 * 
 	 * @param dir
-	 * @returns {Promise.<TResult>}
+	 * @param delNotEmptyDir
+	 * @returns {Promise}
 	 */
 	static deleteDir(dir, delNotEmptyDir = true)
 	{
@@ -598,7 +599,7 @@ class File
 	 * @param obj
 	 * @param obj_dir
 	 * @param spread
-	 * @returns {*}
+	 * @returns {Promise}
 	 */
 	static getPreviews(sizeParams, obj, obj_dir, spread = false)
 	{
