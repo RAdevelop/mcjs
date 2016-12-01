@@ -701,7 +701,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1480542212,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1480455906,'RoLex',1);
+INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1480630408,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1480455906,'RoLex',1);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -757,7 +757,7 @@ CREATE TABLE `users_groups` (
   UNIQUE KEY `ug_name` (`ug_name`),
   UNIQUE KEY `ug_path` (`ug_path`),
   KEY `lrk_level` (`ug_lk`,`ug_rk`,`ug_level`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -766,6 +766,7 @@ CREATE TABLE `users_groups` (
 
 LOCK TABLES `users_groups` WRITE;
 /*!40000 ALTER TABLE `users_groups` DISABLE KEYS */;
+INSERT INTO `users_groups` VALUES (1,0,'root','Супер администратор','Супер администратор',1,1,8,0),(2,1,'admin','Администратор','Администратор',2,2,7,0),(3,2,'user','Пользователь','Пользователь',3,3,6,1),(4,3,'guest','Гость','Гость',4,4,5,1);
 /*!40000 ALTER TABLE `users_groups` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2893,6 +2894,431 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `users_groups_after` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`mc`@`%` PROCEDURE `users_groups_after`(IN f_id INT, IN t_id INT, OUT res INT)
+BEGIN
+DECLARE f_lft,f_rgt,f_lev,t_lft,t_rgt,t_lev,done INT DEFAULT 0;
+DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done=1;
+DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
+SET res=0;
+START TRANSACTION;
+SET done=0;
+SELECT ug_lk,ug_rk,ug_level
+INTO f_lft,f_rgt,f_lev
+FROM `users_groups`
+WHERE ug_id=f_id;
+IF t_id>0 THEN
+SELECT ug_lk,ug_rk,ug_level
+INTO t_lft,t_rgt,t_lev
+FROM `users_groups`
+WHERE ug_level=f_lev AND ug_id=t_id;
+IF NOT done THEN
+SELECT ug_lk,ug_rk,ug_level
+INTO t_lft,t_rgt,t_lev
+FROM `users_groups`
+WHERE ug_level=f_lev AND ug_lk>t_rgt AND ug_rk>t_rgt
+ORDER BY ug_lk ASC
+LIMIT 1;
+IF done THEN
+SET t_lft = t_rgt+1;
+SET t_rgt = t_lft+1;
+SET done=0;
+END IF;
+END IF;
+ELSE
+SELECT ug_lk,ug_rk,ug_level
+INTO t_lft,t_rgt,t_lev
+FROM `users_groups`
+WHERE ug_lk<f_lft AND ug_rk>f_rgt AND ug_level<f_lev
+ORDER BY ug_level DESC
+LIMIT 1;
+IF NOT done THEN
+SELECT ug_lk,ug_rk,ug_level
+INTO t_lft,t_rgt,t_lev
+FROM `users_groups`
+WHERE ug_level=f_lev AND ug_lk>t_lft AND ug_rk<t_rgt
+ORDER BY ug_lk ASC
+LIMIT 1;
+ELSE
+SET done=0;
+SELECT ug_lk,ug_rk,ug_level
+INTO t_lft,t_rgt,t_lev
+FROM `users_groups`
+WHERE ug_level=f_lev
+ORDER BY ug_lk ASC
+LIMIT 1;
+END IF;
+END IF;
+IF NOT done THEN
+SET t_rgt=t_lft;
+SET t_lft=t_lft-1;
+CALL `users_groups_relocate`(f_lft,f_rgt,f_lev,t_lft,t_rgt,t_lev-1,res);
+END IF;
+IF res=0 THEN
+ROLLBACK;
+ELSE
+COMMIT;
+END IF;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `users_groups_create` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`mc`@`%` PROCEDURE `users_groups_create`(IN inPid INT, IN inAfterId INT, IN inPath VARCHAR(255), IN inName VARCHAR(100), IN inDesc TEXT, IN inOnRegister INT, OUT last_ins_id INT)
+BEGIN
+	DECLARE i_level INT DEFAULT 1;
+	DECLARE i_right_key INT DEFAULT 1;
+	DECLARE res INT DEFAULT 0;
+	DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
+	
+	SET last_ins_id=0;
+	SET res=0;
+	START TRANSACTION;
+	
+	SELECT IF(ISNULL(MAX(ug_rk)+1), 1, MAX(ug_rk)+1 ) INTO i_right_key
+	FROM `users_groups`;
+	
+	INSERT INTO `users_groups`
+	SET 
+	ug_level= i_level, 
+	ug_lk	= i_right_key, 
+	ug_rk	= i_right_key + 1,
+	ug_path	= inPath,
+	ug_name	= inName,
+	ug_desc = inDesc,
+    ug_on_register = inOnRegister;
+	
+	SELECT LAST_INSERT_ID() INTO last_ins_id;
+	
+	IF last_ins_id>0 THEN
+		CALL users_groups_move(last_ins_id, inPid, res);
+		IF res=1 THEN
+			CALL users_groups_after(last_ins_id, inAfterId, res);
+		END IF;	
+		
+		IF res=0 THEN
+			ROLLBACK;
+			SET last_ins_id=0;
+		ELSE
+			COMMIT;
+		END IF;
+	ELSE 
+		ROLLBACK;
+	END IF;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `users_groups_down` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`mc`@`%` PROCEDURE `users_groups_down`(IN p_id INT, OUT res INT)
+BEGIN
+DECLARE f_lft,f_rgt,f_lev,t_lft,t_rgt,t_lev INT DEFAULT 0;
+SET res=0;
+SELECT ug_lk,i_ug_rk,ug_level
+INTO f_lft,f_rgt,f_lev
+FROM `users_groups`
+WHERE ug_id=p_id;
+SELECT ug_lk,ug_rk,ug_level
+INTO t_lft,t_rgt,t_lev
+FROM `users_groups`
+WHERE ug_lk<f_lft AND ug_rk>f_rgt AND ug_level<f_lev
+ORDER BY ug_level DESC
+LIMIT 1;
+IF t_rgt-t_lft>f_rgt-f_lft THEN
+IF f_rgt+1<t_rgt THEN
+SELECT ug_lk,ug_rk,ug_level
+INTO t_lft,t_rgt,t_lev
+FROM `users_groups`
+WHERE ug_level=f_lev AND ug_lk>t_lft AND ug_rk<t_rgt AND ug_lk>f_rgt
+ORDER BY ug_lk ASC
+LIMIT 1;
+SET t_lft=t_rgt;
+SET t_rgt=t_rgt+1;
+ELSE
+SELECT ug_lk,ug_rk,ug_level
+INTO t_lft,t_rgt,t_lev
+FROM `users_groups`
+WHERE ug_level=f_lev AND ug_lk>t_lft AND ug_rk<t_rgt
+ORDER BY ug_lk ASC
+LIMIT 1;
+SET t_rgt=t_lft;
+SET t_lft=t_lft-1;
+END IF;
+CALL `users_groups_relocate`(f_lft,f_rgt,f_lev,t_lft,t_rgt,t_lev-1,res);
+END IF;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `users_groups_move` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`mc`@`%` PROCEDURE `users_groups_move`(IN f_id INT, IN t_id INT, OUT res INT)
+BEGIN
+DECLARE f_lft,f_rgt,f_lev,t_lft,t_rgt,t_lev,done INT DEFAULT 0;
+DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done=1;
+DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
+SET res=0;
+SET max_sp_recursion_depth=1;
+START TRANSACTION;
+SET done=0;
+SELECT ug_lk,ug_rk,ug_level
+INTO f_lft,f_rgt,f_lev
+FROM `users_groups`
+WHERE ug_id=f_id;
+IF t_id=0 THEN
+SELECT IFNULL(MIN(ug_lk),1)-1,IFNULL(MAX(ug_rk),2)+1,0
+INTO t_lft,t_rgt,t_lev
+FROM `users_groups`;
+ELSE
+SELECT ug_lk,ug_rk,ug_level
+INTO t_lft,t_rgt,t_lev
+FROM `users_groups`
+WHERE ug_id=t_id;
+END IF;
+IF NOT done THEN
+UPDATE `users_groups`
+SET ug_pid=t_id
+WHERE ug_id=f_id;
+CALL `users_groups_relocate`(f_lft,f_rgt,f_lev,t_lft,t_rgt,t_lev,res);
+END IF;
+IF res=0 THEN
+ROLLBACK;
+ELSE
+COMMIT;
+END IF;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `users_groups_relocate` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`mc`@`%` PROCEDURE `users_groups_relocate`(IN f_lft INT, IN f_rgt INT, IN f_lev INT, IN t_lft INT, IN t_rgt INT, IN t_lev INT, OUT res INT)
+BEGIN
+DECLARE count_pos,mv_level,mv_pos INT DEFAULT 0;
+DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
+SET res=0;
+START TRANSACTION;
+IF f_lft<f_rgt AND t_lft<t_rgt AND (f_lft>t_rgt OR f_rgt<t_rgt) THEN
+SET count_pos=f_rgt-f_lft+1;
+SET mv_level=f_lev-t_lev-1;
+
+IF f_lft>t_rgt THEN
+SET mv_pos=f_lft-t_rgt+count_pos;
+UPDATE `users_groups`
+SET
+ug_rk = ug_rk+count_pos,
+ug_lk = IF(ug_lk > t_lft, ug_lk+count_pos, ug_lk)
+WHERE ug_rk >= t_rgt;
+UPDATE `users_groups`
+SET ug_rk = ug_rk - mv_pos
+WHERE ug_lk >= (f_lft + count_pos) AND ug_rk <= (f_rgt + count_pos);
+UPDATE `users_groups`
+SET
+ug_lk = ug_lk - mv_pos,
+ug_level = ug_level - mv_level
+WHERE ug_lk >= (f_lft+count_pos) AND ug_rk <= (t_rgt+count_pos);
+UPDATE `users_groups`
+SET
+ug_rk = ug_rk - count_pos,
+ug_lk = IF(ug_lk > (f_rgt+count_pos), ug_lk - count_pos, ug_lk)
+WHERE ug_rk > (f_rgt+count_pos);
+ELSE
+SET mv_pos = f_lft - t_rgt;
+UPDATE `users_groups`
+SET
+ug_rk = ug_rk + count_pos,
+ug_lk = IF(ug_lk > t_lft, ug_lk + count_pos, ug_lk)
+WHERE ug_rk >= t_rgt;
+UPDATE `users_groups`
+SET ug_lk = ug_lk - mv_pos
+WHERE ug_lk >= f_lft AND ug_rk <= f_rgt;
+UPDATE `users_groups`
+SET
+ug_rk = ug_rk - mv_pos,
+ug_level = ug_level - mv_level
+WHERE ug_lk >= t_rgt AND ug_rk <= f_rgt;
+UPDATE `users_groups`
+SET ug_rk = ug_rk - count_pos,
+ug_lk = IF(ug_lk > f_rgt, ug_lk - count_pos, ug_lk)
+WHERE ug_rk>f_rgt;
+END IF;
+END IF;
+SET res=1;
+COMMIT;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `users_groups_up` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`mc`@`%` PROCEDURE `users_groups_up`(IN p_id INT, OUT res INT)
+BEGIN
+DECLARE f_lft,f_rgt,f_lev,t_lft,t_rgt,t_lev INT DEFAULT 0;
+SET res=0;
+SELECT ug_lk,ug_rk,ug_level
+INTO f_lft,f_rgt,f_lev
+FROM `users_groups`
+WHERE ug_id=p_id;
+SELECT ug_lk,ug_rk,ug_level
+INTO t_lft,t_rgt,t_lev
+FROM `users_groups`
+WHERE ug_lk<f_lft AND ug_rk>f_rgt AND ug_level<f_lev
+ORDER BY ug_level DESC
+LIMIT 1;
+IF t_rgt-t_lft>f_rgt-f_lft THEN
+IF f_lft-1>t_lft THEN
+SELECT ug_lk,ug_rk,ug_level
+INTO t_lft,t_rgt,t_lev
+FROM `users_groups`
+WHERE ug_level=f_lev AND ug_lk>t_lft AND ug_rk<t_rgt AND ug_rk<f_lft
+ORDER BY ug_rk DESC
+LIMIT 1;
+SET t_rgt=t_lft;
+SET t_lft=t_lft-1;
+ELSE
+SELECT ug_lk,ug_rk,ug_level
+INTO t_lft,t_rgt,t_lev
+FROM `users_groups`
+WHERE ug_level=f_lev AND ug_lk>t_lft AND ug_rk<t_rgt
+ORDER BY ug_rk DESC
+LIMIT 1;
+SET t_lft=t_rgt;
+SET t_rgt=t_rgt+1;
+END IF;
+CALL `users_groups_relocate`(f_lft,f_rgt,f_lev,t_lft,t_rgt,t_lev-1,res);
+END IF;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `users_groups_update` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`mc`@`%` PROCEDURE `users_groups_update`(IN inId INT, IN inPid INT, IN inAftecId INT, IN inPath VARCHAR(255), IN inName VARCHAR(100), IN inDesc TEXT, IN inOnRegister INT, OUT res INT)
+BEGIN
+	DECLARE cPid, cId, cLk, cRk, bIntoSelf INT DEFAULT 0;
+	
+	DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
+	SET res=0;
+	
+	SELECT 
+	ug_lk, ug_rk INTO cLk, cRk
+	FROM `users_groups`
+	WHERE ug_id = inId;
+	
+	SELECT EXISTS (
+		SELECT 1 
+		FROM `users_groups`
+		WHERE inPid IN
+		(SELECT ug_id 
+		FROM `users_groups`
+		WHERE ug_lk >= cLk
+		AND ug_rk <= cRk)
+	) INTO bIntoSelf;
+	
+	START TRANSACTION;
+	
+	UPDATE `users_groups`
+	SET
+	ug_path	= inPath,
+	ug_name	= inName,
+	ug_desc	= inDesc,
+    ug_on_register = inOnRegister
+	WHERE ug_id = inId;
+	
+	
+	if bIntoSelf=1 THEN
+		SET res = 1;
+		Commit;
+	ELSE
+		CALL users_groups_move(inId, inPid, res);
+		
+		IF res=1 THEN
+			CALL users_groups_after(inId, inAftecId, res);
+		END IF;	
+		
+		IF res=0 THEN
+			ROLLBACK;
+		ELSE
+			COMMIT;
+		END IF;
+	END IF;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -2903,4 +3329,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-12-01  1:47:31
+-- Dump completed on 2016-12-02  1:38:19

@@ -49,6 +49,7 @@ class UserGroups extends BaseModel
 	 */
 	updById(ug_id, ug_pid, ug_after_id, ug_path, ug_name, ug_desc, ug_on_register)
 	{
+		ug_path = ug_path.toLowerCase();
 		ug_on_register = (ug_on_register||parseInt(ug_on_register, 10) ? 1 : 0);
 
 		let sql = `CALL users_groups_update(?, ?, ?, ?, ?, ?,?,@res); SELECT @res AS res FROM DUAL;`;
@@ -86,6 +87,7 @@ class UserGroups extends BaseModel
 	 */
 	add(ug_pid, ug_after_id, ug_path, ug_name, ug_desc, ug_on_register)
 	{
+		ug_path = ug_path.toLowerCase();
 		ug_on_register = (ug_on_register||parseInt(ug_on_register, 10) ? 1 : 0);
 		
 		let sql = `CALL users_groups_create(?, ?, ?, ?, ?,?,@ug_id); SELECT @ug_id AS ug_id FROM DUAL;`;

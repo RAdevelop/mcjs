@@ -88,12 +88,12 @@ class AdminUserGroups extends Base
 			.then(function (tplData)
 			{
 				return Promise.props({
-					methodsList: this.getClass('user/groups').getAllMethods(ui_ug_id),
+					menuList: this.getClass('menu').getAll(),
 					userGroupsList: this.getClass('user/groups').getAll()
 				})
 					.then(function(props)
 					{
-						//tplData.methodsList = props.methodsList || [];
+						tplData.menuList = props.menuList || [];
 						tplData.userGroupsList = props.userGroupsList || [];
 
 						return Promise.resolve(tplData);
@@ -103,6 +103,7 @@ class AdminUserGroups extends Base
 			{
 				//экспрот данных в JS на клиента
 				this.getRes().expose(tplData.userGroupsList, 'userGroupsList');
+				this.getRes().expose(tplData.menuList, 'menuList');
 				//this.getRes().expose(tplData.methodsList, 'methodsList');
 
 				this.view.setTplData(tplFile, tplData);
@@ -150,23 +151,26 @@ class AdminUserGroups extends Base
 						}
 					});
 				break;
-
-			//добавляем новый контроллер в БД
+			
 			case 'add':
 				return this.add(tplData);
+				break;
+
+			case 'get_menu_methods':
+				return this.getMenuMethods(tplData);
 				break;
 		}
 	}
 	
 	/**
-	 * добавляем новый контроллер в БД
+	 * добавляем новую группу в БД
 	 *
 	 * @param tplData
-	 * @returns {Promise.<T>}
+	 * @returns {Promise}
 	 */
 	add(tplData)
 	{
-		let tplFile = 'admin/controller/index.ejs';
+		let tplFile = 'admin/user/groups/index.ejs';
 		
 		return Promise.resolve(tplData)
 			.bind(this)
@@ -179,15 +183,8 @@ class AdminUserGroups extends Base
 
 				tplData["ui_ug_pid"]        = parseInt(tplData["ui_ug_pid"], 10)        || 0;
 				tplData["ui_ug_after_id"]   = parseInt(tplData["ui_ug_after_id"], 10)   || 0;
-				
-				tplData["s_ug_path"] = tplData["s_ug_path"].trim().split("/");
-				
-				if (tplData["s_ug_path"][tplData["s_ug_path"].length-1] == "")
-					tplData["s_ug_path"].pop();
-				
-				tplData["s_ug_path"] = tplData["s_ug_path"].join("/").toLowerCase();
-				
-				if (!tplData["s_ug_path"] || !(tplData["s_ug_path"].search(/^([a-zA-Z_]+){3,}$/ig) != -1))
+
+				if (!tplData["s_ug_path"] || !(tplData["s_ug_path"].search(/^([a-zA-Z_]+){3,100}$/ig) != -1))
 					errors["s_ug_path"] = "Укажите alias";
 				
 				if (!tplData["s_ug_name"])
@@ -199,10 +196,10 @@ class AdminUserGroups extends Base
 			})
 			.then(function (tplData)
 			{
-				return this.getClass('controller').add(tplData["ui_ug_pid"], tplData["ui_ug_after_id"], tplData["s_ug_path"], tplData["s_ug_name"], tplData["t_ug_desc"])
-					.then(function (c_id)
+				return this.getClass('user/groups').add(tplData["ui_ug_pid"], tplData["ui_ug_after_id"], tplData["s_ug_path"], tplData["s_ug_name"], tplData["t_ug_desc"], tplData["b_ug_on_register"])
+					.then(function (ug_id)
 					{
-						tplData['ui_ug_id'] = c_id;
+						tplData['ui_ug_id'] = ug_id;
 						return Promise.resolve(tplData);
 					});
 			})
@@ -216,8 +213,9 @@ class AdminUserGroups extends Base
 			{
 				if (err.name == 'AlreadyInUseError')
 				{
-					tplData.formError.message = 'Такой контроллер уже существует';
-					tplData.formError.fields['s_ug_path'] = "Укажите путь";
+					tplData.formError.message = 'Такая группа уже существует';
+					tplData.formError.fields['s_ug_name'] = "Укажите alias";
+					tplData.formError.fields['s_ug_path'] = "Укажите название";
 					tplData.formError.error = true;
 					tplData.formError.errorName = err.name;
 					
@@ -226,6 +224,111 @@ class AdminUserGroups extends Base
 				}
 				
 				this.view.setTplData(tplFile, err['data']);
+				return Promise.resolve(true);
+			})
+			.catch(function (err)
+			{
+				throw err;
+			});
+	}
+	
+	/**
+	 * редактируем основные данные группы
+	 *
+	 * @param tplData
+	 * @returns {Promise}
+	 */
+	update(tplData)
+	{
+		let tplFile = 'admin/user/groups/index.ejs';
+		
+		return Promise.resolve(tplData)
+			.bind(this)
+			.then(function (tplData)
+			{
+				let errors = {};
+				
+				tplData = this.stripTags(tplData, ["s_ug_path", "s_ug_name", "t_ug_desc"]);
+
+				tplData["b_ug_on_register"] = tplData["b_ug_on_register"] || false;
+				tplData["ui_ug_pid"]        = parseInt(tplData["ui_ug_pid"], 10)        || 0;
+				tplData["ui_ug_after_id"]   = parseInt(tplData["ui_ug_after_id"], 10)   || 0;
+
+				if (!tplData["s_ug_path"] || !(tplData["s_ug_path"].search(/^([a-zA-Z_]+){3,100}$/ig) != -1))
+					errors["s_ug_path"] = "Укажите путь";
+				
+				if (!tplData["s_ug_name"])
+					errors["s_ug_name"] = "Укажите название";
+				
+				this.parseFormErrors(tplData, errors);
+				
+				return Promise.resolve(tplData);
+			})
+			.then(function (tplData)
+			{
+				return this.getClass('user/groups').updById(tplData["ui_ug_id"], tplData["ui_ug_pid"], tplData["ui_ug_after_id"], tplData["s_ug_path"], tplData["s_ug_name"], tplData["t_ug_desc"], tplData["b_ug_on_register"])
+					.then(function ()
+					{
+						return Promise.resolve(tplData);
+					});
+			})
+			.then(function (tplData)
+			{
+				this.view.setTplData(tplFile, tplData);
+				
+				return Promise.resolve(true);
+			})
+			.catch(Errors.AlreadyInUseError, Errors.ValidationError, function (err) //такие ошибки не уводят со страницы
+			{
+				if (err.name == 'AlreadyInUseError')
+				{
+					tplData.formError.message = 'Такая группа уже существует';
+					tplData.formError.fields['s_ug_name'] = "Укажите alias";
+					tplData.formError.fields['s_ug_path'] = "Укажите название";
+					tplData.formError.error = true;
+					tplData.formError.errorName = err.name;
+
+					err['data'] = tplData;
+					//console.log(err);
+				}
+
+				this.view.setTplData(tplFile, err['data']);
+				return Promise.resolve(true);
+			})
+			.catch(function (err)
+			{
+				throw err;
+			});
+	}
+	
+	/**
+	 * получаем методы для группы
+	 * 
+	 * @param tplData
+	 * @returns {Promise}
+	 */
+	getMenuMethods(tplData)
+	{
+		let tplFile = 'admin/user/groups/index.ejs';
+
+		if (!tplData["ui_c_id"])
+			throw new Errors.HttpError(400);
+
+		return Promise.resolve(tplData)
+			.bind(this)
+			.then(function (tplData)
+			{
+				return this.getClass('controller').getAllMethods(tplData["ui_c_id"])
+					.then(function (methodsList)
+					{
+						tplData["methodsList"] = methodsList || [];
+						return Promise.resolve(tplData);
+					});
+			})
+			.then(function (tplData)
+			{
+				this.view.setTplData(tplFile, tplData);
+
 				return Promise.resolve(true);
 			})
 			.catch(function (err)

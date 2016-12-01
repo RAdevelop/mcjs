@@ -7,7 +7,7 @@
 <p>не давать возможность выбрать в качестве родителя кого-то из своих потомков!!!!!</p>
 <h2><% if(ui_controller_id) {%>Изменить<%} else {%>Добавить<%}%> контроллер: <%= s_controller_name %></h2>
 <div class="row">
-    <div class="col-xs-3">
+    <div class="col-xs-12 col-sm-3">
         <div class="col-xs-12 open">
             <ul class="dropdown-menu">
                 <% controllerList.forEach(function(controller){%>
@@ -18,7 +18,7 @@
             </ul>
         </div>
     </div>
-    <div class="col-xs-9">
+    <div class="col-xs-12 col-sm-9">
         <ul class="nav nav-pills nav-justified" role="tablist">
             <li class="active" role="presentation"><a href="#base" aria-controls="base" role="tab" data-toggle="tab"><i class="fa fa-cog"></i> Основные параметры</a></li>
             <% if (_action == 'edit') { %>
@@ -29,65 +29,61 @@
         <div class="panel panel-default">
             <div class="panel-body tab-content">
                 <div role="tabpanel" class="tab-pane active" id="base">
-                    <div id="controllerFormBody" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="controllerForm">
-                        <div class="panel-body">
-                            <form id="controllerEditForm" class="form-horizontal" action="<%= menuItem['m_path'] %>/edit/" method="post">
-                                <input type="hidden" id="ui_controller_id" name="ui_controller_id" value="<%= ui_controller_id %>"/>
-                                <div class="form-group ui_controller_pid">
-                                    <label class="col-sm-3 control-label" for="ui_controller_pid">Укажите родительский контроллер</label>
-                                    <div class="col-sm-9">
-                                        <select id="ui_controller_pid" name="ui_controller_pid" class="form-control">
-                                            <option value="0">нет родителя</option>
-                                            <% controllerList.forEach(function(controller){%>
-                                            <option value="<%= controller["c_id"] %>" <% if(ui_controller_pid == controller["c_id"]){%>selected="selected"<%}%> <% if(ui_controller_id == controller["c_id"]){%>disabled="disabled"<%}%> >
-                                                <%- controller["c_nbsp"] %><%= controller["c_name"] %>
-                                            </option>
-                                            <% }) %>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group ui_controller_after_id">
-                                    <label class="col-sm-3 control-label" for="ui_controller_after_id">После какого контроллера</label>
-                                    <div class="col-sm-9">
-                                        <select id="ui_controller_after_id" name="ui_controller_after_id" class="form-control">
-                                            <option value="0">в начале</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group s_controller_path">
-                                    <label class="col-sm-3 control-label" for="s_controller_path">"Путь" контроллера</label>
-                                    <div class="col-sm-9">
-                                        <input type="text" id="s_controller_path" name="s_controller_path" value="<%= s_controller_path %>" maxlength="255" class="form-control" placeholder="&quot;Путь&quot; контроллера" required autofocus aria-describedby="s_controller_pathHelpBlock"/>
-                                        <span id="s_controller_pathHelpBlock" class="help-block">пример: /path/to/controller</span>
-                                    </div>
-                                </div>
-                                <div class="form-group s_controller_name">
-                                    <label class="col-sm-3 control-label" for="s_controller_name">Название контроллера</label>
-                                    <div class="col-sm-9">
-                                        <input type="text" id="s_controller_name" name="s_controller_name" value="<%= s_controller_name %>" maxlength="100" class="form-control" placeholder="Название контроллера" required autofocus aria-describedby="s_controller_nameHelpBlock"/>
-                                        <span id="s_controller_nameHelpBlock" class="help-block">от 3 до 100 символов</span>
-                                    </div>
-                                </div>
-                                <div class="form-group t_controller_desc">
-                                    <label class="col-sm-3 control-label" for="t_controller_desc">Описание контроллера</label>
-                                    <div class="col-sm-9">
-                                        <textarea rows="5" id="t_controller_desc" name="t_controller_desc" class="form-control" placeholder="Описание контроллера"><%= t_controller_desc %></textarea>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="col-sm-6 col-sm-offset-6">
-                                        <% if(ui_controller_id){%>
-                                        <input type="hidden" name="btn_controller_save" value="update" />
-                                        <button class="btn btn-default" type="submit" name="btn_controller_form">Изменить</button>
-                                        <%} else {%>
-                                        <input type="hidden" name="btn_controller_save" value="add" />
-                                        <button class="btn btn-default" type="submit" name="btn_controller_form">Добавить</button>
-                                        <%} %>
-                                    </div>
-                                </div>
-                            </form>
+                    <form id="controllerEditForm" class="form-horizontal" action="<%= menuItem['m_path'] %>/edit/" method="post">
+                        <input type="hidden" id="ui_controller_id" name="ui_controller_id" value="<%= ui_controller_id %>"/>
+                        <div class="form-group ui_controller_pid">
+                            <label class="col-sm-3 control-label" for="ui_controller_pid">Укажите родительский контроллер</label>
+                            <div class="col-sm-9">
+                                <select id="ui_controller_pid" name="ui_controller_pid" class="form-control">
+                                    <option value="0">нет родителя</option>
+                                    <% controllerList.forEach(function(controller){%>
+                                    <option value="<%= controller["c_id"] %>" <% if(ui_controller_pid == controller["c_id"]){%>selected="selected"<%}%> <% if(ui_controller_id == controller["c_id"]){%>disabled="disabled"<%}%> >
+                                        <%- controller["c_nbsp"] %><%= controller["c_name"] %>
+                                    </option>
+                                    <% }) %>
+                                </select>
+                            </div>
                         </div>
-                    </div>
+                        <div class="form-group ui_controller_after_id">
+                            <label class="col-sm-3 control-label" for="ui_controller_after_id">После какого контроллера</label>
+                            <div class="col-sm-9">
+                                <select id="ui_controller_after_id" name="ui_controller_after_id" class="form-control">
+                                    <option value="0">в начале</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group s_controller_path">
+                            <label class="col-sm-3 control-label" for="s_controller_path">"Путь" контроллера</label>
+                            <div class="col-sm-9">
+                                <input type="text" id="s_controller_path" name="s_controller_path" value="<%= s_controller_path %>" maxlength="255" class="form-control" placeholder="&quot;Путь&quot; контроллера" required autofocus aria-describedby="s_controller_pathHelpBlock"/>
+                                <span id="s_controller_pathHelpBlock" class="help-block">пример: /path/to/controller</span>
+                            </div>
+                        </div>
+                        <div class="form-group s_controller_name">
+                            <label class="col-sm-3 control-label" for="s_controller_name">Название контроллера</label>
+                            <div class="col-sm-9">
+                                <input type="text" id="s_controller_name" name="s_controller_name" value="<%= s_controller_name %>" maxlength="100" class="form-control" placeholder="Название контроллера" required autofocus aria-describedby="s_controller_nameHelpBlock"/>
+                                <span id="s_controller_nameHelpBlock" class="help-block">от 3 до 100 символов</span>
+                            </div>
+                        </div>
+                        <div class="form-group t_controller_desc">
+                            <label class="col-sm-3 control-label" for="t_controller_desc">Описание контроллера</label>
+                            <div class="col-sm-9">
+                                <textarea rows="5" id="t_controller_desc" name="t_controller_desc" class="form-control" placeholder="Описание контроллера"><%= t_controller_desc %></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-6 col-sm-offset-6">
+                                <% if(ui_controller_id){%>
+                                <input type="hidden" name="btn_controller_save" value="update" />
+                                <button class="btn btn-default" type="submit" name="btn_controller_form">Изменить</button>
+                                <%} else {%>
+                                <input type="hidden" name="btn_controller_save" value="add" />
+                                <button class="btn btn-default" type="submit" name="btn_controller_form">Добавить</button>
+                                <%} %>
+                            </div>
+                        </div>
+                    </form>
                 </div>
                 <% if (_action == 'edit') { %>
                 <div role="tabpanel" class="tab-pane" id="methods">

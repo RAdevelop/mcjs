@@ -7,7 +7,40 @@ jQuery(document).ready(function ()
 		return;
 
 	var Helpers = {};
-	
+
+	Helpers.tabList = function ()
+	{
+		var hash = window.location.hash;
+			hash = hash.split('#')[1];
+		var $tabList = $('[role="tablist"]').find('[role="presentation"]');
+		if (!$tabList.length)
+			return;
+
+		var find = false;
+		$tabList.each(function (i, item)
+		{
+			//$(item).removeClass('active');
+
+			if ($(item).find('[aria-controls="'+hash+'"]').length)
+			{
+				find = true;
+				//$(item).addClass('active');
+				$(item).find('[role=tab]').click();
+			}
+		});
+
+		if (!find)
+			$tabList.first().addClass('active');
+
+		$tabList.find('[role=tab]').on('click', function ()
+		{
+			if ($(this).attr('aria-controls'))
+			window.location.hash = $(this).attr('aria-controls');
+		});
+	};
+
+	Helpers.tabList();
+
 	Helpers.initTooltip = function ()
 	{
 		$(document).tooltip({

@@ -27,7 +27,7 @@ module.exports = function(Classes, Control)
 	router.use(require('app/middlewares/user/load.js')(Classes));
 
 	//сработает для всех адресов site.com/admin*
-	router.use('/admin*', UserIsAuth);
+	router.use('/admin', UserIsAuth);
 
 	router.use(require('app/middlewares/menu/site.js')(Classes));
 
@@ -99,6 +99,7 @@ function calcTimeForGC()
 		tInterval = null;
 	}
 }
+/*
 
 function v1_calcTimeForGC()
 {
@@ -126,4 +127,4 @@ function v1_calcTimeForGC()
 			}
 		}
 	}
-}
+}*/
