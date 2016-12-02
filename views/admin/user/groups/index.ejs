@@ -29,7 +29,7 @@
         <ul class="nav nav-pills nav-justified" role="tablist">
             <li class="" role="presentation"><a href="#base" aria-controls="base" role="tab" data-toggle="tab"><i class="fa fa-cog"></i> Основные параметры</a></li>
             <% if (_action == 'edit') { %>
-            <li role="presentation"><a href="#user_rights" aria-controls="user_rights" role="tab" data-toggle="tab"><i class="fa fa-cogs"></i> Права</a></li>
+            <li role="presentation"><a href="#users_groups_rights" aria-controls="users_groups_rights" role="tab" data-toggle="tab"><i class="fa fa-cogs"></i> Права</a></li>
             <% }%>
         </ul>
         <!-- Tab panes -->
@@ -101,7 +101,7 @@
                     </div>
                 </div>
                 <% if (_action == 'edit') { %>
-                <div role="tabpanel" class="tab-pane" id="user_rights">
+                <div role="tabpanel" class="tab-pane" id="users_groups_rights">
                     <div class="panel-body" id="userRightsBody">
                         <form id="userGroupMethodsForm" class="form-horizontal" action="<%= menuItem['m_path'] %>/edit/" method="post">
                             <input type="hidden" id="ui_ug_id" name="ui_ug_id" value="<%= ui_ug_id %>"/>

@@ -28,7 +28,7 @@ class AdminUserGroups extends Base
 	{
 		let tplData = {
 			ui_ug_id: "", ui_ug_pid:"0", s_ug_path:'', s_ug_name: '', t_ug_desc: '', ui_ug_after_id: 0,
-			b_ug_on_register: 1, userGroupsList: []
+			b_ug_on_register: "0", userGroupsList: []
 		};
 
 		return this.getClass('user/groups').getAll()
@@ -66,7 +66,7 @@ class AdminUserGroups extends Base
 
 		let tplData = {
 			ui_ug_id: "", ui_ug_pid:"0", s_ug_path:'', s_ug_name: '', t_ug_desc: '', ui_ug_after_id: 0,
-			b_ug_on_register: 1, userGroupsList: []
+			b_ug_on_register: "0", userGroupsList: []
 		};
 
 		return this.getClass('user/groups').getById(ui_ug_id)
