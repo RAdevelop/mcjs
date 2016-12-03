@@ -110,10 +110,17 @@
                                 <div class="col-sm-9">
                                     по c_id получаем список методов: причем результат должен быть с проверкой уже отмеченных ранее методов для текущей группы...
                                     то есть, нужна таблица вида: ug_id, m_id, c_id, cm_id
-                                    <select id="ui_c_id" name="ui_c_id" class="form-control js-menu-controller-id">
+                                    <select id="ui_m_id" name="ui_m_id" class="form-control js-menu-controller-id">
                                         <option value="0"></option><% menuList.forEach(function(mItem){%>
-                                        <option value="<%= mItem["c_id"] %>"><%- mItem["m_nbsp"] %><%= mItem["m_name"] %></option><% }) %>
+                                        <option value="<%= mItem["m_id"] %>"><%- mItem["m_nbsp"] %><%= mItem["m_name"] %></option><% }) %>
                                     </select>
+                                </div>
+                            </div>
+                            <ul class="form-group ug_rights js-methods-list"></ul>
+                            <div class="form-group">
+                                <div class="col-sm-6 col-sm-offset-6">
+                                    <input type="hidden" name="btn_ug_save" value="save_rights" />
+                                    <button class="btn btn-primary" type="submit" id="btn_save_rights">сохранить</button>
                                 </div>
                             </div>
                         </form>
@@ -179,12 +186,22 @@ var ui_ug_pid = "<%= ui_ug_pid %>";
         subUserGroupItem(this.value, ui_ug_id);
     });
 
-
     var $userGroupMethodsForm = $('#userGroupMethodsForm');
+
+    $userGroupMethodsForm.postRes({btnId: 'btn_save_rights',
+        onSuccess: function($dialog, respData)
+        {
+            console.log(respData);
+            //window.location.href = $userGroupEditForm.attr('action')+respData['ui_ug_id'];
+            return true;
+        }
+    });
+
     $('.js-menu-controller-id').on('change', function (event)
     {
         var formData = {'btn_ug_save': 'get_menu_methods'};
-        formData["ui_c_id"] = $(this).val();
+        formData["ui_m_id"] = $(this).val();
+        formData["ui_ug_id"] = ui_ug_id;
 
         $.ajax({
             url: $userGroupMethodsForm.attr('action'),
@@ -192,13 +209,36 @@ var ui_ug_pid = "<%= ui_ug_pid %>";
             data: formData,
             dataType: "json"
         })
-        .done(function(data)
+        .done(function(respData)
         {
-            console.log( data );
+            //console.log( respData );
+            var $jsMethodsList = $('.js-methods-list').empty();
+
+            var methodsList = respData["methodsList"] || [];
+
+            if (methodsList.length)
+            {
+                var li = '';
+                var cId = null;
+
+                $.each(methodsList, function (i, method)
+                {
+                    console.log( i, method );
+                    cId = method['c_id'];
+                    var checked  = (parseInt(method['b_allowed'], 10) ? ' checked="checked" ' : '');
+
+                    li = '<li data-method-id="'+method['cm_id']+'">'
+                    li += '<label><input '+checked+' type="checkbox" name="cm_id[]" value="'+method['cm_id']+'" /> '+method['cm_method']+'</label>';
+                    li += '</li>'
+                    $jsMethodsList.append(li);
+                });
+                cId = parseInt(cId, 10);
+                $jsMethodsList.append('<input type="hidden" name="c_id" value="'+cId+'" />');
+            }
         })
-        .fail(function(data)
+        .fail(function(respData)
         {
-            console.log( data );
+            console.log( respData );
         }
         );
     });

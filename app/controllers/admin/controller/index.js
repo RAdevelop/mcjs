@@ -95,7 +95,7 @@ class Controller extends Base
 			.then(function (tplData)
 			{
 				return Promise.props({
-					methodsList: this.getClass("controller").getAllMethods(ui_controller_id),
+					methodsList: this.getClass("controller").getControllerMethods(ui_controller_id),
 					controllerList: this.getClass("controller").getAll()
 				})
 					.then(function(props)
@@ -129,9 +129,9 @@ class Controller extends Base
 	editActionPost()
 	{
 		let tplData = this.getParsedBody();
-		let btn_save = tplData["btn_controller_save"] || null;
-		
-		switch (btn_save)
+		let action = tplData["btn_controller_save"] || null;
+
+		switch (action)
 		{
 			default:
 
@@ -145,7 +145,7 @@ class Controller extends Base
 						if (!controller)
 							throw new Errors.HttpError(404);
 
-						switch (btn_save)
+						switch (action)
 						{
 							default:
 								throw new Errors.HttpError(400);
@@ -157,6 +157,10 @@ class Controller extends Base
 
 							case 'add_method':
 								return this.addMethod(tplData);
+								break;
+							case 'method_update':
+							case 'method_delete':
+								return this.updateMethod(tplData, action);
 								break;
 						}
 					});
@@ -348,10 +352,95 @@ class Controller extends Base
 				
 				return Promise.resolve(true);
 			})
-			.catch(Errors.ValidationError, function (err) //такие ошибки не уводят со страницы
+			.catch(Errors.AlreadyInUseError, Errors.ValidationError, function (err) //такие ошибки не уводят со страницы
 			{
+				if (err.name == 'AlreadyInUseError')
+				{
+					tplData.formError.message = 'Такой метод уже существует';
+					tplData.formError.error = true;
+					tplData.formError.errorName = err.name;
+
+					err['data'] = tplData;
+					//console.log(err);
+				}
+
 				this.view.setTplData(tplFile, err['data']);
 				
+				return Promise.resolve(true);
+			})
+			.catch(function (err)
+			{
+				throw err;
+			});
+	}
+	/**
+	 * редактируем/удаляем метод
+	 *
+	 * @param tplData
+	 * @returns {Promise}
+	 */
+	updateMethod(tplData, action)
+	{
+		let tplFile = 'admin/controller/index.ejs';
+
+		return Promise.resolve(tplData)
+			.bind(this)
+			.then(function (tplData)
+			{
+				let errors = {};
+
+				tplData = this.stripTags(tplData, ["s_cm_method"]);
+				tplData["s_cm_method"] = tplData["s_cm_method"] || '';
+
+				if (!tplData["ui_cm_id"] || !tplData["ui_controller_id"])
+					errors["s_cm_method"] = "Укажите метод";
+
+				this.parseFormErrors(tplData, errors);
+
+				return Promise.resolve(tplData);
+			})
+			.then(function (tplData)
+			{
+				if (action == 'method_delete')
+				{
+					return this.getClass('controller').deleteMethod(tplData["ui_controller_id"], tplData["ui_cm_id"])
+						.then(function (cm_id)
+						{
+							tplData["ui_cm_id"] = cm_id;
+							return Promise.resolve(tplData);
+						});
+				}
+				else if (action == 'method_update')
+				{
+					return this.getClass('controller').updateMethod(tplData["ui_cm_id"], tplData["s_cm_method"])
+						.then(function (cm_id)
+						{
+							tplData["ui_cm_id"] = cm_id;
+							return Promise.resolve(tplData);
+						});
+				}
+				else
+					throw new Errors.HttpError(400);
+			})
+			.then(function (tplData)
+			{
+				this.view.setTplData(tplFile, tplData);
+
+				return Promise.resolve(true);
+			})
+			.catch(Errors.AlreadyInUseError, Errors.ValidationError, function (err) //такие ошибки не уводят со страницы
+			{
+				if (err.name == 'AlreadyInUseError')
+				{
+					tplData.formError.message = 'Такой метод уже существует';
+					tplData.formError.error = true;
+					tplData.formError.errorName = err.name;
+
+					err['data'] = tplData;
+					//console.log(err);
+				}
+
+				this.view.setTplData(tplFile, err['data']);
 				return Promise.resolve(true);
 			})
 			.catch(function (err)

@@ -1,3 +1,5 @@
+//# sass --sourcemap=none --trace --update -t expanded sass/:./
+
 //#vendors
 
 //#utils
@@ -29,6 +31,7 @@
 @import "layout/uploader";
 
 //#pages
+@import "pages/controllers";
 @import "pages/album";
 @import "pages/events";
 @import "pages/mototrek";

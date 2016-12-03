@@ -152,9 +152,12 @@ DROP TABLE IF EXISTS `controllers_methods`;
 CREATE TABLE `controllers_methods` (
   `cm_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `cm_method` varchar(33) NOT NULL,
+  `cm_name` varchar(100) DEFAULT NULL,
+  `cm_desc` varchar(255) DEFAULT NULL,
+  `c_id` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`cm_id`),
-  UNIQUE KEY `method` (`cm_method`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+  UNIQUE KEY `c_id_method` (`c_id`,`cm_method`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -163,32 +166,8 @@ CREATE TABLE `controllers_methods` (
 
 LOCK TABLES `controllers_methods` WRITE;
 /*!40000 ALTER TABLE `controllers_methods` DISABLE KEYS */;
-INSERT INTO `controllers_methods` VALUES (2,'add'),(3,'delete'),(5,'postadd'),(6,'post_add'),(4,'update'),(1,'view');
+INSERT INTO `controllers_methods` VALUES (1,'get_index','','','1'),(2,'post_index','','','1'),(5,'get_add','','','1'),(6,'post_add','','','1'),(7,'get_edit','','','1'),(8,'post_edit','','','1');
 /*!40000 ALTER TABLE `controllers_methods` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `controllers_vs_methods`
---
-
-DROP TABLE IF EXISTS `controllers_vs_methods`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `controllers_vs_methods` (
-  `c_id` smallint(5) unsigned NOT NULL,
-  `cm_id` smallint(5) unsigned NOT NULL,
-  PRIMARY KEY (`c_id`,`cm_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `controllers_vs_methods`
---
-
-LOCK TABLES `controllers_vs_methods` WRITE;
-/*!40000 ALTER TABLE `controllers_vs_methods` DISABLE KEYS */;
-INSERT INTO `controllers_vs_methods` VALUES (1,1),(1,2),(1,3),(1,4),(1,5),(1,6);
-/*!40000 ALTER TABLE `controllers_vs_methods` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -642,7 +621,7 @@ CREATE TABLE `news_list` (
 
 LOCK TABLES `news_list` WRITE;
 /*!40000 ALTER TABLE `news_list` DISABLE KEYS */;
-INSERT INTO `news_list` VALUES (1,1476125613,1476779288,1476048587,'eTextTinymce','etexttinymce','eTextTinymce','<p>eTextTinymce<iframe src=\"https://rutube.ru/play/embed/8577873\" class=\"iframeVideoEmbed\" frameborder=\"0\" allowfullscreen=\"allowfullscreen\" webkitallowfullscreen=\"webkitallowfullscreen\" mozallowfullscreen=\"mozallowfullscreen\" scrolling=\"no\" data-link=\"https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/\"></iframe></p>\r\n<ul class=\"images\">\r\n<li><img class=\"image\" src=\"/news/0/1/1/6512bd43d9caa6e02c990b0a82652dca/512_384.jpg\" data-img-id=\"1\"></li>\r\n</ul>',0,1,1),(2,1476133593,1476221378,1476133200,'sdfsfd','sdfsfd','sdf','<p>sdf</p>',1,0,1),(3,1476133867,1476221876,1475962161,'xvbhnbn','xvbhnbn','cvbcvbcvb','<p>cvbcvbcvb</p>',1,0,1),(4,1476218080,1477422268,1476221246,'sdfsdf 3','sdfsdf-3','l;sdf,msd,f','<p>sdfsdf</p>',1,1,1);
+INSERT INTO `news_list` VALUES (1,1476125613,1480702442,1476048587,'eTextTinymce','etexttinymce','eTextTinymce','<p>eTextTinymce<iframe src=\"https://rutube.ru/play/embed/8577873\" class=\"iframeVideoEmbed\" frameborder=\"0\" allowfullscreen=\"allowfullscreen\" webkitallowfullscreen=\"webkitallowfullscreen\" mozallowfullscreen=\"mozallowfullscreen\" scrolling=\"no\" data-link=\"\"></iframe></p>\r\n<ul class=\"images\">\r\n<li><img class=\"image\" src=\"/news/0/1/1/6512bd43d9caa6e02c990b0a82652dca/512_384.jpg\" data-img-id=\"1\"></li>\r\n</ul>\r\n<p><iframe src=\"https://rutube.ru/play/embed/8577873\" class=\"iframeVideoEmbed\" frameborder=\"0\" allowfullscreen=\"allowfullscreen\" webkitallowfullscreen=\"webkitallowfullscreen\" mozallowfullscreen=\"mozallowfullscreen\" scrolling=\"no\" data-link=\"https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/\"></iframe></p>',1,1,1),(2,1476133593,1476221378,1476133200,'sdfsfd','sdfsfd','sdf','<p>sdf</p>',1,0,1),(3,1476133867,1476221876,1475962161,'xvbhnbn','xvbhnbn','cvbcvbcvb','<p>cvbcvbcvb</p>',1,0,1),(4,1476218080,1477422268,1476221246,'sdfsdf 3','sdfsdf-3','l;sdf,msd,f','<p>sdfsdf</p>',1,1,1);
 /*!40000 ALTER TABLE `news_list` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -701,7 +680,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1480700763,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1480455906,'RoLex',1);
+INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1480788785,'MotoCommunity',1),(11,'roalexey@mail.ru','$2a$12$PZliEpGWINxfr793DZUzXO','$2a$12$PZliEpGWINxfr793DZUzXOGSq0yD2rjH42aOpJTpx2ClxH1QLsb3q',1469570133,1480455906,'RoLex',1);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -792,6 +771,7 @@ CREATE TABLE `users_groups_rights` (
 
 LOCK TABLES `users_groups_rights` WRITE;
 /*!40000 ALTER TABLE `users_groups_rights` DISABLE KEYS */;
+INSERT INTO `users_groups_rights` VALUES (1,12,1,1),(2,12,1,1);
 /*!40000 ALTER TABLE `users_groups_rights` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1017,78 +997,6 @@ BEGIN
         END IF;
         
     COMMIT;
-END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `controllers_method_create` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-CREATE DEFINER=`mc`@`%` PROCEDURE `controllers_method_create`(IN cId INT, IN cMethod VARCHAR(33), OUT cmId INT)
-BEGIN
-    
-	DECLARE ER_DUP_ENTRY, done INT DEFAULT 0 ;
-  
-	DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done = 1; 
-	DECLARE CONTINUE HANDLER FOR SQLSTATE '23000' SET ER_DUP_ENTRY = 1;
-	DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK ;
-	
-	START TRANSACTION ;
-	SET ER_DUP_ENTRY = 0;
-	
-	SELECT cm_id INTO cmId 
-	FROM `controllers_methods`
-	WHERE cm_method = cMethod;
-		
-	IF done = 1 THEN
-		INSERT INTO `controllers_methods`
-		SET cm_method = cMethod;
-		
-		SET cmId = last_insert_id();
-        
-        INSERT INTO `controllers_vs_methods`
-        SET c_id = cId, cm_id = cmId;
-        
-	END IF;
-	
-	COMMIT;
-    END ;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `controllers_method_del` */;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-CREATE DEFINER=`mc`@`%` PROCEDURE `controllers_method_del`(IN cId INT, IN cmId INT)
-BEGIN
-	
-	START TRANSACTION ;
-	
-	DELETE FROM `controllers_vs_methods`
-	WHERE c_id = cId AND cm_id = cmId;
-	
-    DELETE FROM `roles_controllers_methods`
-	WHERE c_id = cId AND cm_id = cmId;
-    
-	COMMIT;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -3354,4 +3262,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-12-02 21:08:36
+-- Dump completed on 2016-12-03 21:13:35

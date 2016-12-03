@@ -97,7 +97,7 @@ app.use(cookieParser(config.session.secret));
 app.use(Session());
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));//true
+app.use(bodyParser.urlencoded({ extended: true }));//true - работает с html input name="name[]", false - надо будет извращаться
 
 //************ routes ****************
 //используетя для экспорта данных в JavaScript в браузер

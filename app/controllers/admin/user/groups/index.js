@@ -148,6 +148,10 @@ class AdminUserGroups extends Base
 							case 'update':
 								return this.update(tplData);
 								break;
+
+							case 'save_rights':
+								return this.saveRights(tplData);
+								break;
 						}
 					});
 				break;
@@ -300,6 +304,63 @@ class AdminUserGroups extends Base
 				throw err;
 			});
 	}
+
+	/**
+	 * сохраняем права группы пользователей для выбранного пункта меню
+	 * @param tplData
+	 * @returns {Promise}
+	 */
+	saveRights(tplData)
+	{
+		let tplFile = 'admin/user/groups/index.ejs';
+
+		console.log(tplData);
+
+		return Promise.resolve(tplData)
+			.bind(this)
+			.then(function (tplData)
+			{
+				let errors = {};
+
+				if (!tplData["ui_ug_id"])
+					errors["ui_ug_id"] = "Не указана группа";
+
+				if (!tplData["ui_m_id"])
+					errors["ui_m_id"] = "Не указан пункт меню";
+
+				if (!tplData["c_id"])
+					errors["c_id"] = "Не указан контроллер";
+
+				tplData["cm_id"] = tplData["cm_id"] || [];
+
+				this.parseFormErrors(tplData, errors);
+
+				return Promise.resolve(tplData);
+			})
+			.then(function (tplData)
+			{
+				return this.getClass('user/groups').saveRights(tplData["ui_ug_id"], tplData["ui_m_id"], tplData["c_id"], tplData["cm_id"])
+					.then(function ()
+					{
+						return Promise.resolve(tplData);
+					});
+			})
+			.then(function (tplData)
+			{
+				this.view.setTplData(tplFile, tplData);
+
+				return Promise.resolve(true);
+			})
+			.catch(Errors.ValidationError, function (err) //такие ошибки не уводят со страницы
+			{
+				this.view.setTplData(tplFile, err['data']);
+				return Promise.resolve(true);
+			})
+			.catch(function (err)
+			{
+				throw err;
+			});
+	}
 	
 	/**
 	 * получаем методы для группы
@@ -311,14 +372,14 @@ class AdminUserGroups extends Base
 	{
 		let tplFile = 'admin/user/groups/index.ejs';
 
-		if (!tplData["ui_c_id"])
+		if (!tplData["ui_m_id"] || !tplData["ui_ug_id"])
 			throw new Errors.HttpError(400);
 
 		return Promise.resolve(tplData)
 			.bind(this)
 			.then(function (tplData)
 			{
-				return this.getClass('controller').getAllMethods(tplData["ui_c_id"])
+				return this.getClass('user/groups').getRights(tplData["ui_ug_id"], tplData["ui_m_id"], true)
 					.then(function (methodsList)
 					{
 						tplData["methodsList"] = methodsList || [];

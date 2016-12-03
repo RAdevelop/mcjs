@@ -25,17 +25,19 @@
     </ul>
     <div class="row">
         <div class="col-md-12">
-            <form id="cmAddForm" class="form-inline" action="<%= _reqOriginalUrl %>" method="post">
+            <form id="cmAddForm" class="form-horizontal" action="<%= _reqOriginalUrl %>" method="post">
                 <input type="hidden" id="ui_controller_id" name="ui_controller_id" value="<%= ui_controller_id %>"/>
-                <div class="form-group s_cm_method">
-                    <label for="s_cm_method">Имя метода</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="s_cm_method" name="s_cm_method" value="<%= s_cm_method %>" maxlength="33" required placeholder="Имя метода"/>
-                        <div class="input-group-addon">примеры: post_add | get_edit | get_index</div>
-                    </div>
+                <div class="form-group col-xs-12 col-sm-3 col-md-2 s_cm_method">
+                    <label for="s_cm_method" class="control-label">Имя метода</label>
                 </div>
-                <input type="hidden" name="btn_controller_save" value="add_method" />
-                <button class="btn btn-primary" type="button" name="btn_add_cmethod" id="btn_add_cmethod" value="add">Добавить</button>
+                <div class="form-group col-xs-12 col-sm-7 col-md-7 s_cm_method">
+                    <input type="text" class="form-control" aria-describedby="s_cm_method_helpBlock" id="s_cm_method" name="s_cm_method" value="<%= s_cm_method %>" maxlength="33" required placeholder="примеры: post_add | get_edit | get_index" />
+                    <span id="s_cm_method_helpBlock" class="help-block">примеры: post_add | get_edit | get_index</span>
+                </div>
+                <div class="form-group col-xs-12 col-sm-2 col-md-3">
+                    <input type="hidden" name="btn_controller_save" value="add_method" />
+                    <button class="btn btn-primary" type="button" name="btn_add_cmethod" id="btn_add_cmethod" value="add">Добавить</button>
+                </div>
             </form>
         </div>
     </div>
@@ -43,15 +45,16 @@
     <h5>Список методов:</h5>
     <div class="row js-methodsList">
         <% methodsList.forEach(function(method){ %>
-        <div class="col-md-3 " style="border: 1px solid red;">
-            <form id="cmDelForm<%= method["cm_id"] %>" class="form-inline" action="<%= _reqOriginalUrl %>/" method="post">
-                <input type="hidden" id="ui_controller_id" name="ui_controller_id" value="<%= ui_controller_id %>"/>
-                <input type="hidden" id="ui_cm_method_id" name="ui_cm_method_id" value="<%= method["cm_id"] %>"/>
-                <input type="hidden" name="btn_controller_save" value="delete_method" />
-                <div class="input-group ">
-                    <input type="text" class="input" value="<%= method["cm_method"] %>"/> <button class="btn btn-primary btn-xs" type="button" name="btn_del_cm_method" id="btn_del_cm_method<%= method["cm_id"] %>" value="del" style="float: right;">удалить</button>
-                </div>
-            </form>
+        <div class="col-xs-12 col-sm-6 col-lg-4 method-item js-method-item">
+            <div class="input-group input-group-sm">
+                <span class="input-group-btn">
+                    <button class="btn btn-default btn-xs" type="button" data-action="method_update" data-method-id="<%= method["cm_id"] %>"  data-controller-id="<%= method["c_id"] %>">сохранить</button>
+                </span>
+                <input type="text" class="form-control" value="<%= method["cm_method"] %>">
+                <span class="input-group-btn">
+                    <button class="btn btn-default btn-xs" type="button" data-action="method_delete" data-method-id="<%= method["cm_id"] %>" data-controller-id="<%= method["c_id"] %>">удалить</button>
+                </span>
+            </div>
         </div>
         <% }) %>
     </div>

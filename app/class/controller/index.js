@@ -22,9 +22,9 @@ class Controller extends Base
 	 * @param c_id
 	 * @returns {Promise}
 	 */
-	getAllMethods(c_id)
+	getControllerMethods(c_id)
 	{
-		return this.model('controller').getAllMethods(c_id);
+		return this.model('controller').getControllerMethods(c_id);
 	}
 
 	updById(c_id, c_pid, c_after_id, c_path, c_name, c_desc)
@@ -46,6 +46,28 @@ class Controller extends Base
 	addMethod(c_id, cm_method)
 	{
 		return this.model('controller').addMethod(c_id, cm_method);
+	}
+
+	/**
+	 * редактируем метод
+	 *
+	 * @param cm_id
+	 * @param cm_method
+	 */
+	updateMethod(cm_id, cm_method)
+	{
+		return this.model('controller').updateMethod(cm_id, cm_method);
+	}
+
+	/**
+	 * удаляем метод
+	 *
+	 * @param cm_id
+	 * @param c_id
+	 */
+	deleteMethod(cm_id, c_id)
+	{
+		return this.model('controller').deleteMethod(cm_id, c_id);
 	}
 }
 //************************************************************************* module.exports

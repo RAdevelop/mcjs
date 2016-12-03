@@ -845,6 +845,11 @@ iframe.iframeVideoEmbed {
 }
 
 /******************************** END uploader  */
+/**********  controllers **************/
+.method-item {
+  margin-bottom: 15px;
+}
+
 /********** список фотоальбомов **************/
 .album-list-toolbar {
   margin: 10px 0 10px 0;

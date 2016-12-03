@@ -43,14 +43,13 @@ class Controller extends BaseModel
 	 * @param c_id
 	 * @returns {Promise}
 	 */
-	getAllMethods(c_id)
+	getControllerMethods(c_id)
 	{
-		let sql = `SELECT cvsm.c_id, cvsm.cm_id, cm.cm_method
-			FROM controllers_vs_methods AS cvsm
-			JOIN controllers_methods AS cm ON (cm.cm_id = cvsm.cm_id)
+		let sql = `SELECT c_id, cm_id, cm_method, cm_name, cm_desc
+			FROM controllers_methods
 			WHERE c_id = ?`;
 		
-		return this.constructor.conn().ps(sql, [c_id]);
+		return this.constructor.conn().s(sql, [c_id]);
 	}
 
 	/**
@@ -85,15 +84,6 @@ class Controller extends BaseModel
 
 				throw err;
 			});
-
-		/*sql = 'SELECT @res AS res FROM DUAL;'
-		 self.db.q(sql, function(err, res)
-		 {
-		 //self.db.end();
-		 if(err) return cb(err);
-
-		 cb(null, rId);
-		 });*/
 	}
 
 	/**
@@ -133,26 +123,78 @@ class Controller extends BaseModel
 	}
 
 	/**
-	* добавляем метод в общий список, и привязываем его к указанному контроллеру
+	 * добавляем метод, и привязываем его к указанному контроллеру
 	 *
-	* @param c_id
-	* @param cm_method
-	*/
+	 * @param c_id
+	 * @param cm_method
+	 * @returns {Promise}
+	 */
 	addMethod(c_id, cm_method)
 	{
-		let sql = `CALL controllers_method_create(?, ?, @сmId); SELECT @сmId AS cm_id FROM DUAL;`;
+		let sql = `INSERT INTO controllers_methods (cm_method, cm_name, cm_desc, c_id) VALUES (?,?,?,?)`;
 
-		return this.constructor.conn().multis(sql, [c_id, cm_method])
-			.bind(this)
+		//TODO добавить cm_name, cm_desc
+
+		return this.constructor.conn().ins(sql, [cm_method, '', '', c_id])
 			.then(function (res)
 			{
-				let cm_id = (res[1][0] && res[1][0]["cm_id"] ? res[1][0]["cm_id"] : 0);
+				let cm_id = parseInt(res["insertId"], 10);
 
 				if (!cm_id)
 					throw new Errors.HttpError(500, 'не удалось создать метод');
 
 				return Promise.resolve(cm_id);
+			})
+			.catch(function (err)
+			{
+				if (err.name == 'DbErrDuplicateEntry')
+					throw new Errors.AlreadyInUseError();
+
+				throw err;
 			});
+	}
+
+	/**
+	 * редактируем метод
+	 *
+	 * @param cm_id
+	 * @param cm_method
+	 */
+	updateMethod(cm_id, cm_method)
+	{
+		//TODO добавить cm_name, cm_desc
+
+		let sql = `UPDATE controllers_methods SET cm_method = ? WHERE cm_id = ?`;
+		return this.constructor.conn().upd(sql, [cm_method, cm_id])
+			.then(function ()
+			{
+				return Promise.resolve(cm_id);
+			})
+			.catch(function (err)
+			{
+				if (err.name == 'DbErrDuplicateEntry')
+					throw new Errors.AlreadyInUseError();
+
+				throw err;
+			});
+	}
+
+	/**
+	 * удаляем метод
+	 *
+	 * @param cm_id
+	 * @param c_id
+	 */
+	deleteMethod(cm_id, c_id)
+	{
+		//TODO
+		/**
+		 * удаляем связь между cm_id, c_id, ug_id!!
+		 *
+		 * проверяем связи cm_id с другими c_id
+		 * если связи нет - удаляем метод совсем
+		 */
+		return this.model('controller').delMethod(cm_id, c_id);
 	}
 }
 
