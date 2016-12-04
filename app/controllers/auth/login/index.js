@@ -44,12 +44,12 @@ class Login extends Base
 				.bind(this)
 				.then(function ()
 				{
-					return this.getRes().redirect('back');
+					return this.getRes().redirect('/');
 				});
 		}
 		
 		if (this.getArgs().length > 0)
-			throw new Errors.HttpStatusError(404, "Not Found");
+			throw new Errors.HttpError(404);
 		
 		let tplData = {
 			m_mail:'',
@@ -77,7 +77,7 @@ class Login extends Base
 		{
 			default:
 				this.view.setTplData("auth/login", tplData);
-				throw new Errors.HttpStatusError(400, "Bad Request");
+				throw new Errors.HttpError(400);
 			break;
 			
 			case 'login':

@@ -28,6 +28,18 @@ class User extends BaseModel
 		}
 		return uData;
 	}
+
+	static userGroupIds(ug_ids)
+	{
+		ug_ids = ug_ids.split(',');
+		ug_ids.forEach(function (ug_id, i, arr)
+		{
+			if (!ug_id)
+				arr.splice(i, 1);
+		});
+
+		return ug_ids || [];
+	}
 	
 	/**
 	 * поиск пользователя по id
@@ -42,14 +54,16 @@ class User extends BaseModel
 	getById(uId, cb)
 	{
 		uId = parseInt(uId, 10);
-		let user = {u_id: null, u_mail: '', u_date_visit: '', u_login: '', u_reg: ''};
+		let user = {u_id: null, u_mail: '', u_date_visit: '', u_login: '', u_reg: '', ug_ids: []};
 
 		let msg = "Такого пользователя не существует";
 
 		if (!uId)
 			return cb(new Errors.NotFoundError(msg), user);
 		
-		let sql = `SELECT u_id, u_mail, u_date_visit, u_login, u_reg FROM users WHERE u_id = ?;`;
+		let sql =
+			`SELECT u_id, u_mail, u_date_visit, u_login, u_reg, ug_ids 
+			FROM users WHERE u_id = ?;`;
 
 		this.constructor.conn().psRow(sql, [uId], function (err, userData)
 		{
@@ -58,6 +72,8 @@ class User extends BaseModel
 
 			if (userData)
 			{
+				userData['ug_ids'] = User.userGroupIds(userData['ug_ids']);
+				
 				Object.assign(user, userData);
 				return cb(null, user);
 			}
@@ -112,11 +128,17 @@ class User extends BaseModel
 	{
 		email = email.toLowerCase().trim();
 		
-		let sql = "SELECT u_id, u_mail, u_salt, u_pass, u_date_visit, u_reg, u_login FROM `users` WHERE u_mail = ?;";
-		this.constructor.conn().ps(sql, [email], function (err, userData) {
-			if (err) return cb(err, null);
+		let sql = "SELECT u_id, u_mail, u_salt, u_pass, u_date_visit, u_reg, u_login, ug_ids FROM `users` WHERE u_mail = ?;";
+		this.constructor.conn().sRow(sql, [email], function (err, userData) {
+
+			if (err)
+				return cb(err, null);
 			
-			if (userData["info"]["numRows"] == 1) return cb(null, userData[0]);
+			if (userData)
+			{
+				userData['ug_ids'] = User.userGroupIds(userData['ug_ids']);
+				return cb(null, userData);
+			}
 			
 			//не нашли
 			return cb(new Errors.NotFoundError("Пользователя с таким email не существует", err), null);
@@ -129,7 +151,8 @@ class User extends BaseModel
 	 */
 	getUserData(u_id)
 	{
-		let userData = {u_id: null, u_name:'', u_surname:'', u_sex:'', u_sex_name:'', u_birthday:'',bd_birthday:''};
+		let userData = {u_id: null, u_name:'', u_surname:'',
+			u_sex:'', u_sex_name:'', u_birthday:'',bd_birthday:''};
 
 		if (!u_id)
 			return Promise.resolve(userData);
@@ -324,8 +347,9 @@ class User extends BaseModel
 			.then(function (res)
 			{
 				let user = {
-					u_id:null, u_mail:null, u_date_reg:null, u_date_visit:null, u_login:null, u_reg:null, u_name:null, u_surname:null, u_sex:null,
-					u_birthday:null, u_location_id:null, u_latitude:null, u_longitude:null
+					u_id:null, u_mail:null, u_date_reg:null, u_date_visit:null, u_login:null, u_reg:null,
+					u_name:null, u_surname:null, u_sex:null, u_birthday:null,
+					u_location_id:null, u_latitude:null, u_longitude:null
 				};
 
 				let users_ids = [];

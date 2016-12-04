@@ -42,7 +42,7 @@ class Registration extends Base
 				.bind(this)
 				.then(function ()
 				{
-					return this.getRes().redirect('back');
+					return this.getRes().redirect('/');
 				});
 		}
 		

@@ -110,7 +110,7 @@ class User extends Base
 				const Pages = props.users.Pages.setLinksUri(this.getBaseUrl());
 				delete props.users.Pages;
 
-				tplData["pages"] = Pages.setLinksUri(this.getBaseUrl()).pages();
+				tplData["pages"] = Pages.pages();
 
 				this.view.setTplData(tplFile, tplData);
 				this.view.addPartialData("user/left", {user: tplData.user});

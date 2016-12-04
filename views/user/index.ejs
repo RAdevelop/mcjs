@@ -2,13 +2,12 @@
 <% if (users){
 users.forEach(function (usr)
 {
-	let usrName = (usr["u_login"] ? usr["u_login"] : (usr["u_name"] || usr["u_surname"] ? [usr["u_name"], usr["u_surname"]].join(' ') : ''));
 	let linkTousr = _reqBaseUrl+'/'+usr["u_id"];
 	let usrAvaSrc = (usr["previews"]["180_180"] ? usr["previews"]["100_100"] : '/_0.gif');
 %>
 <a href="<%=linkTousr%>/">
 	<img src="<%=usrAvaSrc%>" style="width: 100px; border: 1px solid;"/>
-	<%=usrName%>
+	<%=usr['u_display_name']%>
 	<%=usr.l_name%>
 </a>
 <%});} %>

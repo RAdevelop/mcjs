@@ -1,0 +1,47 @@
+<%  if(!_isXHR){%><%- layout('layout/default') %><% } -%>
+<h1><%= _pageH1 %></h1>
+<h2><%= user['u_display_name']%></h2>
+<div class="row">
+	<div class="col-xs-12 col-sm-3">
+		<div class="panel panel-default">
+			<div class="panel-heading">Группы пользователя</div>
+			<div class="panel-body">
+				<form id="formuAddUserToGroup" class="form-horizontal" action="<%= menuItem['m_path'] %>/edit/" method="post">
+					<ul class="list-group">
+						<% userGroupsList.forEach(function(user_group){
+							let checked = (user['ug_ids'].indexOf(user_group['ug_id']) != -1 ? ' checked="checked" ' : '' );
+						%>
+						<li class="checkbox">
+							<label>
+								<input <%-checked%> type="checkbox" name="ug_ids[]" value="<%= user_group["ug_id"] %>"/>
+								<%- user_group["ug_nbsp"] %><%= user_group["ug_name"] %>
+							</label>
+						</li>
+						<% }) %>
+					</ul>
+					<div class="text-center">
+						<input type="hidden" name="ui_u_id" value="<%=user['u_id']%>" />
+						<input type="hidden" name="btn_user_save" value="user_to_groups" />
+						<button class="btn btn-primary" type="submit" id="btn_user_to_groups">сохранить</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+//<!--
+(function($)
+{
+	var $formuAddUserToGroup = $('#formuAddUserToGroup');
+	$formuAddUserToGroup.postRes({btnId: 'btn_user_to_groups',
+		onSuccess: function($dialog, respData)
+		{
+			//console.log(respData);
+
+			return true;
+		}
+	});
+})(jQuery);
+//-->
+</script>

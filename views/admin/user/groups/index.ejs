@@ -116,7 +116,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <ul class="form-group ug_rights js-methods-list"></ul>
+                            <ul class="form-group list-group ug_rights js-methods-list"></ul>
                             <div class="form-group">
                                 <div class="col-sm-6 col-sm-offset-6">
                                     <input type="hidden" name="btn_ug_save" value="save_rights" />
@@ -192,7 +192,6 @@ var ui_ug_pid = "<%= ui_ug_pid %>";
         onSuccess: function($dialog, respData)
         {
             console.log(respData);
-            //window.location.href = $userGroupEditForm.attr('action')+respData['ui_ug_id'];
             return true;
         }
     });
@@ -227,7 +226,7 @@ var ui_ug_pid = "<%= ui_ug_pid %>";
                     cId = method['c_id'];
                     var checked  = (parseInt(method['b_allowed'], 10) ? ' checked="checked" ' : '');
 
-                    li = '<li data-method-id="'+method['cm_id']+'">'
+                    li = '<li class="checkbox" data-method-id="'+method['cm_id']+'">'
                     li += '<label><input '+checked+' type="checkbox" name="cm_id[]" value="'+method['cm_id']+'" /> '+method['cm_method']+'</label>';
                     li += '</li>'
                     $jsMethodsList.append(li);

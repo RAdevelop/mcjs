@@ -1,0 +1,8 @@
+<%  if(!_isXHR){%><%- layout('layout/default') %><% } -%>
+<h1><%= _pageH1 %></h1>
+<ul>
+	<% user_list.forEach(function (usr)
+	{
+		%><li><a href="<%=[_reqBaseUrl, usr["u_id"]].join('/')%>/"><%=usr['u_display_name']%></a></li><%
+	}); %>
+</ul>

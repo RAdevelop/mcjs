@@ -65,7 +65,10 @@ class User extends Base
 				/*console.log('props');
 				console.log(props);
 				console.log('props\n');*/
-				return Promise.resolve(Object.assign({}, props.userAva, props.userLocation, props.userData, props.user));
+				let user = Object.assign({}, props.userAva, props.userLocation, props.userData, props.user);
+					user['u_display_name'] = (user["u_login"] ? user["u_login"] : (user["u_name"] || user["u_surname"] ? [user["u_name"]||'', user["u_surname"]||''].join(' ') : ''));
+
+				return Promise.resolve(user);
 			});
 	}
 
@@ -97,7 +100,7 @@ class User extends Base
 					return Promise.resolve(usersData);
 
 				if (Pages.limitExceeded())
-					return Promise.reject(new Errors.HttpStatusError(404, "Not found"));
+					return Promise.reject(new Errors.HttpError(404));
 
 				return this.model('user').getUsers(Pages.getOffset(), Pages.getLimit())
 					.bind(this)
@@ -108,6 +111,7 @@ class User extends Base
 							{
 								users.forEach(function (user, uI, users)
 								{
+									user['u_display_name'] = (user["u_login"] ? user["u_login"] : (user["u_name"] || user["u_surname"] ? [user["u_name"]||'', user["u_surname"]||''].join(' ') : ''));
 									users[uI] = Object.assign({}, user, usersAva[user["u_id"]]);
 								});
 

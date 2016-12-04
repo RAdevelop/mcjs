@@ -237,6 +237,107 @@ class UserGroups extends BaseModel
 					});
 			});
 	}
+
+	/**
+	 * список прав для указанного пользователя
+	 * @param u_id - id пользователя
+	 * @returns {Promise}
+	 */
+	getUserRights(u_id)
+	{
+		//TODO
+		return Promise.resolve({});
+	}
+
+	/**
+	 * добавляем пользователя в указанные группы
+	 * @param u_id
+	 * @param ug_ids
+	 * @returns {Promise}
+	 */
+	addUserToGroups(u_id, ug_ids = [])
+	{
+		if (u_id == 1)//root
+			return Promise.resolve(u_id);
+
+		return Promise.resolve()
+			.bind(this)
+			.then(function ()
+			{
+				if (!ug_ids.length)
+					return Promise.resolve(ug_ids);
+
+				return this.getAll(ug_ids)
+					.then(function (ug_list)
+					{
+						if (!ug_list)
+							return Promise.resolve(ug_ids);
+
+						let groups = [];
+
+						//работаем только с реальными id групп
+						ug_list.forEach(function (g)
+						{
+							groups.push(g['ug_id']);
+						});
+
+						return Promise.resolve(groups);
+					})
+			})
+			.then(function (ug_ids)
+			{
+				/*if (!ug_ids.length)
+					return Promise.resolve(ug_ids);*/
+
+				let where = ['u_id = ?'];
+				let sqlData = [u_id];
+				if (ug_ids.length)
+				{
+					let placeHolders = this.constructor.placeHoldersForIn(ug_ids);
+					where.push(`ug_id IN(${placeHolders})`);
+
+					sqlData = sqlData.concat(ug_ids);
+				}
+
+				let sql = `DELETE FROM users_in_groups
+				WHERE ${where.join(' AND ')} `;
+
+				return this.constructor.conn().del(sql, sqlData)
+					.then(function ()
+					{
+						return Promise.resolve(ug_ids);
+					});
+			})
+			.then(function (ug_ids)
+			{
+				let sqlData = [];
+				let sql_vals = [];
+
+				ug_ids.forEach(function (ug_id)
+				{
+					sql_vals.push('(?,?)');
+					sqlData.push(u_id, ug_id);
+				});
+
+				let sql = ``;
+
+				if (ug_ids.length)
+				{
+					sql += `INSERT INTO users_in_groups (u_id, ug_id) VALUES ${sql_vals.join(',')}
+						ON DUPLICATE KEY UPDATE 
+						ug_id=VALUES(ug_id);`;
+				}
+
+				sql += `UPDATE users SET ug_ids = ? WHERE u_id = ?`;
+				sqlData.push(ug_ids.join(','), u_id);
+
+				return this.constructor.conn().multis(sql, sqlData)
+					.then(function ()
+					{
+						return Promise.resolve(u_id);
+					});
+			});
+	}
 }
 
 module.exports = UserGroups;

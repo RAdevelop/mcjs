@@ -17,12 +17,12 @@ pPath = (_user && user && user.u_id && _user.u_id != user.u_id ? '/user/'+user.u
     <div class="row profile-info">
         <% if(_user && (_user.u_id == user.u_id)){%>
         <div class="col-xs-6 col-sm-12 col-md-12"><a href="/profile/edit/"><span class="fa fa-edit fa-fw"></span> редактировать</a></div>
-        <% } if(user.u_login || user.u_name || user.u_surname){%>
+        <% } %>
         <div class="col-xs-6 col-sm-12 col-md-12">
             <span class="fa fa-user fa-fw" aria-hidden="true"></span>
-            <%= (user.u_login ? user.u_login : (user.u_name || user.u_surname ? [user.u_name, user.u_surname].join(' ') : ''))%>
+            <%= user.u_display_name %>
         </div>
-        <% } if (user.l_name) {%>
+        <% if (user.l_name) {%>
         <div class="col-xs-6 col-sm-12 col-md-12 cursor-pointer">
             <span data-toggle="tooltip" title="<%= user.l_full_name%>" data-container="body" data-placement="auto"><span class="fa fa-map-marker fa-fw" aria-hidden="true"></span> <%= user.l_name%></span>
         </div>

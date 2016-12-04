@@ -56,6 +56,27 @@ class UserGroups extends Base
 	{
 		return this.model('user/groups').saveRights(ug_id, m_id, c_id, cm_ids);
 	}
+
+	/**
+	 * список прав для указанного пользователя
+	 * @param u_id - id пользователя
+	 * @returns {Promise}
+	 */
+	getUserRights(u_id)
+	{
+		return this.model('user/groups').getUserRights(u_id);
+	}
+
+	/**
+	 * добавляем пользователя в указанные группы
+	 * @param u_id
+	 * @param ug_ids
+	 * @returns {Promise}
+	 */
+	addUserToGroups(u_id, ug_ids = [])
+	{
+		return this.model('user/groups').addUserToGroups(u_id, ug_ids);
+	}
 }
 //************************************************************************* module.exports
 //писать после class Name....{}
