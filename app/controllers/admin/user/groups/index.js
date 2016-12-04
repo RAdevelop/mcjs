@@ -224,7 +224,6 @@ class AdminUserGroups extends Base
 					tplData.formError.errorName = err.name;
 					
 					err['data'] = tplData;
-					//console.log(err);
 				}
 				
 				this.view.setTplData(tplFile, err['data']);
@@ -293,7 +292,6 @@ class AdminUserGroups extends Base
 					tplData.formError.errorName = err.name;
 
 					err['data'] = tplData;
-					//console.log(err);
 				}
 
 				this.view.setTplData(tplFile, err['data']);
@@ -313,8 +311,6 @@ class AdminUserGroups extends Base
 	saveRights(tplData)
 	{
 		let tplFile = 'admin/user/groups/index.ejs';
-
-		console.log(tplData);
 
 		return Promise.resolve(tplData)
 			.bind(this)

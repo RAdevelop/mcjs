@@ -374,7 +374,8 @@ class Login extends Base
 							return resolve(tplData);
 							
 						}//пароль неверный
-						else return reject(new Errors.NotFoundError(""));
+						else
+							return reject(new Errors.NotFoundError());
 					});
 				});
 			});
@@ -398,7 +399,6 @@ class Login extends Base
 		})
 		.then(function(tplData) //если валидация успешна
 		{
-			//TODO надо return Promise
 			return new Promise(function(resolve, reject)
 			{
 				self.getReq().session.regenerate(function(err)

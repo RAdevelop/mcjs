@@ -105,6 +105,7 @@ let expstate = require('express-state');
 expstate.extend(app);
 
 //загрузка роутеров
+app.use(require('app/middlewares/_reqbody'));
 app.use(require('app/routes')(Class, Control));
 //\\************ routes ****************
 

@@ -22,18 +22,25 @@ module.exports = function(Classes)
 				},
 				function (rtid, asyncCb)
 				{
-					if (!rtid) return asyncCb(null, null);
-					
+					if (!rtid)
+						return asyncCb(null, null);
+
+					if (req.session.user && req.session.user.u_id)
+						return asyncCb(null, req.session.user);
+
 					return Classes.getClass("user").getUser(rtid)
 						.then(function (userData)
 						{
-							if (req.session.rtid)
+							/*if (req.session.rtid)
 							{
 								if (req.signedCookies.rtid)
 									Cookie.setUserId(res, userData.u_id);
 
 								return asyncCb(null, userData);
-							}
+							}*/
+
+							if (!userData || !userData.u_id)
+								return asyncCb(null, null);
 
 							//если пришли/авторизовались с кукой
 							//console.log('если пришли/авторизовались с кукой');
@@ -53,6 +60,7 @@ module.exports = function(Classes)
 								}
 
 								req.session.rtid = userData.u_id;
+								req.session.user = userData;
 
 								Cookie.setUserId(res, userData.u_id);
 
@@ -143,11 +151,17 @@ module.exports = function(Classes)
 				},
 				function (userData, asyncCb)//обновим время посещения...
 				{
-					if (!userData) return asyncCb(null, null);
+					if (!userData)
+						return asyncCb(null, null);
 					
-					Classes.model('user').setLastVisit(userData.u_id, function (err)
+					Classes.model('user').setLastVisit(userData.u_id, function (err, ts)
 					{
-						if (err) return asyncCb(err, null);
+						if (err)
+							return asyncCb(err, null);
+
+						userData['u_date_visit'] = ts;
+						if (req.session.user && req.session.user.u_id)
+							req.session.user.u_date_visit = ts;
 						
 						return asyncCb(null, userData);
 					});

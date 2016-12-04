@@ -150,7 +150,29 @@ class Registration extends Base
 
 					return resolve(tplData);
 				});
-			});
+			})
+				.then(function (tplData)
+				{
+					return self.getClass('user/groups').getGroupsOnRegister()
+						.then(function (list)
+						{
+							let ug_ids = [];
+
+							list.forEach(function (item)
+							{
+								ug_ids.push(item['ug_id']);
+							});
+							return Promise.resolve([tplData, ug_ids]);
+						});
+				})
+				.spread(function (tplData, ug_ids)
+				{
+					return self.getClass('user/groups').addUserToGroups(tplData.userData.u_id, ug_ids)
+						.then(function ()
+						{
+							return Promise.resolve(tplData);
+						});
+				});
 		})
 		.then(function(tplData)
 		{

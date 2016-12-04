@@ -35,7 +35,8 @@ class Auth extends User
 				switch (err.name)
 				{
 					default:
-						if(err) return cb(err, null);
+						if(err)
+							return cb(err, null);
 						break;
 					
 					case 'NotFoundError':

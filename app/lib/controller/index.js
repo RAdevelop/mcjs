@@ -5,7 +5,7 @@ const Promise = require("bluebird");
 const Errors = require('app/lib/errors');
 const Cheerio = require("app/lib/cheerio");
 const Template = require('app/lib/template');
-const _ = require('lodash');
+//const _ = require('lodash');
 
 /*
  console.log("req.method %s", req.method);
@@ -22,7 +22,7 @@ class Base
 		this.setRes(res);
 
 		this._setClasses(Classes);
-
+		this._getClasses().setSession(this.getReq().session);
 		//this.setControls(Controls);
 
 		this.setArgs([]);
@@ -76,6 +76,11 @@ class Base
 		return Cheerio;
 	}
 
+	get httpMethod()
+	{
+		return this._httpMethod;
+	}
+
 	/**
 	 * удаляем html теги для указанных полей (fields)
 	 * @param formData
@@ -126,9 +131,9 @@ class Base
 	setAction()
 	{
 		//HTTP методы GET POST...
-		let method = this.getReq().method.toLowerCase();
-		let f = method.charAt(0).toUpperCase();
-		method = f + method.substr(1, method.length-1);
+		this._httpMethod = this.getReq().method.toLowerCase();
+		let f = this._httpMethod.charAt(0).toUpperCase();
+		let method = f + this._httpMethod.substr(1, this._httpMethod.length-1);
 		method = 'Action'+method;
 		
 		let action = this.getReq().path.substring(this.getRes().locals.menuItem.m_path.length) ;
@@ -257,26 +262,14 @@ class Base
 
 	_parseRoutePaths()
 	{
-		if (this.getReq().method.toLowerCase() != 'get')
-			return true;
+		/*
+		//TODO  ?? пока не удалять!!
+		if (this.httpMethod != 'get')
+			return true;*/
 
 		let actionName = this.getActionName();
 		let routePaths = this.routePaths();
 		let reqPath = this.getPath();
-
-		//console.log('\n');
-		/*console.log('actionName = ', actionName);
-		console.log('routePaths:');
-		console.log(routePaths);
-		console.log('reqPath');
-		console.log(reqPath);*/
-		/*
-		let regExp = new RegExp(this.routePaths().index[0], 'ig');
-
-		console.log(this.getPath().search(regExp));
-		console.log(this.routePaths());
-
-		*/
 
 		if (!routePaths[actionName])
 			return false;
@@ -285,15 +278,9 @@ class Base
 		let args = this.getArgs();
 
 		let regExp, i, tmpArgs = {};
-		for(i in routers)
+		for(let i in routers)
 		{
 			regExp = new RegExp(routers[i], 'ig');
-
-			//console.log(regExp);
-
-			/*
-			console.log(routers[i]);
-			console.log( reqPath.search(regExp) != -1);*/
 
 			if (reqPath.search(regExp) != -1)
 			{
@@ -315,8 +302,6 @@ class Base
 				return true;
 			}
 		}
-
-		console.log('\n');
 		return false;
 	}
 
@@ -333,49 +318,49 @@ class Base
 	callAction()
 	{
 		this.setAction();
-
 		this._setBaseUrl(this.getReq(), this.getRes());
 
-
-		//console.log('this.isAction() = ', this.isAction());
-		//console.log('-----------------------');
-		//console.log('');
-
-		//if (!this._parseRoutePaths())
 		if (!this.isAction() || !this._parseRoutePaths())
-			throw new Errors.HttpStatusError(404, "Not Found");
+			throw new Errors.HttpError(404);
 
-		this._getClasses().setSession(this.getReq().session);
+		return this.checkAccess()
+			.bind(this)
+			.then(function ()
+			{
+				//this._getClasses().setSession(this.getReq().session);
 
-		//this.view = new Template(this.getReq(), this.getRes(), this);
-		this.view = Template.getTemplate(this);
+				//this.view = new Template(this.getReq(), this.getRes(), this);
+				this.view = Template.getTemplate(this);
 
-		return this[this.getAction()]();
+				return this[this.getAction()]();
+			});
 	}
-	/*callAction(cb)
+
+	checkAccess()
 	{
-		this.setAction();
+		//return Promise.resolve();//для отладки
 
-		this._setBaseUrl(this.getReq(), this.getRes());
+		if (!this.getRes().locals.menuItem.m_id)
+			return Promise.resolve();
 
+		let c_method = this.httpMethod+'_'+this.getActionName();
+		//this.getAction() например = indexActionGet
 
-		//console.log('this.isAction() = ', this.isAction());
-		//console.log('-----------------------');
-		//console.log('');
+		return this.getUser(this.getUserId())
+			.bind(this)
+			.then(function (user)
+			{
+				//console.log( c_method, this.getRes().locals.menuItem.m_id, user);
+				console.log( c_method, this.getRes().locals.menuItem.m_id);
 
-		//if (!this._parseRoutePaths())
-		if (!this.isAction() || !this._parseRoutePaths())
-			return cb(new Errors.HttpStatusError(404, "Not Found"));
-
-		this._getClasses().setSession(this.getReq().session);
-
-		//this.view = new Template(this.getReq(), this.getRes(), this);
-		this.view = Template.getTemplate(this);
-
-		this[this.getAction()](cb);
-		return this;
-		//return cb(new Errors.HttpStatusError(404, "Not Found"));
-	}*/
+				return this.getClass('user/groups')
+					.checkAccessToMenu(user.u_id, this.getRes().locals.menuItem.m_id, c_method);
+			})
+			.catch(Errors.NotFoundError, function ()
+			{
+				throw new Errors.HttpError(401);
+			});
+	}
 	
 	formError()
 	{
@@ -521,7 +506,6 @@ class Base
 		if (u_id == this.getUserId())
 		{
 			let user = (this.getReq()._user ? this.getReq()._user : {u_id: null});
-			//return user;
 			return Promise.resolve(user);
 		}
 

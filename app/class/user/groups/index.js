@@ -1,7 +1,7 @@
 "use strict";
 
-//const Errors = require('app/lib/errors');
-//const Promise = require("bluebird");
+const Errors = require('app/lib/errors');
+const Promise = require("bluebird");
 const Base = require('app/lib/class');
 
 class UserGroups extends Base
@@ -60,11 +60,52 @@ class UserGroups extends Base
 	/**
 	 * список прав для указанного пользователя
 	 * @param u_id - id пользователя
+	 * @param m_id - id меню
 	 * @returns {Promise}
 	 */
-	getUserRights(u_id)
+	getUserRights(u_id, m_id)
 	{
-		return this.model('user/groups').getUserRights(u_id);
+		return this.model('user/groups').getUserRights(u_id, m_id);
+	}
+
+	/**
+	 * проверяем права доступа для пользователя в указанный пункт меню
+	 *
+	 * @param u_id
+	 * @param m_id
+	 * @param c_method - метод (пример: get_index, post_edit...)
+	 * @returns {Promise}
+	 */
+	checkAccessToMenu(u_id, m_id, c_method)
+	{
+		return Promise.resolve(u_id)
+			.bind(this)
+			.then(function (u_id)
+			{
+				if (!u_id)
+					return this.model('user/groups').getGroupRightsByPathAndMenu('guest', m_id);
+
+				//иначе получить список групп пользователя...
+				return this.getUserRights(u_id, m_id);
+			})
+			.then(function (rights)
+			{
+				if (!rights || !rights['info']['numRows'])
+					throw new Errors.NotFoundError();
+
+				let b_allowed = false;
+				rights.forEach(function (item)
+				{
+					//if (item['m_id'] == m_id && item['cm_method'] == c_method)
+					if (item['cm_method'] == c_method)
+						b_allowed = true;
+				});
+
+				if (!b_allowed)
+					throw new Errors.NotFoundError();
+
+				return Promise.resolve();
+			});
 	}
 
 	/**
@@ -76,6 +117,15 @@ class UserGroups extends Base
 	addUserToGroups(u_id, ug_ids = [])
 	{
 		return this.model('user/groups').addUserToGroups(u_id, ug_ids);
+	}
+
+	/**
+	 * список групп пользователей, которые назначаются при регистрации
+	 * @returns {Promise}
+	 */
+	getGroupsOnRegister()
+	{
+		return this.model('user/groups').getGroupsOnRegister();
 	}
 }
 //************************************************************************* module.exports

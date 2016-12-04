@@ -102,7 +102,7 @@ class User extends BaseModel
 		this.constructor.conn().upd(sql, sqlData, function (err) {
 			if (err) return cb(err);
 			
-			cb(null);
+			cb(null, now_ts);
 			
 			/*const Redis = new IORedis();
 			 Redis.hset(rKey, 'u_date_visit', now_ts, function (err)

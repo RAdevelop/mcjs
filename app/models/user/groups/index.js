@@ -239,17 +239,6 @@ class UserGroups extends BaseModel
 	}
 
 	/**
-	 * список прав для указанного пользователя
-	 * @param u_id - id пользователя
-	 * @returns {Promise}
-	 */
-	getUserRights(u_id)
-	{
-		//TODO
-		return Promise.resolve({});
-	}
-
-	/**
 	 * добавляем пользователя в указанные группы
 	 * @param u_id
 	 * @param ug_ids
@@ -337,6 +326,59 @@ class UserGroups extends BaseModel
 						return Promise.resolve(u_id);
 					});
 			});
+	}
+
+	/**
+	 * список групп пользователей, которые назначаются при регистрации
+	 * @returns {Promise}
+	 */
+	getGroupsOnRegister()
+	{
+		let sql = `SELECT ug_id, ug_pid, ug_path, ug_name, ug_desc, ug_level, ug_lk, ug_rk, ug_on_register, REPEAT('&nbsp;', IF(ug_level > 1, (ug_level-1)*2, 0)) AS ug_nbsp
+			FROM users_groups
+			WHERE ug_on_register = ?`;
+		return this.constructor.conn().s(sql, [1]);
+	}
+
+	/**
+	 * список права для группы в указанный пункт меню
+	 * @param ug_path
+	 * @param m_id
+	 * @returns {Promise}
+	 */
+	getGroupRightsByPathAndMenu(ug_path, m_id)
+	{
+		let sql =
+			`SELECT ug.ug_id, m.m_id, cm.cm_id, cm.cm_method, IF(ugr.cm_id IS NULL, 0, 1) AS b_allowed
+			FROM (SELECT NULL) AS z
+			JOIN users_groups AS ug ON(ug.ug_path = ?)
+			JOIN menu AS m ON(m.m_id = ?)
+			JOIN controllers_methods AS cm ON(cm.c_id = m.c_id )
+			JOIN users_groups_rights AS ugr ON(ugr.ug_id = ug.ug_id AND ugr.m_id = m.m_id AND ugr.c_id = cm.c_id 
+			AND ugr.cm_id = cm.cm_id)`;
+
+		return this.constructor.conn().ps(sql, [ug_path, m_id]);
+	}
+
+
+	/**
+	 * список прав для указанного пользователя
+	 * @param u_id - id пользователя
+	 * @param m_id - id меню
+	 * @returns {Promise}
+	 */
+	getUserRights(u_id, m_id)
+	{
+		let sql =
+			`SELECT uing.ug_id, m.m_id, cm.cm_id, cm.cm_method, IF(ugr.cm_id IS NULL, 0, 1) AS b_allowed
+			FROM (SELECT NULL) AS z
+			JOIN users_in_groups AS uing ON (uing.u_id = ?)
+			JOIN menu AS m ON(m.m_id = ?)
+			JOIN controllers_methods AS cm ON(cm.c_id = m.c_id )
+			JOIN users_groups_rights AS ugr ON(ugr.ug_id = uing.ug_id AND ugr.m_id = m.m_id AND ugr.c_id = cm.c_id 
+			AND ugr.cm_id = cm.cm_id)`;
+
+		return this.constructor.conn().ps(sql, [u_id, m_id]);
 	}
 }
 
