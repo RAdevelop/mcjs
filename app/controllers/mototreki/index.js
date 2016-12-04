@@ -22,6 +22,7 @@ class Mototreki extends Base
 			},
 			"edit": {
 				'^\/?[0-9]+\/?$': ['i_mtt_id']
+				,'^\/?$': null
 			},
 			"map": {
 				'^\/?$': null

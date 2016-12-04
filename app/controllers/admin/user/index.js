@@ -28,7 +28,7 @@ class AdminUser extends Base
 			"edit": {
 				'^\/?$': null
 			}
-		}
+		};
 	}
 
 	indexActionGet()

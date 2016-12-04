@@ -2,7 +2,6 @@
 
 const Errors = require('app/lib/errors');
 const Promise = require("bluebird");
-
 const Base = require('app/lib/controller');
 
 class Controller extends Base
@@ -18,8 +17,8 @@ class Controller extends Base
 				'^\/?$': null
 			},
 			"edit": {
-				'^\/?$': null,
 				'^\/?[0-9]+\/?$': ['ui_controller_id']
+				,'^\/?$': null
 			}
 		}
 	}

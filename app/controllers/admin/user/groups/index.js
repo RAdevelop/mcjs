@@ -18,10 +18,10 @@ class AdminUserGroups extends Base
 				'^\/?$': null
 			},
 			"edit": {
-				'^\/?$': null,
 				'^\/?[0-9]+\/?$': ['ui_ug_id']
+				,'^\/?$': null
 			}
-		}
+		};
 	}
 
 	indexActionGet()

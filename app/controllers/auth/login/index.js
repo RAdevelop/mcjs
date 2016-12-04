@@ -7,8 +7,6 @@ const bcrypt = require('bcrypt');
 const Mail = require('app/lib/mail');
 const Logger = require('app/lib/logger');
 
-//const _ = require('lodash');
-
 const Base = require('app/lib/controller');
 
 class Login extends Base
@@ -21,12 +19,13 @@ class Login extends Base
 	{
 		return {
 			"index": {
-				'^\/?$': []
+				'^\/?$': null
 			},
 			"reset": {
 				'^\/?\\S{32,}\/?$': ['s_key']
+				,'^\/?$': null
 			}
-		}
+		};
 	}
 
 	/**

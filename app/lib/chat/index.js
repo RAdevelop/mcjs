@@ -11,24 +11,11 @@ const Errors = require('app/lib/errors');
 //TODO проверить работу StringDecoder https://nodejs.org/dist/latest-v4.x/docs/api/string_decoder.html
 const msgpack = require('msgpack-js');
 
-/*//var Redis = require('redis').createClient;
-const IORedis = require('app/lib/ioredis');
-//var readerRedis = new Redis(Config.redis.port, Config.redis.host, { return_buffers: true, prefix: "chat" });
-const readerRedis = new IORedis({ keyPrefix: "chat", password: AppConfig.redis.password });
-readerRedis.on('error', function(err)
-{
-	Logger.error('readerRedis Client', err);
-});
-
-//var writerRedis = new Redis(Config.redis.port, Config.redis.host, {prefix:"chat"});
-const writerRedis = new IORedis({keyPrefix:"chat", password: AppConfig.redis.password});
-writerRedis.on('error', function(err){
-	Logger.error('writerRedis Client', err);
-});*/
 
 const IORedis = require('app/lib/ioredis');
-let writerRedisOpts = {keyPrefix:"chat", password: AppConfig.redis.password};
-let readerRedisOts = {keyPrefix:"chat", password: AppConfig.redis.password, return_buffers: true};
+let writerRedisOpts = {keyPrefix:"chat"};
+let readerRedisOts = {keyPrefix:"chat", return_buffers: true};
+
 //TODO
 //let chanel = 'rooms';
 let chanel = 'chats';
@@ -203,14 +190,6 @@ module.exports = function(http, app)
 				writerRedis.publish(chanel, msgpack.encode(data));
 
 				console.log({rooms: socket.rooms, socket_id: socket.id});
-				/*
-
-				{ rooms: { '/chats#gaYP1QcXV3jfS3B1AAAA': '/chats#gaYP1QcXV3jfS3B1AAAA' },
-					socket_id: '/chats#gaYP1QcXV3jfS3B1AAAA' }
-
-
-				*/
-
 			});
 			
 			//writerRedis.publish(chanel, msgpack.encode(data));

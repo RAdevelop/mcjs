@@ -263,7 +263,23 @@ class Base
 	_parseRoutePaths()
 	{
 		/*
-		//TODO  ?? пока не удалять!!
+		
+		//в методах классов контроллеров надо прописывать все роуты:
+		и для загрузки файлов. в общем все, по которым идет обращение по GET
+		POST тоже, см html формы...
+		пример:
+		 routePaths()
+		 {
+		    return {
+				"index": {
+				    "^\/?$" : null
+				 },
+				"upload": {
+				    "^\/?$" : null
+				 }
+			 };
+		 }
+		 //TODO  ?? пока не удалять!!
 		if (this.httpMethod != 'get')
 			return true;*/
 
@@ -336,6 +352,10 @@ class Base
 			});
 	}
 
+	/**
+	 * проверяем права доступа пользователя
+	 * @returns {Promise}
+	 */
 	checkAccess()
 	{
 		//return Promise.resolve();//для отладки

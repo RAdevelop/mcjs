@@ -31,8 +31,12 @@ class News extends Base
 			},
 			"edit": {
 				'^\/?[0-9]+\/?$': ['i_news_id']
+				,'^\/?$': null
+			},
+			"upload": {
+				'^\/?$': null
 			}
-		}
+		};
 	}
 
 	/**

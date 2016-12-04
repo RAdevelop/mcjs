@@ -4,7 +4,7 @@ const Pages = require("app/lib/pages");
 const Logger = require('app/lib/logger');
 const Promise = require("bluebird");
 const Errors = require('app/lib/errors');
-//const MultiGeocoder = require('multi-geocoder');
+
 const FileUpload = require('app/lib/file/upload');
 const Base = require('app/lib/controller');
 
@@ -12,7 +12,6 @@ let limit_per_page = 20;
 
 class UserPhoto extends Base
 {
-
 	routePaths()
 	{
 		return {
@@ -23,8 +22,11 @@ class UserPhoto extends Base
 				,"^\/?[1-9]+[0-9]*\/page\/[1-9]+[0-9]*\/?$" : ["i_u_id", ,"i_page"] //список альбомов юзера с постраничкой
 				,"^\/?[1-9]+[0-9]*\/?$" : ["i_u_id"] //профиль юзера
 				,"^\/?$" : null //список юзеров
+			},
+			"upload": {
+				"^\/?$" : null
 			}
-		}
+		};
 	}
 
 	/**

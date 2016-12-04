@@ -32,11 +32,15 @@ class Events extends Base
 			},
 			"edit": {
 				'^\/?[0-9]+\/?$': ['i_event_id']
+				,'^\/?$': null
 			},
 			"map": {
 				'^\/?$': null
+			},
+			"upload": {
+				'^\/?$': null
 			}
-		}
+		};
 	}
 
 	/**

@@ -30,6 +30,7 @@ class Motoshop extends Base
 			},
 			"edit": {
 				'^\/?[0-9]+\/?$': ['i_mts_id']
+				,'^\/?$': null
 			},
 			"map": {
 				'^\/?$': null

@@ -8,5 +8,7 @@ const IORedis = require('ioredis');
 module.exports = function(options)
 {
 	options = options || {};
+	options = Object.assign(Config.redis, options);
+
 	return IORedis(Config.redis.port, Config.redis.host, options);
 };

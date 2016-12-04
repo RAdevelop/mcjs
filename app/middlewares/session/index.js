@@ -5,12 +5,12 @@
 const Config = require('app/config');
 const ExpressSession = require('express-session');
 const RedisStore = require('connect-redis')(ExpressSession);
-const IORedis = require('ioredis');
+const IORedis = require('app/lib/ioredis');
 const Logger = require('app/lib/logger');
 
 module.exports = function(){
 
-    const redisClient = new IORedis(Config.redis);
+    const redisClient = new IORedis();
 
     redisClient.on('error', function(err)
     {

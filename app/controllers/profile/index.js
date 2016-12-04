@@ -29,6 +29,7 @@ class Profile extends Base
 			},
 			"change": {
 				'^\/?mail\/[0-9A-Za-z]{32,255}\/?$': ['s_change_type', 's_key']
+				,'^\/?$': null
 			}
 		}
 	}

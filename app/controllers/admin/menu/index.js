@@ -22,6 +22,7 @@ class Menu extends Base
 			},
 			"edit": {
 				'^\/?[0-9]+\/?$': ['i_menu_id']
+				,'^\/?$': null
 			}
 		}
 	}
