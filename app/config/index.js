@@ -26,6 +26,7 @@ var config = {
 			//,maxAge: 86400000 //in milliseconds
 		}
 		, unset: 'destroy'
+		, prefix:'appsess:'
 	},
 	redis:{
 		// /usr/local/opt/redis/bin/redis-server /usr/local/etc/redis.conf
@@ -48,9 +49,6 @@ var config = {
 			
 			return delay;
 		}*/
-	},
-	redisClient:{
-		prefix:'appsess:'
 	},
 	db:   {
 		mariasql: {

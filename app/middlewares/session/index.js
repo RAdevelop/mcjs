@@ -20,8 +20,8 @@ module.exports = function(){
 
     Config.session.store = new RedisStore({
         client: redisClient
-        , prefix: Config.redisClient.prefix
-        //, ttl: 86400 //in sec  (= 60*60*24 = 24 ч) //TODO
+        , prefix: Config.session.prefix
+        , ttl: 86400 //in sec  (= 60*60*24 = 24 ч) //TODO
     });
 
     return ExpressSession(Config.session);
