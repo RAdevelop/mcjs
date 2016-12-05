@@ -1,14 +1,14 @@
 "use strict";
-const Logger = require('app/lib/logger');
+//const Logger = require('app/lib/logger');
 const express = require('express');
 const router = express.Router();
 //const Errors = require('app/lib/errors');
 
-const UserIsAuth = require('app/middlewares/user/auth.js');
+//const UserIsAuth = require('app/middlewares/user/auth.js');
 
 let Controllers = new WeakMap();
 
-let startDate = new Date();
+//let startDate = new Date();
 let memoryUsage;
 let tInterval = null;
 
@@ -27,7 +27,7 @@ module.exports = function(Classes, Control)
 	router.use(require('app/middlewares/user/load.js')(Classes));
 
 	//сработает для всех адресов site.com/admin*
-	router.use('/admin', UserIsAuth);
+	//router.use('/admin', UserIsAuth);
 
 	router.use(require('app/middlewares/menu/site.js')(Classes));
 
@@ -71,7 +71,7 @@ module.exports = function(Classes, Control)
 			})
 			.catch(function (err)
 			{
-				Logger.error(err);
+				//Logger.error(err);
 				//C = null; //так как Controllers это WeakMap то пока закомментим = null
 				return next(err);
 			});

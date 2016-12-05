@@ -293,7 +293,7 @@ class Base
 		let routers = Object.keys(routePaths[actionName]);
 		let args = this.getArgs();
 
-		let regExp, i, tmpArgs = {};
+		let regExp, tmpArgs = {};
 		for(let i in routers)
 		{
 			regExp = new RegExp(routers[i], 'ig');
@@ -358,10 +358,10 @@ class Base
 	 */
 	checkAccess()
 	{
-		//return Promise.resolve();//для отладки
+		//return Promise.resolve(1);//для отладки
 
 		if (!this.getRes().locals.menuItem.m_id)
-			return Promise.resolve();
+			return Promise.resolve(1);
 
 		let c_method = this.httpMethod+'_'+this.getActionName();
 		//this.getAction() например = indexActionGet
@@ -370,15 +370,17 @@ class Base
 			.bind(this)
 			.then(function (user)
 			{
-				//console.log( c_method, this.getRes().locals.menuItem.m_id, user);
-				console.log( c_method, this.getRes().locals.menuItem.m_id);
+				//console.log( c_method, this.getRes().locals.menuItem.m_id)/;
 
 				return this.getClass('user/groups')
 					.checkAccessToMenu(user.u_id, this.getRes().locals.menuItem.m_id, c_method);
 			})
-			.catch(Errors.NotFoundError, function ()
+			.then(function (b_allowed)
 			{
+				if (!b_allowed)
 				throw new Errors.HttpError(401);
+
+				return Promise.resolve(b_allowed);
 			});
 	}
 	
@@ -536,6 +538,12 @@ class Base
 	{
 		//return this.getUser()["u_id"];
 		return (this.getReq()._user && this.getReq()._user["u_id"] ? parseInt(this.getReq()._user["u_id"], 10) : null);
+	}
+
+	isUserAdmin()
+	{
+		//return this.getUser()["u_id"];
+		return (this.getReq()._user && (this.getReq()._user["u_is_admin"] || this.getReq()._user["u_is_root"]));
 	}
 
 	getHost()

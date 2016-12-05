@@ -8,7 +8,7 @@ let document_root = Path.join(__dirname, '../../public');
 /**
  * кофигруационный файл
  *
- * @type {{port: number, db: {mysql: {host: string, user: string, password: string, dbname: string, charset: string}}}}
+ * @type {*}
  */
 var config = {
 	port: 3000,
@@ -55,7 +55,6 @@ var config = {
 			host: 'localhost', //192.168.0.91
 			user: 'mc',
 			password: 'mcjs',
-			//dbname: 'mcjs',
 			db: 'mcjs',
 			charset: 'utf8',
 			multiStatements: true
@@ -119,7 +118,7 @@ var config = {
 				{w: 256, h: 192},
 				{w: 180, h: 180},
 				{w: 100, h: 100},
-				{w: 50, h: 50},
+				{w: 50, h: 50}
 			],
 			cropSize: [
 				{w: 180, h: 180},
@@ -144,7 +143,7 @@ var config = {
 			multiUpload: false,
 			maxFileSize: 10,//Mb
 			sizeParams: [],
-			tokenFields: ['i_time', 'u_id'],
+			tokenFields: ['i_time', 'u_id']
 		},
 		events: {
 			pathUpload: "events",

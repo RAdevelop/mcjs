@@ -36,7 +36,7 @@ class AdminUser extends Base
 		let {i_page=1, ui_u_id=null} = this.routeArgs;
 
 		if (ui_u_id)
-			return this.getUser(ui_u_id);
+			return this.viewUser(ui_u_id);
 
 		return this.getUserList(i_page);
 	}
@@ -71,7 +71,7 @@ class AdminUser extends Base
 	 * показываем страницу пользователя по id
 	 *
 	 */
-	getUser(ui_u_id)
+	viewUser(ui_u_id)
 	{
 		let tplFile = 'admin/user/user.ejs';
 

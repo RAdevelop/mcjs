@@ -50,7 +50,7 @@
 					</div>
 				</div>
 				<div class="form-group" >
-					<div class="col-sm-12" id="eventMap" style="border: 0px solid red; height: 400px;"></div>
+					<div class="col-sm-12" id="eventMap" style="height: 400px;"></div>
 				</div>
 			</div>
 		</div>
@@ -291,19 +291,23 @@
 		ePlacemark.properties.set('balloonContentFooter', contentFooter);
 		ePlacemark.geometry.setCoordinates(coords);
 
+		var $s_e_address = $('#s_e_address');
+		var $f_e_lat = $('#f_e_lat');
+		var $f_e_lng = $('#f_e_lng');
+
 		if (err)
 		{
-			$('#s_e_address').val('');
-			$('#f_e_lat').val('');
-			$('#f_e_lng').val('');
+			$s_e_address.val('');
+			$f_e_lat.val('');
+			$f_e_lng.val('');
 
 			return;
 		}
 
-		$('#s_e_address').val(text);
-		$('#s_e_address').attr('data-original-title', text);
-		$('#f_e_lat').val(coords[0]);
-		$('#f_e_lng').val(coords[1]);
+		$s_e_address.val(text);
+		$s_e_address.attr('data-original-title', text);
+		$f_e_lat.val(coords[0]);
+		$f_e_lng.val(coords[1]);
 	}
 
 	var eventsUploadOpts = MCJS["eventsUploadOpts"] || null;
@@ -368,13 +372,12 @@
 						title: 'закрыть'
 						,name: 'btn_upload_event_close'
 						,cssClass: 'btn-danger'
-						,func:
-					{
-						"click": function(event)
-						{
-							$(event.data[0]).modal('hide');
+						,func: {
+							"click": function($mcDialog)
+							{
+								$mcDialog.modal('hide');
+							}
 						}
-					}
 					}
 				]
 			});
@@ -382,7 +385,7 @@
 	}
 
 	$imagesWrapper.find('.imagesContainer').sortable({
-		update: function( event, ui )
+		update: function( event)//, ui
 		{
 			var imgPos = [];
 			$('.imagesContainer img.image').each(function (i, item)

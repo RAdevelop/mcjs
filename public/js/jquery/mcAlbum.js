@@ -45,8 +45,8 @@
 			options.aText = (options.aText || '').htmlspecialchars(options.aText || '');
 
 			var a_id = (options.album && options.album.a_id  && options.album.a_is_owner ? options.album.a_id : null);
-
-			var html = '<form class="form-horizontal" action="'+options.uri+'" method="post" id="formAddAlbum">' +
+			
+			return '<form class="form-horizontal" action="'+options.uri+'" method="post" id="formAddAlbum">' +
 				'<input type="hidden" name="btn_save_album" value="'+options.btnSaveAlbumVal+'"/>' +
 				'<input type="hidden" name="i_u_id" value="'+options.u_id+'"/>' +
 				'<input type="hidden" name="i_a_id" value="'+a_id+'"/>' +
@@ -58,18 +58,14 @@
 				'<div class="form-group t_album_text">' +
 				'<div class="col-sm-12">' +
 				'<textarea class="form-control" id="t_album_text" name="t_album_text" placeholder="укажите описание альбома" maxlength="255">'+options.aText+'</textarea>' +
-				'</div>' +
-				'</div>' +
-				'</form>';
-
-			return html;
+				'</div></div></form>';
 		}
 		
 		function formDelAlbum(options)
 		{
 			var a_id = (options.album && options.album.a_id  && options.album.a_is_owner ? options.album.a_id : null);
-
-			var html = '<form class="form-horizontal" action="'+options.uri+'/" method="post" id="formDelAlbum">' +
+			
+			return '<form class="form-horizontal" action="'+options.uri+'/" method="post" id="formDelAlbum">' +
 				'<input type="hidden" name="btn_save_album" value="del_album"/>' +
 				'<input type="hidden" name="i_a_id" value="'+a_id+'"/>' +
 				'<div class="form-group">' +
@@ -78,13 +74,11 @@
 				'</div>' +
 				'</div>' +
 				'</form>';
-			
-			return html;
 		}
 
 		function formAlbumUpload(options)
 		{
-			var html = '<form class="form-horizontal text-center" action="'+options.uri+'/upload"  enctype="multipart/form-data" method="post" target="null_frame" id="formAlbumUpload">' +
+			return '<form class="form-horizontal text-center" action="'+options.uri+'/upload"  enctype="multipart/form-data" method="post" target="null_frame" id="formAlbumUpload">' +
 				'<input type="hidden" name="btn_save_album" value="album_image_upload"/>' +
 				'<input type="hidden" name="s_token" value="'+options.s_token+'"/>' +
 				'<input type="hidden" name="i_time" value="'+options.i_time+'"/>' +
@@ -93,8 +87,6 @@
 				'<input type="file" name="album_image_upload" id="album_image_upload" style="display: none;"/>' +
 				'</div>' +
 				'</form>';
-
-			return html;
 		}
 
 		function imageDialog(img, params)
@@ -128,11 +120,11 @@
 			}
 			if (options.is_owner)
 			{
-				htmlDialog += '<li role="separator" class="divider"></li>'
-				htmlDialog += '<li><a href="javascript:void(0);" id="btn_album_image_del_modal">удалить</a></li>'
+				htmlDialog += '<li role="separator" class="divider"></li>';
+				htmlDialog += '<li><a href="javascript:void(0);" id="btn_album_image_del_modal">удалить</a></li>';
 			}
 
-			htmlDialog += '</ul>'
+			htmlDialog += '</ul>';
 			htmlDialog += '</div>' +
 				'<div class="btn-group btn-group-sm" role="group" aria-label="посмотреть на карте" data-toggle="tooltip" title="посмотреть на карте" data-container="body" data-placement="bottom">' +
 					'<button type="button" class="btn btn-default" id="btn_img_map"><i class="fa fa-fw fa-map-marker"></i></button>' +
@@ -214,59 +206,59 @@
 						, name: 'btn_album_image_delete'
 						, cssClass: 'btn-success'
 						, func: {
-						"click": function (event)
-						{
-							$(event.data[0]).modal('hide');
+							"click": function ($mcDialog)
+							{
+								$mcDialog.modal('hide');
 
-							var  postData = {
-								'btn_save_album': 'del_img',
-								'i_a_id': options.album.a_id,
-								'i_ai_id': img["ai_id"]
-							};
+								var  postData = {
+									'btn_save_album': 'del_img',
+									'i_a_id': options.album.a_id,
+									'i_ai_id': img["ai_id"]
+								};
 
-							$.ajax({
-								url: options.uri,
-								method: "POST",
-								data: postData,
-								dataType: "json"
-							})
-								.done(function(resData)
-								{
-									//console.log(resData);
-									if (!resData["formError"] || !resData["formError"]["error"])
-									{
-										$modal.modal('hide');
-										$img.parent().remove();
-										var imgCnt = parseInt($(options.albumName).parent().find('.albumImgCnt').text(), 10) - 1;
-
-										imgCnt = (!imgCnt ? 0 : imgCnt);
-										$(options.albumName).parent().find('.albumImgCnt').text(imgCnt);
-
-										updImg(img["ai_id"]);//удалим
-									}
+								$.ajax({
+									url: options.uri,
+									method: "POST",
+									data: postData,
+									dataType: "json"
 								})
-								.fail(function(resData)
-								{
-									//console.log(resData);
+									.done(function(resData)
+									{
+										//console.log(resData);
+										if (!resData["formError"] || !resData["formError"]["error"])
+										{
+											$modal.modal('hide');
+											$img.parent().remove();
+											var imgCnt = parseInt($(options.albumName).parent().find('.albumImgCnt').text(), 10) - 1;
 
-									$('__album_image_delete_fail_dialog__').mcDialog({
-										title: resData.responseJSON.error.message
+											imgCnt = (!imgCnt ? 0 : imgCnt);
+											$(options.albumName).parent().find('.albumImgCnt').text(imgCnt);
+
+											updImg(img["ai_id"]);//удалим
+										}
+									})
+									.fail(function(resData)
+									{
+										//console.log(resData);
+
+										$('__album_image_delete_fail_dialog__').mcDialog({
+											title: resData.responseJSON.error.message
+										});
+
 									});
-
-								});
+							}
 						}
-					}
 					},
 					{
 						title: 'отменить'
 						,name: 'btn_add_album_cancel'
 						,cssClass: 'btn-danger'
 						,func: {
-						"click": function(event)
-						{
-							$(event.data[0]).modal('hide');
+							"click": function($mcDialog)
+							{
+								$mcDialog.modal('hide');
+							}
 						}
-					}
 					}
 				]
 			});
@@ -368,11 +360,11 @@
 
 		function bindGetPrevNextImg($currentImg, $modal, $img, img, options)
 		{
-			$currentImg.one( "swipeleft click", function (event)
+			$currentImg.one( "swipeleft click", function ()
 			{
 				getNextImg($(this), $modal, $img, img, options);
 			} );
-			$currentImg.one( "swiperight", function (event)
+			$currentImg.one( "swiperight", function ()
 			{
 				getPrevImg($(this), $modal, $img, img, options);
 			} );
@@ -581,7 +573,7 @@
 		if (options.sortable)
 		{
 			$albumWrapper.sortable({
-				update: function( event, ui )
+				update: function()//event, ui
 				{
 					var imgPos = [];
 					$(options.albumImages +' img').each(function (i, item)
@@ -662,12 +654,12 @@
 						,name: 'btn_del_album_cancel'
 						,cssClass: 'btn-danger'
 						,func:
-					{
-						"click": function(event)
 						{
-							$(event.data[0]).modal('hide');
+							"click": function($mcDialog)
+							{
+								$mcDialog.modal('hide');
+							}
 						}
-					}
 					}
 				]
 			});
@@ -717,9 +709,9 @@
 						,cssClass: 'btn-danger'
 						,func:
 						{
-							"click": function(event)
+							"click": function($mcDialog)
 							{
-								$(event.data[0]).modal('hide');
+								$mcDialog.modal('hide');
 							}
 						}
 					}
@@ -776,9 +768,9 @@
 						,cssClass: 'btn-danger'
 						,func:
 						{
-							"click": function(event)
+							"click": function($mcDialog)
 							{
-								$(event.data[0]).modal('hide');
+								$mcDialog.modal('hide');
 							}
 						}
 					}
@@ -827,9 +819,9 @@
 							,cssClass: 'btn-danger'
 							,func:
 						{
-							"click": function(event)
+							"click": function($mcDialog)
 							{
-								$(event.data[0]).modal('hide');
+								$mcDialog.modal('hide');
 							}
 						}
 						}

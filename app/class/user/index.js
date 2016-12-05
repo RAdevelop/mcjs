@@ -8,6 +8,11 @@ const Base = require('app/lib/class');
 
 class User extends Base
 {
+	static userDisplayName(user)
+	{
+		return (user["u_login"] ? user["u_login"] : (user["u_name"] || user["u_surname"] ? [user["u_name"]||'', user["u_surname"]||''].join(' ') : ''))
+	}
+
 	/**
 	 * данные пользователя (имя, фамилия, пол, ДР...)
 	 *
@@ -58,15 +63,23 @@ class User extends Base
 			user:           this.getById(u_id),
 			userData:       this.getUserData(u_id),
 			userLocation:   this.getUserLocation(u_id),
-			userAva:        this.getClass('user/photo/profile').getUserAva(u_id)
+			userAva:        this.getClass('user/photo/profile').getUserAva(u_id),
+			userGroups:     this.getClass('user/groups').getUsersGroups(u_id)
 		})
 			.then(function(props)
 			{
-				/*console.log('props');
-				console.log(props);
-				console.log('props\n');*/
 				let user = Object.assign({}, props.userAva, props.userLocation, props.userData, props.user);
-					user['u_display_name'] = (user["u_login"] ? user["u_login"] : (user["u_name"] || user["u_surname"] ? [user["u_name"]||'', user["u_surname"]||''].join(' ') : ''));
+					user['u_display_name'] = User.userDisplayName(user);
+
+				//TODO данные о группах пользователья нельзя сохранять в сессию
+				//так как, если удалить пользователя из группы, то он все равно может в ней остаться по данным сессии
+				//то есть, пока сессия не удалится...
+
+					user['u_groups'] = props.userGroups;
+					user['u_is_root'] = (user['u_groups']['root'] ? true : false);
+					user['u_is_admin'] = (user['u_groups']['admin']||user['u_is_root'] ? true : false);
+
+				//console.log(user);
 
 				return Promise.resolve(user);
 			});
@@ -111,7 +124,7 @@ class User extends Base
 							{
 								users.forEach(function (user, uI, users)
 								{
-									user['u_display_name'] = (user["u_login"] ? user["u_login"] : (user["u_name"] || user["u_surname"] ? [user["u_name"]||'', user["u_surname"]||''].join(' ') : ''));
+									user['u_display_name'] = User.userDisplayName(user);
 									users[uI] = Object.assign({}, user, usersAva[user["u_id"]]);
 								});
 

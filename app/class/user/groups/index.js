@@ -1,6 +1,6 @@
 "use strict";
 
-const Errors = require('app/lib/errors');
+//const Errors = require('app/lib/errors');
 const Promise = require("bluebird");
 const Base = require('app/lib/class');
 
@@ -90,10 +90,11 @@ class UserGroups extends Base
 			})
 			.then(function (rights)
 			{
-				if (!rights || !rights['info']['numRows'])
-					throw new Errors.NotFoundError();
-
 				let b_allowed = false;
+
+				if (!rights || !rights['info']['numRows'])
+					return Promise.resolve(b_allowed);
+				
 				rights.forEach(function (item)
 				{
 					//if (item['m_id'] == m_id && item['cm_method'] == c_method)
@@ -101,10 +102,7 @@ class UserGroups extends Base
 						b_allowed = true;
 				});
 
-				if (!b_allowed)
-					throw new Errors.NotFoundError();
-
-				return Promise.resolve();
+				return Promise.resolve(b_allowed);
 			});
 	}
 
@@ -126,6 +124,28 @@ class UserGroups extends Base
 	getGroupsOnRegister()
 	{
 		return this.model('user/groups').getGroupsOnRegister();
+	}
+
+	/**
+	 * список групп, в которых состоит пользователь
+	 *
+	 * @param u_id
+	 * @returns {Promise}
+	 */
+	getUsersGroups(u_id)
+	{
+		return this.model('user/groups').getUsersGroups(u_id)
+			.then(function (g_list)
+			{
+				let groups = {};
+
+				g_list.forEach(function (g)
+				{
+					groups[g.ug_path] = g;
+				});
+
+				return Promise.resolve(groups);
+			});
 	}
 }
 //************************************************************************* module.exports

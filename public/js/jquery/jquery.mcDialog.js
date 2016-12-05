@@ -62,9 +62,9 @@ function _htmlDialog(data)
 					cssClass: 'btn-primary',
 					func:
 					{
-						"click": function(event)
+						"click": function($dialog)
 						{
-							$(event.data[0]).modal('hide');
+							$dialog.modal('hide');
 						}
 					}
 				}
@@ -82,8 +82,10 @@ function _htmlDialog(data)
 		{
 			options.buttons = defaults.buttons;
 		}
-
-		if ($('#'+options.id).size()) $('#'+options.id).remove();
+		
+		var $mcDialog = $('#'+options.id);
+		if ($mcDialog.size()) 
+			$mcDialog.remove();
 		
 		$(_htmlDialog(options)).appendTo('body')
 			.modal('hide')
@@ -99,13 +101,18 @@ function _htmlDialog(data)
 				console.log("$mcDialog.on('hidden.bs.modal', function (event)");
 			}).modal('show');
 
-		var $mcDialog = $('#'+options.id);
+		//$mcDialog = $('#'+options.id);
 
 		if (options.postRes)
 			$mcDialog.find('.modal-header').removeClass('text-danger').addClass('text-success');
 		else
 			$mcDialog.find('.modal-header').removeClass('text-success').addClass('text-danger');
 
+		function btnEventCb(event)
+		{
+			funcList[fName].call(this, event.data[0], event.data[1]);
+		}
+		
 		var i;
 		for (i = 0; i  < options.buttons.length; i++)
 		{
@@ -114,16 +121,14 @@ function _htmlDialog(data)
 
 			for (var fName in funcList)
 			{
-				if (!funcList.hasOwnProperty(fName)) continue;
+				if (!funcList.hasOwnProperty(fName) || typeof funcList[fName] !== 'function')
+					continue;
 
 				options.buttons[i]["name"] = options.buttons[i]["name"].replace('#', '_').replace(/\s+/, '_').replace(/\./, '_');
-
-				//var btn = '#'+options.buttons[i]["name"]+"_mcDialogBtn";
-				var btn = '#'+options.buttons[i]["name"];
-
+				
 				$mcDialog
-					.find(btn)
-					.on(fName, [$mcDialog, options.postRes], funcList[fName]);
+					.find('#'+options.buttons[i]["name"])
+					.on(fName, [$mcDialog, options.postRes, funcList[fName]], btnEventCb);
 			}
 		}
 

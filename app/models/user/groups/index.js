@@ -275,21 +275,23 @@ class UserGroups extends BaseModel
 			})
 			.then(function (ug_ids)
 			{
-				/*if (!ug_ids.length)
-					return Promise.resolve(ug_ids);*/
-
 				let where = ['u_id = ?'];
 				let sqlData = [u_id];
 				if (ug_ids.length)
 				{
 					let placeHolders = this.constructor.placeHoldersForIn(ug_ids);
-					where.push(`ug_id IN(${placeHolders})`);
+					where.push(`ug_id NOT IN(${placeHolders})`);
 
 					sqlData = sqlData.concat(ug_ids);
 				}
 
 				let sql = `DELETE FROM users_in_groups
 				WHERE ${where.join(' AND ')} `;
+
+				/*let sql = `DELETE FROM users_in_groups
+				WHERE u_id = ?;`;
+				sqlData = [u_id]
+				*/
 
 				return this.constructor.conn().del(sql, sqlData)
 					.then(function ()
@@ -300,18 +302,17 @@ class UserGroups extends BaseModel
 			.then(function (ug_ids)
 			{
 				let sqlData = [];
-				let sql_vals = [];
-
-				ug_ids.forEach(function (ug_id)
-				{
-					sql_vals.push('(?,?)');
-					sqlData.push(u_id, ug_id);
-				});
-
 				let sql = ``;
 
 				if (ug_ids.length)
 				{
+					let sql_vals = [];
+					ug_ids.forEach(function (ug_id)
+					{
+						sql_vals.push('(?,?)');
+						sqlData.push(u_id, ug_id);
+					});
+
 					sql += `INSERT INTO users_in_groups (u_id, ug_id) VALUES ${sql_vals.join(',')}
 						ON DUPLICATE KEY UPDATE 
 						ug_id=VALUES(ug_id);`;
@@ -379,6 +380,24 @@ class UserGroups extends BaseModel
 			AND ugr.cm_id = cm.cm_id)`;
 
 		return this.constructor.conn().ps(sql, [u_id, m_id]);
+	}
+
+
+	/**
+	 * список групп, в которых состоит пользователь
+	 *
+	 * @param u_id
+	 * @returns {Promise}
+	 */
+	getUsersGroups(u_id)
+	{
+		let sql = `SELECT ug.ug_id,ug.ug_path,ug.ug_name
+		FROM 
+		(SELECT NULL) AS z
+		JOIN users_in_groups AS uing ON(uing.u_id = ?)
+		JOIN users_groups AS ug ON(ug.ug_id = uing.ug_id)`;
+
+		return this.constructor.conn().ps(sql, [u_id]);
 	}
 }
 
