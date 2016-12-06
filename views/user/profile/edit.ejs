@@ -197,7 +197,6 @@
     </div>
 </div>
 <script src="/js/mcMap.js" type="text/javascript"></script>
-<script src="/js/jquery/postRes.js" type="text/javascript" ></script>
 <script src="/js/uploadify/jquery.uploadify.min.js" type="text/javascript" ></script>
 <script src="/js/uploadify/jquery.uploadifive.min.js" type="text/javascript" ></script>
 <script src="/js/uploadify/jquery.fileUpload.js" type="text/javascript"></script>
@@ -260,12 +259,13 @@ $(function()
     $('#formContacts').postRes({btnId: 'btn_save_contacts'});
     
     $('#formLocation').postRes({btnId: 'btn_location'});
-    
-    $('#formPassword').postRes({btnId: 'btn_change_password',
+
+    var $formPassword = $('#formPassword');
+    $formPassword.postRes({btnId: 'btn_change_password',
         onSuccess: function($dialog)
         {
-            $('#formPassword').find("#s_password").val('');
-            $('#formPassword').find("#s_password2").val('');
+            $formPassword.find("#s_password").val('');
+            $formPassword.find("#s_password2").val('');
             //показать диалог
             return true;
         },

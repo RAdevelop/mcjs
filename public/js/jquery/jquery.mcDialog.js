@@ -101,7 +101,7 @@ function _htmlDialog(data)
 				console.log("$mcDialog.on('hidden.bs.modal', function (event)");
 			}).modal('show');
 
-		//$mcDialog = $('#'+options.id);
+		$mcDialog = $($mcDialog.selector);
 
 		if (options.postRes)
 			$mcDialog.find('.modal-header').removeClass('text-danger').addClass('text-success');
@@ -110,7 +110,7 @@ function _htmlDialog(data)
 
 		function btnEventCb(event)
 		{
-			funcList[fName].call(this, event.data[0], event.data[1]);
+			event.data[2].call(this, event.data[0], event.data[1]);
 		}
 		
 		var i;
@@ -125,7 +125,7 @@ function _htmlDialog(data)
 					continue;
 
 				options.buttons[i]["name"] = options.buttons[i]["name"].replace('#', '_').replace(/\s+/, '_').replace(/\./, '_');
-				
+
 				$mcDialog
 					.find('#'+options.buttons[i]["name"])
 					.on(fName, [$mcDialog, options.postRes, funcList[fName]], btnEventCb);
