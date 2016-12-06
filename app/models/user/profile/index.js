@@ -15,34 +15,32 @@ class Profile extends User
 	 *
 	 * @param u_id
 	 * @param u_login
-	 * @param cb
 	 */
-	updLogin(u_id, u_login, cb)
+	updLogin(u_id, u_login)
 	{
 		let sql = "SELECT u_id FROM `users` WHERE u_login = ? LIMIT 1";
 		let sqlData = [u_login];
 		
-		let self = this;
-		
-		this.constructor.conn().s(sql, sqlData, function(err, res)
-		{
-			if(err) return cb(err, u_id);
-			
-			if (res["info"]["numRows"] > 0 && res[0] != u_id)
+		return this.constructor.conn().s(sql, sqlData)
+			.bind(this)
+			.then(function (res)
 			{
-				return cb(new Errors.AlreadyInUseError('Такой логин уже занят!'), u_id);
-			}
-			
-			sql = 'UPDATE `users` SET u_login = ? WHERE u_id = ?';
-			sqlData = [u_login, u_id];
-			
-			self.constructor.conn().upd(sql, sqlData, function(err)
+				if (res["info"]["numRows"] > 0 && res[0] != u_id)
+					throw new Errors.AlreadyInUseError('Такой логин уже занят!');
+
+				return Promise.resolve(u_id);
+			})
+			.then(function (u_id)
 			{
-				if(err) return cb(err, u_id);
-				
-				return cb(null, u_id);
+				sql = 'UPDATE `users` SET u_login = ? WHERE u_id = ?';
+				sqlData = [u_login, u_id];
+
+				return this.constructor.conn().upd(sql, sqlData)
+					.then(function ()
+					{
+						return Promise.resolve(u_id);
+					})
 			});
-		});
 	}
 	
 	/**

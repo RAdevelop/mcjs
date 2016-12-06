@@ -389,28 +389,26 @@ class Profile extends Base
 		if (s_login.search(/^[a-zA-Z\-_0-9]{5,20}$/ig) == -1)
 			errors["s_login"] = "логин указан неверно";
 		
-		const self = this;
-		
 		return Promise.resolve(errors)
+			.bind(this)
 		.then(function(errors)
 		{
-			self.parseFormErrors(tplData, errors);
+			this.parseFormErrors(tplData, errors);
 
 			return Promise.resolve(tplData);
 		})
 		.then(function(tplData)
 		{
-			return new Promise(function(resolve, reject)
-			{
-				self.model("user/profile").updLogin(tplData["i_u_id"], tplData["s_login"], function(err)
+			return this.model("user/profile")
+				.updLogin(tplData["i_u_id"], tplData["s_login"])
+				.bind(this)
+				.then(function ()
 				{
-					if (err) return reject(err);
-					
-					tplData.formError.message = 'Логин успешно изменен';
-					
-					return resolve(tplData);
+					this.setUserSessionData('u_login', tplData['s_login'])
+						.setUserSessionData('u_display_name', tplData['s_login']);
+
+					return Promise.resolve(tplData);
 				});
-			});
 		}).catch(Errors.AlreadyInUseError, function(err)
 		{
 			tplData.formError.message = 'Ошибки при заполнении формы';

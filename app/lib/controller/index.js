@@ -542,8 +542,14 @@ class Base
 
 	isUserAdmin()
 	{
-		//return this.getUser()["u_id"];
 		return (this.getReq()._user && (this.getReq()._user["u_is_admin"] || this.getReq()._user["u_is_root"]));
+	}
+
+	setUserSessionData(key, value)
+	{
+		this.getReq().session.user[key] = value;
+		
+		return this;
 	}
 
 	getHost()
