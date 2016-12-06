@@ -71,7 +71,7 @@ class Base
 		return this._view;
 	}
 
-	get cheerio()
+	static get cheerio()
 	{
 		return Cheerio;
 	}
@@ -87,9 +87,9 @@ class Base
 	 * @param fields
 	 * @returns {Promise}
 	 */
-	stripTags(formData, fields = [])
+	static stripTags(formData, fields = [])
 	{
-		let cheerio = this.cheerio;
+		let cheerio = Base.cheerio;
 
 		Object.keys(formData).forEach(function (key)
 		{
@@ -98,7 +98,6 @@ class Base
 
 			formData[key] = (formData[key] || '');
 			formData[key] = cheerio(formData[key]).text().trim();
-
 		});
 		cheerio = null;
 		return formData;
@@ -384,7 +383,7 @@ class Base
 			});
 	}
 	
-	formError()
+	static formError()
 	{
 		return {
 				formError: {
@@ -525,19 +524,19 @@ class Base
 			u_login: 'MotoCommunity',
 			u_reg: '1' }
 		*/
+
+		if (!u_id)
+			return Promise.resolve({u_id: null});
+
 		if (u_id == this.getUserId())
-		{
-			let user = (this.getReq()._user ? this.getReq()._user : {u_id: null});
-			return Promise.resolve(user);
-		}
+			return Promise.resolve(this.getReq()._user);
 
 		return this.getClass("user").getUser(u_id);
 	}
 
 	getUserId()
 	{
-		//return this.getUser()["u_id"];
-		return (this.getReq()._user && this.getReq()._user["u_id"] ? parseInt(this.getReq()._user["u_id"], 10) : null);
+		return (this.getReq()._user && this.getReq()._user["u_id"] ? this.getReq()._user["u_id"] : null);
 	}
 
 	isUserAdmin()
@@ -569,12 +568,12 @@ class Base
 
 	getReqBody()
 	{
-		return Object.assign((this.getReq().body ? this.getReq().body : {}), this.formError());
+		return Object.assign((this.getReq().body ? this.getReq().body : {}), Base.formError());
 	}
 
 	getParsedBody()
 	{
-		return Object.assign((this.getReq()._reqbody ? this.getReq()._reqbody : {}), this.formError());
+		return Object.assign((this.getReq()._reqbody ? this.getReq()._reqbody : {}), Base.formError());
 	}
 }
 

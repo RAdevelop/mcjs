@@ -3,9 +3,9 @@
 const Errors = require('app/lib/errors');
 const Promise = require("bluebird");
 
-const Base = require('app/lib/controller');
+const CtrlMain = require('app/lib/controller');
 
-class AdminUserGroups extends Base
+class AdminUserGroups extends CtrlMain
 {
 	/**
 	 * @see Base.routePaths()
@@ -182,7 +182,7 @@ class AdminUserGroups extends Base
 			{
 				let errors = {};
 				
-				tplData = this.stripTags(tplData, ["s_ug_path", "s_ug_name", "t_ug_desc"]);
+				tplData = CtrlMain.stripTags(tplData, ["s_ug_path", "s_ug_name", "t_ug_desc"]);
 				tplData["b_ug_on_register"] = tplData["b_ug_on_register"] || false;
 
 				tplData["ui_ug_pid"]        = parseInt(tplData["ui_ug_pid"], 10)        || 0;
@@ -251,7 +251,7 @@ class AdminUserGroups extends Base
 			{
 				let errors = {};
 				
-				tplData = this.stripTags(tplData, ["s_ug_path", "s_ug_name", "t_ug_desc"]);
+				tplData = CtrlMain.stripTags(tplData, ["s_ug_path", "s_ug_name", "t_ug_desc"]);
 
 				tplData["b_ug_on_register"] = tplData["b_ug_on_register"] || false;
 				tplData["ui_ug_pid"]        = parseInt(tplData["ui_ug_pid"], 10)        || 0;

@@ -8,11 +8,11 @@ const FileUpload = require('app/lib/file/upload');
 const EmbedContent = require("app/lib/embed/content");
 
 //const Moment = require('moment'); //работа со временем
-const Base = require('app/lib/controller');
+const CtrlMain = require('app/lib/controller');
 
 let limit_per_page = 1;
 
-class News extends Base
+class News extends CtrlMain
 {
 	/**
 	 * @see Base.routePaths()
@@ -209,9 +209,9 @@ class News extends Base
 		let tplData = this.getParsedBody();
 		let errors = {};
 
-		tplData = this.stripTags(tplData, ["dt_show_ts", "s_n_title","t_n_notice"]);
+		tplData = CtrlMain.stripTags(tplData, ["dt_show_ts", "s_n_title","t_n_notice"]);
 
-		tplData["t_n_text"] = this.cheerio(tplData["t_n_text"]).root().cleanTagEvents().html();
+		tplData["t_n_text"] = CtrlMain.cheerio(tplData["t_n_text"]).root().cleanTagEvents().html();
 		tplData["b_show"] = tplData["b_show"] || false;
 
 		if (!tplData["dt_show_ts"])
@@ -376,9 +376,9 @@ class News extends Base
 			{
 				let errors = {};
 
-				tplData = this.stripTags(tplData, ["dt_show_ts", "s_n_title","t_n_notice"]);
-
-				tplData["t_n_text"] = this.cheerio(tplData["t_n_text"]).root().cleanTagEvents().html();
+				tplData = CtrlMain.stripTags(tplData, ["dt_show_ts", "s_n_title","t_n_notice"]);
+				
+				tplData["t_n_text"] = CtrlMain.cheerio(tplData["t_n_text"]).root().cleanTagEvents().html();
 				tplData["b_show"] = tplData["b_show"] || false;
 
 				if (!tplData["dt_show_ts"])

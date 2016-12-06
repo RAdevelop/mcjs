@@ -7,9 +7,9 @@ const bcrypt = require('bcrypt');
 const Mail = require('app/lib/mail');
 const Logger = require('app/lib/logger');
 
-const Base = require('app/lib/controller');
+const CtrlMain = require('app/lib/controller');
 
-class Login extends Base
+class Login extends CtrlMain
 {
 	/**
 	 * @see Base.routePaths()
@@ -152,8 +152,6 @@ class Login extends Base
 		}
 		
 		let u_id = tplData.s_key.substr(32);
-		
-		tplData = Object.assign(tplData, self.formError());
 		
 		return Promise.resolve(errors)
 		.then(function(errors)

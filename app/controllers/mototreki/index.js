@@ -3,9 +3,9 @@
 const Errors = require('app/lib/errors');
 const Promise = require("bluebird");
 
-const Base = require('app/lib/controller');
+const CtrlMain = require('app/lib/controller');
 
-class Mototreki extends Base
+class Mototreki extends CtrlMain
 {
 	/**
 	 * @see Base.routePaths()
@@ -63,7 +63,7 @@ class Mototreki extends Base
 
 					this.view.setPageTitle(trek["mtt_name"]);
 					this.view.setPageH1(trek["mtt_name"]);
-					this.view.setPageDescription(this.cheerio(trek["mtt_descrip"]).text());
+					this.view.setPageDescription(CtrlMain.cheerio(trek["mtt_descrip"]).text());
 				}
 				else
 				{
@@ -256,8 +256,8 @@ class Mototreki extends Base
 
 		let errors = {};
 
-		tplData = this.stripTags(tplData, ["s_mtt_name", "m_mtt_email", "s_mtt_address", "s_mtt_website", "s_mtt_phones"]);
-		tplData["t_mtt_descrip"] = this.cheerio(tplData["t_mtt_descrip"]).root().cleanTagEvents().html();
+		tplData = CtrlMain.stripTags(tplData, ["s_mtt_name", "m_mtt_email", "s_mtt_address", "s_mtt_website", "s_mtt_phones"]);
+		tplData["t_mtt_descrip"] = CtrlMain.cheerio(tplData["t_mtt_descrip"]).root().cleanTagEvents().html();
 
 		tplData["s_mtt_website"] = tplData["s_mtt_website"].replace(/^https?:\/\//gi, '');
 
@@ -394,8 +394,8 @@ class Mototreki extends Base
 				if (!trek)
 					throw new Errors.HttpError(404);
 
-				tplData = this.stripTags(tplData, ["s_mtt_name", "m_mtt_email", "s_mtt_address", "s_mtt_website", "s_mtt_phones"]);
-				tplData["t_mtt_descrip"] = this.cheerio(tplData["t_mtt_descrip"]).root().cleanTagEvents().html();
+				tplData = CtrlMain.stripTags(tplData, ["s_mtt_name", "m_mtt_email", "s_mtt_address", "s_mtt_website", "s_mtt_phones"]);
+				tplData["t_mtt_descrip"] = CtrlMain.cheerio(tplData["t_mtt_descrip"]).root().cleanTagEvents().html();
 
 				let errors = {};
 

@@ -10,9 +10,9 @@ const FileUpload = require('app/lib/file/upload');
 //const FileErrors = require('app/lib/file/errors');
 //const _ = require('lodash');
 
-const Base = require('app/lib/controller');
+const CtrlMain = require('app/lib/controller');
 
-class Profile extends Base 
+class Profile extends CtrlMain 
 {
 	/**
 	 * @see Base.routePaths()
@@ -25,6 +25,10 @@ class Profile extends Base
 				'^\/?$': null
 			},
 			"edit": {
+				'^\/?$': null
+			},
+			//upload ava
+			"ava": {
 				'^\/?$': null
 			},
 			"change": {
@@ -101,9 +105,7 @@ class Profile extends Base
 	editActionGet()
 	{
 		if (!this.isAuthorized())
-		throw new Errors.HttpError(401);
-
-		let tplFile = 'user/profile/edit.ejs';
+			throw new Errors.HttpError(401);
 
 		return this.getUser(this.getUserId())
 			.bind(this)
@@ -112,6 +114,7 @@ class Profile extends Base
 				let tplData = {};
 				Object.assign(tplData, userData, FileUpload.createToken('user_ava', {"u_id": userData["u_id"]}) );
 
+				let tplFile = 'user/profile/edit.ejs';
 				this.view.setTplData(tplFile, tplData);
 				this.view.addPartialData('user/left', {user: userData});
 
@@ -139,11 +142,16 @@ class Profile extends Base
 
 		return this._formProfileValidation(tplData)
 			.bind(this)
-			.then(function(tplData) //если валидация успешна
+			.then(function(tplData) //если все ок
 			{
-				//tplData.formError.error = false;
-				this.view.setTplData(tplFile, tplData);
-				return Promise.resolve(null);
+				return this.getClass('user')
+					.updateUserSessionData(tplData['u_id']||tplData['i_u_id']||0)
+					.bind(this)
+					.then(function ()
+					{
+						this.view.setTplData(tplFile, tplData);
+						return Promise.resolve(true);
+					});
 			})
 			.catch(Errors.FormError, Errors.AlreadyInUseError, function(err)
 			{
@@ -154,7 +162,7 @@ class Profile extends Base
 				this.view.setTplData(tplFile, tplData);
 
 				//this.getRes().expose();
-				return Promise.resolve(null);
+				return Promise.resolve(true);
 			})
 			.catch(function(err)
 			{
@@ -404,9 +412,6 @@ class Profile extends Base
 				.bind(this)
 				.then(function ()
 				{
-					this.setUserSessionData('u_login', tplData['s_login'])
-						.setUserSessionData('u_display_name', tplData['s_login']);
-
 					return Promise.resolve(tplData);
 				});
 		}).catch(Errors.AlreadyInUseError, function(err)

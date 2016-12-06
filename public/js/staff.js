@@ -49,13 +49,23 @@ function getRandomMinMax(min, max)
 
 /**
  * обновить на странице src у <img /> аватарки пользователя
- * @param $jq - css селектор
+ * @param $avaWrapper - css селектор
  * @param src - относительный путь к фото
  */
-function updAvaProfileSrc($jq, src)
+function updAvaProfileSrc($avaWrapper, src)
 {
-	src = src || $jq.attr("src").split('?')[0];
-	$jq.attr("src", src +'?ts='+(new Date()).getTime());
+	try
+	{
+		$avaWrapper.children().addClass('hidden');
+		var $img = $avaWrapper.find('img');
+		src = src || $img.attr("src").split('?')[0];
+		$img.attr("src", src +'?ts='+(new Date()).getTime());
+		$img.removeClass('hidden');
+	}
+	catch (e)
+	{
+		console.log(e);
+	}
 }
 function isLink(value)
 {

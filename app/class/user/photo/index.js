@@ -74,7 +74,7 @@ class UserPhoto extends User
 							album["a_profile"]  = (album["a_profile"]   == 1);
 							album["a_named"]    = (album["a_named"]     == 1);
 
-							album = Object.assign(album, FileUpload.getPreviews(sizeParams, album, "ai_dir")["obj"]);
+							Object.assign(album, FileUpload.getPreviews(sizeParams, album, "ai_dir")["obj"]);
 						});
 						
 						albums["a_cnt"] = a_cnt;

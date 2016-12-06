@@ -7,11 +7,11 @@ const Promise = require("bluebird");
 //const Mail = require('app/lib/mail');
 //const _ = require('lodash');
 
-const Base = require('app/lib/controller');
+const CtrlMain = require('app/lib/controller');
 
 let limit_per_page = 20;
 
-class User extends Base 
+class User extends CtrlMain
 {
 	routePaths()
 	{

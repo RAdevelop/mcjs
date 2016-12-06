@@ -5,12 +5,11 @@ pPath = (_user && user && user.u_id && _user.u_id != user.u_id ? '/user/'+user.u
 %>
 <div class="logo">&nbsp;</div>
 <div id="profile-ava" class="col-xs-12 col-sm-12 col-md-12">
-    <a href="<%=pPath%>">
-        <% if (user.previews && user.previews["180_180"]) {%>
-        <img class="img-circle img-responsive" src="<%=user.previews["180_180"]%>" />
-        <% } else {%>
-        <span class="fa fa-user"></span>
-        <% } %>
+    <a href="<%=pPath%>"><%
+        let ava = (user.previews && user.previews["180_180"]);
+        let avaSrc = (ava ? user.previews["180_180"] : '/_0.gif');
+        %><img class="img-circle img-responsive <%=(ava ? '':'hidden')%>" src="<%=avaSrc%>" />
+        <span class="fa fa-user <%=(ava ? 'hidden':'')%>"></span>
     </a>
 </div>
 <div class="col-xs-12 col-sm-12 col-md-12 ">

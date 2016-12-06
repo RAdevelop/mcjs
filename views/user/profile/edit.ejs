@@ -231,8 +231,8 @@ $(function()
             var previews = uploadFileData["previews"];
 
             preloadImages(previews);
-            updAvaProfileSrc($('#profile-ava img'), previews["180_180"]);
-            updAvaProfileSrc($('#navbarFixedTop .userProfileTop img'), previews["50_50"]);
+            updAvaProfileSrc($('#profile-ava a'), previews["180_180"]);
+            updAvaProfileSrc($('#navbarFixedTop .userProfileTop'), previews["50_50"]);
 
             $avaProfileCrop.replaceSrc(previews["1024_768"]);
         }
@@ -246,8 +246,8 @@ $(function()
     $formAvaCrop.postRes({btnId: 'btn_crop_ava',
         onSuccess: function($dialog)
         {
-            updAvaProfileSrc($('#profile-ava img'));
-            updAvaProfileSrc($('#navbarFixedTop .userProfileTop img'));
+            updAvaProfileSrc($('#profile-ava a'));
+            updAvaProfileSrc($('#navbarFixedTop .userProfileTop'));
             //показать диалог
             return true;
         }
@@ -395,10 +395,11 @@ $(function()
                 return McMap.userLocation()
                         .then(function (location)
                         {
+                            var $formLocation = $('#formLocation');
                             $.ajax({
-                                url: $('#formLocation').attr('action'),
+                                url: $formLocation.attr('action'),
                                 method: "POST",
-                                data: $('#formLocation').serialize(),
+                                data: $formLocation.serialize(),
                                 dataType: "json"
                             })
                             .done(function(data)
@@ -431,8 +432,8 @@ $(function()
 
     function setLocationOnForm(text, lat, lgn)
     {
-        $('#s_location').val(text);
-        $('#s_location').attr('data-original-title', text);
+        var $s_location = $('#s_location').val(text);
+        $s_location.attr('data-original-title', text);
         $('#f_lat').val(lat);
         $('#f_lng').val(lgn);
     }

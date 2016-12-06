@@ -4,9 +4,9 @@ const Errors = require('app/lib/errors');
 const Promise = require("bluebird");
 const Mail = require('app/lib/mail');
 const Logger = require('app/lib/logger');
-const Base = require('app/lib/controller');
+const CtrlMain = require('app/lib/controller');
 
-class Registration extends Base
+class Registration extends CtrlMain
 {
 	/**
 	 * @see Base.routePaths()

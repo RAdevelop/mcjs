@@ -6,11 +6,11 @@
 const Errors = require('app/lib/errors');
 const Promise = require("bluebird");
 const Pages = require("app/lib/pages");
-const Base = require('app/lib/controller');
+const CtrlMain = require('app/lib/controller');
 
 let limit_per_page = 2;
 
-class Motoshop extends Base
+class Motoshop extends CtrlMain
 {
 	/**
 	 * @see Base.routePaths()
@@ -66,7 +66,7 @@ class Motoshop extends Base
 					
 					this.view.setPageTitle(motoshop["mts_name"]);
 					this.view.setPageH1(motoshop["mts_name"]);
-					this.view.setPageDescription(this.cheerio(motoshop["mts_descrip"]).text());
+					this.view.setPageDescription(CtrlMain.cheerio(motoshop["mts_descrip"]).text());
 				}
 
 				this.view.setTplData(tplFile, tplData);
@@ -233,8 +233,8 @@ class Motoshop extends Base
 		
 		let errors = {};
 		
-		tplData = this.stripTags(tplData, ["s_mts_name", "m_mts_email", "link_mts_website"]);
-		tplData["t_mts_descrip"] = this.cheerio(tplData["t_mts_descrip"]).root().cleanTagEvents().html();
+		tplData = CtrlMain.stripTags(tplData, ["s_mts_name", "m_mts_email", "link_mts_website"]);
+		tplData["t_mts_descrip"] = CtrlMain.cheerio(tplData["t_mts_descrip"]).root().cleanTagEvents().html();
 
 		tplData["b_mts_show"] = (tplData["b_mts_show"] ? '1': '0');
 
@@ -394,8 +394,8 @@ class Motoshop extends Base
 			.bind(this)
 			.then(function (tplData)
 			{
-				tplData = this.stripTags(tplData, ["s_mts_name", "m_mts_email", "link_mts_website"]);
-				tplData["t_mts_descrip"] = this.cheerio(tplData["t_mts_descrip"]).root().cleanTagEvents().html();
+				tplData = CtrlMain.stripTags(tplData, ["s_mts_name", "m_mts_email", "link_mts_website"]);
+				tplData["t_mts_descrip"] = CtrlMain.cheerio(tplData["t_mts_descrip"]).root().cleanTagEvents().html();
 
 				tplData["b_mts_show"] = (tplData["b_mts_show"] ? '1' : '0');
 
@@ -463,7 +463,7 @@ class Motoshop extends Base
 			.bind(this)
 			.then(function (tplData)
 			{
-				tplData = this.stripTags(tplData, ["s_mts_address", "s_mts_address_phones", "m_mts_address_email", "link_address_website"]);
+				tplData = CtrlMain.stripTags(tplData, ["s_mts_address", "s_mts_address_phones", "m_mts_address_email", "link_address_website"]);
 
 				tplData["b_mts_address_show"] = (tplData["b_mts_address_show"] ? '1' : '0');
 
@@ -548,7 +548,7 @@ class Motoshop extends Base
 				if (!found)
 					throw new Errors.HttpStatusError(404, "Not found");
 
-				tplData = this.stripTags(tplData, ["s_mts_address", "s_mts_address_phones", "m_mts_address_email", "link_address_website"]);
+				tplData = CtrlMain.stripTags(tplData, ["s_mts_address", "s_mts_address_phones", "m_mts_address_email", "link_address_website"]);
 
 				tplData["b_mts_address_show"] = (tplData["b_mts_address_show"] ? '1' : '0');
 

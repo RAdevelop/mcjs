@@ -79,7 +79,10 @@ class Calendar
 		month	= parseInt(month, 10);
 
 		if (month > 12)
+		{
 			year++;
+			month = month-12;
+		}
 
 		if (month <= 0)
 		{

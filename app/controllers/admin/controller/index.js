@@ -2,9 +2,9 @@
 
 const Errors = require('app/lib/errors');
 const Promise = require("bluebird");
-const Base = require('app/lib/controller');
+const CtrlMain = require('app/lib/controller');
 
-class Controller extends Base
+class Controller extends CtrlMain
 {
 	/**
 	 * @see Base.routePaths()
@@ -188,7 +188,7 @@ class Controller extends Base
 			{
 				let errors = {};
 
-				tplData = this.stripTags(tplData, ["s_controller_path", "s_controller_name", "t_controller_desc"]);
+				tplData = CtrlMain.stripTags(tplData, ["s_controller_path", "s_controller_name", "t_controller_desc"]);
 
 				tplData["ui_controller_pid"]        = parseInt(tplData["ui_controller_pid"], 10)        || 0;
 				tplData["ui_controller_after_id"]   = parseInt(tplData["ui_controller_after_id"], 10)   || 0;
@@ -263,7 +263,7 @@ class Controller extends Base
 			{
 				let errors = {};
 
-				tplData = this.stripTags(tplData, ["s_controller_path", "s_controller_name", "t_controller_desc"]);
+				tplData = CtrlMain.stripTags(tplData, ["s_controller_path", "s_controller_name", "t_controller_desc"]);
 
 				tplData["ui_controller_pid"]        = parseInt(tplData["ui_controller_pid"], 10)        || 0;
 				tplData["ui_controller_after_id"]   = parseInt(tplData["ui_controller_after_id"], 10)   || 0;
@@ -327,7 +327,7 @@ class Controller extends Base
 			{
 				let errors = {};
 				
-				tplData = this.stripTags(tplData, ["s_cm_method"]);
+				tplData = CtrlMain.stripTags(tplData, ["s_cm_method"]);
 
 				if (!tplData["s_cm_method"] || !(tplData["s_cm_method"].search(/^(get|post)_[a-zA-Z_]{3,33}$/ig) != -1))
 					errors["s_cm_method"] = "Укажите метод";
@@ -388,7 +388,7 @@ class Controller extends Base
 			{
 				let errors = {};
 
-				tplData = this.stripTags(tplData, ["s_cm_method"]);
+				tplData = CtrlMain.stripTags(tplData, ["s_cm_method"]);
 				tplData["s_cm_method"] = tplData["s_cm_method"] || '';
 
 				if (!tplData["ui_cm_id"] || !tplData["ui_controller_id"])

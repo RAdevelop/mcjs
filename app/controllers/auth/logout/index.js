@@ -1,8 +1,8 @@
 "use strict";
 const Cookie = require('app/lib/cookie');
-const Base = require('app/lib/controller');
+const CtrlMain = require('app/lib/controller');
 
-class Logout extends Base
+class Logout extends CtrlMain
 {
 	/**
 	 *

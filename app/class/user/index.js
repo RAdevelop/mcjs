@@ -74,12 +74,6 @@ class User extends Base
 				//TODO данные о группах пользователья нельзя сохранять в сессию
 				//так как, если удалить пользователя из группы, то он все равно может в ней остаться по данным сессии
 				//то есть, пока сессия не удалится...
-				/*
-				 TODO а так же надо обновлять данные сесси по пользователю, если он редактирует свои данные.
-				так как при текущих улосвиях данные в сессии не обновляются...
-				возможно сотот проверить в контроллере вызов
-				this.
-				 */
 
 					user['u_groups'] = props.userGroups;
 					user['u_is_root'] = (user['u_groups']['root'] ? true : false);
@@ -87,6 +81,28 @@ class User extends Base
 
 				//console.log(user);
 
+				return Promise.resolve(user);
+			});
+	}
+
+	/**
+	 * обновляем данные сессии текущего пользователя
+	 * @param u_id
+	 * @returns {Promise}
+	 */
+	updateUserSessionData(u_id)
+	{
+		if (!u_id || !this.session.user || !this.session.user.u_id || this.session.user.u_id != u_id)
+			return Promise.resolve();
+
+		return this.getUser(u_id)
+			.bind(this)
+			.then(function (user)
+			{
+				if (!user)
+					return Promise.resolve();
+
+				this.session.user = user;
 				return Promise.resolve(user);
 			});
 	}

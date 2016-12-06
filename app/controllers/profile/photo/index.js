@@ -7,11 +7,11 @@ const Promise = require("bluebird");
 const Errors = require('app/lib/errors');
 //const MultiGeocoder = require('multi-geocoder');
 const FileUpload = require('app/lib/file/upload');
-const Base = require('app/lib/controller');
+const CtrlMain = require('app/lib/controller');
 
 let limit_per_page = 20;
 
-class ProfilePhoto extends Base
+class ProfilePhoto extends CtrlMain
 {
 
 	routePaths()

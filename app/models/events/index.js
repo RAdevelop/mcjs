@@ -184,6 +184,7 @@ class Events extends BaseModel
 	 */
 	getLocations()
 	{
+		//TODO передавать год месяц день
 		let kinds = ['country','province','locality'];
 
 		let sql =

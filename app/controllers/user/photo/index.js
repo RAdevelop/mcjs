@@ -6,11 +6,11 @@ const Promise = require("bluebird");
 const Errors = require('app/lib/errors');
 
 const FileUpload = require('app/lib/file/upload');
-const Base = require('app/lib/controller');
+const CtrlMain = require('app/lib/controller');
 
 let limit_per_page = 20;
 
-class UserPhoto extends Base
+class UserPhoto extends CtrlMain
 {
 	routePaths()
 	{
@@ -53,7 +53,7 @@ class UserPhoto extends Base
 						if (!userData["u_id"])
 							throw new Errors.HttpError(404);
 
-						userData["u_is_owner"] = (this.getUserId() == i_u_id);
+						userData["u_is_owner"] = this.isTheSameUser(i_u_id);
 
 						return Promise.resolve(userData);
 					});
@@ -212,7 +212,7 @@ class UserPhoto extends Base
 					this.view.addPartialData('user/left', {user: tplData["user"]});
 
 					this.view.setPageTitle(tplData["album"]["a_name"]);
-					this.view.setPageDescription(this.cheerio(tplData["album"]["a_text"]).text());
+					this.view.setPageDescription(CtrlMain.cheerio(tplData["album"]["a_text"]).text());
 
 					if (tplData["album"]["images"] && tplData["album"]["images"][0] && tplData["album"]["images"][0]["previews"]["512_384"])
 					this.view.setPageOgImage(tplData["album"]["images"][0]["previews"]["512_384"]);
@@ -336,7 +336,7 @@ class UserPhoto extends Base
 		if (!tplData["i_u_id"] || tplData["i_u_id"] != this.getUserId())
 			throw new Errors.HttpError(400);
 
-		tplData = this.stripTags(tplData, ["s_album_name", "t_album_text"]);
+		tplData = CtrlMain.stripTags(tplData, ["s_album_name", "t_album_text"]);
 
 		if (tplData["s_album_name"] == '')
 			errors["s_album_name"] = 'Укажите название альбома';
@@ -370,7 +370,7 @@ class UserPhoto extends Base
 	{
 		let errors = {};
 
-		tplData = this.stripTags(tplData, ["s_album_name", "t_album_text"]);
+		tplData = CtrlMain.stripTags(tplData, ["s_album_name", "t_album_text"]);
 		
 		if (!tplData["i_a_id"] || !tplData.hasOwnProperty("s_album_name") || !tplData.hasOwnProperty("t_album_text"))
 			throw new Errors.HttpError(400);
@@ -416,7 +416,7 @@ class UserPhoto extends Base
 		if (!tplData["i_a_id"] || !tplData["i_ai_id"] || !tplData.hasOwnProperty("t_ai_text"))
 			return new Errors.HttpError(400);
 
-		tplData = this.stripTags(tplData, ["t_ai_text"]);
+		tplData = CtrlMain.stripTags(tplData, ["t_ai_text"]);
 
 		return this.getClass('user/photo').updImgText(this.getUserId(), tplData["i_a_id"], tplData["i_ai_id"], tplData["t_ai_text"])
 			.then(function ()

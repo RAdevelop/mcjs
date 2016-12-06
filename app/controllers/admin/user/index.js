@@ -7,11 +7,11 @@ const Errors = require('app/lib/errors');
 const Promise = require("bluebird");
 const Pages = require('app/lib/pages');
 
-const Base = require('app/lib/controller');
+const CtrlMain = require('app/lib/controller');
 
 //let limit_per_page = 20;
 
-class AdminUser extends Base
+class AdminUser extends CtrlMain
 {
 	/**
 	 * @see Base.routePaths()

@@ -3,9 +3,9 @@
 const Errors = require('app/lib/errors');
 const Promise = require("bluebird");
 
-const Base = require('app/lib/controller');
+const CtrlMain = require('app/lib/controller');
 
-class Menu extends Base
+class Menu extends CtrlMain
 {
 	/**
 	 * @see Base.routePaths()
@@ -189,7 +189,7 @@ class Menu extends Base
 			{
 				let errors = {};
 
-				tplData = this.stripTags(tplData, ["s_menu_path", "s_menu_name", "s_menu_title", "s_menu_h1", "t_menu_desc"]);
+				tplData = CtrlMain.stripTags(tplData, ["s_menu_path", "s_menu_name", "s_menu_title", "s_menu_h1", "t_menu_desc"]);
 
 				tplData["i_menu_pid"] = parseInt(tplData["i_menu_pid"], 10) || 0;
 				tplData["i_menu_after_id"] = parseInt(tplData["i_menu_after_id"], 10) || 0;
@@ -264,7 +264,7 @@ class Menu extends Base
 			{
 				let errors = {};
 
-				tplData = this.stripTags(tplData, ["s_menu_path", "s_menu_name", "s_menu_title", "s_menu_h1", "t_menu_desc"]);
+				tplData = CtrlMain.stripTags(tplData, ["s_menu_path", "s_menu_name", "s_menu_title", "s_menu_h1", "t_menu_desc"]);
 
 				tplData["i_menu_pid"] = parseInt(tplData["i_menu_pid"], 10) || 0;
 				tplData["i_menu_after_id"] = parseInt(tplData["i_menu_after_id"], 10) || 0;

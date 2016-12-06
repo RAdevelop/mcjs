@@ -2,16 +2,16 @@
 const Logger = require('app/lib/logger');
 const Errors = require('app/lib/errors');
 const Promise = require("bluebird");
-const Base = require('app/lib/controller');
+const CtrlMain = require('app/lib/controller');
 const Mail = require('app/lib/mail');
 const FileUpload = require('app/lib/file/upload');
 const Calendar = require('app/lib/calendar');
 
 const EmbedContent = require("app/lib/embed/content");
 
-//const Moment = require('moment'); //работа со временем
+const Moment = require('moment'); //работа со временем
 
-class Events extends Base
+class Events extends CtrlMain
 {
 	/**
 	 * @see Base.routePaths()
@@ -80,12 +80,18 @@ class Events extends Base
 
 		if (i_dd)
 		{
+			if (!Moment([i_yy,i_mm,i_dd].join('-'), "YYYY-MM-DD").isValid())
+				throw new Errors.HttpError(400);
+
 			startDate = new Date(i_yy, i_mm-1, i_dd);
 			endDate = startDate;
 
 			tplData["selectedDate"] = {i_yy:i_yy, i_mm:i_mm, i_dd:i_dd};
 			return this.eventList(tplData, startDate, endDate, l_id);
 		}
+
+		if (!Moment([i_yy, i_mm].join('-'), "YYYY-MM").isValid())
+			throw new Errors.HttpError(400);
 
 		startDate = new Date(i_yy, i_mm-1);
 		endDate = new Date(startDate.getFullYear(), startDate.getMonth()+3); //+3 месяца
@@ -344,9 +350,9 @@ class Events extends Base
 
 		let errors = {};
 
-		tplData = this.stripTags(tplData, ["dd_start_ts", "dd_end_ts", "s_e_title","t_e_notice", "s_e_address"]);
+		tplData = CtrlMain.stripTags(tplData, ["dd_start_ts", "dd_end_ts", "s_e_title","t_e_notice", "s_e_address"]);
 
-		tplData["t_e_text"] = this.cheerio(tplData["t_e_text"]).root().cleanTagEvents().html();
+		tplData["t_e_text"] = CtrlMain.cheerio(tplData["t_e_text"]).root().cleanTagEvents().html();
 
 		if (!tplData["dd_start_ts"])
 			errors["dd_start_ts"] = "Укажите дату начала события";
@@ -551,9 +557,9 @@ class Events extends Base
 			{
 				let errors = {};
 
-				tplData = this.stripTags(tplData, ["dd_start_ts", "dd_end_ts", "s_e_title","t_e_notice", "s_e_address"]);
+				tplData = CtrlMain.stripTags(tplData, ["dd_start_ts", "dd_end_ts", "s_e_title","t_e_notice", "s_e_address"]);
 
-				tplData["t_e_text"] = this.cheerio(tplData["t_e_text"]).root().cleanTagEvents().html();
+				tplData["t_e_text"] = CtrlMain.cheerio(tplData["t_e_text"]).root().cleanTagEvents().html();
 
 				if (!tplData["dd_start_ts"])
 					errors["dd_start_ts"] = "Укажите дату начала события";
