@@ -58,51 +58,36 @@ class UserGroups extends Base
 	}
 
 	/**
-	 * список прав для указанного пользователя
-	 * @param u_id - id пользователя
+	 * проверка прав для указанного пользователя
+	 *
+	 * @param ug_ids - id групп пользователя
 	 * @param m_id - id меню
+	 * @param cm_method - метод
 	 * @returns {Promise}
 	 */
-	getUserRights(u_id, m_id)
+	checkUserRights(ug_ids, m_id, cm_method)
 	{
-		return this.model('user/groups').getUserRights(u_id, m_id);
+		return this.model('user/groups').checkUserRights(ug_ids, m_id, cm_method);
 	}
 
 	/**
 	 * проверяем права доступа для пользователя в указанный пункт меню
 	 *
-	 * @param u_id
+	 * @param ug_ids
 	 * @param m_id
-	 * @param c_method - метод (пример: get_index, post_edit...)
+	 * @param cm_method - метод (пример: get_index, post_edit...)
 	 * @returns {Promise}
 	 */
-	checkAccessToMenu(u_id, m_id, c_method)
+	checkAccessToMenu(ug_ids, m_id, cm_method)
 	{
-		return Promise.resolve(u_id)
+		return Promise.resolve(ug_ids)
 			.bind(this)
-			.then(function (u_id)
+			.then(function (ug_ids)
 			{
-				if (!u_id)
-					return this.model('user/groups').getGroupRightsByPathAndMenu('guest', m_id);
-
-				//иначе получить список групп пользователя...
-				return this.getUserRights(u_id, m_id);
-			})
-			.then(function (rights)
-			{
-				let b_allowed = false;
-
-				if (!rights || !rights['info']['numRows'])
-					return Promise.resolve(b_allowed);
+				if (!ug_ids.length)
+					return this.model('user/groups').checkGroupRightsByPathAndMenu('guest', m_id, cm_method);
 				
-				rights.forEach(function (item)
-				{
-					//if (item['m_id'] == m_id && item['cm_method'] == c_method)
-					if (item['cm_method'] == c_method)
-						b_allowed = true;
-				});
-
-				return Promise.resolve(b_allowed);
+				return this.checkUserRights(ug_ids, m_id, cm_method);
 			});
 	}
 

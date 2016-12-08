@@ -57,7 +57,8 @@ module.exports = function(Classes, Control)
 			Controllers.set(cn, new (Control.get(cName))(req, res, Classes) );
 		}
 
-		Controllers.get(cn).callAction()
+		Controllers.get(cn)
+			.callAction()
 			.then(function (json)
 			{
 				return Controllers.get(cn).view.render(json)

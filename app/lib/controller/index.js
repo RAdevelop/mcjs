@@ -329,7 +329,7 @@ class Base
 	{
 		return this._routeArgs;
 	}
-
+	
 	callAction()
 	{
 		this.setAction();
@@ -340,8 +340,11 @@ class Base
 
 		return this.checkAccess()
 			.bind(this)
-			.then(function ()
+			.then(function (b_allowed)
 			{
+				if (!b_allowed)
+					throw new Errors.HttpError(403);
+
 				//this._getClasses().setSession(this.getReq().session);
 
 				//this.view = new Template(this.getReq(), this.getRes(), this);
@@ -353,16 +356,20 @@ class Base
 
 	/**
 	 * проверяем права доступа пользователя
+	 * 
+	 * @param cm_method
+	 * @param m_id
 	 * @returns {Promise}
 	 */
-	checkAccess()
+	checkAccess(cm_method = null, m_id = null)
 	{
 		//return Promise.resolve(1);//для отладки
 
 		if (!this.getRes().locals.menuItem.m_id)
 			return Promise.resolve(1);
 
-		let c_method = this.httpMethod+'_'+this.getActionName();
+		cm_method = cm_method || this.httpMethod+'_'+this.getActionName();
+		m_id = m_id || this.getRes().locals.menuItem.m_id;
 		//this.getAction() например = indexActionGet
 
 		return this.getUser(this.getUserId())
@@ -371,15 +378,12 @@ class Base
 			{
 				//console.log( c_method, this.getRes().locals.menuItem.m_id)/;
 
-				return this.getClass('user/groups')
-					.checkAccessToMenu(user.u_id, this.getRes().locals.menuItem.m_id, c_method);
-			})
-			.then(function (b_allowed)
-			{
-				if (!b_allowed)
-				throw new Errors.HttpError(401);
+				let ug_ids = [];
+				if (user.ug_ids)
+					ug_ids= user.ug_ids;
 
-				return Promise.resolve(b_allowed);
+				return this.getClass('user/groups')
+					.checkAccessToMenu(ug_ids, m_id, cm_method);
 			});
 	}
 	
@@ -409,16 +413,9 @@ class Base
 	parseFormErrors(tplData, errors, message = 'Ошибки при заполнении формы', text = '')
 	{
 		let errKeys = Object.keys(errors);
-		let data = {
-			formError: {
-				message: '',
-				text: '',
-				error: false,
-				errorName: '',
-				fields: {}
-			}
-		};
+		let data = Base.formError();
 
+		if (tplData.formError)
 		Object.assign(data, tplData.formError);
 
 		if (errKeys.length)
@@ -431,13 +428,14 @@ class Base
 			if (text)
 			data.formError.text = text;
 
+			let err = new Errors.FormError(message, tplData);
 			data.formError.message = message;
 			data.formError.error = true;
-			data.formError.errorName = 'FormError';
+			data.formError.errorName = err.name;
 
 			Object.assign(tplData, data);
 
-			throw new Errors.FormError(message, tplData);
+			throw err;
 		}
 
 		return tplData;

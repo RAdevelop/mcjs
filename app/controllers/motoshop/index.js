@@ -303,17 +303,25 @@ class Motoshop extends CtrlMain
 		let {i_mts_id} = this.routeArgs;
 
 		if (!i_mts_id)
-			throw new Errors.HttpStatusError(404, "Not found");
+			throw new Errors.HttpError(404);
 
 		//TODO написать условие для mts_show - админ, автор = null илначе 1
 		let mts_show = null;
 
+		/*
+		для примера
+		this.checkAccess('owner_edit')
+			.then(function (b_allowed)
+			{
+				console.log('b_allowed = ', b_allowed);
+			});*/
+		
 		return this.getClass('motoshop').getMotoshop(i_mts_id, mts_show)
 			.bind(this)
 			.then(function (motoshop)
 			{
 				if (!motoshop)
-					throw new Errors.HttpStatusError(404, "Not found");
+					throw new Errors.HttpError(404);
 
 				let tplFile = "motoshop";
 				let tplData = {
@@ -546,7 +554,7 @@ class Motoshop extends CtrlMain
 				});
 
 				if (!found)
-					throw new Errors.HttpStatusError(404, "Not found");
+					throw new Errors.HttpError(404);
 
 				tplData = CtrlMain.stripTags(tplData, ["s_mts_address", "s_mts_address_phones", "m_mts_address_email", "link_address_website"]);
 

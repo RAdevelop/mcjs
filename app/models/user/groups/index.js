@@ -3,9 +3,10 @@
 //const IORedis = require('ioredis'); TODO может быть придется использовать для кеширования
 const Promise = require("bluebird");
 const Errors = require('app/lib/errors');
-const BaseModel = require('app/lib/db');
+//const BaseModel = require('app/lib/db');
+const UserModel = require('app/models/user');
 
-class UserGroups extends BaseModel
+class UserGroups extends UserModel
 {
 	/**
 	 * список групп
@@ -345,41 +346,72 @@ class UserGroups extends BaseModel
 	 * список права для группы в указанный пункт меню
 	 * @param ug_path
 	 * @param m_id
+	 * @param cm_method
 	 * @returns {Promise}
 	 */
-	getGroupRightsByPathAndMenu(ug_path, m_id)
+	checkGroupRightsByPathAndMenu(ug_path, m_id, cm_method)
 	{
-		let sql =
-			`SELECT ug.ug_id, m.m_id, cm.cm_id, cm.cm_method, IF(ugr.cm_id IS NULL, 0, 1) AS b_allowed
+		/*let sql =
+			`SELECT ug.ug_id, m.m_id, cm.cm_id, cm.cm_method
 			FROM (SELECT NULL) AS z
-			JOIN users_groups AS ug ON(ug.ug_path = ?)
 			JOIN menu AS m ON(m.m_id = ?)
-			JOIN controllers_methods AS cm ON(cm.c_id = m.c_id )
+			JOIN users_groups AS ug ON(ug.ug_path = ?)
+			JOIN controllers_methods AS cm ON(cm.c_id = m.c_id AND cm.cm_method = ?)
 			JOIN users_groups_rights AS ugr ON(ugr.ug_id = ug.ug_id AND ugr.m_id = m.m_id AND ugr.c_id = cm.c_id 
-			AND ugr.cm_id = cm.cm_id)`;
+			AND ugr.cm_id = cm.cm_id)`;*/
 
-		return this.constructor.conn().ps(sql, [ug_path, m_id]);
+		let sql =
+			`SELECT EXISTS(
+				SELECT 1
+				FROM (SELECT NULL) AS z
+				JOIN menu AS m ON(m.m_id = ?)
+				JOIN users_groups AS ug ON(ug.ug_path = ?)
+				JOIN controllers_methods AS cm ON(cm.c_id = m.c_id AND cm.cm_method = ?)
+				JOIN users_groups_rights AS ugr ON(ugr.ug_id = ug.ug_id AND ugr.m_id = m.m_id AND ugr.c_id = cm.c_id 
+				AND ugr.cm_id = cm.cm_id) 
+			) AS b_allowed`;
+
+		let sqlData = [m_id, ug_path, cm_method];
+
+		return this.constructor.conn().psRow(sql, sqlData)
+			.then(function (res)
+			{
+				return Promise.resolve(res['b_allowed'] == 1);
+			});
 	}
 
 
 	/**
 	 * список прав для указанного пользователя
-	 * @param u_id - id пользователя
+	 *
+	 * @param ug_ids - id групп пользователя
 	 * @param m_id - id меню
+	 * @param cm_method - метод
 	 * @returns {Promise}
 	 */
-	getUserRights(u_id, m_id)
+	checkUserRights(ug_ids, m_id, cm_method)
 	{
+		let placeHolders = this.constructor.placeHoldersForIn(ug_ids);
 		let sql =
-			`SELECT uing.ug_id, m.m_id, cm.cm_id, cm.cm_method, IF(ugr.cm_id IS NULL, 0, 1) AS b_allowed
-			FROM (SELECT NULL) AS z
-			JOIN users_in_groups AS uing ON (uing.u_id = ?)
-			JOIN menu AS m ON(m.m_id = ?)
-			JOIN controllers_methods AS cm ON(cm.c_id = m.c_id )
-			JOIN users_groups_rights AS ugr ON(ugr.ug_id = uing.ug_id AND ugr.m_id = m.m_id AND ugr.c_id = cm.c_id 
-			AND ugr.cm_id = cm.cm_id)`;
+			`SELECT EXISTS(
+				SELECT 1
+				FROM (SELECT NULL) AS z
+				JOIN menu AS m ON(m.m_id = ?)
+				JOIN controllers_methods AS cm ON(cm.c_id = m.c_id AND cm.cm_method = ?)
+				JOIN users_groups_rights AS ugr ON(
+					ugr.m_id = m.m_id AND ugr.c_id = cm.c_id AND ugr.cm_id = cm.cm_id 
+					AND ugr.ug_id IN (${placeHolders})
+				)
+			) AS b_allowed`;
 
-		return this.constructor.conn().ps(sql, [u_id, m_id]);
+		let sqlData = [].concat(ug_ids);
+		sqlData.unshift(m_id, cm_method);
+
+		return this.constructor.conn().psRow(sql, [m_id, cm_method, ug_ids])
+			.then(function (res)
+			{
+				return Promise.resolve(res['b_allowed'] == 1);
+			});
 	}
 
 
