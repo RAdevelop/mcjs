@@ -2,7 +2,6 @@
 
 const Errors = require('app/lib/errors');
 const Promise = require("bluebird");
-//const _ = require('lodash');
 
 const Base = require('app/lib/class');
 
@@ -37,12 +36,10 @@ class User extends Base
 
 	getById(u_id)
 	{
-		const self = this;
+		return new Promise((resolve, reject) => {
 
-		return new Promise(function(resolve, reject)
-		{
-			self.model("user").getById(u_id, function(err, uData)
-			{
+			this.model("user").getById(u_id, (err, uData) => {
+
 				if (err && err.name != 'NotFoundError')
 					return reject(err);
 
@@ -63,11 +60,10 @@ class User extends Base
 			user:           this.getById(u_id),
 			userData:       this.getUserData(u_id),
 			userLocation:   this.getUserLocation(u_id),
-			userAva:        this.getClass('user/photo/profile').getUserAva(u_id),
-			userGroups:     this.getClass('user/groups').getUsersGroups(u_id)
+			userAva:        this.getClass('user/photo/profile').getUserAva(u_id)
+			//,userGroups:     this.getClass('user/groups').getUsersGroups(u_id)
 		})
-			.then(function(props)
-			{
+			.then((props) => {
 				let user = Object.assign({}, props.userAva, props.userLocation, props.userData, props.user);
 					user['u_display_name'] = User.userDisplayName(user);
 
@@ -75,9 +71,9 @@ class User extends Base
 				//так как, если удалить пользователя из группы, то он все равно может в ней остаться по данным сессии
 				//то есть, пока сессия не удалится...
 
-					user['u_groups'] = props.userGroups;
-					user['u_is_root'] = (user['u_groups']['root'] ? true : false);
-					user['u_is_admin'] = (user['u_groups']['admin']||user['u_is_root'] ? true : false);
+				//user['u_groups'] = props.userGroups;
+				//user['u_is_root'] = (user['u_groups']['root'] ? true : false);
+				//user['u_is_admin'] = (user['u_groups']['admin']||user['u_is_root'] ? true : false);
 
 				//console.log(user);
 
@@ -96,9 +92,7 @@ class User extends Base
 			return Promise.resolve();
 
 		return this.getUser(u_id)
-			.bind(this)
-			.then(function (user)
-			{
+			.then((user) => {
 				if (!user)
 					return Promise.resolve();
 
@@ -124,9 +118,7 @@ class User extends Base
 	getUsers(Pages)
 	{
 		return this.model('user').countUsers()
-			.bind(this)
-			.then(function (users_cnt)
-			{
+			.then((users_cnt) => {
 				Pages.setTotal(users_cnt);
 
 				let usersData = {"users":null, "users_cnt":users_cnt, "Pages":Pages};
@@ -138,14 +130,12 @@ class User extends Base
 					return Promise.reject(new Errors.HttpError(404));
 
 				return this.model('user').getUsers(Pages.getOffset(), Pages.getLimit())
-					.bind(this)
-					.spread(function (users, users_ids)//собираем аватарки
-					{
+					.spread((users, users_ids) => {//собираем аватарки
+
 						return this.getClass('user/photo/profile').getUsersAva(users_ids)
-							.then(function (usersAva)
-							{
-								users.forEach(function (user, uI, users)
-								{
+							.then((usersAva) => {
+								users.forEach((user, uI, users) => {
+
 									user['u_display_name'] = User.userDisplayName(user);
 									users[uI] = Object.assign({}, user, usersAva[user["u_id"]]);
 								});
@@ -153,21 +143,20 @@ class User extends Base
 								return [users, users_ids];
 							});
 					})
-					.spread(function (users, users_ids)//собираем данные о населенных пунктах юзеров
-					{
+					.spread((users, users_ids) => {//собираем данные о населенных пунктах юзеров
+
 						return this.getClass('user').getUsersLocation(users_ids)
-							.then(function (usersLocation)
-							{
-								users.forEach(function (user, uI, users)
-								{
+							.then((usersLocation) => {
+
+								users.forEach((user, uI, users) => {
 									users[uI] = Object.assign({}, user, usersLocation[user["u_id"]]);
 								});
 
 								return [users, users_ids];
 							});
 					})
-					.spread(function (users)
-					{
+					.spread((users) => {
+
 						/*console.log('\nusers_ids');
 						console.log(users);
 						console.log('=======\n');*/

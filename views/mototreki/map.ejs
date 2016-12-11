@@ -7,7 +7,7 @@
 			<button class="btn btn-default dropdown-toggle" type="button" id="dropdownLocationsNames"  aria-haspopup="true" aria-expanded="true"><span class="btnText">Регионы</span> <span class="caret"></span></button>
 			<ul class=" dropdown-menu" aria-labelledby="dropdownLocationsNames"><% trekLocations.forEach(function (item, i, list) {
 				let cssLevel = 'locLevel'+item["l_mtt_level"];
-				%><li class="<%=cssLevel%>"><% if (item["l_mtt_level"]==1) {%><i class="fa fa-caret-down" aria-hidden="true"></i><% }%>
+				%><li class="<%=cssLevel%>"><% if (item["l_mtt_level"]==1) {%><i class="js-fa-square fa fa-plus-square-o" aria-hidden="true"></i><% }%>
 					<a href="javascript:void(0);" data-coords="<%=[item["l_latitude"], item["l_longitude"]]%>" data-location-id="<%=item["l_id"]%>"><%=item["l_name"]%></a><%
 				if (list[i+1] && list[i+1]["l_mtt_level"] == 2 && item["l_mtt_level"] == 1){%><ul><% } else{%></li><% }
 				if (list[i+1] && list[i+1]["l_mtt_level"] == 1 && item["l_mtt_level"] == 2){%></ul></li><% } %><%
@@ -159,10 +159,12 @@
 	function onClickMttLocationsNames(MttMap)
 	{
 		var $mttLocationsNames = $(".mttLocationsNames");
-		var caret = ".fa-caret-down";
-		var $caret = $mttLocationsNames.find(".locLevel1 "+caret);
+		var squareMinus = "fa-minus-square-o";
+		var squarePlus = "fa-plus-square-o";
+		var square = ".js-fa-square";
+		var $square = $mttLocationsNames.find(".js-fa-square");
 
-		$caret.on('click', function (event)
+		$square.on('click', function (event)
 		{
 			event.preventDefault();
 			event.stopPropagation();
@@ -170,6 +172,9 @@
 			var $ul = $(this).parent().find("ul");
 
 			$mttLocationsNames.find(".locLevel1 ul").not($ul).hide();
+			$mttLocationsNames.find(square).removeClass(squareMinus);
+			$mttLocationsNames.find(square).addClass(squarePlus);
+			$(this).removeClass(squarePlus).addClass(squareMinus);
 
 			$ul.toggle();
 
@@ -211,7 +216,7 @@
 
 						if ($(self).parent().find("ul").css('display') == 'none')
 						{
-							$(self).parent().find(caret).click();
+							$(self).parent().find($square).click();
 						}
 					});
 		});

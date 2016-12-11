@@ -25,8 +25,7 @@ class Location extends BaseModel
 		let sqlData = [inPid, 0, inName, lat, lng, kind, fullName];
 
 		return this.constructor.conn().multis(sql, sqlData)
-			.then(function (res)
-			{
+			.then((res) => {
 				return Promise.resolve(res[1][0]["last_ins_id"]);
 			});
 	}
@@ -44,8 +43,7 @@ class Location extends BaseModel
 			FROM location AS l
 			JOIN location_names AS ln ON(ln.l_id = l.l_id)
 			WHERE l.l_id = ?`;
-
-
+		
 		return this.constructor.conn().sRow(sql, [loc_id]);
 	}
 }

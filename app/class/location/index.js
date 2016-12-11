@@ -35,11 +35,8 @@ class Location extends Base
 	 */
 	create(locationData = [])
 	{
-
 		if (locationData.length == 0)
 			throw new Errors.ValidationError('Не удалось определить указанный населенный пункт');
-
-		const self = this;
 
 		for(let i = 0; i < locationData.length; i++)
 		{
@@ -64,11 +61,10 @@ class Location extends Base
 		if (locationData.length == 0)
 			throw new Errors.ValidationError('Не удалось определить указанный населенный пункт');
 		
-		return Promise.reduce(locationData, function(pId, location)
-		{
-			return self.addLocation(pId, location["name"], location["lat"], location["lng"], location["kind"], location["text"])
-				.then(function(inPid)
-				{
+		return Promise.reduce(locationData, (pId, location) => {
+
+			return this.addLocation(pId, location["name"], location["lat"], location["lng"], location["kind"], location["text"])
+				.then((inPid) => {
 					return inPid;
 				});
 		}, 0); //0 - pId с начала считаем равным 0
@@ -94,7 +90,7 @@ class Location extends Base
 	 * прямое геокодирование адреса s_location (пример): страна, область, город...
 	 *
 	 * примечание:
-	 * 1) у GeoCoder.geocode нельзя добавить в цепочку вызовов catch(function(err){})
+	 * 1) у GeoCoder.geocode нельзя добавить в цепочку вызовов catch((err){})
 	 * 2) и метод bind(this)
 	 *
 	 * @param s_location
@@ -102,7 +98,7 @@ class Location extends Base
 	 */
 	geoCoder(s_location)
 	{
-		s_location = s_location.split(',').map(function(str){ return str.trim();}).join(',');
+		s_location = s_location.split(',').map((str) => { return str.trim();}).join(',');
 		let locationNames = s_location.split(',');
 		/*
 		console.log("locationNames");
@@ -122,8 +118,7 @@ class Location extends Base
 
 		//return GeoCoder.geocode(locationArr,{lang: 'ru_RU', kind: 'locality'})
 		return GeoCoder.geocode(locationArr, geoCoderParams)
-			.then(function (res)
-			{
+			.then((res) => {
 				//console.log(res["errors"]);
 
 				//provider: yandex
@@ -170,7 +165,7 @@ class Location extends Base
 	 *
 	 * @use mixin from Helpers
 	 *
-	 * @returns {{lat: string, lng: string}}
+	 * @returns {{gps_lat: string, gps_lng: string}}
 	 */
 	coordConvert(lat, lng)
 	{

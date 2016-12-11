@@ -41,15 +41,14 @@ class Motoshop extends Base
 	getMotoshop(mts_id, mts_show = null)
 	{
 		return this.model("motoshop").getMotoshop(mts_id, mts_show)
-			.bind(this)
-			.then(function (motoshop)
-			{
+			.then((motoshop) => {
+
 				if (!motoshop)
 					return Promise.resolve(motoshop);
 				
 				return this.getMotoshopAddressList([mts_id], mts_show)
-					.then(function (addressList)
-					{
+					.then((addressList) => {
+
 						motoshop["address_list"] = addressList || [];
 						return Promise.resolve(motoshop);
 					});
@@ -102,23 +101,20 @@ class Motoshop extends Base
 	addAddress(mts_id, mts_show, mts_address_website, mts_address_email, mts_address_phones, mts_address, mts_address_lat, mts_address_lng)
 	{
 		return Promise.resolve(mts_address)
-			.bind(this)
-			.then(function (mts_address)
-			{
-				const self = this;
+			.then((mts_address) => {
 
 				return this.getClass('location').geoCoder(mts_address)
-					.then(function (locationData)
-					{
+					.then((locationData) => {
 						//возвращает location_id
-						return self.getClass('location').create(locationData);
+						return this.getClass('location').create(locationData);
 					});
 			})
-			.then(function (location_id)
-			{
+			.then((location_id) => {
+
 				let {gps_lat, gps_lng} = this.getClass('location').coordConvert(mts_address_lat, mts_address_lng);
 
-				return this.model("motoshop").addAddress(mts_id, mts_show, mts_address_website, mts_address_email, mts_address_phones, mts_address, mts_address_lat, mts_address_lng, gps_lat, gps_lng, location_id);
+				return this.model("motoshop")
+					.addAddress(mts_id, mts_show, mts_address_website, mts_address_email, mts_address_phones, mts_address, mts_address_lat, mts_address_lng, gps_lat, gps_lng, location_id);
 			});
 	}
 
@@ -137,23 +133,21 @@ class Motoshop extends Base
 	editAddress(mts_address_id, mts_address_show, mts_address_website, mts_address_email, mts_address_phones, mts_address, mts_address_lat, mts_address_lng)
 	{
 		return Promise.resolve(mts_address)
-			.bind(this)
-			.then(function (mts_address)
-			{
-				const self = this;
+			.then((mts_address) => {
 
 				return this.getClass('location').geoCoder(mts_address)
-					.then(function (locationData)
-					{
+					.then((locationData) => {
+
 						//возвращает location_id
-						return self.getClass('location').create(locationData);
+						return this.getClass('location').create(locationData);
 					});
 			})
-			.then(function (location_id)
-			{
+			.then((location_id) => {
+
 				let {gps_lat, gps_lng} = this.getClass('location').coordConvert(mts_address_lat, mts_address_lng);
 
-				return this.model("motoshop").editAddress(mts_address_id, mts_address_show, mts_address_website, mts_address_email, mts_address_phones, mts_address, mts_address_lat, mts_address_lng, gps_lat, gps_lng, location_id);
+				return this.model("motoshop")
+					.editAddress(mts_address_id, mts_address_show, mts_address_website, mts_address_email, mts_address_phones, mts_address, mts_address_lat, mts_address_lng, gps_lat, gps_lng, location_id);
 			});
 	}
 
@@ -210,9 +204,8 @@ class Motoshop extends Base
 	getMotoshopListByLocId(loc_id, mts_show, Pages)
 	{
 		return this.model("motoshop").countMotoshopByLocId(loc_id, mts_show)
-			.bind(this)
-			.then(function (cnt)
-			{
+			.then((cnt) => {
+
 				Pages.setTotal(cnt);
 				if (!cnt)
 					return [null, null];
@@ -220,32 +213,33 @@ class Motoshop extends Base
 				if (Pages.limitExceeded())
 					return Promise.reject(new FileErrors.HttpError(404));
 
-				return this.model("motoshop").getMotoshopListByLocId(loc_id, mts_show, Pages.getLimit(), Pages.getOffset())
-					.then(function (list)
-					{
+				return this.model("motoshop")
+					.getMotoshopListByLocId(loc_id, mts_show, Pages.getLimit(), Pages.getOffset())
+					.then((list) => {
+
 						if (!list)
 							return Promise.resolve([null, null]);
 
 						let mts_ids = [];
-						list.forEach(function (shop){
+						list.forEach((shop) => {
 							mts_ids.push(shop['mts_id']);
 						});
 
 						return Promise.resolve([list, mts_ids]);
 					});
 			})
-			.spread(function (list, mts_ids)
-			{
+			.spread((list, mts_ids) => {
+
 				if (!list || !mts_ids)
 					return Promise.resolve([null, Pages]);
 
 				return this.getMotoshopAddressList(mts_ids, mts_show, loc_id)
-					.then(function (addressList)
-					{
-						list.forEach(function (shop)
-						{
-							addressList.forEach(function (address)
-							{
+					.then((addressList) => {
+
+						list.forEach((shop) => {
+
+							addressList.forEach((address) => {
+								
 								if (shop['mts_id'] == address['mts_id'])
 								{
 									if (!shop.hasOwnProperty('address_list'))

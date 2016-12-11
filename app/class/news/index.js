@@ -71,9 +71,8 @@ class News extends Base
 	getNews(Pages, n_show = null)
 	{
 		return this.model('news').countNews(n_show)
-			.bind(this)
-			.then(function (cnt)
-			{
+			.then((cnt) => {
+
 				Pages.setTotal(cnt);
 
 				if (!cnt)
@@ -83,20 +82,18 @@ class News extends Base
 					return Promise.reject(new FileErrors.HttpError(404));
 
 				return this.model('news').getNews(Pages.getLimit(), Pages.getOffset(), n_show)
-					.then(function (newsList)
-					{
+					.then((newsList) => {
+
 						if (!newsList)
 							return Promise.resolve([null, Pages]);
 
 						let sizeParams = FileUpload.getUploadConfig('news').sizeParams;
 
-						newsList.forEach(function (news, indx)
-						{
+						newsList.forEach((news, indx) => {
+
 							newsList[indx]["previews"] = {};
 							if (news["ni_dir"])
-							{
 								news = FileUpload.getPreviews(sizeParams, news, "ni_dir", true)["obj"];
-							}
 						});
 
 						return Promise.resolve([newsList, Pages]);
@@ -114,7 +111,6 @@ class News extends Base
 	 */
 	uploadImage(u_id, req, res)
 	{
-		const self = this;
 		let uploadConf = 'news';
 		let ni_id, n_id;
 		let ufile = {};
@@ -122,34 +118,33 @@ class News extends Base
 		const UploadFile = new FileUpload(uploadConf, req, res);
 
 		return UploadFile.upload()
-			.then(function(file)
-			{
+			.then((file) => {
+
 				ufile = file;
 				n_id = file.n_id;
 				
-				return self.get(n_id)
-					.then(function (event)
-					{
+				return this.get(n_id)
+					.then((event) => {
+
 						if (event["e_img_cnt"] >= 5)
 							throw new FileErrors.LimitExceeded('Можно добавить не более 5 файлов.');
 
 						return Promise.resolve(ufile);
 					});
 			})
-			.then(function(file)
-			{
-				return self.model('news')
-					.addPhoto(u_id, file)
-					.then(function (file)
-					{
+			.then((file) => {
+
+				return this.model('news').addPhoto(u_id, file)
+					.then((file) => {
+
 						ni_id = file.ni_id;
 
 						file["moveToDir"] = FileUpload.getImageUri(file.n_id, file.ni_id);
 
-						return new Promise(function (resolve, reject)
-						{
-							UploadFile.moveUploadedFile(file, file["moveToDir"], function (err, file)
-							{
+						return new Promise((resolve, reject) => {
+
+							UploadFile.moveUploadedFile(file, file["moveToDir"], (err, file) => {
+
 								if (err) return reject(err);
 
 								return resolve(file);
@@ -157,37 +152,36 @@ class News extends Base
 						});
 					});
 			})
-			.then(function(file)
-			{
+			.then((file) => {
+
 				if (file.type != 'image')
 					return Promise.resolve(file);
 
 				return UploadFile.setImageGeo(file)
-					.then(function (file)
-					{
+					.then((file) => {
 						return UploadFile.resize(file, uploadConf);
 					});
 			})
-			.then(function (file)
-			{
+			.then((file) => {
+
 				//console.log(file);
 
-				return self.model('news')
+				return this.model('news')
 					.updImage(file.n_id, file.ni_id, file.latitude, file.longitude, file.webDirPath, file.name, true)
-					.then(function ()
-					{
+					.then(() => {
+
 						ufile = null;
 						file["ni_name"] = file.name;
 						return Promise.resolve(file);
 					});
 			})
-			.catch(function (err)
-			{
+			.catch((err) => {
+
 				//console.log(ufile);
 				Logger.error(err);
-				return self.delImage(u_id, n_id, ni_id, ufile)
-					.catch(function (delErr)
-					{
+				return this.delImage(u_id, n_id, ni_id, ufile)
+					.catch((delErr) => {
+
 						switch (err.name)
 						{
 							case 'FileTooBig':
@@ -214,17 +208,17 @@ class News extends Base
 	getImage(ni_id)
 	{
 		return this.model('news').getImage(ni_id)
-			.then(function (image)
-			{
+			.then((image) => {
+
 				if (!image)
 					throw new FileErrors.io.FileNotFoundError("фотография не найдена: EVents.getImage(ni_id="+ni_id+")");
 				
 				let sizeParams = FileUpload.getUploadConfig('news').sizeParams;
 				image["previews"] = {};
+
 				if (image["ni_dir"])
-				{
 					image = FileUpload.getPreviews(sizeParams, image, "ni_dir", false)["obj"];
-				}
+
 				return Promise.resolve(image);
 			});
 	}
@@ -238,16 +232,16 @@ class News extends Base
 	getImageList(n_id)
 	{
 		return this.model('news').getImageList(n_id)
-			.then(function (images)
-			{
+			.then((images) => {
+
 				if (!images)
 					return [[], []];
 
 				let sizeParams = FileUpload.getUploadConfig('news').sizeParams;
 
 				let allPreviews = [];
-				images.forEach(function (image, indx)
-				{
+				images.forEach((image, indx) => {
+
 					images[indx]["previews"] = {};
 					if (image["ni_dir"])
 					{
@@ -278,20 +272,17 @@ class News extends Base
 		//console.log(file);
 
 		return FileUpload.deleteFile(file.path || '')
-			.bind(this)
-			.then(function ()
-			{
+			.then(() => {
 				return this.getImage(ni_id);
 			})
-			.then(function (image)
-			{
+			.then((image) => {
 				if (!image || image["n_id"] != n_id)
 					throw new FileErrors.io.FileNotFoundError();
 
 				return Promise.resolve(image);
 			})
-			.then(function (image)
-			{
+			.then((image) => {
+
 				let dir = (image["ni_dir"] ? image["ni_dir"] : (file["webDirPath"] ? file["webDirPath"] : null));
 
 				if (!dir)
@@ -300,25 +291,22 @@ class News extends Base
 				dir = Path.dirname(Path.join(FileUpload.getDocumentRoot, dir));
 
 				return FileUpload.deleteDir(dir, true)
-					.bind(this)
-					.then(function ()
-					{
+					.then(() => {
+
 						return this.model('news').delImage(n_id, ni_id);
 					})
-					.then(function ()
-					{
+					.then(() => {
 						return Promise.resolve(image);
 					});
 			})
-			.catch(function (err)
-			{
+			.catch((err) => {
+
 				console.log('class Events delImage catch');
 				Logger.error(err);
 				console.log('\n');
 
 				return this.model('news').delImage(n_id, ni_id)
-					.then(function ()
-					{
+					.then(() => {
 						throw err;
 					});
 			});
@@ -346,9 +334,7 @@ class News extends Base
 	delEvent(u_id, n_id)
 	{
 		return this.get(n_id)
-			.bind(this)
-			.then(function (news)
-			{
+			.then((news) => {
 
 				if (!news)
 					return Promise.resolve(null);
@@ -356,13 +342,11 @@ class News extends Base
 				let dir = Path.join(FileUpload.getDocumentRoot, FileUpload.getUploadConfig('news')["pathUpload"], FileUpload.getAlbumUri(n_id));
 
 				return FileUpload.deleteDir(dir, true)
-					.then(function ()
-					{
+					.then(() => {
 						return Promise.resolve(news);
 					});
 			})
-			.then(function (news)
-			{
+			.then((news) => {
 				if (!news)
 					return Promise.resolve(n_id);
 

@@ -21,7 +21,6 @@ function Template(req, res, Controller = null)
 		back= '/';
 
 	this.data = {
-		//exported_to_js: null,
 		formError: {
 			message: '',
 			text: '',
@@ -48,6 +47,7 @@ function Template(req, res, Controller = null)
 	//this.res.locals._reqPath        = req.path;
 	this.res.locals._reqPath        = (this.controller() ? this.controller().getPath() : req.path);
 	this.res.locals._action         = (this.controller() ? this.controller().getActionName() : '');
+	this.res.locals._access        = (this.controller() ? this.controller().getLocalAccess() : {});
 
 }
 

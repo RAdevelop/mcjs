@@ -39,7 +39,7 @@ class EmbedContent
 	/**
 	 * адрес страницы, к которой шлем запрос sendRequest()
 	 * @param uri
-	 * @returns {VideoEmbed}
+	 * @return {EmbedContent}
 	 */
 	setUri(uri)
 	{
@@ -89,20 +89,18 @@ class EmbedContent
 
 	/**
 	 * название сайта, к которому обратились
-	 * @returns {Promise}
+	 * @returns {EmbedContent}
 	 */
 	setVideoHosting(hostName)
 	{
-		const self = this;
 		let re = new RegExp( hostName, 'gi');
 
-		this.hostList.some(function (host)
-		{
+		this.hostList.some((host) => {
 			if(re.test(host["host"]))
 			{
 				let hName = host["host"].toLowerCase().split('.');
-				self._videoHosting = hName[hName.length-2];
-				self.setCharsetEncoding(host["encoding"]);
+				this._videoHosting = hName[hName.length-2];
+				this.setCharsetEncoding(host["encoding"]);
 				return true;
 			}
 			return false;
@@ -203,10 +201,8 @@ class EmbedContent
 			 return resolve(body !== '');
 			 });*/
 
-			let req = H.request(options, function(res)
-			{
-				res.on('error', function(err)
-				{
+			let req = H.request(options, (res) => {
+				res.on('error', (err) => {
 					return reject(err);
 				});
 
@@ -235,8 +231,7 @@ class EmbedContent
 				}
 			});
 
-			req.on('error', function(err)
-			{
+			req.on('error', (err) => {
 				return reject(err);
 			});
 
@@ -255,8 +250,8 @@ class EmbedContent
 	{
 		let meta = Cheerio(this.getHtml()).root().find('meta');
 		let data = {};
-		Object.keys(meta).forEach(function (key)
-		{
+
+		Object.keys(meta).forEach((key) => {
 			let item = meta[key];
 
 			if (item.hasOwnProperty('attribs') && item["attribs"].hasOwnProperty('name'))
@@ -379,25 +374,18 @@ class EmbedContent
 	getContent()
 	{
 		return this.sendRequest()
-			.bind(this)
-			.then(function (hasBody)
-			{
+			.then((hasBody) => {
 				if (!hasBody)
 					return Promise.resolve(this.getData());
 
 				if(typeof this['_'+this.getVideoHosting()] == 'function')
-				{
 					this['_'+this.getVideoHosting()]();
-				}
 				else
-				{
 					this.setData(this._parseMetaTag());
-				}
 
 				return Promise.resolve(this.getData());
 			})
-			.catch(function (err)
-			{
+			.catch(() => {//err
 				//console.log(err);
 				return Promise.resolve(this.getData());
 			});
@@ -417,13 +405,12 @@ class EmbedContent
 		 const Content = new EmbedContent(tplData["s_uri"]);
 
 		 return Content.getContent()
-		 .then(function (contentData)
-		 {
-			 Object.assign(tplData, contentData);
-			 Controller.view.setTplData(tplFile, tplData);
+			 .then((contentData) => {
+				 Object.assign(tplData, contentData);
+				 Controller.view.setTplData(tplFile, tplData);
 
-		    return Promise.resolve(true);
-		 });
+			    return Promise.resolve(true);
+			 });
 	 }
 }
 //************************************************************************* module.exports

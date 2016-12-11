@@ -18,28 +18,26 @@ class Profile extends User
 	 */
 	updLogin(u_id, u_login)
 	{
-		let sql = "SELECT u_id FROM `users` WHERE u_login = ? LIMIT 1";
+		let sql = `SELECT u_id FROM users WHERE u_login = ? LIMIT 1`;
 		let sqlData = [u_login];
 		
 		return this.constructor.conn().s(sql, sqlData)
-			.bind(this)
-			.then(function (res)
-			{
+			.then((res) => {
+
 				if (res["info"]["numRows"] > 0 && res[0] != u_id)
 					throw new Errors.AlreadyInUseError('Такой логин уже занят!');
 
 				return Promise.resolve(u_id);
 			})
-			.then(function (u_id)
-			{
-				sql = 'UPDATE `users` SET u_login = ? WHERE u_id = ?';
+			.then((u_id) => {
+
+				sql = `UPDATE users SET u_login = ? WHERE u_id = ?`;
 				sqlData = [u_login, u_id];
 
 				return this.constructor.conn().upd(sql, sqlData)
-					.then(function ()
-					{
+					.then(() => {
 						return Promise.resolve(u_id);
-					})
+					});
 			});
 	}
 	
@@ -51,23 +49,21 @@ class Profile extends User
 	 * @param u_surname
 	 * @param u_sex
 	 * @param u_birthday
-	 * @param cb
+	 * @returns {Promise}
 	 */
-	updBaseInfo(u_id, u_name, u_surname, u_sex, u_birthday, cb)
+	updBaseInfo(u_id, u_name, u_surname, u_sex, u_birthday)
 	{
 		u_sex = u_sex || 2;
-		let sql = 'INSERT INTO `users_data` (u_id, u_name, u_surname, u_sex, u_birthday) ' +
-			' VALUES(?, ?, ?, ?, ?) ' +
-			'ON DUPLICATE KEY UPDATE u_name=VALUES(u_name), u_surname=VALUES(u_surname), u_sex=VALUES(u_sex), u_birthday=VALUES(u_birthday)';
+		let sql = `INSERT INTO users_data (u_id, u_name, u_surname, u_sex, u_birthday)
+			VALUES(?, ?, ?, ?, ?)
+			ON DUPLICATE KEY UPDATE u_name=VALUES(u_name), u_surname=VALUES(u_surname), u_sex=VALUES(u_sex), u_birthday=VALUES(u_birthday)`;
 		
 		let sqlData = [u_id, u_name, u_surname, u_sex, u_birthday];
 		
-		this.constructor.conn().ins(sql, sqlData, function(err)
-		{
-			if(err) return cb(err);
-			
-			return cb(null, u_id);
-		});
+		return this.constructor.conn().ins(sql, sqlData)
+			.then(() =>{
+				return Promise.resolve(u_id);
+			});
 	}
 	
 	/**
@@ -107,9 +103,10 @@ class Profile extends User
 			
 			let u_req_end_ts = Moment().add(1, 'd').unix();
 			
-			let sql = "INSERT INTO `user_change_request` (u_id, u_req_type, u_req_key, u_req_end_ts, u_req_data)" +
-				" VALUES(?,?,?,?,?)" +
-				" ON DUPLICATE KEY UPDATE u_req_key=VALUES(u_req_key), u_req_end_ts=VALUES(u_req_end_ts), u_req_data=VALUES(u_req_data);";
+			let sql = `INSERT INTO user_change_request (u_id, u_req_type, u_req_key, u_req_end_ts, u_req_data)
+				VALUES(?,?,?,?,?)
+				ON DUPLICATE KEY UPDATE u_req_key=VALUES(u_req_key), 
+				u_req_end_ts=VALUES(u_req_end_ts), u_req_data=VALUES(u_req_data);`;
 			
 			self.constructor.conn().ins(sql, [user.u_id, u_req_type, user.u_req_key, u_req_end_ts, new_mail], function(err)
 			{
@@ -134,8 +131,8 @@ class Profile extends User
 		
 		let u_req_type = 'reg_mail_change';
 		
-		let sql = "SELECT u_req_data FROM `user_change_request`" +
-			" WHERE u_id = ? AND u_req_type = ? AND u_req_key = ? AND u_req_end_ts >= ?";
+		let sql = `SELECT u_req_data FROM user_change_request
+			WHERE u_id = ? AND u_req_type = ? AND u_req_key = ? AND u_req_end_ts >= ?`;
 		
 		self.constructor.conn().ps(sql, [u_id, u_req_type, key, Moment().unix()], function(err, res)
 		{
@@ -144,14 +141,14 @@ class Profile extends User
 			if (res["info"]["numRows"] != 1)
 			return cb(null, false);
 			
-			sql = "UPDATE `users` SET u_mail = ? WHERE u_id = ?;";
+			sql = `UPDATE users SET u_mail = ? WHERE u_id = ?;`;
 			
 			self.constructor.conn().upd(sql, [res[0]["u_req_data"], u_id], function(err)
 			{
 				if (err) return cb(err, false);
 				
-				sql = "DELETE FROM `user_change_request`" +
-					" WHERE u_id = ? AND u_req_type = ?";
+				sql = `DELETE FROM user_change_request
+					WHERE u_id = ? AND u_req_type = ?`;
 				
 				self.constructor.conn().del(sql, [u_id, u_req_type], function(err)
 				{
@@ -182,8 +179,7 @@ class Profile extends User
 		let sqlData = [u_id, location_id, f_lat, f_lng];
 
 		return this.constructor.conn().ins(sql, sqlData)
-			.then(function ()
-			{
+			.then(() => {
 				return Promise.resolve(location_id);
 			});
 	}

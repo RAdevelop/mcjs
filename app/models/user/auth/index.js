@@ -1,6 +1,5 @@
 "use strict";
 
-//var _ = require('lodash');
 const Errors = require('app/lib/errors');
 const bcrypt = require('bcrypt');
 const Crypto = require('crypto');
@@ -114,9 +113,9 @@ class Auth extends User
 		
 		let u_req_end_ts = Moment().add(1, 'd').unix();
 		
-		let sql = "INSERT INTO `user_change_request` (u_id, u_req_type, u_req_key, u_req_end_ts)" +
-			" VALUES(?,?,?,?)" +
-			" ON DUPLICATE KEY UPDATE u_req_key=VALUES(u_req_key), u_req_end_ts=VALUES(u_req_end_ts);";
+		let sql = `INSERT INTO user_change_request (u_id, u_req_type, u_req_key, u_req_end_ts)
+			 VALUES(?,?,?,?)
+			 ON DUPLICATE KEY UPDATE u_req_key=VALUES(u_req_key), u_req_end_ts=VALUES(u_req_end_ts);`;
 		
 		this.constructor.conn().ins(sql, [user.u_id, u_req_type, user.u_req_key, u_req_end_ts], function(err)
 		{
@@ -142,14 +141,13 @@ class Auth extends User
 		
 		let u_req_end_ts = Moment().add(1, 'd').unix();
 		
-		let sql = "INSERT INTO `user_change_request` (u_id, u_req_type, u_req_key, u_req_end_ts)" +
-			" VALUES(?,?,?,?)" +
-			" ON DUPLICATE KEY UPDATE u_req_key=VALUES(u_req_key), u_req_end_ts=VALUES(u_req_end_ts);";
+		let sql = `INSERT INTO user_change_request (u_id, u_req_type, u_req_key, u_req_end_ts)
+			VALUES(?,?,?,?)
+			ON DUPLICATE KEY UPDATE u_req_key=VALUES(u_req_key), u_req_end_ts=VALUES(u_req_end_ts);`;
 		
-		this.constructor.conn().ins(sql, [user.u_id, u_req_type, user.u_req_key, u_req_end_ts], function(err)
-		{
+		this.constructor.conn().ins(sql, [user.u_id, u_req_type, user.u_req_key, u_req_end_ts], (err) => {
+
 			if (err) return cb(err, user);
-			
 			return cb(null, user);
 		});
 	}
@@ -166,16 +164,16 @@ class Auth extends User
 		let hashData = {};
 		
 		//генерируем соль
-		bcrypt.genSalt(12, function(err, salt)
-		{
+		bcrypt.genSalt(12, (err, salt) => {
+
 			if(err) return cb(err);
 			
 			//задаем пользователю соль для сохранения
 			hashData.salt = salt;
 			
 			//генерируем хеш пароля
-			bcrypt.hash(u_pass, salt, function(err, hash)
-			{
+			bcrypt.hash(u_pass, salt, (err, hash) => {
+
 				if(err) return cb(err);
 				
 				//задаем хеш для сохранения
@@ -198,8 +196,8 @@ class Auth extends User
 		
 		const self = this;
 		
-		let sql = "SELECT 1 AS f FROM `user_change_request`" +
-			" WHERE u_id = ? AND u_req_type = ? AND u_req_key = ? AND u_req_end_ts >= ?;";
+		let sql = `SELECT 1 AS f FROM user_change_request
+			WHERE u_id = ? AND u_req_type = ? AND u_req_key = ? AND u_req_end_ts >= ?;`;
 		
 		let sqlData = [u_id,u_req_type, u_reg_key, Moment().unix()];
 		
@@ -209,13 +207,13 @@ class Auth extends User
 			
 			if (res["info"]["numRows"] == 1)
 			{
-				sql = "DELETE FROM `user_change_request` WHERE (u_id = ? AND u_req_type = ?) OR u_req_end_ts < ?;";
+				sql = `DELETE FROM user_change_request WHERE (u_id = ? AND u_req_type = ?) OR u_req_end_ts < ?;`;
 				
 				self.constructor.conn().del(sql, [u_id, u_req_type, Moment().unix()], function(err)
 				{
 					if (err) return cb(err, false);
 					
-					sql = "UPDATE `users` SET u_reg = ? WHERE u_id = ?;";
+					sql = `UPDATE users SET u_reg = ? WHERE u_id = ?;`;
 					
 					self.constructor.conn().upd(sql, [1, u_id], function(err)
 					{
@@ -244,16 +242,18 @@ class Auth extends User
 	{
 		const self = this;
 		
-		self.hashPassword(password, function(err, hashData)
-		{
-			if(err) return cb(err);
+		self.hashPassword(password, (err, hashData) => {
+
+			if(err)
+				return cb(err);
 			
-			let sql = 'UPDATE `users` SET u_salt = ?, u_pass = ? WHERE u_id = ?';
+			let sql = `UPDATE users SET u_salt = ?, u_pass = ? WHERE u_id = ?`;
 			let sqlData = [hashData.salt, hashData.hash, u_id];
 			
-			self.constructor.conn().upd(sql, sqlData, function(err)
-			{
-				if(err) return cb(err);
+			self.constructor.conn().upd(sql, sqlData, (err) => {
+
+				if(err)
+					return cb(err);
 				
 				return cb();
 			});

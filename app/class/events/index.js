@@ -29,7 +29,8 @@ class Events extends Base
 		let {gps_lat, gps_lng} = this.getClass('location').coordConvert(f_e_lat, f_e_lng);
 		let e_alias = this.helpers.clearSymbol(this.helpers.translit(s_e_title), '-');
 
-		return this.model('events').add(i_u_id, s_e_title, e_alias, t_e_notice, t_e_text, s_e_address, f_e_lat, f_e_lng, i_location_id, gps_lat, gps_lng, dd_start_ts, dd_end_ts);
+		return this.model('events')
+			.add(i_u_id, s_e_title, e_alias, t_e_notice, t_e_text, s_e_address, f_e_lat, f_e_lng, i_location_id, gps_lat, gps_lng, dd_start_ts, dd_end_ts);
 	}
 
 	/**
@@ -53,7 +54,8 @@ class Events extends Base
 		let {gps_lat, gps_lng} = this.getClass('location').coordConvert(f_e_lat, f_e_lng);
 		let e_alias = this.helpers.clearSymbol(this.helpers.translit(s_e_title), '-');
 
-		return this.model('events').edit(i_e_id, i_u_id, s_e_title, e_alias, t_e_notice, t_e_text, s_e_address, f_e_lat, f_e_lng, i_location_id, gps_lat, gps_lng, dd_start_ts, dd_end_ts);
+		return this.model('events')
+			.edit(i_e_id, i_u_id, s_e_title, e_alias, t_e_notice, t_e_text, s_e_address, f_e_lat, f_e_lng, i_location_id, gps_lat, gps_lng, dd_start_ts, dd_end_ts);
 	}
 
 	/**
@@ -79,16 +81,16 @@ class Events extends Base
 	getEvents(date_ts, end_ts = null, l_id = null)
 	{
 		return this.model('events').getEvents(date_ts, end_ts, l_id)
-			.then(function (eventList)
-			{
+			.then((eventList) => {
+
 				if (!eventList)
 					return Promise.resolve(null);
 
 				let sizeParams = FileUpload.getUploadConfig('events').sizeParams;
 
 				//let allPreviews = [];
-				eventList.forEach(function (ev, indx)
-				{
+				eventList.forEach((ev, indx) => {
+
 					eventList[indx]["previews"] = {};
 					if (ev["ei_dir"])
 					{
@@ -116,8 +118,7 @@ class Events extends Base
 	getEventsDate(date_ts, end_ts, l_id = null)
 	{
 		return this.model('events').getEventsDate(date_ts, end_ts, l_id)
-			.then(function (eventsDate)
-			{
+			.then((eventsDate) => {
 				//console.log("eventsDate = ", eventsDate);
 				if (!eventsDate)
 					return Promise.resolve([]);
@@ -146,7 +147,6 @@ class Events extends Base
 	 */
 	uploadImage(u_id, req, res)
 	{
-		const self = this;
 		let uploadConf = 'events';
 		let ei_id, e_id;
 		let ufile = {};
@@ -154,34 +154,32 @@ class Events extends Base
 		const UploadFile = new FileUpload(uploadConf, req, res);
 
 		return UploadFile.upload()
-			.then(function(file)
-			{
+			.then((file) => {
+
 				ufile = file;
 				e_id = file.e_id;
 				
-				return self.get(e_id)
-					.then(function (event)
-					{
+				return this.get(e_id)
+					.then((event) => {
 						if (event["e_img_cnt"] >= 5)
 							throw new FileErrors.LimitExceeded('Можно добавить не более 5 файлов.');
 
 						return Promise.resolve(ufile);
 					});
 			})
-			.then(function(file)
-			{
-				return self.model('events')
+			.then((file) => {
+
+				return this.model('events')
 					.addPhoto(u_id, file)
-					.then(function (file)
-					{
+					.then((file) => {
+
 						ei_id = file.ei_id;
 
 						file["moveToDir"] = FileUpload.getImageUri(file.e_id, file.ei_id);
 
-						return new Promise(function (resolve, reject)
-						{
-							UploadFile.moveUploadedFile(file, file["moveToDir"], function (err, file)
-							{
+						return new Promise((resolve, reject) => {
+							
+							UploadFile.moveUploadedFile(file, file["moveToDir"], (err, file) => {
 								if (err) return reject(err);
 
 								return resolve(file);
@@ -189,37 +187,35 @@ class Events extends Base
 						});
 					});
 			})
-			.then(function(file)
-			{
+			.then((file) => {
+
 				if (file.type != 'image')
 					return Promise.resolve(file);
 
 				return UploadFile.setImageGeo(file)
-					.then(function (file)
-					{
+					.then((file) => {
 						return UploadFile.resize(file, uploadConf);
 					});
 			})
-			.then(function (file)
-			{
+			.then((file) => {
+
 				//console.log(file);
 
-				return self.model('events')
+				return this.model('events')
 					.updImage(file.e_id, file.ei_id, file.latitude, file.longitude, file.webDirPath, file.name, true)
-					.then(function ()
-					{
+					.then(() => {
+
 						ufile = null;
 						file["ei_name"] = file.name;
 						return Promise.resolve(file);
 					});
 			})
-			.catch(function (err)
-			{
+			.catch((err) => {
+
 				//console.log(ufile);
 				Logger.error(err);
-				return self.delImage(u_id, e_id, ei_id, ufile)
-					.catch(function (delErr)
-					{
+				return this.delImage(u_id, e_id, ei_id, ufile)
+					.catch((delErr) => {
 						switch (err.name)
 						{
 							case 'FileTooBig':
@@ -246,8 +242,8 @@ class Events extends Base
 	getImage(ei_id)
 	{
 		return this.model('events').getImage(ei_id)
-			.then(function (image)
-			{
+			.then((image) => {
+
 				if (!image)
 					throw new FileErrors.io.FileNotFoundError("фотография не найдена: EVents.getImage(ei_id="+ei_id+")");
 				
@@ -270,16 +266,16 @@ class Events extends Base
 	getImageList(e_id)
 	{
 		return this.model('events').getImageList(e_id)
-			.then(function (images)
-			{
+			.then((images) => {
+
 				if (!images)
 					return [[], []];
 
 				let sizeParams = FileUpload.getUploadConfig('events').sizeParams;
 
 				let allPreviews = [];
-				images.forEach(function (image, indx)
-				{
+				images.forEach((image, indx) => {
+
 					images[indx]["previews"] = {};
 					if (image["ei_dir"])
 					{
@@ -307,23 +303,19 @@ class Events extends Base
 	 */
 	delImage(u_id, e_id, ei_id, file = {})
 	{
-		//console.log(file);
-
 		return FileUpload.deleteFile(file.path || '')
-			.bind(this)
-			.then(function ()
-			{
+			.then(() => {
 				return this.getImage(ei_id);
 			})
-			.then(function (image)
-			{
+			.then((image) => {
+
 				if (!image || image["e_id"] != e_id)
 					throw new FileErrors.io.FileNotFoundError();
 
 				return Promise.resolve(image);
 			})
-			.then(function (image)
-			{
+			.then((image) => {
+
 				let dir = (image["ei_dir"] ? image["ei_dir"] : (file["webDirPath"] ? file["webDirPath"] : null));
 
 				if (!dir)
@@ -332,25 +324,22 @@ class Events extends Base
 				dir = Path.dirname(Path.join(FileUpload.getDocumentRoot, dir));
 
 				return FileUpload.deleteDir(dir, true)
-					.bind(this)
-					.then(function ()
-					{
+					.then(() => {
 						return this.model('events').delImage(e_id, ei_id);
 					})
-					.then(function ()
-					{
+					.then(() => {
 						return Promise.resolve(image);
 					});
 			})
-			.catch(function (err)
-			{
+			.catch((err) => {
+
 				console.log('class Events delImage catch');
 				Logger.error(err);
 				console.log('\n');
 
-				return this.model('events').delImage(e_id, ei_id)
-					.then(function ()
-					{
+				return this.model('events')
+					.delImage(e_id, ei_id)
+					.then(() => {
 						throw err;
 					});
 			});
@@ -378,9 +367,7 @@ class Events extends Base
 	delEvent(u_id, e_id)
 	{
 		return this.get(e_id)
-			.bind(this)
-			.then(function (event)
-			{
+			.then((event) => {
 
 				if (!event)
 					return Promise.resolve(null);
@@ -388,13 +375,11 @@ class Events extends Base
 				let dir = Path.join(FileUpload.getDocumentRoot, FileUpload.getUploadConfig('events')["pathUpload"], FileUpload.getAlbumUri(e_id));
 
 				return FileUpload.deleteDir(dir, true)
-					.then(function ()
-					{
+					.then(() => {
 						return Promise.resolve(event);
 					});
 			})
-			.then(function (event)
-			{
+			.then((event) => {
 				if (!event)
 					return Promise.resolve(e_id);
 

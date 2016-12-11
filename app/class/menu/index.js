@@ -8,11 +8,8 @@ class Menu extends Base
 {
 	getAll(is_admin_menu = null, all = true)
 	{
-		const self = this;
-		return new Promise(function (resolve, reject)
-		{
-			self.model('menu').getAll(is_admin_menu, all, function(err, menuList)
-			{
+		return new Promise((resolve, reject) => {
+			this.model('menu').getAll(is_admin_menu, all, (err, menuList) => {
 				if (err)
 					return reject(err);
 

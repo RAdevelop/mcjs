@@ -30,6 +30,11 @@ class Mototreki extends CtrlMain
 		}
 	}
 
+	localAccessCheck()
+	{
+		return this.checkAccess(['get_edit', 'post_edit', 'get_add', 'post_add']);
+	}
+
 	/**
 	 * главная страница
 	 *
@@ -40,17 +45,13 @@ class Mototreki extends CtrlMain
 		let {i_mtt_id} = this.routeArgs;
 
 		return this.trekData(i_mtt_id)
-			.bind(this)
-			.spread(function (trek, trekList)
-			{
+			.spread((trek, trekList) => {
 				return this.getUser(this.getUserId())
-					.then(function (userData)
-					{
+					.then((userData) => {
 						return Promise.resolve([userData, trek, trekList]);
-					})
+					});
 			})
-			.spread(function(userData, trek, trekList)
-			{
+			.spread((userData, trek, trekList) => {
 				let tplData = {};
 
 				tplData.trek = trek || null;
@@ -77,8 +78,7 @@ class Mototreki extends CtrlMain
 
 				return Promise.resolve(null);
 			})
-			.catch(function(err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}
@@ -107,10 +107,10 @@ class Mototreki extends CtrlMain
 	trek(i_mtt_id)
 	{
 		return this.getClass('mototrek').get(i_mtt_id)
-			.then(function (trek)
-			{
+			.then((trek) => {
+
 				if (!trek)
-					throw new Errors.HttpStatusError(404, "Not found");
+					throw new Errors.HttpError(404);
 
 				return Promise.resolve([trek, null]);
 			});
@@ -127,8 +127,8 @@ class Mototreki extends CtrlMain
 			trekList: this.getClass("mototrek").getAll(),
 			trekLocations: this.getClass("mototrek").getLocations()
 		})
-			.then(function (proprs)
-			{
+			.then((proprs) => {
+
 				proprs.trekLocations = proprs.trekLocations.reverse();
 				proprs.trekList = proprs.trekList.reverse();
 
@@ -186,10 +186,8 @@ class Mototreki extends CtrlMain
 
 				proprs.trekLocations = proprs.trekLocations.reverse();
 
-
 				let pIndex, trekList = [];
-				proprs.trekLocations.forEach(function (locItem, locIndex, locNames)
-				{
+				proprs.trekLocations.forEach((locItem, locIndex, locNames) => {
 					if (locItem["l_mtt_level"] <= 1)
 					{
 						if (locItem["l_mtt_level"] == 1)
@@ -278,30 +276,22 @@ class Mototreki extends CtrlMain
 		let tplFile = "mototreki/edit.ejs";
 
 		return Promise.resolve(errors)
-			.bind(this)
-			.then(function(errors)
-			{
-				this.parseFormErrors(tplData, errors, 'Ошибки при заполнении формы');
-
-				return Promise.resolve(tplData);
+			.then((errors) => {
+				if (this.parseFormErrors(tplData, errors))
+					return Promise.resolve(tplData);
 			})
-			.then(function (tplData)
-			{
-				const self = this;
+			.then((tplData) => {
 
 				return this.getClass('location').geoCoder(tplData["s_mtt_address"])
-					.then(function (locationData)
-					{
-						return self.getClass('location').create(locationData);
+					.then((locationData) => {
+						return this.getClass('location').create(locationData);
 					})
-					.then(function (location_id)
-					{
+					.then((location_id) => {
 						tplData["i_location_id"] = location_id;
 						return Promise.resolve(tplData);
 					});
 			})
-			.then(function (tplData)
-			{
+			.then((tplData) => {
 				return this.getClass('mototrek').add(
 					tplData["s_mtt_name"],
 					tplData["t_mtt_descrip"],
@@ -313,26 +303,22 @@ class Mototreki extends CtrlMain
 					tplData["f_mtt_lng"],
 					tplData["i_location_id"]
 				)
-					.then(function (i_mtt_id)
-					{
+					.then((i_mtt_id) => {
 						tplData["i_mtt_id"] = i_mtt_id;
 						return Promise.resolve(tplData);
 					});
 			})
-			.then(function (tplData)
-			{
+			.then((tplData) => {
 				this.view.setTplData(tplFile, tplData);
 
 				return Promise.resolve(true);
 			})
-			.catch(Errors.ValidationError, function (err)//такие ошибки не уводят со страницы.
-			{
-				this.view.setTplData(tplFile, err.data);
+			.catch(Errors.ValidationError, (err) => {//такие ошибки не уводят со страницы.
 
+				this.view.setTplData(tplFile, err.data);
 				return Promise.resolve(true);
 			})
-			.catch(function (err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}
@@ -346,14 +332,12 @@ class Mototreki extends CtrlMain
 		let {i_mtt_id} = this.routeArgs;
 
 		if (!i_mtt_id)
-			throw new Errors.HttpStatusError(404, "Not found");
+			throw new Errors.HttpError(404);
 
 		return this.getClass('mototrek').get(i_mtt_id)
-			.bind(this)
-			.then(function (trek)
-			{
+			.then((trek) => {
 				if (!trek)
-					throw new Errors.HttpStatusError(404, "Not found");
+					throw new Errors.HttpError(404);
 
 				let tplFile = "mototreki";
 				let tplData = {
@@ -366,8 +350,7 @@ class Mototreki extends CtrlMain
 
 				return Promise.resolve(null);
 			})
-			.catch(function(err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}
@@ -386,11 +369,9 @@ class Mototreki extends CtrlMain
 		if (!tplData["i_mtt_id"])
 			throw new Errors.HttpError(404);
 
-
 		return this.getClass('mototrek').get(tplData["i_mtt_id"])
-			.bind(this)
-			.then(function (trek)
-			{
+			.then((trek) => {
+
 				if (!trek)
 					throw new Errors.HttpError(404);
 
@@ -417,29 +398,24 @@ class Mototreki extends CtrlMain
 
 				return Promise.resolve([errors, tplData]);
 			})
-			.spread(function(errors, tplData)
-			{
-				this.parseFormErrors(tplData, errors, 'Ошибки при заполнении формы');
-
-				return Promise.resolve(tplData);
+			.spread((errors, tplData) => {
+				if (this.parseFormErrors(tplData, errors))
+					return Promise.resolve(tplData);
 			})
-			.then(function (tplData)
-			{
-				const self = this;
+			.then((tplData) => {
 
 				return this.getClass('location').geoCoder(tplData["s_mtt_address"])
-					.then(function (locationData)
-					{
-						return self.getClass('location').create(locationData);
+					.then((locationData) => {
+						return this.getClass('location').create(locationData);
 					})
-					.then(function (location_id)
-					{
+					.then((location_id) => {
+
 						tplData["i_location_id"] = location_id;
 						return Promise.resolve(tplData);
 					});
 			})
-			.then(function (tplData)
-			{
+			.then((tplData) => {
+
 				return this.getClass('mototrek').edit(
 					tplData["i_mtt_id"],
 					tplData["s_mtt_name"],
@@ -452,25 +428,18 @@ class Mototreki extends CtrlMain
 					tplData["f_mtt_lng"],
 					tplData["i_location_id"]
 				)
-					.then(function ()
-					{
-						return Promise.resolve(tplData);
+					.then(() => {
+						this.view.setTplData(tplFile, tplData);
+
+						return Promise.resolve(true);
 					});
 			})
-			.then(function (tplData)
-			{
-				this.view.setTplData(tplFile, tplData);
+			.catch(Errors.ValidationError, (err) => { //такие ошибки не уводят со страницы
 
-				return Promise.resolve(true);
-			})
-			.catch(Errors.ValidationError, function (err) //такие ошибки не уводят со страницы
-			{
 				this.view.setTplData(tplFile, err.data);
-
 				return Promise.resolve(true);
 			})
-			.catch(function (err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}
@@ -486,9 +455,8 @@ class Mototreki extends CtrlMain
 			trekList: this.getClass("mototrek").getAll(),
 			trekLocations: this.getClass("mototrek").getLocations()
 		})
-			.bind(this)
-			.then(function(props)
-			{
+			.then((props) => {
+
 				let tplData = {
 					trek: null,
 					trekList: props.trekList || [],
@@ -503,8 +471,7 @@ class Mototreki extends CtrlMain
 
 				return Promise.resolve(null);
 			})
-			.catch(function(err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}

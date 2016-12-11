@@ -40,9 +40,7 @@ class Login extends CtrlMain
 		if(this.getUserId())
 		{
 			return Promise.resolve()
-				.bind(this)
-				.then(function ()
-				{
+				.then(() => {
 					return this.getRes().redirect('/');
 				});
 		}
@@ -57,7 +55,6 @@ class Login extends CtrlMain
 		};
 
 		this.view.setTplData("auth/login", tplData);
-
 		return Promise.resolve(null);
 	}
 	
@@ -156,9 +153,8 @@ class Login extends CtrlMain
 		return Promise.resolve(errors)
 		.then(function(errors)
 		{
-			self.parseFormErrors(tplData, errors);
-			
-			return Promise.resolve(tplData);
+			if (self.parseFormErrors(tplData, errors))
+				return Promise.resolve(tplData);
 		})
 		.then(function(tplData)
 		{
@@ -213,18 +209,15 @@ class Login extends CtrlMain
 		tplData.m_email = tplData.m_email.trim();
 		
 		if(!this.getReq()._reqbody.m_email)
-		{
 			errors["m_email"] = 'e-mail указан неверно';
-		}
 
 		const self = this;
 		
 		return Promise.resolve(errors)
 		.then(function(errors)
 		{
-			self.parseFormErrors(tplData, errors);
-
-			return Promise.resolve(tplData);
+			if (self.parseFormErrors(tplData, errors))
+				return Promise.resolve(tplData);
 		})
 		.then(function(tplData)
 		{
@@ -322,18 +315,17 @@ class Login extends CtrlMain
 	_formLoginValidation(tplData)
 	{
 		let errors = {};
-		
+
 		tplData.s_password = tplData.s_password.trim();
-		tplData.m_email = tplData.m_email.trim();
 		
 		if(tplData.s_password.length < 6)
 		{
 			errors["s_password"] = 'короткий пароль';
 		}
 		if(!tplData["m_email"])
-		{
 			errors["m_email"] = 'e-mail указан неверно';
-		}
+		else
+			tplData.m_email = tplData.m_email.trim();
 		
 		tplData.b_remember = (tplData.b_remember ? tplData.b_remember : 0);
 		
@@ -341,9 +333,8 @@ class Login extends CtrlMain
 
 		return Promise.resolve(errors).then(function(errors)
 		{
-			self.parseFormErrors(tplData, errors);
-			
-			return Promise.resolve(tplData);
+			if (self.parseFormErrors(tplData, errors))
+				return Promise.resolve(tplData);
 		})
 		.then(function(tplData)
 		{

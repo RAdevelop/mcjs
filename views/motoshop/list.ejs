@@ -3,7 +3,7 @@
 		<% motoshopList.forEach(function (shop)
 		{
 		%><li class="shopItem">
-			<h5><a href="<%=[_reqBaseUrl, shop["mts_id"], shop["mts_alias"]].join('/')%>/" target="_blank"><%=shop["mts_name"]%></a></h5>
+			<h5><a href="<%=[_reqBaseUrl, shop["mts_id"], shop["mts_alias"]].join('/')%>/"><%=shop["mts_name"]%></a></h5>
 			<ul class="motoshopAddressList">
 				<%
 					let addressCnt = shop["address_list"].length;

@@ -15,21 +15,17 @@ class Home extends CtrlMain
 	indexActionGet()
 	{
 		return this.getUser(this.getUserId())
-			.bind(this)
-			.then(function(userData)
-			{
+			.then((userData) => {
 				this.view.setTplData("home", {});
 				this.view.addPartialData("user/left", {user: userData});
 				this.view.addPartialData("user/right", {title: 'right_col'});
 
 				return Promise.resolve(null);
 			})
-			.catch(Errors.NotFoundError, function()
-			{
+			.catch(Errors.NotFoundError, () => {
 				throw new Errors.HttpError(404);
 			})
-			.catch(function(err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}

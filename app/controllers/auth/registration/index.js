@@ -39,9 +39,7 @@ class Registration extends CtrlMain
 		if(this.getUserId())
 		{
 			return Promise.resolve()
-				.bind(this)
-				.then(function ()
-				{
+				.then(() => {
 					return this.getRes().redirect('/');
 				});
 		}
@@ -76,25 +74,21 @@ class Registration extends CtrlMain
 		};
 		tplData = this.getReqBody();
 
-		const self = this;
-		
-		return self._formRegValidation(tplData)
-		.then(function(tplData) //если регистрация успешна
-		{
-			self.view.setTplData(tplFile, tplData);
+		return this._formRegValidation(tplData)
+		.then((tplData) => { //если регистрация успешна
+
+			this.view.setTplData(tplFile, tplData);
 			return Promise.resolve(null);
 		})
-		.catch(Errors.ValidationError, Errors.AlreadyInUseError, Errors.AppMailError, function(err)
-		{
+		.catch(Errors.ValidationError, Errors.AlreadyInUseError, Errors.AppMailError, (err) => {
 			tplData.formError.error = true;
 			tplData.formError.errorName = err.name;
 
-			self.view.setTplData(tplFile, tplData);
+			this.view.setTplData(tplFile, tplData);
 
 			return Promise.resolve(null);
 		})
-		.catch(function(err)
-		{
+		.catch((err) => {
 			throw err;
 		});
 	}
@@ -131,9 +125,8 @@ class Registration extends CtrlMain
 		return Promise.resolve(errors)
 		.then(function(errors)
 		{
-			self.parseFormErrors(tplData, errors);
-			
-			return Promise.resolve(tplData);
+			if (self.parseFormErrors(tplData, errors))
+				return Promise.resolve(tplData);
 		})
 		.then(function(tplData)
 		{
@@ -225,7 +218,7 @@ class Registration extends CtrlMain
 		return new Promise(function(resolve, reject)
 		{
 			if (!u_id)
-				return reject(new Errors.HttpStatusError(404, "Not Found"));
+				return reject(new Errors.HttpError(404));
 
 			self.model("user/auth").regConfirm(u_id, key, function(err, valid)
 			{
@@ -250,20 +243,16 @@ class Registration extends CtrlMain
 		/*if (this.getArgs().length > 1)
 			throw new Errors.HttpStatusError(404, "Not Found");*/
 
-		const self = this;
-
 		let {s_key} = this.routeArgs;
 		let u_id = s_key.substr(32);
 		let tplData = {confirmed: false};
 
-		return self.confirmed(tplData, u_id, s_key)
-		.then(function(tplData)
-		{
-			self.view.setTplData('auth/confirm', tplData);
+		return this.confirmed(tplData, u_id, s_key)
+		.then((tplData) => {
+			this.view.setTplData('auth/confirm', tplData);
 			return Promise.resolve(null);
 		})
-		.catch(function(err)
-		{
+		.catch((err) => {
 			throw err;
 		});
 	}

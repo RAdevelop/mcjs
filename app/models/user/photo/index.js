@@ -34,18 +34,17 @@ class Photo extends User
 	createAlbumProfile(u_id)
 	{
 		let a_type_id;
-		let sql = 'SELECT a_type_id FROM album_type WHERE a_type_alias = ?';
+		let sql = `SELECT a_type_id FROM album_type WHERE a_type_alias = ?`;
 
-		return this.constructor.conn().psRow(sql, [this.constructor.albumProfile])
-			.bind(this)
-			.then(function (res)
-			{
+		return this.constructor.conn()
+			.psRow(sql, [this.constructor.albumProfile])
+			.then((res) => {
 				a_type_id = res["a_type_id"];
 
-				sql = 'SELECT a_id FROM album WHERE u_id = ? AND a_type_id = ?';
+				sql = `SELECT a_id FROM album WHERE u_id = ? AND a_type_id = ?`;
 				return this.constructor.conn().psRow(sql, [u_id, a_type_id])
-					.then(function (res)
-					{
+					.then((res) => {
+
 						if (!res)
 							return Promise.reject(new Errors.NotFoundError());
 
@@ -53,8 +52,7 @@ class Photo extends User
 					});
 
 			})
-			.catch(Errors.NotFoundError, function ()
-			{
+			.catch(Errors.NotFoundError, () => {
 				let a_name = 'Фотографии профиля';
 				let a_alias = 'fotografii-profilya';
 				return this._insAlbum(u_id, a_type_id, a_name, a_alias, a_name);
@@ -63,31 +61,32 @@ class Photo extends User
 
 	_insAlbum(u_id, a_type_id, a_name, a_alias, a_text)
 	{
-		let sql = 'INSERT INTO album (u_id, a_type_id, a_name, a_alias, a_text, a_create_ts, a_update_ts) ' +
-			'VALUES (?, ?, ?, ?, ?, ?, ?)';
+		let sql = `INSERT INTO album (u_id, a_type_id, a_name, a_alias, a_text, a_create_ts, a_update_ts)
+			VALUES (?, ?, ?, ?, ?, ?, ?)`;
+
 		let now_ts = Moment().unix();
 
-		return this.constructor.conn().ins(sql, [u_id, a_type_id, a_name, a_alias, a_text, now_ts, now_ts])
-			.then(function (res)
-			{
+		return this.constructor.conn()
+			.ins(sql, [u_id, a_type_id, a_name, a_alias, a_text, now_ts, now_ts])
+			.then((res) => {
 				return Promise.resolve(res['insertId'])
 			});
 	}
 
 	_updAlbum(u_id, a_type_id, a_id, a_name, a_alias, a_text)
 	{
-		let sql = "UPDATE album SET" +
-			" a_name = ?" +
-			" , a_alias = ?" +
-			" , a_text = ?" +
-			" , a_update_ts = ?" +
-			" WHERE a_id = ? AND u_id = ? AND a_type_id = ?;";
+		let sql = `UPDATE album SET 
+			a_name = ? 
+			, a_alias = ? 
+			, a_text = ? 
+			, a_update_ts = ?
+			WHERE a_id = ? AND u_id = ? AND a_type_id = ?;`;
 
 		let now_ts = Moment().unix();
 
-		return this.constructor.conn().upd(sql, [a_name, a_alias, a_text, now_ts, a_id, u_id, a_type_id])
-			.then(function ()
-			{
+		return this.constructor.conn()
+			.upd(sql, [a_name, a_alias, a_text, now_ts, a_id, u_id, a_type_id])
+			.then(() => {
 				return Promise.resolve(a_id)
 			});
 	}
@@ -100,12 +99,10 @@ class Photo extends User
 	createAlbumNamed(u_id, a_name, a_alias, a_text)
 	{
 		let a_type_id;
-		let sql = 'SELECT a_type_id FROM album_type WHERE a_type_alias = ?';
+		let sql = `SELECT a_type_id FROM album_type WHERE a_type_alias = ?`;
 
 		return this.constructor.conn().psRow(sql, [this.constructor.albumNamed])
-			.bind(this)
-			.then(function (res)
-			{
+			.then((res) => {
 				a_type_id = res["a_type_id"];
 				return this._insAlbum(u_id, a_type_id, a_name, a_alias, a_text);
 			});
@@ -124,12 +121,12 @@ class Photo extends User
 	editAlbumNamed(u_id, a_id, a_name, a_alias, a_text)
 	{
 		let a_type_id;
-		let sql = 'SELECT a_type_id FROM album_type WHERE a_type_alias = ?';
+		let sql = `SELECT a_type_id FROM album_type WHERE a_type_alias = ?`;
 		
-		return this.constructor.conn().psRow(sql, [this.constructor.albumNamed])
-			.bind(this)
-			.then(function (res)
-			{
+		return this.constructor.conn()
+			.psRow(sql, [this.constructor.albumNamed])
+			.then((res) => {
+
 				a_type_id = res["a_type_id"];
 				
 				return this._updAlbum(u_id, a_type_id, a_id, a_name, a_alias, a_text);
@@ -139,12 +136,11 @@ class Photo extends User
 	addProfilePhoto(u_id, fileData)
 	{
 		return this.createAlbumProfile(u_id)
-			.bind(this)
-			.then(function (a_id)
-			{
+			.then((a_id) => {
+
 				return this._insImage(a_id, u_id)
-					.then(function (res)
-					{
+					.then((res) => {
+
 						fileData["u_id"] = u_id;
 						fileData["ai_id"] = res['insertId'];
 						fileData["a_id"] = a_id;
@@ -165,8 +161,8 @@ class Photo extends User
 	addPhoto(u_id, fileData)
 	{
 		return this._insImage(fileData["a_id"], u_id)
-		.then(function (res)
-		{
+		.then((res) => {
+
 			fileData["u_id"] = u_id;
 			fileData["ai_pos"] = "0";
 			fileData["ai_id"] = res['insertId'];
@@ -187,8 +183,8 @@ class Photo extends User
 	_insImage(a_id, u_id)
 	{
 		let now_ts = Moment().unix();
-		let sql = 'INSERT INTO album_image (a_id, u_id, ai_create_ts, ai_update_ts)' +
-			'VALUES (?, ?, ?, ?);';
+		let sql = `INSERT INTO album_image (a_id, u_id, ai_create_ts, ai_update_ts)
+			VALUES (?, ?, ?, ?);`;
 
 		return this.constructor.conn().ins(sql, [a_id, u_id, now_ts, now_ts]);
 	}
@@ -211,12 +207,11 @@ class Photo extends User
 	updImage(u_id, a_id, ai_id, ai_latitude, ai_longitude, ai_text, ai_dir, ai_name, posUpd = true, ai_profile = 0)
 	{
 		posUpd = (posUpd ? 1 : 0);
-		let sql = "CALL album_image_update(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		let sql = `CALL album_image_update(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 		let sqlData = [u_id, a_id, ai_id, ai_latitude, ai_longitude, ai_text, ai_dir, ai_name, ai_profile, posUpd];
 
 		return this.constructor.conn().call(sql, sqlData)
-			.then(function ()
-			{
+			.then(() => {
 				return Promise.resolve(ai_id);
 			});
 	}
@@ -231,13 +226,12 @@ class Photo extends User
 	 */
 	delImage(u_id, a_id, ai_id)
 	{
-		let sql = "CALL album_image_delete(?, ?, ?, @is_del); SELECT @is_del AS is_del FROM DUAL;";
+		let sql = `CALL album_image_delete(?, ?, ?, @is_del); SELECT @is_del AS is_del FROM DUAL;`;
 
 		return this.constructor.conn().multis(sql, [u_id, a_id, ai_id])
-			.then(function (res)
-			{
-				let is_del = (res[1] && res[1]["is_del"] ? res[1]["is_del"] : 0);
+			.then((res) => {
 
+				let is_del = (res[1] && res[1]["is_del"] ? res[1]["is_del"] : 0);
 				return Promise.resolve(is_del);
 			});
 	}
@@ -250,11 +244,11 @@ class Photo extends User
 	 */
 	getImage(u_id, ai_id)
 	{
-		let sql = "SELECT * " +
-			" FROM album_image AS ai" +
-			" JOIN album AS a ON (a.a_id = ai.a_id AND a.u_id = ?)" +
-			" JOIN album_type AS t ON (t.a_type_id = a.a_type_id)" +
-			" WHERE ai.ai_id = ? AND ai.u_id = ?";
+		let sql = `SELECT * 
+			FROM album_image AS ai
+			JOIN album AS a ON (a.a_id = ai.a_id AND a.u_id = ?)
+			JOIN album_type AS t ON (t.a_type_id = a.a_type_id)
+			WHERE ai.ai_id = ? AND ai.u_id = ?`;
 
 		return this.constructor.conn().sRow(sql, [u_id, ai_id, u_id]);
 	}
@@ -270,8 +264,7 @@ class Photo extends User
 		let sql = `SELECT COUNT(a.a_id) AS cnt FROM album AS a WHERE a.u_id = ?;`;
 
 		return this.constructor.conn().sRow(sql, [u_id])
-			.then(function (res)
-			{
+			.then((res) => {
 				return Promise.resolve(res["cnt"]);
 			});
 	}
@@ -300,7 +293,8 @@ class Photo extends User
 			 ORDER BY a.a_update_ts DESC
 			 LIMIT ${limit} OFFSET ${offset}`;
 
-		return this.constructor.conn().s(sql, [this.constructor.albumProfile, this.constructor.albumNamed,u_id, u_id, 0]);
+		return this.constructor.conn()
+			.s(sql, [this.constructor.albumProfile, this.constructor.albumNamed,u_id, u_id, 0]);
 	}
 
 	/**
@@ -319,7 +313,8 @@ class Photo extends User
 			 JOIN album AS a ON (a.a_id = ? AND a.u_id = ?)
 			 JOIN album_type AS t ON (t.a_type_id = a.a_type_id);`;
 
-		return this.constructor.conn().sRow(sql, [this.constructor.albumProfile, this.constructor.albumNamed, a_id, u_id]);
+		return this.constructor.conn()
+			.sRow(sql, [this.constructor.albumProfile, this.constructor.albumNamed, a_id, u_id]);
 	}
 
 	/**
@@ -334,8 +329,7 @@ class Photo extends User
 		let sql = `SELECT COUNT(ai_id) AS cnt FROM album_image WHERE a_id = ? AND u_id = ?;`;
 
 		return this.constructor.conn().sRow(sql, [a_id, u_id])
-			.then(function (res)
-			{
+			.then((res) => {
 				return Promise.resolve(res["cnt"]);
 			});
 	}
@@ -376,8 +370,7 @@ class Photo extends User
 		let sql = `CALL album_image_reorder(?, ?);`;
 
 		return this.constructor.conn().call(sql, [u_id, a_id])
-			.then(function ()
-			{
+			.then(() => {
 				return Promise.resolve(true);
 			});
 	}
@@ -409,9 +402,8 @@ class Photo extends User
 	updSortImg(u_id, a_id, ai_pos)
 	{
 		return this.countAlbumImages(u_id, a_id)
-			.bind(this)
-			.then(function (cnt)
-			{
+			.then((cnt) => {
+
 				cnt = parseInt(cnt, 10);
 				cnt = (!cnt ? 0 : cnt);
 				if (!cnt || !ai_pos.length || cnt < ai_pos.length)
@@ -420,8 +412,7 @@ class Photo extends User
 				let setOrdi = [];
 				let setData = [];
 
-				ai_pos.forEach(function (ai_id, i)
-				{
+				ai_pos.forEach((ai_id, i) => {
 					setOrdi.push("IF(ai_id = ?, ? ");
 					setData.push(ai_id, i);
 				});

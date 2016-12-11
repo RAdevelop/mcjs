@@ -21,7 +21,7 @@ class User extends CtrlMain
 				,"^\/?[1-9]+[0-9]*\/?$" : ['i_u_id'] //профиль пользователя
 				,"^\/?$" : null //список пользователей
 			}
-		}
+		};
 	}
 
 	/**
@@ -33,9 +33,6 @@ class User extends CtrlMain
 	{
 		if (!this.isAuthorized())
 			throw new Errors.HttpError(401);
-
-		console.log("this.routeArgs;");
-		console.log(this.routeArgs);
 
 		let {i_u_id} = this.routeArgs;
 
@@ -53,20 +50,18 @@ class User extends CtrlMain
 	userProfile(u_id)
 	{
 		return this.getUser(u_id)
-			.bind(this)
-			.then(function (userData)
-			{
+			.then((userData) => {
+
 				if (!userData || !userData.u_id)
 					throw new Errors.HttpError(404);
 
 				return this.getClass('user/photo').getAlbumList(this.getUserId(), u_id, new Pages(1, 4))
-					.spread(function (albums)//, Pages
-					{
+					.spread((albums) => {//, Pages
 						return [userData, albums];
 					});
 			})
-			.spread(function (userData, albums)
-			{
+			.spread((userData, albums) => {
+
 				let tplFile = "user/profile.ejs";
 				let tplData = {
 					user: userData,
@@ -78,8 +73,7 @@ class User extends CtrlMain
 
 				return Promise.resolve(null);
 			})
-			.catch(function (err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}
@@ -97,9 +91,7 @@ class User extends CtrlMain
 			user: this.getUser(this.getUserId()),
 			users: this.getClass("user").getUsers(new Pages(i_page, limit_per_page)) //{users:users, users_cnt:users_cnt, Pages:Pages}
 		})
-			.bind(this)
-			.then(function(props)
-			{
+			.then((props) => {
 				let tplFile = "user";
 				let tplData = {
 					"user": props.user,
@@ -118,8 +110,7 @@ class User extends CtrlMain
 
 				return Promise.resolve(null);
 			})
-			.catch(function(err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}

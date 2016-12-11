@@ -1,15 +1,21 @@
 <div class="row">
 	<div class="btn-toolbar btnsToolbar" role="toolbar" aria-label="Опции для мотосалонов">
+
+		<% if (Object.keys(_access).length) {%>
 		<div class="btn-group btn-group-sm" role="group" aria-label="Опции для мотосалонов">
 			<button type="button" class="btn btn-default dropdown-toggle toolbarBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-fw fa-cog"></i> опции <i class="caret"></i></button>
 			<ul class="dropdown-menu ">
-				<li><a href="<%=menuItem.m_path+'/add/'%>" ><i class="fa fa-fw fa-plus-square-o"></i> добавить мотосалон</a></li>
-				<% if (motoshop && motoshop["mts_id"]) {%>
-				<li><a href="<%=menuItem.m_path+'/edit/'+motoshop["mts_id"]%>/"><i class="fa fa-fw fa-edit"></i> редактировать мотосалон</a></li>
-				<li><a href="javascript:void(0)" class="js-motoshop-tools" data-action="delete"><i class="fa fa-fw fa-trash-o"></i> удалить мотосалон</a></li>
-				<% }%>
+
+				<% if (_access['get_add']) {%><li><a href="<%=menuItem.m_path+'/add/'%>" ><i class="fa fa-fw fa-plus-square-o"></i> добавить мотосалон</a></li><% }%>
+
+				<% if (_access['get_edit'] && motoshop && motoshop["mts_id"])
+				{%><li><a href="<%=menuItem.m_path+'/edit/'+motoshop["mts_id"]%>/"><i class="fa fa-fw fa-edit"></i> редактировать мотосалон</a></li><% }
+				if (_access['post_edit'] && motoshop && motoshop["mts_id"])
+				{%><li><a href="javascript:void(0)" class="js-motoshop-tools" data-action="delete"><i class="fa fa-fw fa-trash-o"></i> удалить мотосалон</a></li><% }%>
 			</ul>
 		</div>
+		<% }%>
+
 		<div class="btn-group btn-group-sm" role="group" aria-label="список мотосалонов">
 			<a href="<%=menuItem.m_path+'/'%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-list"></i> все мотосалоны</a>
 		</div>

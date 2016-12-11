@@ -20,9 +20,13 @@ class Controller extends CtrlMain
 				'^\/?[0-9]+\/?$': ['ui_controller_id']
 				,'^\/?$': null
 			}
-		}
+		};
 	}
-
+	localAccessCheck()
+	{
+		return this.checkAccess(['get_edit', 'post_edit']);
+	}
+	
 	/**
 	 *
 	 * @returns {Promise}
@@ -37,9 +41,7 @@ class Controller extends CtrlMain
 		};
 
 		return this.getClass("controller").getAll()
-			.bind(this)
-			.then(function(controllerList)
-			{
+			.then((controllerList) => {
 				let tplFile = 'admin/controller/index.ejs';
 
 				tplData['controllerList'] = controllerList || [];
@@ -51,8 +53,7 @@ class Controller extends CtrlMain
 
 				return Promise.resolve(null);
 			})
-			.catch(function(err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}
@@ -77,9 +78,8 @@ class Controller extends CtrlMain
 		};
 
 		return this.getClass("controller").getById(ui_controller_id)
-			.bind(this)
-			.then(function (cData)
-			{
+			.then((cData) => {
+
 				if (!cData)
 					throw new Errors.HttpError(404);
 
@@ -91,22 +91,19 @@ class Controller extends CtrlMain
 
 				return Promise.resolve(tplData);
 			})
-			.then(function (tplData)
-			{
+			.then((tplData) => {
 				return Promise.props({
 					methodsList: this.getClass("controller").getControllerMethods(ui_controller_id),
 					controllerList: this.getClass("controller").getAll()
 				})
-					.then(function(props)
-					{
+					.then((props) => {
 						tplData.methodsList = props.methodsList || [];
 						tplData.controllerList = props.controllerList || [];
 
 						return Promise.resolve(tplData);
 					});
 			})
-			.then(function (tplData)
-			{
+			.then((tplData) => {
 				//экспрот данных в JS на клиента
 				this.getRes().expose(tplData.controllerList, 'controllerList');
 				this.getRes().expose(tplData.methodsList, 'methodsList');
@@ -115,8 +112,7 @@ class Controller extends CtrlMain
 
 				return Promise.resolve(null);
 			})
-			.catch(function(err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}
@@ -138,9 +134,8 @@ class Controller extends CtrlMain
 					throw new Errors.HttpError(404);
 
 				return this.getClass('controller').getById(tplData["ui_controller_id"])
-					.bind(this)
-					.then(function (controller)
-					{
+					.then((controller) => {
+
 						if (!controller)
 							throw new Errors.HttpError(404);
 
@@ -183,9 +178,8 @@ class Controller extends CtrlMain
 		let tplFile = 'admin/controller/index.ejs';
 
 		return Promise.resolve(tplData)
-			.bind(this)
-			.then(function (tplData)
-			{
+			.then((tplData) => {
+
 				let errors = {};
 
 				tplData = CtrlMain.stripTags(tplData, ["s_controller_path", "s_controller_name", "t_controller_desc"]);
@@ -206,27 +200,23 @@ class Controller extends CtrlMain
 				if (!tplData["s_controller_name"])
 					errors["s_controller_name"] = "Укажите название";
 
-				this.parseFormErrors(tplData, errors);
-
-				return Promise.resolve(tplData);
+				if (this.parseFormErrors(tplData, errors))
+					return Promise.resolve(tplData);
 			})
-			.then(function (tplData)
-			{
-				return this.getClass('controller').add(tplData["ui_controller_pid"], tplData["ui_controller_after_id"], tplData["s_controller_path"], tplData["s_controller_name"], tplData["t_controller_desc"])
-					.then(function (c_id)
-					{
+			.then((tplData) => {
+				return this.getClass('controller')
+					.add(tplData["ui_controller_pid"], tplData["ui_controller_after_id"], tplData["s_controller_path"], tplData["s_controller_name"], tplData["t_controller_desc"])
+					.then((c_id) => {
 						tplData['ui_controller_id'] = c_id;
 						return Promise.resolve(tplData);
 					});
 			})
-			.then(function (tplData)
-			{
+			.then((tplData) => {
 				this.view.setTplData(tplFile, tplData);
-
 				return Promise.resolve(true);
 			})
-			.catch(Errors.AlreadyInUseError, Errors.ValidationError, function (err) //такие ошибки не уводят со страницы
-			{
+			.catch(Errors.AlreadyInUseError, Errors.ValidationError, (err) => { //такие ошибки не уводят со страницы
+
 				if (err.name == 'AlreadyInUseError')
 				{
 					tplData.formError.message = 'Такой контроллер уже существует';
@@ -241,8 +231,7 @@ class Controller extends CtrlMain
 				this.view.setTplData(tplFile, err['data']);
 				return Promise.resolve(true);
 			})
-			.catch(function (err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}
@@ -258,9 +247,7 @@ class Controller extends CtrlMain
 		let tplFile = 'admin/controller/index.ejs';
 
 		return Promise.resolve(tplData)
-			.bind(this)
-			.then(function (tplData)
-			{
+			.then((tplData) => {
 				let errors = {};
 
 				tplData = CtrlMain.stripTags(tplData, ["s_controller_path", "s_controller_name", "t_controller_desc"]);
@@ -281,32 +268,24 @@ class Controller extends CtrlMain
 				if (!tplData["s_controller_name"])
 					errors["s_controller_name"] = "Укажите название";
 
-				this.parseFormErrors(tplData, errors);
-
-				return Promise.resolve(tplData);
+				if (this.parseFormErrors(tplData, errors))
+					return Promise.resolve(tplData);
 			})
-			.then(function (tplData)
-			{
+			.then((tplData) => {
+
 				return this.getClass('controller').updById(tplData["ui_controller_id"], tplData["ui_controller_pid"], tplData["ui_controller_after_id"], tplData["s_controller_path"], tplData["s_controller_name"], tplData["t_controller_desc"])
-					.then(function ()
-					{
-						return Promise.resolve(tplData);
+					.then(() => {
+						this.view.setTplData(tplFile, tplData);
+
+						return Promise.resolve(true);
 					});
 			})
-			.then(function (tplData)
-			{
-				this.view.setTplData(tplFile, tplData);
+			.catch(Errors.ValidationError, (err) => { //такие ошибки не уводят со страницы
 
-				return Promise.resolve(true);
-			})
-			.catch(Errors.ValidationError, function (err) //такие ошибки не уводят со страницы
-			{
 				this.view.setTplData(tplFile, err['data']);
-
 				return Promise.resolve(true);
 			})
-			.catch(function (err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}
@@ -322,9 +301,7 @@ class Controller extends CtrlMain
 		let tplFile = 'admin/controller/index.ejs';
 		
 		return Promise.resolve(tplData)
-			.bind(this)
-			.then(function (tplData)
-			{
+			.then((tplData) => {
 				let errors = {};
 				
 				tplData = CtrlMain.stripTags(tplData, ["s_cm_method"]);
@@ -332,27 +309,24 @@ class Controller extends CtrlMain
 				if (!tplData["s_cm_method"] || !(tplData["s_cm_method"].search(/^(get|post)_[a-zA-Z_]{3,33}$/ig) != -1))
 					errors["s_cm_method"] = "Укажите метод";
 
-				this.parseFormErrors(tplData, errors);
-				
-				return Promise.resolve(tplData);
+				if (this.parseFormErrors(tplData, errors))
+					return Promise.resolve(tplData);
 			})
-			.then(function (tplData)
-			{
-				return this.getClass('controller').addMethod(tplData["ui_controller_id"], tplData["s_cm_method"])
-					.then(function (cm_id)
-					{
+			.then((tplData) => {
+
+				return this.getClass('controller')
+					.addMethod(tplData["ui_controller_id"], tplData["s_cm_method"])
+					.then((cm_id) => {
 						tplData["ui_cm_id"] = cm_id;
 						return Promise.resolve(tplData);
 					});
 			})
-			.then(function (tplData)
-			{
+			.then((tplData) => {
 				this.view.setTplData(tplFile, tplData);
-				
 				return Promise.resolve(true);
 			})
-			.catch(Errors.AlreadyInUseError, Errors.ValidationError, function (err) //такие ошибки не уводят со страницы
-			{
+			.catch(Errors.AlreadyInUseError, Errors.ValidationError, (err) => { //такие ошибки не уводят со страницы
+
 				if (err.name == 'AlreadyInUseError')
 				{
 					tplData.formError.message = 'Такой метод уже существует';
@@ -367,8 +341,7 @@ class Controller extends CtrlMain
 				
 				return Promise.resolve(true);
 			})
-			.catch(function (err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}
@@ -383,9 +356,7 @@ class Controller extends CtrlMain
 		let tplFile = 'admin/controller/index.ejs';
 
 		return Promise.resolve(tplData)
-			.bind(this)
-			.then(function (tplData)
-			{
+			.then((tplData) => {
 				let errors = {};
 
 				tplData = CtrlMain.stripTags(tplData, ["s_cm_method"]);
@@ -394,17 +365,15 @@ class Controller extends CtrlMain
 				if (!tplData["ui_cm_id"] || !tplData["ui_controller_id"])
 					errors["s_cm_method"] = "Укажите метод";
 
-				this.parseFormErrors(tplData, errors);
-
-				return Promise.resolve(tplData);
+				if (this.parseFormErrors(tplData, errors))
+					return Promise.resolve(tplData);
 			})
-			.then(function (tplData)
-			{
+			.then((tplData) => {
 				if (action == 'method_delete')
 				{
-					return this.getClass('controller').deleteMethod(tplData["ui_controller_id"], tplData["ui_cm_id"])
-						.then(function (cm_id)
-						{
+					return this.getClass('controller')
+						.deleteMethod(tplData["ui_controller_id"], tplData["ui_cm_id"])
+						.then((cm_id) => {
 							tplData["ui_cm_id"] = cm_id;
 							return Promise.resolve(tplData);
 						});
@@ -412,8 +381,7 @@ class Controller extends CtrlMain
 				else if (action == 'method_update')
 				{
 					return this.getClass('controller').updateMethod(tplData["ui_cm_id"], tplData["s_cm_method"])
-						.then(function (cm_id)
-						{
+						.then((cm_id) => {
 							tplData["ui_cm_id"] = cm_id;
 							return Promise.resolve(tplData);
 						});
@@ -421,14 +389,13 @@ class Controller extends CtrlMain
 				else
 					throw new Errors.HttpError(400);
 			})
-			.then(function (tplData)
-			{
+			.then((tplData) => {
 				this.view.setTplData(tplFile, tplData);
 
 				return Promise.resolve(true);
 			})
-			.catch(Errors.AlreadyInUseError, Errors.ValidationError, function (err) //такие ошибки не уводят со страницы
-			{
+			.catch(Errors.AlreadyInUseError, Errors.ValidationError, (err) => {//такие ошибки не уводят со страницы
+
 				if (err.name == 'AlreadyInUseError')
 				{
 					tplData.formError.message = 'Такой метод уже существует';
@@ -442,8 +409,7 @@ class Controller extends CtrlMain
 				this.view.setTplData(tplFile, err['data']);
 				return Promise.resolve(true);
 			})
-			.catch(function (err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}
@@ -460,7 +426,7 @@ module.exports = Controller;
  * @param next
  */
 /*
-exports.delMethod = function(req, res, next)
+exports.delMethod = (req, res, next)
 {
 	var tplData = _.assign({}, req.body);
 	
@@ -477,7 +443,7 @@ exports.delMethod = function(req, res, next)
 	
 	Async.waterfall(
 		[
-			function(asyncCb) //провека формы
+			(asyncCb) //провека формы
 			{
 				var formErrs = {};
 				
@@ -493,7 +459,7 @@ exports.delMethod = function(req, res, next)
 					tplData.formError.error = true;
 					tplData.formError.message = "Ошибка заполнения формы";
 					
-					kErr.forEach(function(e, i){
+					kErr.forEach((e, i){
 						tplData.formError.fields[e] = formErrs[e];
 					});
 					
@@ -502,9 +468,9 @@ exports.delMethod = function(req, res, next)
 				
 				return asyncCb(null, tplData);
 			},
-			function(tplData, asyncCb) //отвяжем метод от роутера
+			(tplData, asyncCb) //отвяжем метод от роутера
 			{
-				Models.get("Router").delMethod(tplData.i_controller_id, tplData.i_method_id, function(err, rmId)
+				Models.get("Router").delMethod(tplData.i_controller_id, tplData.i_method_id, (err, rmId)
 				{
 					if (err) return asyncCb(err, tplData);
 					
@@ -512,7 +478,7 @@ exports.delMethod = function(req, res, next)
 				});
 			}
 		],
-		function(err, tplData)
+		(err, tplData)
 		{
 			//Models.end();
 		

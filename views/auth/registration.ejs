@@ -42,14 +42,11 @@ $(function()
                 cssClass: 'btn-primary',
                 func:
                 {
-                    click: function(event)
+                    click: function($dialog, postRes)
                     {
-                        var $dialog = event["data"][0];
-                        var respData = event["data"][1];
-
                         $dialog.modal('hide');
                         
-                        if (respData)
+                        if (postRes)
                         window.location.href = "/login";
                     }
                 }

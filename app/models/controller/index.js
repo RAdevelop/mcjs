@@ -66,24 +66,21 @@ class Controller extends BaseModel
 	{
 		let sql = `CALL controller_update(?, ?, ?, ?, ?, ?,@res); SELECT @res AS res FROM DUAL;`;
 
-		let sqlData = [c_id, cPid, cAfterId, cPath, cName, cDesc];
-
 		return this.constructor.conn().call(sql, sqlData)
-			.bind(this)
-			.then(function (res)
-			{
+			.then((res) => {
 				if (!(res[1][0] && res[1][0]["res"]))
 					throw new Errors.HttpError(500, 'не удалось обновить контроллер');
 
 				return Promise.resolve(c_id);
 			})
-			.catch(function (err)
-			{
+			.catch((err) => {
 				if (err.name == 'DbErrDuplicateEntry')
 					throw new Errors.AlreadyInUseError();
 
 				throw err;
 			});
+
+		let sqlData = [c_id, cPid, cAfterId, cPath, cName, cDesc];
 	}
 
 	/**
@@ -103,9 +100,7 @@ class Controller extends BaseModel
 		let sqlData = [cPid, cAfterId, cPath, cName, cDesc];
 
 		return this.constructor.conn().multis(sql, sqlData)
-			.bind(this)
-			.then(function (res)
-			{
+			.then((res) => {
 				let c_id = (res[1][0] && res[1][0]["c_id"] ? res[1][0]["c_id"] : 0);
 
 				if (!c_id)
@@ -113,10 +108,10 @@ class Controller extends BaseModel
 
 				return Promise.resolve(c_id);
 			})
-			.catch(function (err)
-			{
+			.catch((err) => {
+
 				if (err.name == 'DbErrDuplicateEntry')
-				throw new Errors.AlreadyInUseError();
+					throw new Errors.AlreadyInUseError();
 
 				throw err;
 			});
@@ -136,8 +131,7 @@ class Controller extends BaseModel
 		//TODO добавить cm_name, cm_desc
 
 		return this.constructor.conn().ins(sql, [cm_method, '', '', c_id])
-			.then(function (res)
-			{
+			.then((res) => {
 				let cm_id = parseInt(res["insertId"], 10);
 
 				if (!cm_id)
@@ -145,8 +139,7 @@ class Controller extends BaseModel
 
 				return Promise.resolve(cm_id);
 			})
-			.catch(function (err)
-			{
+			.catch((err) => {
 				if (err.name == 'DbErrDuplicateEntry')
 					throw new Errors.AlreadyInUseError();
 
@@ -166,12 +159,10 @@ class Controller extends BaseModel
 
 		let sql = `UPDATE controllers_methods SET cm_method = ? WHERE cm_id = ?`;
 		return this.constructor.conn().upd(sql, [cm_method, cm_id])
-			.then(function ()
-			{
+			.then(() => {
 				return Promise.resolve(cm_id);
 			})
-			.catch(function (err)
-			{
+			.catch((err) => {
 				if (err.name == 'DbErrDuplicateEntry')
 					throw new Errors.AlreadyInUseError();
 
@@ -194,7 +185,7 @@ class Controller extends BaseModel
 		 * проверяем связи cm_id с другими c_id
 		 * если связи нет - удаляем метод совсем
 		 */
-		return this.model('controller').delMethod(cm_id, c_id);
+		return Promise.resolve("TODO");
 	}
 }
 
@@ -211,12 +202,12 @@ module.exports = Controller;
  * @param cm_method
  * @param cb
  *!/
-Router.delMethod = function(c_id, rmId, cb)
+Router.delMethod = (c_id, rmId, cb)
 {
 	let sql = 'CALL routes_method_del(?, ?);';
 	let sqlData = [c_id, rmId];
 	
-	this.db.q(sql, sqlData, function(err, res)
+	this.db.q(sql, sqlData, (err, res)
 	{
 		if(err) return cb(err);
 		

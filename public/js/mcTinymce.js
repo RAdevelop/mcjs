@@ -36,6 +36,7 @@
 
 		//https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/
 
+		var $form = $(editor.formElement);
 		var postData = {
 			"b_load_embed_content": "1",
 			"s_uri": uri
@@ -43,7 +44,7 @@
 
 		editor.setProgressState(true);
 		$.ajax({
-			url: 'embed_content',
+			url: $form.attr('action'),//'embed_content',
 			method: "POST",
 			data: postData,
 			dataType: "json"

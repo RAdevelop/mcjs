@@ -31,8 +31,7 @@ class User extends BaseModel
 	static userGroupIds(ug_ids)
 	{
 		ug_ids = ug_ids.split(',');
-		ug_ids.forEach(function (ug_id, i, arr)
-		{
+		ug_ids.forEach((ug_id, i, arr) => {
 			if (!ug_id)
 				arr.splice(i, 1);
 		});
@@ -60,14 +59,13 @@ class User extends BaseModel
 		if (!uId)
 			return cb(new Errors.NotFoundError(msg), user);
 		
-		let sql =
-			`SELECT u_id, u_mail, u_date_visit, u_login, u_reg, ug_ids 
+		let sql = `SELECT u_id, u_mail, u_date_visit, u_login, u_reg, ug_ids 
 			FROM users WHERE u_id = ?;`;
 
-		this.constructor.conn().psRow(sql, [uId], function (err, userData)
-		{
+		this.constructor.conn().psRow(sql, [uId], (err, userData) => {
 			//console.log(userData);
-			if (err) return cb(err, user);
+			if (err)
+				return cb(err, user);
 
 			if (userData)
 			{
@@ -98,14 +96,15 @@ class User extends BaseModel
 		let sql = 'UPDATE `users` SET u_date_visit = ? WHERE u_id = ?';
 		let sqlData = [now_ts, uId];
 		
-		this.constructor.conn().upd(sql, sqlData, function (err) {
-			if (err) return cb(err);
+		this.constructor.conn().upd(sql, sqlData, (err) => {
+
+			if (err)
+				return cb(err);
 			
 			cb(null, now_ts);
 			
 			/*const Redis = new IORedis();
-			 Redis.hset(rKey, 'u_date_visit', now_ts, function (err)
-			 {
+			 Redis.hset(rKey, 'u_date_visit', now_ts, (err) => {
 			 Redis.quit();
 			 if (err) return cb(new Errors.AppRedisError('Redis error', err), null);
 			 
@@ -127,8 +126,10 @@ class User extends BaseModel
 	{
 		email = email.toLowerCase().trim();
 		
-		let sql = "SELECT u_id, u_mail, u_salt, u_pass, u_date_visit, u_reg, u_login, ug_ids FROM `users` WHERE u_mail = ?;";
-		this.constructor.conn().sRow(sql, [email], function (err, userData) {
+		let sql = `SELECT u_id, u_mail, u_salt, u_pass, u_date_visit, u_reg, u_login, ug_ids 
+		FROM users WHERE u_mail = ?;`;
+
+		this.constructor.conn().sRow(sql, [email], (err, userData) => {
 
 			if (err)
 				return cb(err, null);
@@ -159,8 +160,8 @@ class User extends BaseModel
 		let sql = "SELECT u_id, u_name, u_surname, u_sex, u_birthday FROM `users_data` WHERE u_id = ?;";
 		
 		return this.constructor.conn().psRow(sql, [u_id])
-			.then(function (res)
-			{
+			.then((res) => {
+
 				if (!res)
 					return Promise.resolve(userData);
 
@@ -202,15 +203,16 @@ class User extends BaseModel
 		if (!u_id)
 			return Promise.resolve(userData);
 
-		let sql = "SELECT ud.u_location_id, ud.u_latitude, ud.u_longitude, uln.l_pid, uln.l_name, uln.l_latitude, uln.l_longitude, uln.l_kind, uln.l_full_name, ul.l_level, ul.l_lk, ul.l_rk " +
-			"FROM `users_data` AS ud " +
-			"JOIN `location_names` AS uln ON (uln.l_id = ud.u_location_id) " +
-			"JOIN `location` AS ul ON (ul.l_id = ud.u_location_id) " +
-			"WHERE ud.u_id = ?;";
+		let sql = `SELECT ud.u_location_id, ud.u_latitude, ud.u_longitude, uln.l_pid, uln.l_name, 
+			uln.l_latitude, uln.l_longitude, uln.l_kind, uln.l_full_name, ul.l_level, ul.l_lk, ul.l_rk
+			FROM users_data AS ud
+			JOIN location_names AS uln ON (uln.l_id = ud.u_location_id)
+			JOIN location AS ul ON (ul.l_id = ud.u_location_id)
+			WHERE ud.u_id = ?;`;
 		
 		return this.constructor.conn().psRow(sql, [u_id])
-			.then(function (res)
-			{
+			.then((res) => {
+
 				if (res)
 					Object.assign(userData, res);
 
@@ -222,7 +224,7 @@ class User extends BaseModel
 	 * получаем данные по населенному пункту указанных юзеров
 	 *
 	 * @param user_ids
-	 * @returns {usersLocation = {u_id:{ocationData}}}
+	 * @returns {usersLocation = {u_id:{locationData}}}
 	 */
 	getUsersLocation(user_ids = [])
 	{
@@ -233,8 +235,8 @@ class User extends BaseModel
 			"WHERE ud.u_id IN ("+(new Array(user_ids.length)).fill('?').join(',')+");";
 
 		return this.constructor.conn().ps(sql, user_ids)
-			.then(function (res)
-			{
+			.then((res) => {
+
 				let userData = {
 					u_id: null, u_location_id:null, u_latitude: null, u_longitude: null,
 					l_pid:null, l_name:'', l_latitude:null,l_longitude:null,
@@ -243,14 +245,14 @@ class User extends BaseModel
 
 				let usersLocation = {};
 
-				user_ids.forEach(function (u_id)
-				{
+				user_ids.forEach((u_id) => {
+
 					userData["u_id"] = u_id;
 					usersLocation[u_id] = userData;
 					if (res)
 					{
-						res.forEach(function (item)
-						{
+						res.forEach((item) => {
+
 							if (item.u_id == u_id)
 							usersLocation[u_id] = Object.assign({}, usersLocation[u_id], item);
 						});
@@ -273,14 +275,15 @@ class User extends BaseModel
 	{
 		let u_id = u_req_key.substr(32);
 		
-		let sql = "SELECT 1 AS f FROM `user_change_request`" +
-			" WHERE u_id = ? AND u_req_type = ? AND u_req_key = ? AND u_req_end_ts >= ?;";
+		let sql = `SELECT 1 AS f FROM user_change_request
+				WHERE u_id = ? AND u_req_type = ? AND u_req_key = ? AND u_req_end_ts >= ?;`;
 		
 		let sqlData = [u_id, u_req_type, u_req_key, Moment().unix()];
 		
-		return this.constructor.conn().ps(sql, sqlData, function(err, res)
-		{
-			if (err) return cb(err, false);
+		return this.constructor.conn().ps(sql, sqlData, (err, res) => {
+
+			if (err)
+				return cb(err, false);
 			
 			return cb(null, (res["info"]["numRows"] == 1));
 		});
@@ -296,12 +299,13 @@ class User extends BaseModel
 	 */
 	clearUserChangeRequest(u_id, u_req_type, cb)
 	{
-		let sql = "DELETE FROM `user_change_request` " +
-			"WHERE u_id = ? AND u_req_type = ?;";
+		let sql = `DELETE FROM user_change_request
+			WHERE u_id = ? AND u_req_type = ?;`;
 
-		return this.constructor.conn().del(sql, [u_id, u_req_type], function(err)
-		{
-			if (err) return cb(err, u_id);
+		return this.constructor.conn().del(sql, [u_id, u_req_type], (err) => {
+
+			if (err)
+				return cb(err, u_id);
 
 			return cb(null, u_id);
 		});
@@ -315,8 +319,8 @@ class User extends BaseModel
 		let sql = "SELECT COUNT(u_id) AS u_cnt FROM users";
 
 		return this.constructor.conn().sRow(sql)
-			.then(function (res)
-			{
+			.then((res) => {
+
 				if(!res)
 					return Promise.resolve(0);
 
@@ -336,15 +340,15 @@ class User extends BaseModel
 		offset = parseInt(offset, 10) || 0;
 		limit = parseInt(limit, 10) || 20;
 
-		let sql = "SELECT u.u_id, u.u_mail, u.u_date_reg, u.u_date_visit, u.u_login, u.u_reg," +
-			" ud.u_name, ud.u_surname, ud.u_sex, ud.u_birthday, ud.u_location_id, ud.u_latitude, ud.u_longitude" +
-			" FROM users AS u" +
-			" JOIN users_data AS ud ON (ud.u_id = u.u_id)" +
-			" LIMIT "+limit+" OFFSET "+offset;
+		let sql = `SELECT u.u_id, u.u_mail, u.u_date_reg, u.u_date_visit, u.u_login, u.u_reg,
+			ud.u_name, ud.u_surname, ud.u_sex, ud.u_birthday, ud.u_location_id, ud.u_latitude, ud.u_longitude
+			FROM users AS u
+			JOIN users_data AS ud ON (ud.u_id = u.u_id)
+			LIMIT ${limit} OFFSET ${offset}`;
 
 		return this.constructor.conn().s(sql)
-			.then(function (res)
-			{
+			.then((res) => {
+
 				let user = {
 					u_id:null, u_mail:null, u_date_reg:null, u_date_visit:null, u_login:null, u_reg:null,
 					u_name:null, u_surname:null, u_sex:null, u_birthday:null,
@@ -356,8 +360,8 @@ class User extends BaseModel
 
 				if (res.info.numRows)
 				{
-					res.forEach(function (u)
-					{
+					res.forEach((u) => {
+
 						if (u.hasOwnProperty("u_id"))
 						{
 							users_ids.push(u.u_id);

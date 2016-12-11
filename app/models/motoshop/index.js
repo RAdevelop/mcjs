@@ -29,9 +29,9 @@ class Motoshop extends BaseModel
 		let now_ts = Moment().unix();
 
 		let sqlData = [u_id, u_id, mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip, now_ts, now_ts];
+
 		return this.constructor.conn().ins(sql, sqlData)
-			.then(function (res)
-			{
+			.then((res) => {
 				return Promise.resolve(res["insertId"]);
 			});
 	}
@@ -84,8 +84,7 @@ class Motoshop extends BaseModel
 		let sqlData = [u_id, mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip, now_ts, mts_id];
 
 		return this.constructor.conn().upd(sql, sqlData)
-			.then(function ()
-			{
+			.then(() => {
 				return Promise.resolve(mts_id);
 			});
 	}
@@ -122,27 +121,26 @@ class Motoshop extends BaseModel
 		let mts_address_id;
 
 		return this.constructor.conn().ins(sql, sqlData)
-			.bind(this)
-			.then(function (res)
-			{
+			.then((res) => {
+
 				mts_address_id = res["insertId"];
 
 				sql = "SELECT l_lk, l_rk FROM location WHERE l_id = ?;";
 
 				return this.constructor.conn().sRow(sql, [location_id]);
 			})
-			.then(function (res)
-			{
+			.then((res) => {
+
 				let {l_lk, l_rk} = res;
 
 				sql = "SELECT l_id FROM location WHERE l_lk <= ? AND l_rk >= ? ORDER BY l_lk;";
 				return this.constructor.conn().s(sql, [l_lk, l_rk]);
 			})
-			.then(function (res)
-			{
+			.then((res) => {
+
 				let sqlIns = [], sqlData = [mts_address_id], pids = [];
-				res.forEach(function (item)
-				{
+
+				res.forEach((item) => {
 					sqlIns.push("(?, ?)");
 					sqlData.push(mts_address_id, item["l_id"]);
 					pids.push(item["l_id"]);
@@ -159,8 +157,7 @@ class Motoshop extends BaseModel
 
 				return this.constructor.conn().multis(sql, sqlData);
 			})
-			.then(function ()
-			{
+			.then(() => {
 				return Promise.resolve(mts_address_id);
 			});
 	}
@@ -195,25 +192,20 @@ class Motoshop extends BaseModel
 		];
 
 		return this.constructor.conn().upd(sql, sqlData)
-			.bind(this)
-			.then(function ()
-			{
+			.then(() => {
 				sql = "SELECT l_lk, l_rk FROM location WHERE l_id = ?;";
 
 				return this.constructor.conn().sRow(sql, [location_id]);
 			})
-			.then(function (res)
-			{
+			.then((res) => {
 				let {l_lk, l_rk} = res;
 
 				sql = "SELECT l_id FROM location WHERE l_lk <= ? AND l_rk >= ? ORDER BY l_lk;";
 				return this.constructor.conn().s(sql, [l_lk, l_rk]);
 			})
-			.then(function (res)
-			{
+			.then((res) => {
 				let sqlIns = [], sqlData = [mts_address_id], pids = [];
-				res.forEach(function (item)
-				{
+				res.forEach((item) => {
 					sqlIns.push("(?, ?)");
 					sqlData.push(mts_address_id, item["l_id"]);
 					pids.push(item["l_id"]);
@@ -230,8 +222,7 @@ class Motoshop extends BaseModel
 
 				return this.constructor.conn().multis(sql, sqlData);
 			})
-			.then(function ()
-			{
+			.then(() => {
 				return Promise.resolve(mts_address_id);
 			});
 	}
@@ -293,14 +284,11 @@ class Motoshop extends BaseModel
 	delMotoshop(mts_id)
 	{
 		return this.getMotoshopAddressList(mts_id)
-			.bind(this)
-			.then(function(address_list){
-
+			.then((address_list) => {
 				let mtsAids = [];
 				if (address_list.length)
 				{
-					address_list.forEach(function (item)
-					{
+					address_list.forEach((item) => {
 						mtsAids.push(item["mts_address_id"]);
 					});
 				}
@@ -322,8 +310,7 @@ class Motoshop extends BaseModel
 				sql += `DELETE FROM motoshop WHERE mts_id = ?;`;
 
 				return this.constructor.conn().multis(sql, sqlData)
-					.then(function ()
-					{
+					.then(() => {
 						return Promise.resolve(mts_id);
 					});
 
@@ -418,8 +405,7 @@ class Motoshop extends BaseModel
 		 console.log(sqlData);*/
 
 		return this.constructor.conn().sRow(sql, sqlData)
-			.then(function (res)
-			{
+			.then((res) => {
 				return Promise.resolve(res["cnt"] || 0);
 			});
 	}
@@ -451,8 +437,7 @@ class Motoshop extends BaseModel
 		let sqlData = [mts_show, loc_id, mts_show];
 
 		return this.constructor.conn().s(sql, sqlData)
-			.then(function (res)
-			{
+			.then((res) => {
 				if (res['info']['numRows'] == '0')
 					return Promise.resolve(null);
 

@@ -32,11 +32,9 @@ class AdminUserGroups extends CtrlMain
 		};
 
 		return this.getClass('user/groups').getAll()
-			.bind(this)
-			.then(function(userGroupsList)
-			{
-				let tplFile = 'admin/user/groups/index.ejs';
+			.then((userGroupsList) => {
 
+				let tplFile = 'admin/user/groups/index.ejs';
 				tplData['userGroupsList'] = userGroupsList || [];
 
 				//экспрот данных в JS на клиента
@@ -46,8 +44,7 @@ class AdminUserGroups extends CtrlMain
 
 				return Promise.resolve(null);
 			})
-			.catch(function(err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}
@@ -70,9 +67,8 @@ class AdminUserGroups extends CtrlMain
 		};
 
 		return this.getClass('user/groups').getById(ui_ug_id)
-			.bind(this)
-			.then(function (ugData)
-			{
+			.then((ugData) => {
+
 				if (!ugData)
 					throw new Errors.HttpError(404);
 
@@ -85,22 +81,19 @@ class AdminUserGroups extends CtrlMain
 
 				return Promise.resolve(tplData);
 			})
-			.then(function (tplData)
-			{
+			.then((tplData) => {
 				return Promise.props({
 					menuList: this.getClass('menu').getAll(),
 					userGroupsList: this.getClass('user/groups').getAll()
 				})
-					.then(function(props)
-					{
+					.then((props) => {
 						tplData.menuList = props.menuList || [];
 						tplData.userGroupsList = props.userGroupsList || [];
 
 						return Promise.resolve(tplData);
 					});
 			})
-			.then(function (tplData)
-			{
+			.then((tplData) => {
 				//экспрот данных в JS на клиента
 				this.getRes().expose(tplData.userGroupsList, 'userGroupsList');
 				this.getRes().expose(tplData.menuList, 'menuList');
@@ -110,8 +103,7 @@ class AdminUserGroups extends CtrlMain
 
 				return Promise.resolve(null);
 			})
-			.catch(function(err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}
@@ -133,9 +125,8 @@ class AdminUserGroups extends CtrlMain
 					throw new Errors.HttpError(404);
 
 				return this.getClass('user/groups').getById(tplData["ui_ug_id"])
-					.bind(this)
-					.then(function (user_groups)
-					{
+					.then((user_groups) => {
+
 						if (!user_groups)
 							throw new Errors.HttpError(404);
 
@@ -177,9 +168,7 @@ class AdminUserGroups extends CtrlMain
 		let tplFile = 'admin/user/groups/index.ejs';
 		
 		return Promise.resolve(tplData)
-			.bind(this)
-			.then(function (tplData)
-			{
+			.then((tplData) => {
 				let errors = {};
 				
 				tplData = CtrlMain.stripTags(tplData, ["s_ug_path", "s_ug_name", "t_ug_desc"]);
@@ -194,27 +183,24 @@ class AdminUserGroups extends CtrlMain
 				if (!tplData["s_ug_name"])
 					errors["s_ug_name"] = "Укажите название";
 				
-				this.parseFormErrors(tplData, errors);
-				
-				return Promise.resolve(tplData);
+				if (this.parseFormErrors(tplData, errors))
+					return Promise.resolve(tplData);
 			})
-			.then(function (tplData)
-			{
+			.then((tplData) => {
+
 				return this.getClass('user/groups').add(tplData["ui_ug_pid"], tplData["ui_ug_after_id"], tplData["s_ug_path"], tplData["s_ug_name"], tplData["t_ug_desc"], tplData["b_ug_on_register"])
-					.then(function (ug_id)
-					{
+					.then((ug_id) => {
 						tplData['ui_ug_id'] = ug_id;
 						return Promise.resolve(tplData);
 					});
 			})
-			.then(function (tplData)
-			{
+			.then((tplData) => {
 				this.view.setTplData(tplFile, tplData);
 				
 				return Promise.resolve(true);
 			})
-			.catch(Errors.AlreadyInUseError, Errors.ValidationError, function (err) //такие ошибки не уводят со страницы
-			{
+			.catch(Errors.AlreadyInUseError, Errors.ValidationError, (err) => {//такие ошибки не уводят со страницы
+
 				if (err.name == 'AlreadyInUseError')
 				{
 					tplData.formError.message = 'Такая группа уже существует';
@@ -229,8 +215,7 @@ class AdminUserGroups extends CtrlMain
 				this.view.setTplData(tplFile, err['data']);
 				return Promise.resolve(true);
 			})
-			.catch(function (err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}
@@ -246,10 +231,7 @@ class AdminUserGroups extends CtrlMain
 		let tplFile = 'admin/user/groups/index.ejs';
 		
 		return Promise.resolve(tplData)
-			.bind(this)
-			.then(function (tplData)
-			{
-				let errors = {};
+			.then((tplData) => {
 				
 				tplData = CtrlMain.stripTags(tplData, ["s_ug_path", "s_ug_name", "t_ug_desc"]);
 
@@ -257,32 +239,27 @@ class AdminUserGroups extends CtrlMain
 				tplData["ui_ug_pid"]        = parseInt(tplData["ui_ug_pid"], 10)        || 0;
 				tplData["ui_ug_after_id"]   = parseInt(tplData["ui_ug_after_id"], 10)   || 0;
 
+				let errors = {};
 				if (!tplData["s_ug_path"] || !(tplData["s_ug_path"].search(/^([a-zA-Z_]+){3,100}$/ig) != -1))
 					errors["s_ug_path"] = "Укажите путь";
 				
 				if (!tplData["s_ug_name"])
 					errors["s_ug_name"] = "Укажите название";
 				
-				this.parseFormErrors(tplData, errors);
-				
-				return Promise.resolve(tplData);
+				if (this.parseFormErrors(tplData, errors))
+					return Promise.resolve(tplData);
 			})
-			.then(function (tplData)
-			{
+			.then((tplData) => {
+
 				return this.getClass('user/groups').updById(tplData["ui_ug_id"], tplData["ui_ug_pid"], tplData["ui_ug_after_id"], tplData["s_ug_path"], tplData["s_ug_name"], tplData["t_ug_desc"], tplData["b_ug_on_register"])
-					.then(function ()
-					{
-						return Promise.resolve(tplData);
+					.then(() => {
+						this.view.setTplData(tplFile, tplData);
+
+						return Promise.resolve(true);
 					});
 			})
-			.then(function (tplData)
-			{
-				this.view.setTplData(tplFile, tplData);
-				
-				return Promise.resolve(true);
-			})
-			.catch(Errors.AlreadyInUseError, Errors.ValidationError, function (err) //такие ошибки не уводят со страницы
-			{
+			.catch(Errors.AlreadyInUseError, Errors.ValidationError, (err) => { //такие ошибки не уводят со страницы
+
 				if (err.name == 'AlreadyInUseError')
 				{
 					tplData.formError.message = 'Такая группа уже существует';
@@ -297,8 +274,7 @@ class AdminUserGroups extends CtrlMain
 				this.view.setTplData(tplFile, err['data']);
 				return Promise.resolve(true);
 			})
-			.catch(function (err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}
@@ -313,9 +289,7 @@ class AdminUserGroups extends CtrlMain
 		let tplFile = 'admin/user/groups/index.ejs';
 
 		return Promise.resolve(tplData)
-			.bind(this)
-			.then(function (tplData)
-			{
+			.then((tplData) => {
 				let errors = {};
 
 				if (!tplData["ui_ug_id"])
@@ -329,31 +303,23 @@ class AdminUserGroups extends CtrlMain
 
 				tplData["cm_id"] = tplData["cm_id"] || [];
 
-				this.parseFormErrors(tplData, errors);
-
-				return Promise.resolve(tplData);
+				if (this.parseFormErrors(tplData, errors))
+					return Promise.resolve(tplData);
 			})
-			.then(function (tplData)
-			{
+			.then((tplData) => {
 				return this.getClass('user/groups').saveRights(tplData["ui_ug_id"], tplData["ui_m_id"], tplData["c_id"], tplData["cm_id"])
-					.then(function ()
-					{
-						return Promise.resolve(tplData);
+					.then(() => {
+						this.view.setTplData(tplFile, tplData);
+
+						return Promise.resolve(true);
 					});
 			})
-			.then(function (tplData)
-			{
-				this.view.setTplData(tplFile, tplData);
+			.catch(Errors.ValidationError, (err) => { //такие ошибки не уводят со страницы
 
-				return Promise.resolve(true);
-			})
-			.catch(Errors.ValidationError, function (err) //такие ошибки не уводят со страницы
-			{
 				this.view.setTplData(tplFile, err['data']);
 				return Promise.resolve(true);
 			})
-			.catch(function (err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}
@@ -372,24 +338,20 @@ class AdminUserGroups extends CtrlMain
 			throw new Errors.HttpError(400);
 
 		return Promise.resolve(tplData)
-			.bind(this)
-			.then(function (tplData)
-			{
-				return this.getClass('user/groups').getRights(tplData["ui_ug_id"], tplData["ui_m_id"], true)
-					.then(function (methodsList)
-					{
+			.then((tplData) => {
+				return this.getClass('user/groups')
+					.getRights(tplData["ui_ug_id"], tplData["ui_m_id"], true)
+					.then((methodsList) => {
 						tplData["methodsList"] = methodsList || [];
 						return Promise.resolve(tplData);
 					});
 			})
-			.then(function (tplData)
-			{
+			.then((tplData) => {
 				this.view.setTplData(tplFile, tplData);
 
 				return Promise.resolve(true);
 			})
-			.catch(function (err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}

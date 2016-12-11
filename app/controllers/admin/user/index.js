@@ -45,9 +45,8 @@ class AdminUser extends CtrlMain
 	{
 		//{users:users, users_cnt:users_cnt, Pages:Pages}
 		return this.getClass("user").getUsers(new Pages(i_page))
-			.bind(this)
-			.then(function(users)
-			{
+			.then((users) => {
+
 				let tplFile = 'admin/user';
 				let tplData = {};
 				tplData['user_list'] = users.users || [];
@@ -61,8 +60,7 @@ class AdminUser extends CtrlMain
 
 				return Promise.resolve(null);
 			})
-			.catch(function(err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}
@@ -79,15 +77,13 @@ class AdminUser extends CtrlMain
 			throw new Errors.HttpError(404);
 
 		return this.getClass('user').getUser(ui_u_id)
-			.bind(this)
-			.then(function (uData)
-			{
+			.then((uData) => {
+
 				if (!uData)
 					throw new Errors.HttpError(404);
 
 				return this.getClass('user/groups').getAll()
-					.then(function (userGroupsList)
-					{
+					.then((userGroupsList) => {
 						let tplData = {
 							'user': uData,
 							'userGroupsList': userGroupsList
@@ -96,8 +92,7 @@ class AdminUser extends CtrlMain
 						return Promise.resolve(tplData);
 					});
 			})
-			.then(function (tplData)
-			{
+			.then((tplData) => {
 				//экспрот данных в JS на клиента
 				//this.getRes().expose(tplData.userGroupsList, 'userGroupsList');
 				//this.getRes().expose(tplData.menuList, 'menuList');
@@ -107,8 +102,7 @@ class AdminUser extends CtrlMain
 
 				return Promise.resolve(null);
 			})
-			.catch(function(err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}
@@ -130,9 +124,7 @@ class AdminUser extends CtrlMain
 					throw new Errors.HttpError(404);
 
 				return this.getClass('user').getById(tplData["ui_u_id"])
-					.bind(this)
-					.then(function (user)
-					{
+					.then((user) => {
 						if (!user)
 							throw new Errors.HttpError(404);
 
@@ -162,9 +154,8 @@ class AdminUser extends CtrlMain
 		let tplFile = 'admin/user/groups/index.ejs';
 
 		return Promise.resolve(tplData)
-			.bind(this)
-			.then(function (tplData)
-			{
+			.then((tplData) => {
+
 				let errors = {};
 
 				if (!tplData["ui_u_id"])
@@ -172,31 +163,25 @@ class AdminUser extends CtrlMain
 
 				tplData["ug_ids"] = tplData["ug_ids"] || [];
 
-				this.parseFormErrors(tplData, errors);
-
-				return Promise.resolve(tplData);
+				if (this.parseFormErrors(tplData, errors))
+					return Promise.resolve(tplData);
 			})
-			.then(function (tplData)
-			{
-				return this.getClass('user/groups').addUserToGroups(tplData["ui_u_id"], tplData["ug_ids"])
-					.then(function ()
-					{
-						return Promise.resolve(tplData);
+			.then((tplData) => {
+
+				return this.getClass('user/groups')
+					.addUserToGroups(tplData["ui_u_id"], tplData["ug_ids"])
+					.then(() => {
+						this.view.setTplData(tplFile, tplData);
+
+						return Promise.resolve(true);
 					});
 			})
-			.then(function (tplData)
-			{
-				this.view.setTplData(tplFile, tplData);
+			.catch(Errors.ValidationError, (err) => { //такие ошибки не уводят со страницы
 
-				return Promise.resolve(true);
-			})
-			.catch(Errors.ValidationError, function (err) //такие ошибки не уводят со страницы
-			{
 				this.view.setTplData(tplFile, err['data']);
 				return Promise.resolve(true);
 			})
-			.catch(function (err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}

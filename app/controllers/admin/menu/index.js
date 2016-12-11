@@ -24,7 +24,7 @@ class Menu extends CtrlMain
 				'^\/?[0-9]+\/?$': ['i_menu_id']
 				,'^\/?$': null
 			}
-		}
+		};
 	}
 
 	indexActionGet()
@@ -43,9 +43,8 @@ class Menu extends CtrlMain
 			menuList: this.getClass("menu").getAll(),
 			controllerList: this.getClass("controller").getAll()
 		})
-			.bind(this)
-			.then(function(props)
-			{
+			.then((props) => {
+
 				tplData['menuList'] = props.menuList || [];
 				tplData['controllerList'] = props.controllerList || [];
 
@@ -57,8 +56,7 @@ class Menu extends CtrlMain
 
 				return Promise.resolve(null);
 			})
-			.catch(function(err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}
@@ -87,9 +85,8 @@ class Menu extends CtrlMain
 			throw new Errors.HttpError(404);
 
 		return this.getClass("menu").getById(i_menu_id)
-			.bind(this)
-			.then(function (mData)
-			{
+			.then((mData) => {
+
 				if (!mData)
 					throw new Errors.HttpError(404);
 
@@ -105,22 +102,20 @@ class Menu extends CtrlMain
 
 				return Promise.resolve(tplData);
 			})
-			.then(function (tplData)
-			{
+			.then((tplData) => {
 				return Promise.props({
 					menuList: this.getClass("menu").getAll(),
 					controllerList: this.getClass("controller").getAll()
 				})
-				.then(function(props)
-				{
+				.then((props) => {
+
 					tplData.menuList = props.menuList || [];
 					tplData.controllerList = props.controllerList || [];
 
 					return Promise.resolve(tplData);
 				});
 			})
-			.then(function (tplData)
-			{
+			.then((tplData) => {
 				//экспрот данных в JS на клиента
 				self.getRes().expose(tplData.controllerList, 'controllerList');
 				self.getRes().expose(tplData.menuList, 'menuList');
@@ -129,8 +124,7 @@ class Menu extends CtrlMain
 
 				return Promise.resolve(null);
 			})
-			.catch(function(err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}
@@ -148,9 +142,8 @@ class Menu extends CtrlMain
 					throw new Errors.HttpError(404);
 
 				return this.getClass('menu').getById(tplData["i_menu_id"])
-					.bind(this)
-					.then(function (menu)
-					{
+					.then((menu) => {
+
 						if (!menu)
 							throw new Errors.HttpError(404);
 
@@ -177,23 +170,22 @@ class Menu extends CtrlMain
 	 * добавляем новый контроллер в БД
 	 *
 	 * @param tplData
-	 * @returns {Promise.<T>}
+	 * @returns {Promise}
 	 */
 	add(tplData)
 	{
 		let tplFile = 'admin/controller/index.ejs';
 
 		return Promise.resolve(tplData)
-			.bind(this)
-			.then(function (tplData)
-			{
-				let errors = {};
+			.then((tplData) => {
 
 				tplData = CtrlMain.stripTags(tplData, ["s_menu_path", "s_menu_name", "s_menu_title", "s_menu_h1", "t_menu_desc"]);
 
 				tplData["i_menu_pid"] = parseInt(tplData["i_menu_pid"], 10) || 0;
 				tplData["i_menu_after_id"] = parseInt(tplData["i_menu_after_id"], 10) || 0;
 				tplData["i_menu_controller_id"] = parseInt(tplData["i_menu_controller_id"], 10) || 0;
+
+				let errors = {};
 
 				if (!tplData["s_menu_path"])
 					errors["s_menu_path"] = "Укажите URL меню";
@@ -207,27 +199,25 @@ class Menu extends CtrlMain
 				if (!tplData["s_menu_h1"])
 					errors["s_menu_h1"] = "Укажите H1 страниц";
 
-				this.parseFormErrors(tplData, errors, 'Ошибки при заполнении формы');
-
-				return Promise.resolve(tplData);
+				if (this.parseFormErrors(tplData, errors))
+					return Promise.resolve(tplData);
 			})
-			.then(function (tplData)
-			{
-				return this.getClass('menu').add(tplData["i_menu_pid"], tplData["i_menu_after_id"], tplData["s_menu_path"], tplData["s_menu_name"], tplData["s_menu_title"], tplData["s_menu_h1"], tplData["t_menu_desc"], tplData["i_menu_controller_id"])
-					.then(function (menuId)
-					{
+			.then((tplData) => {
+
+				return this.getClass('menu')
+					.add(tplData["i_menu_pid"], tplData["i_menu_after_id"], tplData["s_menu_path"], tplData["s_menu_name"], tplData["s_menu_title"], tplData["s_menu_h1"], tplData["t_menu_desc"], tplData["i_menu_controller_id"])
+					.then((menuId) => {
+
 						tplData['i_menu_id'] = menuId;
 						return Promise.resolve(tplData);
 					});
 			})
-			.then(function (tplData)
-			{
+			.then((tplData) => {
 				this.view.setTplData(tplFile, tplData);
-
 				return Promise.resolve(true);
 			})
-			.catch(Errors.AlreadyInUseError, Errors.ValidationError, function (err) //такие ошибки не уводят со страницы
-			{
+			.catch(Errors.AlreadyInUseError, Errors.ValidationError, (err) => { //такие ошибки не уводят со страницы
+
 				if (err.name == 'AlreadyInUseError')
 				{
 					tplData.formError.message = 'Такой пункт меню уже существует';
@@ -242,8 +232,7 @@ class Menu extends CtrlMain
 				this.view.setTplData(tplFile, err['data']);
 				return Promise.resolve(true);
 			})
-			.catch(function (err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}
@@ -259,16 +248,15 @@ class Menu extends CtrlMain
 		let tplFile = 'admin/menu/index.ejs';
 
 		return Promise.resolve(tplData)
-			.bind(this)
-			.then(function (tplData)
-			{
-				let errors = {};
+			.then((tplData) => {
 
 				tplData = CtrlMain.stripTags(tplData, ["s_menu_path", "s_menu_name", "s_menu_title", "s_menu_h1", "t_menu_desc"]);
 
 				tplData["i_menu_pid"] = parseInt(tplData["i_menu_pid"], 10) || 0;
 				tplData["i_menu_after_id"] = parseInt(tplData["i_menu_after_id"], 10) || 0;
 				tplData["i_menu_controller_id"] = parseInt(tplData["i_menu_controller_id"], 10) || 0;
+
+				let errors = {};
 
 				if (!tplData["s_menu_path"])
 					errors["s_menu_path"] = "Укажите URL меню";
@@ -282,32 +270,27 @@ class Menu extends CtrlMain
 				if (!tplData["s_menu_h1"])
 					errors["s_menu_h1"] = "Укажите H1 страниц";
 
-				this.parseFormErrors(tplData, errors, 'Ошибки при заполнении формы');
-
-				return Promise.resolve(tplData);
+				if (this.parseFormErrors(tplData, errors))
+					return Promise.resolve(tplData);
 			})
-			.then(function (tplData)
-			{
-				return this.getClass('menu').updById(tplData["i_menu_id"], tplData["i_menu_pid"], tplData["i_menu_after_id"], tplData["s_menu_path"], tplData["s_menu_name"], tplData["s_menu_title"], tplData["s_menu_h1"], tplData["t_menu_desc"], tplData["i_menu_controller_id"])
-					.then(function ()
-					{
+			.then((tplData) => {
+
+				return this.getClass('menu')
+					.updById(tplData["i_menu_id"], tplData["i_menu_pid"], tplData["i_menu_after_id"], tplData["s_menu_path"], tplData["s_menu_name"], tplData["s_menu_title"], tplData["s_menu_h1"], tplData["t_menu_desc"], tplData["i_menu_controller_id"])
+					.then(() => {
 						return Promise.resolve(tplData);
 					});
 			})
-			.then(function (tplData)
-			{
+			.then((tplData) => {
 				this.view.setTplData(tplFile, tplData);
-
 				return Promise.resolve(true);
 			})
-			.catch(Errors.ValidationError, function (err) //такие ошибки не уводят со страницы
-			{
+			.catch(Errors.ValidationError, (err) => { //такие ошибки не уводят со страницы
+
 				this.view.setTplData(tplFile, err['data']);
-
 				return Promise.resolve(true);
 			})
-			.catch(function (err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}
@@ -373,11 +356,11 @@ var tplFile = 'admin/menu/index.ejs';
  * @param res
  * @param next
  *!/
-exports.main = function(req, res, next)
+exports.main = (req, res, next)
 {
 	Async.parallel(
 		getDataTasks(),
-	function(err, results)
+	(err, results)
 	{
 		//Models.end();
 		if(err) return next(err);
@@ -403,7 +386,7 @@ exports.main = function(req, res, next)
  * @param res
  * @param next
  *!/
-exports.add = function(req, res, next)
+exports.add = (req, res, next)
 {
 	var tplData = defaultData();
 	tplData.title = res.app.settings.title + ' | Menu start page';
@@ -411,13 +394,13 @@ exports.add = function(req, res, next)
 	
 	Async.waterfall(
 		[
-			function(asyncCb) //валидация формы
+			(asyncCb) //валидация формы
 			{
-				menuFormValidation(tplData, function(err, tplData)
+				menuFormValidation(tplData, (err, tplData)
 				{
 					if(err)
 					{
-						getAdditionData(tplData, function(err2, tplData)
+						getAdditionData(tplData, (err2, tplData)
 						{
 							if(err2) return asyncCb(err2, tplData);
 							
@@ -428,11 +411,11 @@ exports.add = function(req, res, next)
 						return asyncCb(null, tplData);
 				});
 			},
-			function(tplData, asyncCb) //добавление в БД
+			(tplData, asyncCb) //добавление в БД
 			{
-				Models.get("Menu").add(tplData.menuPid, tplData.menuAfterId, tplData.menuPath, tplData.menuName, tplData.menuTitle, tplData.menuH1, tplData.menuDesc, tplData.menuControllerId, function(err, mId)
+				Models.get("Menu").add(tplData.menuPid, tplData.menuAfterId, tplData.menuPath, tplData.menuName, tplData.menuTitle, tplData.menuH1, tplData.menuDesc, tplData.menuControllerId, (err, mId)
 				{
-					if(err) return getAdditionData(tplData, function(err2, tplData){
+					if(err) return getAdditionData(tplData, (err2, tplData){
 						
 						if(err2) return asyncCb(err2, null);
 						else return asyncCb(err, null);
@@ -441,7 +424,7 @@ exports.add = function(req, res, next)
 					return asyncCb(null, mId);
 				});
 			}
-		], function (err, mId)
+		], (err, mId)
 		{
 			//Models.end();
 			//tplData.formError = false;
@@ -489,7 +472,7 @@ exports.add = function(req, res, next)
  * @param res
  * @param next
  *!/
-exports.edit = function(req, res, next)
+exports.edit = (req, res, next)
 {
 	var tplData = defaultData();
 	tplData.title = res.app.settings.title + ' | Menu start page';
@@ -498,10 +481,10 @@ exports.edit = function(req, res, next)
 	if(!rId || rId <= 0) return next(Errors.HttpStatusError(404, "Пункт меню не найден"));
 	
 	var parallelTasks = [
-		function(cb){
-			setTimeout(function(){
+		(cb){
+			setTimeout((){
 				
-				Models.get("Menu").getById(rId, function(err, mData)
+				Models.get("Menu").getById(rId, (err, mData)
 				{
 					if(err) return cb(err);
 					if(!mData) return cb(new Errors.HttpStatusError(404, "Пункт меню не найден"));
@@ -522,9 +505,9 @@ exports.edit = function(req, res, next)
 				
 			}, 1);
 		},
-		function(cb){
-			setTimeout(function(){
-				Models.get("Menu").getAll(function(err, menuList)
+		(cb){
+			setTimeout((){
+				Models.get("Menu").getAll((err, menuList)
 				{
 					if(err) return cb(err, menuList);
 					
@@ -532,9 +515,9 @@ exports.edit = function(req, res, next)
 				});
 			}, 1);
 		},
-		function(cb){
-			setTimeout(function(){
-				Models.get("controller").getAll(function(err, controllerList)
+		(cb){
+			setTimeout((){
+				Models.get("controller").getAll((err, controllerList)
 				{
 					if(err) return cb(err, controllerList);
 					
@@ -545,7 +528,7 @@ exports.edit = function(req, res, next)
 	];
 	
 	Async.parallel(parallelTasks,
-		function(err, results)
+		(err, results)
 		{
 			//console.log(results);
 			
@@ -571,7 +554,7 @@ exports.edit = function(req, res, next)
  * @param res
  * @param next
  *!/
-exports.update = function(req, res, next)
+exports.update = (req, res, next)
 {
 	var tplData = defaultData();
 	tplData.title = res.app.settings.title + ' | Menu start page';
@@ -582,13 +565,13 @@ exports.update = function(req, res, next)
 	
 	Async.waterfall(
 		[
-			function(asyncCb) //валидация формы
+			(asyncCb) //валидация формы
 			{
-				menuFormValidation(tplData, function(err, tplData)
+				menuFormValidation(tplData, (err, tplData)
 				{
 					if(err)
 					{
-						getAdditionData(tplData, function(err2, tplData)
+						getAdditionData(tplData, (err2, tplData)
 						{
 							if(err2) return asyncCb(err2, tplData);
 							
@@ -599,19 +582,19 @@ exports.update = function(req, res, next)
 					return asyncCb(null, tplData);
 				});
 			},
-			function(tplData, asyncCb) //
+			(tplData, asyncCb) //
 			{
-				Models.get("Menu").getById(tplData.menuId, function(err, mData)
+				Models.get("Menu").getById(tplData.menuId, (err, mData)
 				{
 					if(err) return asyncCb(err, null);
 					return asyncCb(null, tplData);
 				});
 			},
-			function(tplData, asyncCb)
+			(tplData, asyncCb)
 			{
-				Models.get("Menu").updById(tplData.menuId, tplData.menuPid, tplData.menuAfterId, tplData.menuPath, tplData.menuName, tplData.menuTitle, tplData.menuH1, tplData.menuDesc, tplData.menuControllerId, function(err)
+				Models.get("Menu").updById(tplData.menuId, tplData.menuPid, tplData.menuAfterId, tplData.menuPath, tplData.menuName, tplData.menuTitle, tplData.menuH1, tplData.menuDesc, tplData.menuControllerId, (err)
 				{
-					if(err) return getAdditionData(tplData, function(err2, tplData)
+					if(err) return getAdditionData(tplData, (err2, tplData)
 					{						
 						if(err2) return asyncCb(err2, tplData);
 						
@@ -622,7 +605,7 @@ exports.update = function(req, res, next)
 				});
 			}
 		],
-		function (err, tplData)
+		(err, tplData)
 		{
 			//Models.end();
 			//console.log(err);
@@ -762,18 +745,18 @@ function menuFormValidation(tplData, cb)
 function getDataTasks()
 {
 	return [
-		function(cb)
+		(cb)
 		{
-			Models.get("Menu").getAll(function(err, menuList)
+			Models.get("Menu").getAll((err, menuList)
 			{
 				if(err) return cb(err, menuList);
 				
 				return cb(null, menuList);
 			});
 		},
-		function(cb)
+		(cb)
 		{
-			Models.get("controller").getAll(function(err, controllerList)
+			Models.get("controller").getAll((err, controllerList)
 			{
 				if(err) return cb(err, controllerList);
 				
@@ -787,7 +770,7 @@ function getAdditionData(tplData, cb)
 {
 	Async.series(
 		getDataTasks(),
-		function(err, results)
+		(err, results)
 		{
 			////Models.end();
 			tplData.menuList = results[0] || [];

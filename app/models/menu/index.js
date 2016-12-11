@@ -27,8 +27,7 @@ class Menu extends BaseModel
 		 let sqlData = [mPid, mAfterId, mPath, mName, mTitle, mH1, mDesc, mCId];
 
 		 return this.constructor.conn().multis(sql, sqlData)
-			 .then(function(res)
-			 {
+			 .then((res) => {
 				 let m_id = (res[1][0] && res[1][0]["m_id"] ? res[1][0]["m_id"] : 0);
 
 				 if (!m_id)
@@ -45,9 +44,10 @@ class Menu extends BaseModel
 	 */
 	 getById(mId)
 	 {
-		 let sql = `SELECT m.m_id, m.m_pid, m.m_path, m.m_name, m.m_title, m.m_h1, m.m_desc, m.m_level, m.m_lk, m.m_rk, c.c_id, c.c_path
-			 FROM menu AS m 
-			 JOIN controllers AS c ON(m.m_id = ? AND c.c_id = m.c_id)`;
+		 let sql = `SELECT m.m_id, m.m_pid, m.m_path, m.m_name, m.m_title, m.m_h1, m.m_desc, 
+		 m.m_level, m.m_lk, m.m_rk, c.c_id, c.c_path
+		 FROM menu AS m
+		 JOIN controllers AS c ON(m.m_id = ? AND c.c_id = m.c_id)`;
 		 
 		 return this.constructor.conn().sRow(sql, [mId]);
 	 }
@@ -74,8 +74,8 @@ class Menu extends BaseModel
 		 let sqlData = [mId, mPid, mAfterId, mPath, mName, mTitle, mH1, mDesc, mCId];
 		 
 		 return this.constructor.conn().multis(sql, sqlData)
-			 .then(function (res)
-			 {
+			 .then((res) => {
+
 				 if (!(res[1][0] && res[1][0]["res"]))
 					 throw new Errors.HttpError(500, 'не удалось обновить меню');
 
@@ -119,8 +119,7 @@ class Menu extends BaseModel
 
 		//console.log(sql);
 
-		this.constructor.conn().ps(sql, null, function(err, res)
-		{
+		this.constructor.conn().ps(sql, null, (err, res) => {
 			if (err) return cb(err, null);
 			
 			//не нашли
@@ -147,13 +146,13 @@ class Menu extends BaseModel
 		
 		mPath = mPath.split('/');
 		
-		mPath.forEach(function(item, i){
+		mPath.forEach((item, i) => {
 			if (item == '') mPath.splice(i, 1);
 		});
 		
 		let cnt = mPath.length;
 		
-		mPath.forEach(function(){
+		mPath.forEach(() => {
 			resPath.push('/'+(mPath.slice( 0, cnt)).join('/'));
 			pHolders.push('?');
 			cnt--;
@@ -179,8 +178,8 @@ class Menu extends BaseModel
 
 		//console.log(sql);
 
-		this.constructor.conn().sRow(sql, resPath, function(err, res)
-		{
+		this.constructor.conn().sRow(sql, resPath, (err, res) => {
+
 			if (err) return cb(err);
 			
 			//не нашли

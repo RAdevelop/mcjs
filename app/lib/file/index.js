@@ -204,9 +204,9 @@ class File
 		});
 	}
 
-	resize(file, uploadConf)
+	resize(file, uploadConfType)
 	{
-		let sizeParams = File.getUploadConfig(uploadConf).sizeParams;
+		let sizeParams = File.getUploadConfig(uploadConfType).sizeParams;
 		const self = this;
 		let images = sizeParams.map(function(size)
 		{

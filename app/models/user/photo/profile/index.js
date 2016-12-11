@@ -22,17 +22,16 @@ class UserPhotoProfile extends UserPhoto
 			ai_id: null,
 			ai_dir: null
 		};
-		let sql = "SELECT a.a_id, a.u_id, ai.ai_id, ai.ai_dir" +
-			" FROM (SELECT NULL) AS z" +
-			" JOIN album_type AS t ON (t.a_type_alias = ?)" +
-			" JOIN album AS a ON (t.a_type_id = a.a_type_id)" +
-			" JOIN album_image AS ai ON (ai.a_id = a.a_id AND ai.u_id = ? AND ai.ai_profile = ?)" +
-			" LIMIT 1;";
+		let sql = `SELECT a.a_id, a.u_id, ai.ai_id, ai.ai_dir
+			FROM (SELECT NULL) AS z
+			JOIN album_type AS t ON (t.a_type_alias = ?)
+			JOIN album AS a ON (t.a_type_id = a.a_type_id)
+			JOIN album_image AS ai ON (ai.a_id = a.a_id AND ai.u_id = ? AND ai.ai_profile = ?)
+			LIMIT 1;`;
 		let sqlData = [this.constructor.albumProfile, u_id, 1];
 
 		return this.constructor.conn().psRow(sql, sqlData)
-			.then(function (res)
-			{
+			.then((res) => {
 				if (res)
 					Object.assign(ava, res);
 
@@ -60,8 +59,8 @@ class UserPhotoProfile extends UserPhoto
 		sqlData.push(1);
 
 		return this.constructor.conn().ps(sql, sqlData)
-			.then(function (res)
-			{
+			.then((res) => {
+
 				let ava = {
 					a_id: null,
 					u_id: null,
@@ -71,16 +70,16 @@ class UserPhotoProfile extends UserPhoto
 
 				let avaList = {};
 
-				user_ids.forEach(function (u_id)
-				{
+				user_ids.forEach((u_id) => {
+
 					ava["u_id"] = u_id;
 					avaList[u_id] = ava;
 					if (res)
 					{
-						res.forEach(function (item)
-						{
+						res.forEach((item) => {
+
 							if (item.u_id == ava["u_id"])
-							avaList[u_id] = Object.assign({}, avaList[u_id], item);
+								avaList[u_id] = Object.assign({}, avaList[u_id], item);
 						});
 					}
 				});

@@ -61,16 +61,15 @@ class UserGroups extends UserModel
 		let sqlData = [ug_id, ug_pid, ug_after_id, ug_path, ug_name, ug_desc, ug_on_register];
 
 		return this.constructor.conn().call(sql, sqlData)
-			.bind(this)
-			.then(function (res)
-			{
+			.then((res) => {
+
 				if (!(res[1][0] && res[1][0]["res"]))
 					throw new Errors.HttpError(500, 'не удалось обновить группу');
 
 				return Promise.resolve(ug_id);
 			})
-			.catch(function (err)
-			{
+			.catch((err) => {
+
 				if (err.name == 'DbErrDuplicateEntry')
 					throw new Errors.AlreadyInUseError();
 
@@ -99,9 +98,8 @@ class UserGroups extends UserModel
 		let sqlData = [ug_pid, ug_after_id, ug_path, ug_name, ug_desc, ug_on_register];
 
 		return this.constructor.conn().multis(sql, sqlData)
-			.bind(this)
-			.then(function (res)
-			{
+			.then((res) => {
+
 				let ug_id = (res[1][0] && res[1][0]["ug_id"] ? res[1][0]["ug_id"] : 0);
 
 				if (!ug_id)
@@ -109,8 +107,8 @@ class UserGroups extends UserModel
 
 				return Promise.resolve(ug_id);
 			})
-			.catch(function (err)
-			{
+			.catch((err) => {
+
 				if (err.name == 'DbErrDuplicateEntry')
 				throw new Errors.AlreadyInUseError();
 
@@ -160,9 +158,8 @@ class UserGroups extends UserModel
 		//cm_ids - если не пустой, то для каждого метода добавить связи ug_id, m_id, c_id, cm_id
 
 		return this.getAll([ug_id])
-			.bind(this)
-			.then(function (ug)
-			{
+			.then((ug) => {
+
 				let ug_ids_for_del = [];
 				let ug_group = {};
 
@@ -176,11 +173,10 @@ class UserGroups extends UserModel
 				WHERE ug_lk >= ? AND ug_rk <= ?`;
 
 				return this.constructor.conn().s(sql, [ug_group['ug_lk'], ug_group['ug_rk']])
-					.bind(this)
-					.then(function (list)
-					{
-						list.forEach(function (item)
-						{
+					.then((list) => {
+
+						list.forEach((item) => {
+
 							item['ug_path'] = item['ug_path'].toLowerCase();
 
 							if (item['ug_path'] != 'root' && item['ug_path'] != 'admin')
@@ -190,8 +186,8 @@ class UserGroups extends UserModel
 						return Promise.resolve([ug_group, ug_ids_for_del]);
 					});
 			})
-			.spread(function (ug_group, ug_ids_for_del)
-			{
+			.spread((ug_group, ug_ids_for_del) => {
+
 				if (!ug_ids_for_del.length)
 					return Promise.resolve(ug_group);
 
@@ -202,13 +198,12 @@ class UserGroups extends UserModel
 				sqlData.push(m_id, c_id);
 
 				return this.constructor.conn().del(sql, sqlData)
-					.then(function ()
-					{
+					.then(() => {
 						return Promise.resolve(ug_group);
 					});
 			})
-			.then(function (ug_group)
-			{
+			.then((ug_group) => {
+
 				if (!cm_ids.length || !ug_group['ug_id'])
 					return Promise.resolve(1);
 
@@ -216,15 +211,14 @@ class UserGroups extends UserModel
 				let sql = `SELECT ug_id FROM users_groups WHERE ug_lk <= ? AND ug_rk >= ?`;
 
 				return this.constructor.conn().s(sql, [ug_group['ug_lk'], ug_group['ug_rk']])
-					.bind(this)
-					.then(function (g_list)
-					{
+					.then((g_list) => {
+
 						let sql_vals = [];
 						let sqlData = [];
 
-						g_list.forEach(function (g_id)
-						{
-							cm_ids.forEach(function(cm_id){
+						g_list.forEach((g_id) => {
+
+							cm_ids.forEach((cm_id) => {
 								sql_vals.push(`(?,?,?,?)`);
 								sqlData.push(g_id['ug_id'], m_id, c_id, cm_id);
 							});
@@ -251,31 +245,29 @@ class UserGroups extends UserModel
 			return Promise.resolve(u_id);
 
 		return Promise.resolve()
-			.bind(this)
-			.then(function ()
-			{
+			.then(() => {
+
 				if (!ug_ids.length)
 					return Promise.resolve(ug_ids);
 
 				return this.getAll(ug_ids)
-					.then(function (ug_list)
-					{
+					.then((ug_list) => {
+
 						if (!ug_list)
 							return Promise.resolve(ug_ids);
 
 						let groups = [];
 
 						//работаем только с реальными id групп
-						ug_list.forEach(function (g)
-						{
+						ug_list.forEach((g) => {
 							groups.push(g['ug_id']);
 						});
 
 						return Promise.resolve(groups);
 					})
 			})
-			.then(function (ug_ids)
-			{
+			.then((ug_ids) => {
+
 				let where = ['u_id = ?'];
 				let sqlData = [u_id];
 				if (ug_ids.length)
@@ -295,21 +287,21 @@ class UserGroups extends UserModel
 				*/
 
 				return this.constructor.conn().del(sql, sqlData)
-					.then(function ()
-					{
+					.then(() => {
+
 						return Promise.resolve(ug_ids);
 					});
 			})
-			.then(function (ug_ids)
-			{
+			.then((ug_ids) => {
+
 				let sqlData = [];
 				let sql = ``;
 
 				if (ug_ids.length)
 				{
 					let sql_vals = [];
-					ug_ids.forEach(function (ug_id)
-					{
+					ug_ids.forEach((ug_id) => {
+
 						sql_vals.push('(?,?)');
 						sqlData.push(u_id, ug_id);
 					});
@@ -323,8 +315,7 @@ class UserGroups extends UserModel
 				sqlData.push(ug_ids.join(','), u_id);
 
 				return this.constructor.conn().multis(sql, sqlData)
-					.then(function ()
-					{
+					.then(() => {
 						return Promise.resolve(u_id);
 					});
 			});
@@ -351,16 +342,19 @@ class UserGroups extends UserModel
 	 */
 	checkGroupRightsByPathAndMenu(ug_path, m_id, cm_method)
 	{
-		/*let sql =
+		let cmPlaceHolders = this.constructor.placeHoldersForIn(cm_method);
+		let sqlData = [].concat(cm_method);
+			sqlData.unshift(m_id, ug_path);
+		let sql =
 			`SELECT ug.ug_id, m.m_id, cm.cm_id, cm.cm_method
 			FROM (SELECT NULL) AS z
 			JOIN menu AS m ON(m.m_id = ?)
 			JOIN users_groups AS ug ON(ug.ug_path = ?)
-			JOIN controllers_methods AS cm ON(cm.c_id = m.c_id AND cm.cm_method = ?)
+			JOIN controllers_methods AS cm ON(cm.c_id = m.c_id AND cm.cm_method IN(${cmPlaceHolders}))
 			JOIN users_groups_rights AS ugr ON(ugr.ug_id = ug.ug_id AND ugr.m_id = m.m_id AND ugr.c_id = cm.c_id 
-			AND ugr.cm_id = cm.cm_id)`;*/
+			AND ugr.cm_id = cm.cm_id)`;
 
-		let sql =
+		/*let sql =
 			`SELECT EXISTS(
 				SELECT 1
 				FROM (SELECT NULL) AS z
@@ -370,13 +364,21 @@ class UserGroups extends UserModel
 				JOIN users_groups_rights AS ugr ON(ugr.ug_id = ug.ug_id AND ugr.m_id = m.m_id AND ugr.c_id = cm.c_id 
 				AND ugr.cm_id = cm.cm_id) 
 			) AS b_allowed`;
+		 let sqlData = [m_id, ug_path, cm_method];
+			*/
 
-		let sqlData = [m_id, ug_path, cm_method];
+		return this.constructor.conn().ps(sql, sqlData)
+			.then((res) => {
+				if (!res || res['info']['numRows'] == 0)
+					return Promise.resolve({});
 
-		return this.constructor.conn().psRow(sql, sqlData)
-			.then(function (res)
-			{
-				return Promise.resolve(res['b_allowed'] == 1);
+				let rights = {};
+
+				res.forEach((item) => {
+					rights[item['cm_method']] =item['m_id'];
+				});
+
+				return Promise.resolve(rights);
 			});
 	}
 
@@ -384,14 +386,49 @@ class UserGroups extends UserModel
 	/**
 	 * список прав для указанного пользователя
 	 *
-	 * @param ug_ids - id групп пользователя
-	 * @param m_id - id меню
-	 * @param cm_method - метод
+	 * @param int m_id - id меню
+	 * @param array ug_ids - id групп пользователя
+	 * @param array cm_method - метод
 	 * @returns {Promise}
 	 */
-	checkUserRights(ug_ids, m_id, cm_method)
+	checkUserRights(m_id, ug_ids, cm_methods)
 	{
-		let placeHolders = this.constructor.placeHoldersForIn(ug_ids);
+		let ugPlaceHolders = this.constructor.placeHoldersForIn(ug_ids);
+		let cmPlaceHolders = this.constructor.placeHoldersForIn(cm_methods);
+
+		let sqlData = [].concat(cm_methods);
+			sqlData = sqlData.concat(ug_ids);
+
+		sqlData.unshift(m_id);
+
+		let sql = `SELECT m.m_id, cm.cm_method
+		FROM (SELECT NULL) AS z
+		JOIN menu AS m ON(m.m_id = ?)
+		JOIN controllers_methods AS cm ON(cm.c_id = m.c_id 
+			AND cm.cm_method IN (${cmPlaceHolders})
+		)
+		JOIN users_groups_rights AS ugr ON(
+			ugr.m_id = m.m_id AND ugr.c_id = cm.c_id AND ugr.cm_id = cm.cm_id
+			AND ugr.ug_id IN (${ugPlaceHolders}) 
+		)
+		GROUP BY cm.cm_id`;
+
+		return this.constructor.conn().ps(sql, sqlData)
+			.then((res) => {
+
+				if (!res || res['info']['numRows'] == 0)
+					return Promise.resolve({});
+
+				let rights = {};
+
+				res.forEach((item) => {
+					rights[item['cm_method']] =item['m_id'];
+				});
+
+				return Promise.resolve(rights);
+			});
+
+		/*let placeHolders = this.constructor.placeHoldersForIn(ug_ids);
 		let sql =
 			`SELECT EXISTS(
 				SELECT 1
@@ -408,10 +445,9 @@ class UserGroups extends UserModel
 		sqlData.unshift(m_id, cm_method);
 
 		return this.constructor.conn().psRow(sql, [m_id, cm_method, ug_ids])
-			.then(function (res)
-			{
+			.then((res) => {
 				return Promise.resolve(res['b_allowed'] == 1);
-			});
+			});*/
 	}
 
 

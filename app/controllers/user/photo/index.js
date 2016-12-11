@@ -30,7 +30,7 @@ class UserPhoto extends CtrlMain
 	}
 
 	/**
-	 * показываем страницу пользователя (свою, или выбранного)
+	 * показываем страницу  с фотоальбомами пользователя (свою, или выбранного)
 	 *
 	 * @returns {Promise}
 	 */
@@ -42,24 +42,17 @@ class UserPhoto extends CtrlMain
 		let xhr = this.getReq().xhr;
 		let {i_u_id=this.getUserId(), i_a_id} = this.routeArgs;
 
-		return Promise.resolve(xhr)
-			.bind(this)
-			.then(function ()
-			{
-				return this.getUser(i_u_id)
-					.bind(this)
-					.then(function (userData)
-					{
-						if (!userData["u_id"])
-							throw new Errors.HttpError(404);
+		return this.getUser(i_u_id)
+			.then((userData) => {
 
-						userData["u_is_owner"] = this.isTheSameUser(i_u_id);
+				if (!userData["u_id"])
+					throw new Errors.HttpError(404);
 
-						return Promise.resolve(userData);
-					});
+				userData["u_is_owner"] = this.isTheSameUser(i_u_id);
+
+				return Promise.resolve(userData);
 			})
-			.then(function (userData)
-			{
+			.then((userData) => {
 				let tplData = {
 					"user": userData
 				,   "albums": null
@@ -72,8 +65,7 @@ class UserPhoto extends CtrlMain
 
 				return this.albumList(i_u_id, tplData, xhr);
 			})
-			.catch(function (err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}
@@ -91,20 +83,17 @@ class UserPhoto extends CtrlMain
 		let {i_page=1} = this.routeArgs;
 
 		return Promise.resolve(tplData)
-			.bind(this)
-			.then(function (tplData)
-			{
-				return this.getClass('user/photo').getAlbumList(this.getUserId(), i_u_id, new Pages(i_page, limit_per_page))
-					.bind(this)
-					.spread(function (albums, Pages)
-					{
-						tplData["albums"]   = albums;
+			.then((tplData) => {
+				return this.getClass('user/photo')
+					.getAlbumList(this.getUserId(), i_u_id, new Pages(i_page, limit_per_page))
+					.spread((albums, Pages) => {
 
+						tplData["albums"]   = albums;
 						return [tplData, Pages];
 					});
 			})
-			.spread(function (tplData, Pages)
-			{
+			.spread((tplData, Pages) => {
+
 				let exposeAlbums = 'albums';
 				Pages.setLinksUri(this.getBaseUrl()+'/'+ i_u_id)
 					.setAjaxPagesType(true)
@@ -147,12 +136,12 @@ class UserPhoto extends CtrlMain
 		let {i_a_id, i_page=1} = this.routeArgs;
 
 		return Promise.resolve(tplData)
-			.bind(this)
-			.then(function (tplData)
-			{
-				return this.getClass('user/photo').getAlbum(this.getUserId(), i_u_id, i_a_id)
-					.then(function (album)
-					{
+			.then((tplData) => {
+
+				return this.getClass('user/photo')
+					.getAlbum(this.getUserId(), i_u_id, i_a_id)
+					.then((album) => {
+
 						if (!album)
 							return Promise.reject(new Errors.HttpError(404));
 
@@ -160,8 +149,8 @@ class UserPhoto extends CtrlMain
 						return Promise.resolve(tplData);
 					});
 			})
-			.then(function (tplData)
-			{
+			.then((tplData) => {
+
 				if (!tplData["album"]["a_img_cnt"])
 				{
 					tplData["album"]["images"] = [];
@@ -170,9 +159,8 @@ class UserPhoto extends CtrlMain
 
 				return this.getClass('user/photo')
 					.getAlbumImages(i_u_id, i_a_id, new Pages(i_page, limit_per_page, tplData["album"]["a_img_cnt"]))
-					.bind(this)
-					.spread(function (Pages, images, allPreviews)
-					{
+					.spread((Pages, images, allPreviews) => {
+
 						Pages.setLinksUri(this.getBaseUrl()+'/'+i_u_id+'/'+i_a_id);
 
 						tplData["album"]["images"] = images;
@@ -180,8 +168,8 @@ class UserPhoto extends CtrlMain
 						return [tplData, allPreviews, Pages];
 					});
 			})
-			.spread(function (tplData, allPreviews, Pages)
-			{
+			.spread((tplData, allPreviews, Pages) => {
+
 				if (!isAjax)
 				{
 					tplData = Object.assign(tplData, FileUpload.createToken('user_photo', {"a_id": i_a_id}) );
@@ -226,7 +214,7 @@ class UserPhoto extends CtrlMain
 				this.getRes().expose(tplData["pages"], 'pages');
 
 				return Promise.resolve(isAjax);
-			})
+			});
 	}
 
 	indexActionPost()
@@ -241,21 +229,18 @@ class UserPhoto extends CtrlMain
 		//console.log(tplData);
 
 		return this.albumPostActions(tplData)
-			.bind(this)
-			.then(function(tplData) //если валидация успешна
-			{
+			.then((tplData) => { //если валидация успешна
+
 				//tplData.formError.error = false;
 				this.view.setTplData(tplFile, tplData);
 				return Promise.resolve(true);
 			})
-			.catch(Errors.FormError, function(err)
-			{
-				this.view.setTplData(tplFile, err.data);
+			.catch(Errors.FormError, (err) => {
 
+				this.view.setTplData(tplFile, err.data);
 				return Promise.resolve(true);
 			})
-			.catch(function(err)
-			{
+			.catch((err) => {
 				throw err;
 			});
 	}
@@ -316,9 +301,9 @@ class UserPhoto extends CtrlMain
 		if (!tplData["i_a_id"] || !tplData.hasOwnProperty("ai_pos") || !tplData["ai_pos"].length)
 			return Promise.resolve(tplData);
 
-		return this.getClass('user/photo').sortImgUpd(this.getUserId(), tplData["i_a_id"], tplData["ai_pos"])
-			.then(function ()
-			{
+		return this.getClass('user/photo')
+			.sortImgUpd(this.getUserId(), tplData["i_a_id"], tplData["ai_pos"])
+			.then(() => {
 				return Promise.resolve(tplData);
 			});
 	}
@@ -331,29 +316,25 @@ class UserPhoto extends CtrlMain
 	 */
 	addNamedAlbum(tplData)
 	{
-		let errors = {};
-
 		if (!tplData["i_u_id"] || tplData["i_u_id"] != this.getUserId())
 			throw new Errors.HttpError(400);
 
 		tplData = CtrlMain.stripTags(tplData, ["s_album_name", "t_album_text"]);
 
+		let errors = {};
+
 		if (tplData["s_album_name"] == '')
 			errors["s_album_name"] = 'Укажите название альбома';
 
 		return Promise.resolve(errors)
-			.bind(this)
-			.then(function(errors)
-			{
-				this.parseFormErrors(tplData, errors, 'Ошибка при создании фотоальбома');
-
-				return Promise.resolve(tplData);
+			.then((errors) => {
+				if (this.parseFormErrors(tplData, errors, 'Ошибка при создании фотоальбома'))
+					return Promise.resolve(tplData);
 			})
-			.then(function (tplData)
-			{
-				return this.getClass('user/photo').addNamedAlbum(this.getUserId(), tplData["s_album_name"], tplData["t_album_text"])
-					.then(function (a_id)
-					{
+			.then((tplData) => {
+				return this.getClass('user/photo')
+					.addNamedAlbum(this.getUserId(), tplData["s_album_name"], tplData["t_album_text"])
+					.then((a_id) => {
 						tplData["a_id"] = a_id;
 						return Promise.resolve(tplData);
 					});
@@ -368,40 +349,36 @@ class UserPhoto extends CtrlMain
 	 */
 	editAlbum(tplData)
 	{
-		let errors = {};
-
 		tplData = CtrlMain.stripTags(tplData, ["s_album_name", "t_album_text"]);
 		
 		if (!tplData["i_a_id"] || !tplData.hasOwnProperty("s_album_name") || !tplData.hasOwnProperty("t_album_text"))
 			throw new Errors.HttpError(400);
 
+		let errors = {};
 		if (tplData["s_album_name"] == '')
 			errors["s_album_name"] = 'Укажите название альбома';
 
 		return Promise.resolve(errors)
-			.bind(this)
-			.then(function(errors)
-			{
-				this.parseFormErrors(tplData, errors, 'Ошибка при редактировании фотоальбома');
-
-				return Promise.resolve(tplData);
+			.then((errors) => {
+				if (this.parseFormErrors(tplData, errors, 'Ошибка при редактировании фотоальбома'))
+					return Promise.resolve(tplData);
 			})
-			.then(function (tplData)
-			{
-				return this.getClass('user/photo').getAlbum(this.getUserId(), this.getUserId(), tplData["i_a_id"])
-					.bind(this)
-					.then(function (album)
-					{
+			.then((tplData) => {
+
+				return this.getClass('user/photo')
+					.getAlbum(this.getUserId(), this.getUserId(), tplData["i_a_id"])
+					.then((album) => {
+
 						if (!album || !album["a_is_owner"])
 							throw new Errors.HttpStatusError(400, "Bad request");
 
-						return this.getClass('user/photo').editAlbumNamed(this.getUserId(), tplData["i_a_id"], tplData["s_album_name"], tplData["t_album_text"])
-							.then(function (a_id)
-							{
-								tplData["a_id"] = a_id;
-								return Promise.resolve(tplData);
-							});
+						return this.getClass('user/photo')
+							.editAlbumNamed(this.getUserId(), tplData["i_a_id"], tplData["s_album_name"], tplData["t_album_text"]);
 					});
+			})
+			.then((a_id) => {
+				tplData["a_id"] = a_id;
+				return Promise.resolve(tplData);
 			});
 	}
 
@@ -418,9 +395,9 @@ class UserPhoto extends CtrlMain
 
 		tplData = CtrlMain.stripTags(tplData, ["t_ai_text"]);
 
-		return this.getClass('user/photo').updImgText(this.getUserId(), tplData["i_a_id"], tplData["i_ai_id"], tplData["t_ai_text"])
-			.then(function ()
-			{
+		return this.getClass('user/photo')
+			.updImgText(this.getUserId(), tplData["i_a_id"], tplData["i_ai_id"], tplData["t_ai_text"])
+			.then(() => {
 				return Promise.resolve(tplData);
 			});
 	}
@@ -436,13 +413,12 @@ class UserPhoto extends CtrlMain
 		if (!tplData["i_a_id"] || !tplData["i_ai_id"])
 			throw new Errors.HttpError(400);
 
-		return this.getClass('user/photo').delImage(this.getUserId(), tplData["i_a_id"], tplData["i_ai_id"])
-			.then(function ()
-			{
+		return this.getClass('user/photo')
+			.delImage(this.getUserId(), tplData["i_a_id"], tplData["i_ai_id"])
+			.then(() => {
 				return Promise.resolve(tplData);
 			})
-			.catch(Errors.io.FileNotFoundError, function(err)
-			{
+			.catch(Errors.io.FileNotFoundError, (err) => {
 				Logger.error(err);
 				throw new Errors.HttpError(404, 'Фотография не найдена');
 			});
@@ -455,20 +431,17 @@ class UserPhoto extends CtrlMain
 	 */
 	uploadActionPost()
 	{
-		let self = this;
 		let tplFile = 'user/profile/photo/albums.ejs';
-		let tplData = self.getParsedBody();
+		let tplData = this.getParsedBody();
 
-		this.getRes().on('cancelUploadedFile', function(file)
-		{
+		this.getRes().on('cancelUploadedFile', (file) => {
 			if (file["u_id"] && file["a_id"] && file["ai_id"])
-			return self.getClass('user/photo').delImage(file["u_id"], file["a_id"], file["ai_id"], file);
+			return this.getClass('user/photo').delImage(file["u_id"], file["a_id"], file["ai_id"], file);
 		});
 
-		return self.getClass('user/photo')
+		return this.getClass('user/photo')
 			.uploadImage(this.getUserId(), this.getReq(), this.getRes())
-			.then(function (file)
-			{
+			.then((file) => {
 				//console.log(file);
 				tplData = {
 					a_id: file.a_id,
@@ -483,18 +456,17 @@ class UserPhoto extends CtrlMain
 					size: file.size,
 					previews: file.previews
 				};
-				self.view.setTplData(tplFile, tplData);
+				this.view.setTplData(tplFile, tplData);
 
 				return Promise.resolve(true);
 			})
-			.catch(function (err)
-			{
+			.catch((err) => {
 				Logger.error(err);
 				tplData.formError.text = err.message;
 				tplData.formError.error = true;
 				tplData.formError.errorName = err.name;
 
-				self.view.setTplData(tplFile, tplData);
+				this.view.setTplData(tplFile, tplData);
 
 				return Promise.resolve(true);
 			});
@@ -512,8 +484,7 @@ class UserPhoto extends CtrlMain
 			throw new Errors.HttpError(400);
 
 		return this.getClass('user/photo').delAlbum(this.getUserId(), tplData["i_a_id"])
-			.then(function ()
-			{
+			.then(() => {
 				return Promise.resolve(tplData);
 			});
 	}

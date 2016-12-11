@@ -33,9 +33,7 @@ class News extends BaseModel
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
 		return this.constructor.conn().ins(sql, sqlData)
-			.bind(this)
-			.then(function (res)
-			{
+			.then((res) => {
 				return Promise.resolve(res["insertId"]);
 			});
 	}
@@ -68,9 +66,7 @@ class News extends BaseModel
 		let sqlData = [now_ts, n_show_ts, s_n_title, n_alias, t_n_notice, t_n_text, i_u_id, n_show, i_n_id];
 
 		return this.constructor.conn().upd(sql, sqlData)
-			.bind(this)
-			.then(function ()
-			{
+			.then(() => {
 				return Promise.resolve(i_n_id);
 			});
 	}
@@ -125,8 +121,7 @@ class News extends BaseModel
 		let sql = `SELECT COUNT(n_id) AS cnt FROM news_list WHERE ${where.join(' AND ')};`;
 
 		return this.constructor.conn().sRow(sql, sqlData)
-			.then(function (res)
-			{
+			.then((res) => {
 				return Promise.resolve(res["cnt"] || 0);
 			});
 	}
@@ -199,8 +194,7 @@ class News extends BaseModel
 	addPhoto(u_id, fileData)
 	{
 		return this._insImage(fileData["n_id"])
-			.then(function (res)
-			{
+			.then((res) => {
 				fileData["u_id"] = u_id;
 				fileData["ni_pos"] = "0";
 				fileData["ni_id"] = res['insertId'];
@@ -227,8 +221,7 @@ class News extends BaseModel
 		let sqlData = [n_id, ni_id, ni_latitude, ni_longitude, ni_dir, ni_name, posUpd];
 
 		return this.constructor.conn().call(sql, sqlData)
-			.then(function ()
-			{
+			.then(() => {
 				return Promise.resolve(ni_id);
 			});
 	}
@@ -245,8 +238,7 @@ class News extends BaseModel
 		let sql = "CALL news_image_delete(?, ?, @is_del); SELECT @is_del AS is_del FROM DUAL;";
 
 		return this.constructor.conn().multis(sql, [n_id, ni_id])
-			.then(function (res)
-			{
+			.then((res) => {
 				let is_del = (res[1] && res[1]["is_del"] ? res[1]["is_del"] : 0);
 
 				return Promise.resolve(is_del);
@@ -296,8 +288,7 @@ class News extends BaseModel
 		let sql = "SELECT COUNT(ni_id) AS cnt FROM news_image WHERE n_id = ?;";
 
 		return this.constructor.conn().sRow(sql, [n_id])
-			.then(function (res)
-			{
+			.then((res) => {
 				return Promise.resolve(res["cnt"]);
 			});
 	}
@@ -312,19 +303,18 @@ class News extends BaseModel
 	updSortImg(n_id, ni_pos)
 	{
 		return this.countAlbumImages(n_id)
-			.bind(this)
-			.then(function (cnt)
-			{
+			.then((cnt) => {
+
 				cnt = parseInt(cnt, 10);
 				cnt = (!cnt ? 0 : cnt);
+
 				if (!cnt || !ni_pos.length || cnt < ni_pos.length)
 					return Promise.resolve(true);
 
 				let setOrdi = [];
 				let setData = [];
 
-				ni_pos.forEach(function (ni_id, i)
-				{
+				ni_pos.forEach((ni_id, i) => {
 					setOrdi.push("IF(ni_id = ?, ? ");
 					setData.push(ni_id, i);
 				});
@@ -348,8 +338,7 @@ class News extends BaseModel
 	delNews(n_id)
 	{
 		let sql = `DELETE FROM news_image WHERE n_id = ?;
-		DELETE FROM news_list WHERE n_id = ?;
-		`;
+		DELETE FROM news_list WHERE n_id = ?;`;
 
 		return this.constructor.conn().multis(sql, [n_id, n_id]);
 	}

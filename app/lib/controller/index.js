@@ -91,8 +91,8 @@ class Base
 	{
 		let cheerio = Base.cheerio;
 
-		Object.keys(formData).forEach(function (key)
-		{
+		Object.keys(formData).forEach((key) => {
+
 			if (fields.indexOf(key) == -1)
 				return;
 
@@ -138,8 +138,8 @@ class Base
 		let action = this.getReq().path.substring(this.getRes().locals.menuItem.m_path.length) ;
 		let args = action.split('/');
 
-		args.forEach(function(item, i)
-		{
+		args.forEach((item, i) => {
+
 			if (item == '') args.splice(i, 1);
 		});
 
@@ -194,8 +194,8 @@ class Base
 	
 	setArgs(args)
 	{
-		args.forEach(function(item, i)
-		{
+		args.forEach((item, i) => {
+
 			if (item == '') args.splice(i, 1);
 		});
 		this._args = args;
@@ -301,8 +301,8 @@ class Base
 			{
 				if (routePaths[actionName][routers[i]] && routePaths[actionName][routers[i]].length)
 				{
-					routePaths[actionName][routers[i]].forEach(function (varName, i)
-					{
+					routePaths[actionName][routers[i]].forEach((varName, i) => {
+						
 						if (varName)
 						{
 							tmpArgs[varName] = args[i];
@@ -329,7 +329,20 @@ class Base
 	{
 		return this._routeArgs;
 	}
-	
+
+	localAccessCheck()
+	{
+		return Promise.resolve({});
+	}
+
+	getLocalAccess(localAccess)
+	{
+		if (!this._localAccess)
+			this._localAccess = localAccess;
+
+		return this._localAccess;
+	}
+
 	callAction()
 	{
 		this.setAction();
@@ -339,12 +352,14 @@ class Base
 			throw new Errors.HttpError(404);
 
 		return this.checkAccess()
-			.bind(this)
-			.then(function (b_allowed)
-			{
-				if (!b_allowed)
+			.then((res) => {
+				if (!Object.keys(res).length)
 					throw new Errors.HttpError(403);
 
+				return this.localAccessCheck();
+			})
+			.then((localAccess) => {
+				this.getLocalAccess(localAccess);
 				//this._getClasses().setSession(this.getReq().session);
 
 				//this.view = new Template(this.getReq(), this.getRes(), this);
@@ -363,27 +378,20 @@ class Base
 	 */
 	checkAccess(cm_method = null, m_id = null)
 	{
-		//return Promise.resolve(1);//для отладки
+		//return Promise.resolve([1]);//для отладки
 
 		if (!this.getRes().locals.menuItem.m_id)
-			return Promise.resolve(1);
+			return Promise.resolve([1]);
 
 		cm_method = cm_method || this.httpMethod+'_'+this.getActionName();
 		m_id = m_id || this.getRes().locals.menuItem.m_id;
-		//this.getAction() например = indexActionGet
 
 		return this.getUser(this.getUserId())
-			.bind(this)
-			.then(function (user)
-			{
-				//console.log( c_method, this.getRes().locals.menuItem.m_id)/;
+			.then((user) => {
 
-				let ug_ids = [];
-				if (user.ug_ids)
-					ug_ids= user.ug_ids;
-
+				let ug_ids = (user.ug_ids ? user.ug_ids : []);
 				return this.getClass('user/groups')
-					.checkAccessToMenu(ug_ids, m_id, cm_method);
+					.checkAccessToMenu(m_id, ug_ids, cm_method);
 			});
 	}
 	
@@ -416,17 +424,16 @@ class Base
 		let data = Base.formError();
 
 		if (tplData.formError)
-		Object.assign(data, tplData.formError);
+			Object.assign(data, tplData.formError);
 
 		if (errKeys.length)
 		{
-			errKeys.forEach(function(f)
-			{
+			errKeys.forEach((f) => {
 				data.formError.fields[f] = errors[f];
 			});
 
 			if (text)
-			data.formError.text = text;
+				data.formError.text = text;
 
 			let err = new Errors.FormError(message, tplData);
 			data.formError.message = message;

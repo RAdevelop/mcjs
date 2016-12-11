@@ -11,7 +11,7 @@ class Logout extends CtrlMain
 	indexActionPost()
 	{
 		if(this.getReq().signedCookies.rtid)
-		Cookie.clearUserId(this.getReq(), this.getRes());
+			Cookie.clearUserId(this.getReq(), this.getRes());
 		
 		let self = this;
 		

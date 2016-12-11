@@ -43,10 +43,10 @@
 				<div class="form-group s_e_address">
 					<label for="m_mail" class="col-sm-1 control-label">адрес *</label>
 					<div class="col-sm-11">
-						<input type="text" class="form-control" id="s_e_address" name="s_e_address" value="<%=event.e_address%>" placeholder="адрес" required="required" data-toggle="tooltip" data-container="body" data-placement="auto" title="<%=event.e_address%>">
+						<input type="text" class="form-control" id="s_e_address" name="s_e_address" value="<%=event.e_address%>" placeholder="адрес" data-toggle="tooltip" data-container="body" data-placement="auto" title="<%=event.e_address%>">
 						<span class="help-block">укажите адрес с помощью карты: через поиск адреса, или по клику на карте.</span>
-						<input type="text" id="f_e_lat" name="f_e_lat" value="<%=event.e_latitude%>" readonly="readonly" maxlength="20" required="required"  />
-						<input type="text" id="f_e_lng" name="f_e_lng" value="<%=event.e_longitude%>" readonly="readonly" maxlength="20" required="required"  />
+						<input type="text" id="f_e_lat" name="f_e_lat" value="<%=event.e_latitude%>" readonly="readonly" maxlength="20" />
+						<input type="text" id="f_e_lng" name="f_e_lng" value="<%=event.e_longitude%>" readonly="readonly" maxlength="20" />
 					</div>
 				</div>
 				<div class="form-group" >

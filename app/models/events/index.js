@@ -42,44 +42,38 @@ class Events extends BaseModel
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
 		return this.constructor.conn().ins(sql, sqlData)
-			.bind(this)
-			.then(function (res)
-			{
+			.then((res) => {
 				i_e_id = res["insertId"];
 
 				sql = `SELECT l_lk, l_rk FROM location WHERE l_id = ?;`;
 
 				return this.constructor.conn().sRow(sql, [i_location_id]);
 			})
-			.then(function (res)
-			{
+			.then((res) => {
 				let {l_lk, l_rk} = res;
 
 				sql = `SELECT l_id FROM location WHERE l_lk <= ? AND l_rk >= ? ORDER BY l_lk;`;
 				return this.constructor.conn().s(sql, [l_lk, l_rk]);
 			})
-			.then(function (res)
-			{
+			.then((res) => {
 				let sqlIns = [], sqlData = [i_e_id], pids = [];
-				res.forEach(function (item)
-				{
+				res.forEach((item) => {
 					sqlIns.push("(?, ?)");
 					sqlData.push(i_e_id, item["l_id"]);
 					pids.push(item["l_id"]);
 				});
 
-				sql =
-					`DELETE FROM events_locations WHERE e_id = ?;
+				sql = `DELETE FROM events_locations WHERE e_id = ?;
 					INSERT INTO events_locations (e_id, l_id)
 					VALUES ${sqlIns.join(',')}
 					ON DUPLICATE KEY UPDATE l_id=VALUES(l_id);
 					UPDATE events_list SET e_location_pids = ? WHERE e_id = ?;`;
+
 				sqlData.push(pids.join(','), i_e_id);
 
 				return this.constructor.conn().multis(sql, sqlData);
 			})
-			.then(function ()
-			{
+			.then(() => {
 				return Promise.resolve(i_e_id);
 			});
 	}
@@ -105,8 +99,7 @@ class Events extends BaseModel
 	 */
 	edit(i_e_id, i_u_id, s_e_title, e_alias, t_e_notice, t_e_text, s_e_address, f_e_lat, f_e_lng, i_location_id, gps_lat, gps_lng, dd_start_ts, dd_end_ts)
 	{
-		let sql =
-			`UPDATE events_list SET e_update_ts = ?, e_start_ts = ?, e_end_ts = ?, e_title = ?, e_alias = ?, 
+		let sql = `UPDATE events_list SET e_update_ts = ?, e_start_ts = ?, e_end_ts = ?, e_title = ?, e_alias = ?, 
 			e_notice = ?, e_text = ?, e_address = ?, e_location_id = ?, e_latitude = ?, e_longitude = ?, e_gps_lat = ?, 
 			e_gps_lng = ?, u_id = ? 
 			WHERE e_id = ?`;
@@ -119,41 +112,37 @@ class Events extends BaseModel
 			, gps_lat, gps_lng, i_u_id, i_e_id];
 
 		return this.constructor.conn().upd(sql, sqlData)
-			.bind(this)
-			.then(function ()
-			{
+			.then(() => {
 				sql = `SELECT l_lk, l_rk FROM location WHERE l_id = ?;`;
 
 				return this.constructor.conn().sRow(sql, [i_location_id]);
 			})
-			.then(function (res)
-			{
+			.then((res) => {
 				let {l_lk, l_rk} = res;
 
 				sql = `SELECT l_id FROM location WHERE l_lk <= ? AND l_rk >= ? ORDER BY l_lk;`;
 				return this.constructor.conn().s(sql, [l_lk, l_rk]);
 			})
-			.then(function (res)
-			{
+			.then((res) => {
+
 				let sqlIns = [], sqlData = [i_e_id], pids = [];
-				res.forEach(function (item)
-				{
+
+				res.forEach((item) => {
 					sqlIns.push("(?, ?)");
 					sqlData.push(i_e_id, item["l_id"]);
 					pids.push(item["l_id"]);
 				});
 
-				sql =
-					`DELETE FROM events_locations WHERE e_id = ?;
+				sql = `DELETE FROM events_locations WHERE e_id = ?;
 					INSERT INTO events_locations (e_id, l_id) 
 					VALUES ${sqlIns.join(',')} ON DUPLICATE KEY UPDATE l_id=VALUES(l_id);
 					UPDATE events_list SET e_location_pids = ? WHERE e_id = ?;`;
+
 				sqlData.push(pids.join(','), i_e_id);
 
 				return this.constructor.conn().multis(sql, sqlData);
 			})
-			.then(function ()
-			{
+			.then(() => {
 				return Promise.resolve(i_e_id);
 			});
 	}
@@ -166,13 +155,13 @@ class Events extends BaseModel
 	 */
 	getById(e_id)
 	{
-		let sql =
-			`SELECT e_id, e_create_ts, e_update_ts, e_start_ts, e_end_ts, e_title, e_alias, e_notice, e_text, e_address, 
-			e_location_id, e_latitude, e_longitude, e_gps_lat, e_gps_lng, e_location_pids, u_id, e_img_cnt
-			, FROM_UNIXTIME(e_start_ts, "%d-%m-%Y") AS dd_start_ts
-			, FROM_UNIXTIME(e_end_ts, "%d-%m-%Y") AS dd_end_ts
-			FROM events_list
-			WHERE e_id = ?`;
+		let sql = `SELECT e_id, e_create_ts, e_update_ts, e_start_ts, e_end_ts, e_title, e_alias, 
+		e_notice, e_text, e_address, e_location_id, e_latitude, e_longitude, e_gps_lat, e_gps_lng, e_location_pids, 
+		u_id, e_img_cnt
+		, FROM_UNIXTIME(e_start_ts, "%d-%m-%Y") AS dd_start_ts
+		, FROM_UNIXTIME(e_end_ts, "%d-%m-%Y") AS dd_end_ts
+		FROM events_list
+		WHERE e_id = ?`;
 
 		return this.constructor.conn().sRow(sql, [e_id]);
 	}
@@ -297,8 +286,7 @@ class Events extends BaseModel
 	addPhoto(u_id, fileData)
 	{
 		return this._insImage(fileData["e_id"])
-			.then(function (res)
-			{
+			.then((res) => {
 				fileData["u_id"] = u_id;
 				fileData["ei_pos"] = "0";
 				fileData["ei_id"] = res['insertId'];
@@ -325,8 +313,7 @@ class Events extends BaseModel
 		let sqlData = [e_id, ei_id, ei_latitude, ei_longitude, ei_dir, ei_name, posUpd];
 
 		return this.constructor.conn().call(sql, sqlData)
-			.then(function ()
-			{
+			.then(() => {
 				return Promise.resolve(ei_id);
 			});
 	}
@@ -343,8 +330,7 @@ class Events extends BaseModel
 		let sql = "CALL events_image_delete(?, ?, @is_del); SELECT @is_del AS is_del FROM DUAL;";
 
 		return this.constructor.conn().multis(sql, [e_id, ei_id])
-			.then(function (res)
-			{
+			.then((res) => {
 				let is_del = (res[1] && res[1]["is_del"] ? res[1]["is_del"] : 0);
 
 				return Promise.resolve(is_del);
@@ -394,8 +380,7 @@ class Events extends BaseModel
 		let sql = "SELECT COUNT(ei_id) AS cnt FROM events_image WHERE e_id = ?;";
 
 		return this.constructor.conn().sRow(sql, [e_id])
-			.then(function (res)
-			{
+			.then((res) => {
 				return Promise.resolve(res["cnt"]);
 			});
 	}
@@ -410,19 +395,17 @@ class Events extends BaseModel
 	updSortImg(e_id, ei_pos)
 	{
 		return this.countAlbumImages(e_id)
-			.bind(this)
-			.then(function (cnt)
-			{
+			.then((cnt) => {
 				cnt = parseInt(cnt, 10);
 				cnt = (!cnt ? 0 : cnt);
+
 				if (!cnt || !ei_pos.length || cnt < ei_pos.length)
 					return Promise.resolve(true);
 
 				let setOrdi = [];
 				let setData = [];
 
-				ei_pos.forEach(function (ei_id, i)
-				{
+				ei_pos.forEach((ei_id, i) => {
 					setOrdi.push("IF(ei_id = ?, ? ");
 					setData.push(ei_id, i);
 				});

@@ -1,17 +1,15 @@
 <div class="row">
 	<div class="btn-toolbar btnsToolbar" role="toolbar" aria-label="Опции для новостей">
+		<% if (Object.keys(_access).length) {%>
 		<div class="btn-group btn-group-sm" role="group" aria-label="Опции для новостей">
 			<button type="button" class="btn btn-default dropdown-toggle toolbarBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-fw fa-cog"></i> опции <i class="caret"></i></button>
-			<ul class="dropdown-menu newsToolBar">
-				<li><a href="<%=menuItem.m_path+'/add/'%>" ><i class="fa fa-fw fa-plus-square-o"></i> добавить новость</a></li>
-			<% if (news && news.n_id) {%>
-				<li><a href="<%=menuItem.m_path+'/edit/'+news.n_id%>/"><i class="fa fa-fw fa-edit"></i> редактировать новость</a></li>
-				<% if (_action == 'edit'){%>
-				<li><a href="javascript:void(0);" data-action="delete" data-news-id="<%=news.n_id%>"><i class="fa fa-fw fa-trash-o"></i> удалить новость</a></li>
-				<% }%>
-			<% }%>
+			<ul class="dropdown-menu newsToolBar"><%
+				if (_access['post_add']) {%><li><a href="<%=menuItem.m_path+'/add/'%>" ><i class="fa fa-fw fa-plus-square-o"></i> добавить новость</a></li><% }
+				if (_access['post_edit'] && news && news.n_id) {
+				%><li><a href="<%=menuItem.m_path+'/edit/'+news.n_id%>/"><i class="fa fa-fw fa-edit"></i> редактировать новость</a></li>
+				<li><a href="javascript:void(0);" data-action="delete" data-news-id="<%=news.n_id%>"><i class="fa fa-fw fa-trash-o"></i> удалить новость</a></li><% }%>
 			</ul>
-		</div>
+		</div><% }%>
 		<div class="btn-group btn-group-sm" role="group" aria-label="список новостей">
 			<a href="<%=menuItem.m_path+'/'%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-list"></i> все новости</a>
 		</div>
