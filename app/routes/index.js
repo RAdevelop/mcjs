@@ -59,10 +59,10 @@ module.exports = function(Classes, Control)
 
 		Controllers.get(cn)
 			.callAction()
-			.then(function (json)
+			.then((json) =>
 			{
 				return Controllers.get(cn).view.render(json)
-					.then(function ()
+					.then(() =>
 					{
 						calcTimeForGC();
 						//Controllers.get(cn) = null;  //так как Controllers это WeakMap то пока закомментим = null
@@ -70,7 +70,7 @@ module.exports = function(Classes, Control)
 						//console.log("response time: ", end.getTime() - startDate.getTime() + " ms");
 					});
 			})
-			.catch(function (err)
+			.catch((err) =>
 			{
 				//Logger.error(err);
 				//C = null; //так как Controllers это WeakMap то пока закомментим = null

@@ -98,7 +98,7 @@
 
 					$embedContent = $(editor.getBody()).find('dl[data-link="'+uri+'"]');
 
-					console.log(embedContent);
+					//console.log(embedContent);
 
 					if (!$embedContent.hasClass('embed_content'))
 						$embedContent = null;

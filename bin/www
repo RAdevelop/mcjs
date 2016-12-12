@@ -125,7 +125,7 @@ function _shutdownService(sigName)
 	{
 		console.error("Could not close connections in time, forcefully shutting down");
 		process.exit(1);
-	}, 5000);//5 sec
+	}, 1000);//1 sec
 }
 process.on('SIGINT', function _SIGINT()
 {

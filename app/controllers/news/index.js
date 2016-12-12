@@ -10,7 +10,7 @@ const EmbedContent = require("app/lib/embed/content");
 //const Moment = require('moment'); //работа со временем
 const CtrlMain = require('app/lib/controller');
 
-let limit_per_page = 1;
+let limit_per_page = 20;
 
 class News extends CtrlMain
 {
@@ -75,15 +75,18 @@ class News extends CtrlMain
 	 */
 	news(tplData, i_news_id, s_alias)
 	{
+		let show = (this.getLocalAccess()['post_edit'] ? null : 1);
 		return this.getClass('news')
-			.get(i_news_id, 1)
-			.then((news) => {
+			.get(i_news_id, show)
+			.then((news) =>
+			{
 				if (!news || news["n_alias"] != s_alias)
 					throw new Errors.HttpError(404);
 
 				return Promise.resolve(news);
 			})
-			.then((news) => {
+			.then((news) =>
+			{
 				return this.getClass('news').getImageList(news.n_id)
 					.spread((images, allPreviews) => {
 						return Promise.resolve([news, images, allPreviews]);
@@ -128,11 +131,12 @@ class News extends CtrlMain
 	newsList(tplData)
 	{
 		let {i_page=1} = this.routeArgs;
+		let show = (this.getLocalAccess()['post_edit'] ? null : 1);
 
 		return Promise.resolve(this.getClass("news")
-			.getNews(new Pages(i_page, limit_per_page), 1))
-			.spread((newsList, Pages) => {
-
+			.getNews(new Pages(i_page, limit_per_page), show))
+			.spread((newsList, Pages) =>
+			{
 				tplData["newsList"] = newsList;
 
 				let exposeNews = 'newsList';
@@ -256,7 +260,9 @@ class News extends CtrlMain
 		if (!i_news_id)
 			throw new Errors.HttpError(404);
 
-		return this.getClass('news').get(i_news_id, null)
+		let show = (this.getLocalAccess()['post_edit'] ? null : 1);
+
+		return this.getClass('news').get(i_news_id, show)
 			.then((news) => {
 
 				if (!news)

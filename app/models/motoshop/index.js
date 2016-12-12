@@ -40,21 +40,25 @@ class Motoshop extends BaseModel
 	 * данные мотосалона по его id
 	 *
 	 * @param mts_id
-	 * @param show
+	 * @param mts_show
 	 * @returns {Promise}
 	 */
-	getMotoshop(mts_id, show = null)
+	getMotoshop(mts_id, mts_show = null)
 	{
-		let sql = `SELECT mts_u_id_add, mts_u_id_edit, mts_id, mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip, mts_create_ts, mts_update_ts
+		let sql = `SELECT mts_u_id_add, mts_u_id_edit, mts_id, mts_show, mts_name, mts_alias, mts_website, mts_email, 
+		mts_descrip, mts_create_ts, mts_update_ts
 		FROM motoshop
 		WHERE mts_id = ?`;
 
 		let sqlData = [mts_id];
-		if (show)
-		{
-			sqlData.push(show);
-			sql += ` AND mts_show = ?`;
-		}
+
+		if (mts_show == null)
+			mts_show = 0;
+		else
+			mts_show = (parseInt(mts_show, 10) ? 1 : 0);
+
+		sqlData.push(mts_show);
+		sql += ` AND mts_show IN(1,?)`;
 
 		return this.constructor.conn().sRow(sql, sqlData);
 	}
@@ -231,11 +235,11 @@ class Motoshop extends BaseModel
 	 * список адресов для указанного (-ых) салона
 	 *
 	 * @param mts_id
-	 * @param show
+	 * @param mts_show
 	 * @param location_id
 	 * @returns {Promise}
 	 */
-	getMotoshopAddressList(mts_id, show = null, location_id = null)
+	getMotoshopAddressList(mts_id, mts_show = null, location_id = null)
 	{
 		if (!mts_id.map)
 			mts_id = [mts_id];
@@ -256,10 +260,15 @@ class Motoshop extends BaseModel
 		let sqlData = [];
 		sqlData = sqlData.concat(mts_id);
 
-		if (show)
+		if (mts_show == null)
+			mts_show = 0;
+		else
+			mts_show = (parseInt(mts_show, 10) ? 1 : 0);
+
+		//if (mts_show)
 		{
-			sqlData.push(show);
-			sql += ` AND mtsa.mts_address_show = ?`;
+			sqlData.push(mts_show);
+			sql += ` AND mtsa.mts_address_show IN(1,?)`;
 		}
 		if (location_id)
 		{
@@ -342,15 +351,20 @@ class Motoshop extends BaseModel
 	/**
 	 * список локаций, к которым привязан мотосалон (включая родительские районы, города, страны..)
 	 *
+	 * @param mts_show
 	 * @returns {Promise}
 	 */
-	getMotoshopLocations(show)
+	getMotoshopLocations(mts_show)
 	{
 		let kinds = ['country','province','locality'];
 
 		let inIds = this.constructor.placeHoldersForIn(kinds);
+		if (mts_show == null)
+			mts_show = 0;
+		else
+			mts_show = (parseInt(mts_show, 10) ? 1 : 0);
 
-		let sqlData = [show, show];
+		let sqlData = [mts_show, mts_show];
 		sqlData = sqlData.concat(kinds);
 
 		let sql = `SELECT l.l_id, l.l_pid, l.l_level, l.l_lk, l.l_rk,
@@ -358,8 +372,8 @@ class Motoshop extends BaseModel
 			IF(l.l_rk - l.l_lk = 0, 0, 1) AS l_has_child,
 			IF(ln.l_kind = 'country', 0, IF(ln.l_kind = 'province', 1, IF(ln.l_kind = 'locality' AND l.l_level < 3, 1, 2))) AS l_mts_level
 			FROM (SELECT NULL) AS z 
-			JOIN motoshop AS mts ON (mts.mts_show = ?)
-			JOIN motoshop_address AS mtsa ON (mtsa.mts_id = mts.mts_id AND mtsa.mts_address_show = ?)
+			JOIN motoshop AS mts ON (mts.mts_show IN(1,?))
+			JOIN motoshop_address AS mtsa ON (mtsa.mts_id = mts.mts_id AND mtsa.mts_address_show IN(1,?))
 			JOIN motoshop_address_locations AS mtsal ON (mtsa.mts_address_id = mtsal.mts_address_id)
 			JOIN location_names AS ln ON(mtsal.l_id = ln.l_id  AND ln.l_kind IN(${inIds}))
 			JOIN location AS l ON(l.l_id = ln.l_id)
@@ -375,28 +389,42 @@ class Motoshop extends BaseModel
 	/**
 	 * список мотосалонов
 	 *
+	 * @param mts_show
 	 * @returns {Promise}
 	 */
-	getAllMotoshop(show)
+	getAllMotoshop(mts_show = null)
 	{
 		let sql = `SELECT mts_u_id_add, mts_u_id_edit, mts_id, mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip, mts_create_ts, mts_update_ts
 		FROM motoshop
-		WHERE mts_show = ?`;
+		WHERE mts_show IN(1,?)`;
 
-		let sqlData = [show];
+		if (mts_show == null)
+			mts_show = 0;
+		else
+			mts_show = (parseInt(mts_show, 10) ? 1 : 0);
+
+		let sqlData = [mts_show];
+
+		/*console.log(sql);
+		console.log(sqlData);*/
 
 		return this.constructor.conn().s(sql, sqlData);
 	}
 
-	countMotoshopByLocId(loc_id, mts_show)
+	countMotoshopByLocId(loc_id, mts_show = null)
 	{
+		if (mts_show == null)
+			mts_show = 0;
+		else
+			mts_show = (parseInt(mts_show, 10) ? 1 : 0);
+
 		let sql = `SELECT COUNT(mts_id) AS cnt
 			FROM (SELECT NULL) AS z
-			JOIN motoshop AS mts ON(mts.mts_show = ? 
+			JOIN motoshop AS mts ON(mts.mts_show IN(1,?) 
 				AND EXISTS (
 				SELECT 1 FROM motoshop_address_locations AS mal
                 JOIN motoshop_address AS ma ON(mal.l_id = ? AND ma.mts_address_id = mal.mts_address_id)
-		        WHERE mts.mts_id = ma.mts_id AND ma.mts_address_show = ?
+		        WHERE mts.mts_id = ma.mts_id AND ma.mts_address_show IN(1,?)
 		        )
 		    )`;
 		let sqlData = [mts_show, loc_id, mts_show];
@@ -424,15 +452,20 @@ class Motoshop extends BaseModel
 		let sql = `SELECT mts.mts_u_id_add, mts.mts_u_id_edit, mts.mts_id, mts.mts_name, mts.mts_alias, mts.mts_website,
 		    mts.mts_email, mts.mts_show
 			FROM (SELECT NULL) AS z
-			JOIN motoshop AS mts ON(mts.mts_show = ? 
+			JOIN motoshop AS mts ON(mts.mts_show IN(1,?) 
 				AND EXISTS (
 				SELECT 1 FROM motoshop_address_locations AS mal
                 JOIN motoshop_address AS ma ON(mal.l_id = ? AND ma.mts_address_id = mal.mts_address_id)
-		        WHERE mts.mts_id = ma.mts_id AND ma.mts_address_show = ?
+		        WHERE mts.mts_id = ma.mts_id AND ma.mts_address_show IN(1,?)
 		        )
 			)
 			ORDER BY mts.mts_name
 			LIMIT ${limit} OFFSET ${offset}`;
+
+		if (mts_show == null)
+			mts_show = 0;
+		else
+			mts_show = (parseInt(mts_show, 10) ? 1 : 0);
 
 		let sqlData = [mts_show, loc_id, mts_show];
 

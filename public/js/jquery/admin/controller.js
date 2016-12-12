@@ -30,7 +30,7 @@
 		event.preventDefault();
 		var $self = $(this);
 		var action = $self.data('action');
-		console.log(action);
+
 		switch (action)
 		{
 			default:
@@ -67,12 +67,10 @@
 					})
 					.fail(function(respData)
 					{
-							console.log( respData );
+						console.log( respData );
 					});
 				break;
 		}
-		//console.log();
-		//console.log();
 	});
 	//Delete action
 	

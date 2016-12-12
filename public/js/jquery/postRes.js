@@ -140,7 +140,7 @@
 						})
 						.fail(function(data)
 						{
-							console.log(data);
+							//console.log(data);
 
 							var text = '';
 

@@ -50,11 +50,12 @@ class Motoshop extends CtrlMain
 	indexActionGet()
 	{
 		let {i_mts_id, i_loc_id} = this.routeArgs;
+		let mts_show = (this.getLocalAccess()['post_edit'] ? null : 1);
 
 		if(i_loc_id)
-			return this.motoshopList(i_loc_id);
+			return this.motoshopList(i_loc_id, mts_show);
 
-		return this.motoshopData(i_mts_id)
+		return this.motoshopData(i_mts_id, mts_show)
 			.spread((motoshop, motoshopList, motoshopLocations) => {
 				let tplData = {};
 				tplData.motoshop = motoshop || null;
@@ -84,13 +85,11 @@ class Motoshop extends CtrlMain
 	 * что показывать - указанный салон, или список ...
 	 *
 	 * @param i_mts_id
+	 * @param mts_show
 	 * @returns {Promise}
 	 */
-	motoshopData(i_mts_id)
+	motoshopData(i_mts_id, mts_show)
 	{
-		//TODO написать условие для mts_show - админ, автор = null илначе 1
-		let mts_show = null;
-
 		if (i_mts_id)
 			return this.motoshop(i_mts_id, mts_show);
 
@@ -101,13 +100,13 @@ class Motoshop extends CtrlMain
 	 * список мотосалонов для указанной локации
 	 * 
 	 * @param i_loc_id
+	 * @param mts_show
 	 * @returns {Promise}
 	 */
-	motoshopList(i_loc_id)
+	motoshopList(i_loc_id, mts_show)
 	{
 		let {i_page=1} = this.routeArgs;
-		let mts_show = 1;
-
+		
 		return Promise.props({
 			list: this.getClass("motoshop").getMotoshopListByLocId(i_loc_id, mts_show, new Pages(i_page, limit_per_page)),
 			location: this.getClass("location").getLocationById(i_loc_id)
@@ -293,17 +292,10 @@ class Motoshop extends CtrlMain
 		if (!i_mts_id)
 			throw new Errors.HttpError(404);
 
-		//TODO написать условие для mts_show - админ, автор = null илначе 1
 		let mts_show = null;
 
-		//для примера
-		/*this.checkAccess(['owner_edit', 'get_edit'])
-			.then((res)
-			{
-				console.log('moto edit res = ', res);
-			});*/
-		
-		return this.getClass('motoshop').getMotoshop(i_mts_id, mts_show)
+		return this.getClass('motoshop')
+			.getMotoshop(i_mts_id, mts_show)
 			.then((motoshop) => {
 				if (!motoshop)
 					throw new Errors.HttpError(404);
@@ -616,10 +608,10 @@ class Motoshop extends CtrlMain
 	 */
 	mapActionGet()
 	{
-		let show = 1;
+		let mts_show = (this.getLocalAccess()['post_edit'] ? null : 1);
 		return Promise.props({
-			motoshopList: this.getClass("motoshop").getAllMotoshop(show),
-			motoshopLocations: this.getClass("motoshop").getMotoshopLocations(show)
+			motoshopList: this.getClass("motoshop").getAllMotoshop(mts_show),
+			motoshopLocations: this.getClass("motoshop").getMotoshopLocations(mts_show)
 		})
 			.then((props) => {
 				let mtsIds = [];
@@ -628,7 +620,7 @@ class Motoshop extends CtrlMain
 				});
 
 				return this.getClass("motoshop")
-					.getMotoshopAddressList(mtsIds, show)
+					.getMotoshopAddressList(mtsIds, mts_show)
 					.then((addressList) => {
 						return Promise.resolve([props.motoshopList, props.motoshopLocations, addressList]);
 					});

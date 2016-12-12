@@ -40,6 +40,7 @@ class Motoshop extends Base
 	 */
 	getMotoshop(mts_id, mts_show = null)
 	{
+		console.log('mts_show = ', mts_show);
 		return this.model("motoshop").getMotoshop(mts_id, mts_show)
 			.then((motoshop) => {
 
