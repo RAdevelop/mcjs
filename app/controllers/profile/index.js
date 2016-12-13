@@ -38,6 +38,17 @@ class Profile extends CtrlMain
 		};
 	}
 
+	localAccessCheck()
+	{
+		return this.checkAccess(['get_index', 'get_edit', 'post_edit', 'get_change', 'post_ava'
+		]);
+	}
+
+	/*
+	TODO добавить провеки на то, что "редактирем" сами себя.
+	то есть пользователь может менять данные только для своего u_id
+	 */
+
 	/**
 	 * показываем страницу пользователя (свою, или выбранного)
 	 * 
@@ -45,8 +56,8 @@ class Profile extends CtrlMain
 	 */
 	indexActionGet()
 	{
-		if (!this.isAuthorized())
-			throw new Errors.HttpError(401);
+		//if (!this.isAuthorized())
+			//throw new Errors.HttpError(401);
 
 		return this.getUser(this.getUserId())
 			.then((userData) =>  {
@@ -171,13 +182,13 @@ class Profile extends CtrlMain
 		let tplData = this.getReqBody();
 		
 		return this._changeConfirm(tplData)
-		.then((tplData) => {
-			this.view.setTplData('user/profile/change_mail_confirm.ejs', tplData);
-			return Promise.resolve(null);
-		})
-		.catch((err) => {
-			throw err;
-		});
+			.then((tplData) => {
+				this.view.setTplData('user/profile/change_mail_confirm.ejs', tplData);
+				return Promise.resolve(null);
+			})
+			.catch((err) => {
+				throw err;
+			});
 	}
 	
 	_changeConfirm(tplData)

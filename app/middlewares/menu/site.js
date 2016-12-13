@@ -29,7 +29,8 @@ module.exports = function siteMenu(Classes)
 
 		menu(Classes, req, function(err, menuData)
 		{
-			if (err) return next(err);
+			if (err)
+				return next(err);
 			
 			res.locals.menuSite = menuData.menuList;
 			res.locals.menuItem = menuData.menuItem;
@@ -67,7 +68,20 @@ function menu(Classes, req, cb)
 		if (item == '') path.splice(i, 1);
 	});*/
 
-	let is_admin_menu = (path[1] && path[1].toLowerCase() == 'admin' ? 1 : 0);
+	let menu_type = 1;// 1- меню сайта (см model("menu").getAll(...))
+	if (path[1])
+	{
+		switch(path[1].toLowerCase())
+		{
+			case 'admin':
+				menu_type = 0;
+				break;
+
+			case 'profile':
+				menu_type = 2;
+				break;
+		}
+	}
 
 	let menuData = {};
 	menuData.menuList = [];
@@ -85,7 +99,7 @@ function menu(Classes, req, cb)
 				if(req.xhr)
 					return aCb(null, menuData);
 				
-				Classes.model("menu").getAll(is_admin_menu, false, function(err, menuList)
+				Classes.model("menu").getAll(menu_type, false, function(err, menuList)
 				{
 					if (err) return aCb(err, menuData);
 					
@@ -121,7 +135,7 @@ function menu(Classes, req, cb)
 				}
 				
 				//если там нет, смотрим тут
-				Classes.model("menu").getByPath(req.path, is_admin_menu, function(err, menuItem)
+				Classes.model("menu").getByPath(req.path, menu_type, function(err, menuItem)
 				{
 					if (err)
 						return aCb(err, menuData);

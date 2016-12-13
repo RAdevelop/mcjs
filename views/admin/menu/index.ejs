@@ -25,6 +25,16 @@
     <div class="col-xs-10">
         <form id="menuEditForm" class="form-horizontal" action="<%= menuItem['m_path'] %>/edit/" method="post">
             <input type="hidden" id="i_menu_id" name="i_menu_id" value="<%= menuId %>"/>
+            <div class="form-group ui_menu_type">
+                <label class="col-sm-3 control-label" for="ui_menu_type">Тип меню</label>
+                <div class="col-sm-9">
+                        <select id="ui_menu_type" name="ui_menu_type" class="form-control">
+                        <option value="0">для админки</option>
+                        <option value="1">для сайта</option>
+                        <option value="2">для профиля</option>
+                    </select>
+                </div>
+            </div>
             <div class="form-group i_menu_pid">
                 <label class="col-sm-3 control-label" for="i_menu_pid">Родительское меню</label>
                 <div class="col-sm-9">

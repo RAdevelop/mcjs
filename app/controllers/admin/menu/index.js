@@ -35,6 +35,7 @@ class Menu extends CtrlMain
 			menuId: "", menuPid:"0", menuAfterId:"0", menuPath:'', menuName: '', menuTitle: '', menuH1: '', menuDesc: '',
 			menuControllerId: null,
 			menuControllerPath: '',
+			menuType: '',
 			menuList: [],
 			controllerList: []
 		};
@@ -75,6 +76,7 @@ class Menu extends CtrlMain
 			menuId: "", menuPid:"0", menuAfterId:"0", menuPath:'', menuName: '', menuTitle: '', menuH1: '', menuDesc: '',
 			menuControllerId: null,
 			menuControllerPath: '',
+			menuTpye: '',
 			menuList: [],
 			controllerList: []
 		};
@@ -99,6 +101,7 @@ class Menu extends CtrlMain
 				tplData.menuDesc = mData["m_desc"];
 				tplData.menuControllerId = mData["c_id"];
 				tplData.menuControllerPath = mData["c_path"];
+				tplData.menuType = mData["menu_type"];
 
 				return Promise.resolve(tplData);
 			})
@@ -181,9 +184,10 @@ class Menu extends CtrlMain
 
 				tplData = CtrlMain.stripTags(tplData, ["s_menu_path", "s_menu_name", "s_menu_title", "s_menu_h1", "t_menu_desc"]);
 
-				tplData["i_menu_pid"] = parseInt(tplData["i_menu_pid"], 10) || 0;
-				tplData["i_menu_after_id"] = parseInt(tplData["i_menu_after_id"], 10) || 0;
+				tplData["i_menu_pid"]           = parseInt(tplData["i_menu_pid"], 10)           || 0;
+				tplData["i_menu_after_id"]      = parseInt(tplData["i_menu_after_id"], 10)      || 0;
 				tplData["i_menu_controller_id"] = parseInt(tplData["i_menu_controller_id"], 10) || 0;
+				tplData["ui_menu_type"]          = parseInt(tplData["ui_menu_type"], 10)          || 0;
 
 				let errors = {};
 
@@ -205,7 +209,7 @@ class Menu extends CtrlMain
 			.then((tplData) => {
 
 				return this.getClass('menu')
-					.add(tplData["i_menu_pid"], tplData["i_menu_after_id"], tplData["s_menu_path"], tplData["s_menu_name"], tplData["s_menu_title"], tplData["s_menu_h1"], tplData["t_menu_desc"], tplData["i_menu_controller_id"])
+					.add(tplData["i_menu_pid"], tplData["i_menu_after_id"], tplData["s_menu_path"], tplData["s_menu_name"], tplData["s_menu_title"], tplData["s_menu_h1"], tplData["t_menu_desc"], tplData["i_menu_controller_id"], tplData["ui_menu_type"])
 					.then((menuId) => {
 
 						tplData['i_menu_id'] = menuId;
@@ -255,6 +259,7 @@ class Menu extends CtrlMain
 				tplData["i_menu_pid"] = parseInt(tplData["i_menu_pid"], 10) || 0;
 				tplData["i_menu_after_id"] = parseInt(tplData["i_menu_after_id"], 10) || 0;
 				tplData["i_menu_controller_id"] = parseInt(tplData["i_menu_controller_id"], 10) || 0;
+				tplData["ui_menu_type"] = parseInt(tplData["ui_menu_type"], 10) || 0;
 
 				let errors = {};
 
@@ -276,7 +281,7 @@ class Menu extends CtrlMain
 			.then((tplData) => {
 
 				return this.getClass('menu')
-					.updById(tplData["i_menu_id"], tplData["i_menu_pid"], tplData["i_menu_after_id"], tplData["s_menu_path"], tplData["s_menu_name"], tplData["s_menu_title"], tplData["s_menu_h1"], tplData["t_menu_desc"], tplData["i_menu_controller_id"])
+					.updById(tplData["i_menu_id"], tplData["i_menu_pid"], tplData["i_menu_after_id"], tplData["s_menu_path"], tplData["s_menu_name"], tplData["s_menu_title"], tplData["s_menu_h1"], tplData["t_menu_desc"], tplData["i_menu_controller_id"], tplData["ui_menu_type"])
 					.then(() => {
 						return Promise.resolve(tplData);
 					});

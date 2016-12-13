@@ -36,7 +36,7 @@ let menu = {
 		
 		m_id: null,m_pid: null,m_level: null,m_lk: null,m_rk: null,c_id: null
 	},
-	"/profile":{
+	/*"/profile":{
 		c_path: '/profile',
 		m_path: '/profile',
 		m_name: 'Личный кабинет',
@@ -47,7 +47,7 @@ let menu = {
 		
 		m_id: null,m_pid: null,m_level: null,m_lk: null,m_rk: null,c_id: null
 	},
-	/*"/profile/photo":{
+	"/profile/photo":{
 		c_path: '/profile/photo',
 		m_path: '/profile/photo',
 		m_name: 'Фотографии',
