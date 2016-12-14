@@ -36,8 +36,7 @@ class ProfilePhoto extends CtrlMain
 	 */
 	indexActionGet()
 	{
-		//if (!this.isAuthorized())
-		//	throw new Errors.HttpError(401);
+		//console.log(this.getLocalAccess());
 
 		let xhr = this.getReq().xhr;
 		let {i_u_id=this.getUserId(), i_a_id} = this.routeArgs;
@@ -143,7 +142,7 @@ class ProfilePhoto extends CtrlMain
 					.then((album) => {
 
 						if (!album)
-							return Promise.reject(new Errors.HttpError(404));
+							throw new Errors.HttpError(404);
 
 						tplData["album"] = album;
 						return Promise.resolve(tplData);
@@ -219,9 +218,6 @@ class ProfilePhoto extends CtrlMain
 
 	indexActionPost()
 	{
-		if (!this.isAuthorized())
-			throw new Errors.HttpStatusError(401, "Unauthorized");
-
 		let tplData = this.getParsedBody();
 
 		let tplFile = 'user/profile/photo/albums.ejs';
@@ -370,7 +366,7 @@ class ProfilePhoto extends CtrlMain
 					.then((album) => {
 
 						if (!album || !album["a_is_owner"])
-							throw new Errors.HttpStatusError(400, "Bad request");
+							throw new Errors.HttpError(400);
 
 						return this.getClass('user/photo')
 							.editAlbumNamed(this.getUserId(), tplData["i_a_id"], tplData["s_album_name"], tplData["t_album_text"]);

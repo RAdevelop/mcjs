@@ -330,16 +330,13 @@ class Base
 		return this._routeArgs;
 	}
 
-	localAccessCheck()
+	setLocalAccess(localAccess)
 	{
-		return Promise.resolve({});
+		this._localAccess = localAccess;
+		return this;
 	}
-
-	getLocalAccess(localAccess)
+	getLocalAccess()
 	{
-		if (!this._localAccess)
-			this._localAccess = localAccess;
-
 		return this._localAccess;
 	}
 
@@ -352,14 +349,18 @@ class Base
 			throw new Errors.HttpError(404);
 
 		return this.checkAccess()
-			.then((res) => {
-				if (!Object.keys(res).length)
+			.then((localAccess) => {
+
+				let check_method = this.httpMethod+'_'+this.getActionName();
+
+				if (this.getRes().locals.menuItem.m_id && !localAccess[check_method])
 					throw new Errors.HttpError(403);
 
-				return this.localAccessCheck();
+				return Promise.resolve(localAccess);
 			})
 			.then((localAccess) => {
-				this.getLocalAccess(localAccess);
+
+				this.setLocalAccess(localAccess);
 				//this._getClasses().setSession(this.getReq().session);
 
 				//this.view = new Template(this.getReq(), this.getRes(), this);
@@ -371,19 +372,16 @@ class Base
 
 	/**
 	 * проверяем права доступа пользователя
-	 * 
-	 * @param cm_method
+	 *
 	 * @param m_id
 	 * @returns {Promise}
 	 */
-	checkAccess(cm_method = null, m_id = null)
+	checkAccess(m_id = null)
 	{
-		//return Promise.resolve([1]);//для отладки
-
+		//когда меню из файла /app/middlewares/menu/menu.js
 		if (!this.getRes().locals.menuItem.m_id)
-			return Promise.resolve([1]);
+			return Promise.resolve({});
 
-		cm_method = cm_method || this.httpMethod+'_'+this.getActionName();
 		m_id = m_id || this.getRes().locals.menuItem.m_id;
 
 		return this.getUser(this.getUserId())
@@ -391,7 +389,7 @@ class Base
 
 				let ug_ids = (user.ug_ids ? user.ug_ids : []);
 				return this.getClass('user/groups')
-					.checkAccessToMenu(m_id, ug_ids, cm_method);
+					.checkAccessToMenu(m_id, ug_ids);
 			});
 	}
 	

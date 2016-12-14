@@ -335,22 +335,20 @@ class UserGroups extends UserModel
 
 	/**
 	 * список права для группы в указанный пункт меню
-	 * @param ug_path
+	 *
 	 * @param m_id
-	 * @param cm_method
+	 * @param ug_path
 	 * @returns {Promise}
 	 */
-	checkGroupRightsByPathAndMenu(ug_path, m_id, cm_method)
+	getGroupRightsByPathAndMenu(m_id, ug_path)
 	{
-		let cmPlaceHolders = this.constructor.placeHoldersForIn(cm_method);
-		let sqlData = [].concat(cm_method);
-			sqlData.unshift(m_id, ug_path);
+		let sqlData = [m_id, ug_path];
 		let sql =
 			`SELECT ug.ug_id, m.m_id, cm.cm_id, cm.cm_method
 			FROM (SELECT NULL) AS z
 			JOIN menu AS m ON(m.m_id = ?)
 			JOIN users_groups AS ug ON(ug.ug_path = ?)
-			JOIN controllers_methods AS cm ON(cm.c_id = m.c_id AND cm.cm_method IN(${cmPlaceHolders}))
+			JOIN controllers_methods AS cm ON(cm.c_id = m.c_id)
 			JOIN users_groups_rights AS ugr ON(ugr.ug_id = ug.ug_id AND ugr.m_id = m.m_id AND ugr.c_id = cm.c_id 
 			AND ugr.cm_id = cm.cm_id)`;
 
@@ -375,7 +373,7 @@ class UserGroups extends UserModel
 				let rights = {};
 
 				res.forEach((item) => {
-					rights[item['cm_method']] =item['m_id'];
+					rights[item['cm_method']] = item['m_id'];
 				});
 
 				return Promise.resolve(rights);
@@ -388,30 +386,27 @@ class UserGroups extends UserModel
 	 *
 	 * @param int m_id - id меню
 	 * @param array ug_ids - id групп пользователя
-	 * @param array cm_method - метод
 	 * @returns {Promise}
 	 */
-	checkUserRights(m_id, ug_ids, cm_methods)
+	getUserRights(m_id, ug_ids)
 	{
 		let ugPlaceHolders = this.constructor.placeHoldersForIn(ug_ids);
-		let cmPlaceHolders = this.constructor.placeHoldersForIn(cm_methods);
 
-		let sqlData = [].concat(cm_methods);
-			sqlData = sqlData.concat(ug_ids);
+		let sqlData = [].concat(ug_ids);
 
 		sqlData.unshift(m_id);
 
 		let sql = `SELECT m.m_id, cm.cm_method
 		FROM (SELECT NULL) AS z
 		JOIN menu AS m ON(m.m_id = ?)
-		JOIN controllers_methods AS cm ON(cm.c_id = m.c_id 
-			AND cm.cm_method IN (${cmPlaceHolders})
-		)
+		JOIN controllers_methods AS cm ON(cm.c_id = m.c_id)
 		JOIN users_groups_rights AS ugr ON(
 			ugr.m_id = m.m_id AND ugr.c_id = cm.c_id AND ugr.cm_id = cm.cm_id
 			AND ugr.ug_id IN (${ugPlaceHolders}) 
 		)
 		GROUP BY cm.cm_id`;
+
+		//console.log(sql, sqlData);
 
 		return this.constructor.conn().ps(sql, sqlData)
 			.then((res) => {

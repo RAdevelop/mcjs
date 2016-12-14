@@ -29,12 +29,7 @@ class Mototreki extends CtrlMain
 			}
 		}
 	}
-
-	localAccessCheck()
-	{
-		return this.checkAccess(['get_edit', 'post_edit', 'get_add', 'post_add']);
-	}
-
+	
 	/**
 	 * главная страница
 	 *

@@ -40,11 +40,6 @@ class Profile extends CtrlMain
 		};
 	}
 
-	localAccessCheck()
-	{
-		return this.checkAccess(['get_index', 'get_edit', 'post_edit', 'get_change', 'post_ava']);
-	}
-
 	/*
 	TODO добавить провеки на то, что "редактирем" сами себя.
 	то есть пользователь может менять данные только для своего u_id
@@ -248,9 +243,6 @@ class Profile extends CtrlMain
 	 */
 	_formProfileValidation(tplData)
 	{
-		if (!this.isAuthorized())
-			return Promise.reject(new Errors.HttpStatusError(401, "Unauthorized"));
-		
 		if (!this.isTheSameUser(tplData.i_u_id))
 			return Promise.reject(new Errors.HttpStatusError(403, "Forbidden"));
 

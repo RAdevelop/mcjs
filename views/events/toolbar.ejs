@@ -1,6 +1,8 @@
 <div class="row">
 	<div class="btn-toolbar btnsToolbar" role="toolbar" aria-label="Опции для событий"><%
-		if (Object.keys(_access)) { %>
+		if (Object.keys(_access).some((m)=>{
+					return (['post_add','post_edit'].indexOf(m) != -1);
+		})) { %>
 		<div class="btn-group btn-group-sm" role="group" aria-label="Опции для событий">
 			<button type="button" class="btn btn-default dropdown-toggle toolbarBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-fw fa-cog"></i> опции <i class="caret"></i></button>
 			<ul class="dropdown-menu eventToolBar">

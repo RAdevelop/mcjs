@@ -62,12 +62,11 @@ class UserGroups extends Base
 	 *
 	 * @param m_id - id меню
 	 * @param ug_ids - id групп пользователя
-	 * @param cm_methods - методы
 	 * @returns {Promise}
 	 */
-	checkUserRights(m_id, ug_ids, cm_methods)
+	getUserRights(m_id, ug_ids)
 	{
-		return this.model('user/groups').checkUserRights(m_id, ug_ids, cm_methods);
+		return this.model('user/groups').getUserRights(m_id, ug_ids);
 	}
 
 	/**
@@ -75,21 +74,17 @@ class UserGroups extends Base
 	 *
 	 * @param m_id
 	 * @param ug_ids
-	 * @param cm_method - метод (пример: get_index, post_edit...)
 	 * @returns {Promise}
 	 */
-	checkAccessToMenu(m_id, ug_ids, cm_methods)
+	checkAccessToMenu(m_id, ug_ids)
 	{
-		if (!cm_methods.map)
-			cm_methods = [cm_methods];
-
 		return Promise.resolve(ug_ids)
 			.then((ug_ids) => {
 				
 				if (!ug_ids.length)
-					return this.model('user/groups').checkGroupRightsByPathAndMenu('guest', m_id, cm_methods);
+					return this.model('user/groups').getGroupRightsByPathAndMenu(m_id, 'guest');
 				
-				return this.checkUserRights(m_id, ug_ids, cm_methods);
+				return this.getUserRights(m_id, ug_ids);
 			});
 	}
 

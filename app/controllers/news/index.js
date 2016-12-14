@@ -38,12 +38,7 @@ class News extends CtrlMain
 			}
 		};
 	}
-
-	localAccessCheck()
-	{
-		return this.checkAccess(['get_edit', 'post_edit', 'get_add', 'post_add','post_upload']);
-	}
-
+	
 	/**
 	 * главная страница
 	 *

@@ -37,12 +37,7 @@ class Motoshop extends CtrlMain
 			}
 		}
 	}
-
-	localAccessCheck()
-	{
-		return this.checkAccess(['get_edit', 'post_edit', 'get_add', 'post_add']);
-	}
-
+	
 	/**
 	 *
 	 * @returns {Promise}
@@ -178,7 +173,7 @@ class Motoshop extends CtrlMain
 			.then((motoshop) => {
 
 				if (!motoshop || s_mts_alias != motoshop["mts_alias"])
-					throw new Errors.HttpStatusError(404, "Not found");
+					throw new Errors.HttpError(404);
 
 				return Promise.resolve([motoshop, null, null]);
 			});

@@ -22,10 +22,6 @@ class Controller extends CtrlMain
 			}
 		};
 	}
-	localAccessCheck()
-	{
-		return this.checkAccess(['get_edit', 'post_edit']);
-	}
 	
 	/**
 	 *
