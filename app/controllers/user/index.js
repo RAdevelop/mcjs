@@ -4,8 +4,6 @@
 const Errors = require('app/lib/errors');
 const Pages = require('app/lib/pages');
 const Promise = require("bluebird");
-//const Mail = require('app/lib/mail');
-//const _ = require('lodash');
 
 const CtrlMain = require('app/lib/controller');
 
@@ -18,7 +16,6 @@ class User extends CtrlMain
 		return {
 			"index": {
 				"^\/?page\/[0-9]+\/?$" : [ ,"i_page"] //список с постраничкой
-				,"^\/?[1-9]+[0-9]*\/?$" : ['i_u_id'] //профиль пользователя
 				,"^\/?$" : null //список пользователей
 			}
 		};
@@ -34,54 +31,13 @@ class User extends CtrlMain
 		if (!this.isAuthorized())
 			throw new Errors.HttpError(401);
 
-		let {i_u_id} = this.routeArgs;
-
-		if (i_u_id)
-		return this.userProfile(i_u_id);
-
 		return this.usersList();
-	}
-
-	/**
-	 * просмотр профиля выбранного пользователя
-	 *
-	 * @param u_id
-	 */
-	userProfile(u_id)
-	{
-		return this.getUser(u_id)
-			.then((userData) => {
-
-				if (!userData || !userData.u_id)
-					throw new Errors.HttpError(404);
-
-				return this.getClass('user/photo').getAlbumList(this.getUserId(), u_id, new Pages(1, 4))
-					.spread((albums) => {//, Pages
-						return [userData, albums];
-					});
-			})
-			.spread((userData, albums) => {
-
-				let tplFile = "user/profile.ejs";
-				let tplData = {
-					user: userData,
-					albums: albums
-				};
-				this.view.setTplData(tplFile, tplData);
-				this.view.addPartialData("user/left", {user: userData});
-				//self.view.addPartialData("user/right", {}); //TODO
-
-				return Promise.resolve(null);
-			})
-			.catch((err) => {
-				throw err;
-			});
 	}
 
 	/**
 	 * список пользователей
 	 *
-	 * @returns {Promise.<T>}
+	 * @returns {Promise}
 	 */
 	usersList()
 	{

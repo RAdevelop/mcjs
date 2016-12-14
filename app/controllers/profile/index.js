@@ -6,6 +6,7 @@ const Promise = require("bluebird");
 const Errors = require('app/lib/errors');
 const Mail = require('app/lib/mail');
 const FileUpload = require('app/lib/file/upload');
+const Pages = require('app/lib/pages');
 
 //const FileErrors = require('app/lib/file/errors');
 //const _ = require('lodash');
@@ -22,7 +23,8 @@ class Profile extends CtrlMain
 	{
 		return {
 			"index": {
-				'^\/?$': null
+				"^\/?[1-9][0-9]*\/?$" : ['i_u_id'] //профиль пользователя
+				,'^\/?$': null
 			},
 			"edit": {
 				'^\/?$': null
@@ -40,8 +42,7 @@ class Profile extends CtrlMain
 
 	localAccessCheck()
 	{
-		return this.checkAccess(['get_index', 'get_edit', 'post_edit', 'get_change', 'post_ava'
-		]);
+		return this.checkAccess(['get_index', 'get_edit', 'post_edit', 'get_change', 'post_ava']);
 	}
 
 	/*
@@ -56,18 +57,29 @@ class Profile extends CtrlMain
 	 */
 	indexActionGet()
 	{
-		//if (!this.isAuthorized())
-			//throw new Errors.HttpError(401);
+		let {i_u_id=this.getUserId()} = this.routeArgs;
 
-		return this.getUser(this.getUserId())
-			.then((userData) =>  {
+		return this.getUser(i_u_id)
+			.then((userData) => {
 
-				let tplFile = 'user/profile/index.ejs';
-				let tplData = {};
-				Object.assign(tplData, userData);
+				if (!userData || !userData.u_id)
+					throw new Errors.HttpError(404);
 
+				return this.getClass('user/photo').getAlbumList(this.getUserId(), i_u_id, new Pages(1, 4))
+					.spread((albums) => {//, Pages
+						return [userData, albums];
+					});
+			})
+			.spread((userData, albums) => {
+
+				let tplFile = "user/profile/index.ejs";
+				let tplData = {
+					user: userData,
+					albums: albums
+				};
 				this.view.setTplData(tplFile, tplData);
-				this.view.addPartialData('user/left', {user: userData});
+				this.view.addPartialData("user/left", {user: userData});
+				//self.view.addPartialData("user/right", {}); //TODO
 
 				return Promise.resolve(null);
 			})

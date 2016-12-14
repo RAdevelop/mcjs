@@ -36,28 +36,6 @@ let menu = {
 		
 		m_id: null,m_pid: null,m_level: null,m_lk: null,m_rk: null,c_id: null
 	},
-	/*"/profile":{
-		c_path: '/profile',
-		m_path: '/profile',
-		m_name: 'Личный кабинет',
-		m_title: 'Личный кабинет',
-		m_h1: 'Личный кабинет',
-		m_desc: 'Личный кабинет',
-		m_nbsp: '',
-		
-		m_id: null,m_pid: null,m_level: null,m_lk: null,m_rk: null,c_id: null
-	},
-	"/profile/photo":{
-		c_path: '/profile/photo',
-		m_path: '/profile/photo',
-		m_name: 'Фотографии',
-		m_title: 'Фотографии',
-		m_h1: 'Фотографии',
-		m_desc: 'Фотографии',
-		m_nbsp: '',
-
-		m_id: null,m_pid: null,m_level: null,m_lk: null,m_rk: null,c_id: null
-	},*/
 	"/user/photo":{
 		c_path: '/user/photo',
 		m_path: '/user/photo',

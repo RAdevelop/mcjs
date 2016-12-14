@@ -1,14 +1,12 @@
-<%  if(!_isXHR){%><%- layout('layout/user/index') %><% } %>
-<% if (users){
+<%
+if(!_isXHR){%><%- layout('layout/user/index') %><% }
+if (users){
 users.forEach(function (usr)
 {
-	let linkTousr = _reqBaseUrl+'/'+usr["u_id"];
 	let usrAvaSrc = (usr["previews"]["180_180"] ? usr["previews"]["100_100"] : '/_0.gif');
-%>
-<a href="<%=linkTousr%>/">
+%><a href="<%='/profile/'+usr["u_id"]%>/">
 	<img src="<%=usrAvaSrc%>" style="width: 100px; border: 1px solid;"/>
 	<%=usr['u_display_name']%>
 	<%=usr.l_name%>
-</a>
-<%});} %>
+</a><%});} %>
 <%- include ../pages/index.ejs %>

@@ -1,11 +1,10 @@
-/*
 "use strict";
 
 const Pages = require("app/lib/pages");
 const Logger = require('app/lib/logger');
 const Promise = require("bluebird");
 const Errors = require('app/lib/errors');
-//const MultiGeocoder = require('multi-geocoder');
+
 const FileUpload = require('app/lib/file/upload');
 const CtrlMain = require('app/lib/controller');
 
@@ -13,97 +12,94 @@ let limit_per_page = 20;
 
 class ProfilePhoto extends CtrlMain
 {
-
 	routePaths()
 	{
 		return {
 			"index": {
-				"^\/?[0-9]+\/page\/[0-9]+\/?$" : ["i_a_id", ,"i_page"] //список фоток в альбоме с постраничкой
-				,"^\/?page\/[0-9]+\/?$" : [ ,"i_page"] //список альбомов с постраничкой
-				,"^\/?[0-9]+\/?$" : ["i_a_id"] //список фоток в альбоме
-				,"^\/?$" : null //список альбомов
+				"^\/?[1-9]+[0-9]*\/[1-9]+[0-9]*\/page\/[1-9]+[0-9]*\/?$" : ["i_u_id", "i_a_id", ,"i_page"] //список фоток в альбоме с постраничкой
+				,"^\/?[1-9]+[0-9]*\/[1-9]+[0-9]*\/?$" : ["i_u_id", "i_a_id"] //список фоток в альбоме юзера
+
+				,"^\/?[1-9]+[0-9]*\/page\/[1-9]+[0-9]*\/?$" : ["i_u_id", ,"i_page"] //список альбомов юзера с постраничкой
+				,"^\/?[1-9]+[0-9]*\/?$" : ["i_u_id"] //профиль юзера
+				,"^\/?$" : null //список юзеров
+			},
+			"upload": {
+				"^\/?$" : null
 			}
-		}
+		};
 	}
 
-	/!**
-	 * показываем страницу пользователя (свою, или выбранного)
-	 * @param cb
+	/**
+	 * показываем страницу  с фотоальбомами пользователя (свою, или выбранного)
+	 *
 	 * @returns {Promise}
-	 *!/
-	indexActionGet(cb)
+	 */
+	indexActionGet()
 	{
-		if (!this.isAuthorized())
-			return cb(new Errors.HttpStatusError(401, "Unauthorized"));
+		//if (!this.isAuthorized())
+		//	throw new Errors.HttpError(401);
 
-		//if (args.length > 1)
-		//	return cb(new Errors.HttpStatusError(404, "Not found"));
 		let xhr = this.getReq().xhr;
-		return Promise.resolve(xhr)
-			.bind(this)
-			.then(function (xhr)
-			{
-				if (xhr)
-					return Promise.resolve({});
+		let {i_u_id=this.getUserId(), i_a_id} = this.routeArgs;
 
-				return this.getClass("user").getUser(this.getUserId())
-					.then(function (userData)
-					{
-						let tplData = (xhr ? {} : {"user": userData});
+		return this.getUser(i_u_id)
+			.then((userData) => {
 
-						return Promise.resolve(tplData);
-					});
+				if (!userData["u_id"])
+					throw new Errors.HttpError(404);
+
+				userData["u_is_owner"] = this.isTheSameUser(i_u_id);
+
+				return Promise.resolve(userData);
 			})
-			.then(function (tplData)
-			{
-				tplData["albums"] = null;
-				tplData["album"] = null;
-				tplData["pages"] = null;
+			.then((userData) => {
+				let tplData = {
+					"user": userData
+					,   "albums": null
+					,   "album": null
+					,   "pages": null
+				};
 
-				if (this.routeArgs["i_a_id"])
-					return this.album(cb, tplData, xhr);
+				if (i_a_id)
+					return this.album(i_u_id, tplData, xhr);
 
-				return this.albumList(cb, tplData, xhr);
+				return this.albumList(i_u_id, tplData, xhr);
 			})
-			.catch(function (err)
-			{
-				return cb(err);
+			.catch((err) => {
+				throw err;
 			});
 	}
-	
-	/!**
+
+	/**
 	 * список фотоальбомов пользователя
 	 *
-	 * @param cb
+	 * @param i_u_id
 	 * @param tplData
 	 * @param isAjax
 	 * @returns {Promise}
-	 *!/
-	albumList(cb, tplData, isAjax = false)
+	 */
+	albumList(i_u_id, tplData, isAjax = false)
 	{
 		let {i_page=1} = this.routeArgs;
 
 		return Promise.resolve(tplData)
-			.bind(this)
-			.then(function (tplData)
-			{
-				return this.getClass('user/photo').getAlbumList(this.getUserId(), this.getUserId(), new Pages(i_page, limit_per_page))
-					.bind(this)
-					.spread(function (albums, Pages)
-					{
-						tplData["albums"]   = albums;
+			.then((tplData) => {
+				return this.getClass('user/photo')
+					.getAlbumList(this.getUserId(), i_u_id, new Pages(i_page, limit_per_page))
+					.spread((albums, Pages) => {
 
+						tplData["albums"]   = albums;
 						return [tplData, Pages];
 					});
 			})
-			.spread(function (tplData, Pages)
-			{
+			.spread((tplData, Pages) => {
+
 				let exposeAlbums = 'albums';
-				Pages.setLinksUri(this.getBaseUrl())
+				Pages.setLinksUri(this.getBaseUrl()+'/'+ i_u_id)
 					.setAjaxPagesType(true)
 					.setAjaxDataSrc(['albums'])
 					.setAjaxDataTarget(exposeAlbums)
-					.setJquerySelectorData('.album');
+					.setJquerySelectorData('.albumList .album');
 
 				tplData["pages"] = Pages.pages();
 
@@ -124,37 +120,37 @@ class ProfilePhoto extends CtrlMain
 				this.getRes().expose(tplData["albums"], exposeAlbums);
 				this.getRes().expose(tplData["pages"], 'pages');
 
-				return cb(null);
+				return Promise.resolve(isAjax);
 			});
 	}
 
-	/!**
+	/**
 	 * просмотр фотоальбома
 	 *
-	 * @param cb
+	 * @param i_u_id
 	 * @param tplData
 	 * @param isAjax
-	 *!/
-	album(cb, tplData, isAjax = false)
+	 */
+	album(i_u_id, tplData, isAjax = false)
 	{
 		let {i_a_id, i_page=1} = this.routeArgs;
 
 		return Promise.resolve(tplData)
-			.bind(this)
-			.then(function (tplData)
-			{
-				return this.getClass('user/photo').getAlbum(this.getUserId(), this.getUserId(), i_a_id)
-					.then(function (album)
-					{
+			.then((tplData) => {
+
+				return this.getClass('user/photo')
+					.getAlbum(this.getUserId(), i_u_id, i_a_id)
+					.then((album) => {
+
 						if (!album)
-							return Promise.reject(new Errors.HttpStatusError(404, "Not found"));
+							return Promise.reject(new Errors.HttpError(404));
 
 						tplData["album"] = album;
 						return Promise.resolve(tplData);
 					});
 			})
-			.then(function (tplData)
-			{
+			.then((tplData) => {
+
 				if (!tplData["album"]["a_img_cnt"])
 				{
 					tplData["album"]["images"] = [];
@@ -162,32 +158,23 @@ class ProfilePhoto extends CtrlMain
 				}
 
 				return this.getClass('user/photo')
-					.getAlbumImages(this.getUserId(), i_a_id, new Pages(i_page, limit_per_page, tplData["album"]["a_img_cnt"]))
-					.bind(this)
-					.spread(function (Pages, images, allPreviews)
-					{
-						Pages.setLinksUri(this.getBaseUrl()+'/'+i_a_id);
+					.getAlbumImages(i_u_id, i_a_id, new Pages(i_page, limit_per_page, tplData["album"]["a_img_cnt"]))
+					.spread((Pages, images, allPreviews) => {
+
+						Pages.setLinksUri(this.getBaseUrl()+'/'+i_u_id+'/'+i_a_id);
 
 						tplData["album"]["images"] = images;
 						//return Promise.resolve(tplData);
 						return [tplData, allPreviews, Pages];
 					});
 			})
-			.spread(function (tplData, allPreviews, Pages)
-			{
+			.spread((tplData, allPreviews, Pages) => {
+
 				if (!isAjax)
 				{
 					tplData = Object.assign(tplData, FileUpload.createToken('user_photo', {"a_id": i_a_id}) );
 
-					let uploadConfig = FileUpload.getUploadConfig('user_photo');
-
-					this.getRes().expose({
-						"fileMediaType":    uploadConfig["fileMediaType"]
-						,"fileSizeLimit":   uploadConfig["fileSizeLimit"]
-						,"fileTypes":       uploadConfig["fileTypes"]
-						,"maxFileSize":     uploadConfig["maxFileSize"]
-						,"multiUpload":     uploadConfig["multiUpload"]
-					}, 'albumUploadOpts');
+					this.getRes().expose(FileUpload.exposeUploadOptions('user_photo'), 'albumUploadOpts');
 				}
 
 				let exposeAlbumImages = 'albumImages';
@@ -211,70 +198,71 @@ class ProfilePhoto extends CtrlMain
 				{
 					tplFile = 'user/profile/photo/albums.ejs';
 					this.view.addPartialData('user/left', {user: tplData["user"]});
+
+					this.view.setPageTitle(tplData["album"]["a_name"]);
+					this.view.setPageDescription(CtrlMain.cheerio(tplData["album"]["a_text"]).text());
+
+					if (tplData["album"]["images"] && tplData["album"]["images"][0] && tplData["album"]["images"][0]["previews"]["512_384"])
+						this.view.setPageOgImage(tplData["album"]["images"][0]["previews"]["512_384"]);
 				}
 
 				this.view.setTplData(tplFile, tplData, isAjax);
+
+				this.getRes().expose(tplData["album"], 'album');
 				this.getRes().expose(tplData["album"]["images"], exposeAlbumImages);
 				this.getRes().expose(allPreviews, 'albumPreviews');
 				this.getRes().expose(tplData["pages"], 'pages');
 
-				return cb(null);
-			})
+				return Promise.resolve(isAjax);
+			});
 	}
 
-	indexActionPost(cb)
+	indexActionPost()
 	{
 		if (!this.isAuthorized())
-			return cb(new Errors.HttpStatusError(401, "Unauthorized"));
+			throw new Errors.HttpStatusError(401, "Unauthorized");
 
 		let tplData = this.getParsedBody();
-
-		if (!tplData["btn_save_album"])
-			return Promise.reject(new Errors.HttpStatusError(400, "Bad request"));
 
 		let tplFile = 'user/profile/photo/albums.ejs';
 
 		//console.log(tplData);
 
 		return this.albumPostActions(tplData)
-			.bind(this)
-			.then(function(tplData) //если валидация успешна
-			{
+			.then((tplData) => { //если валидация успешна
+
 				//tplData.formError.error = false;
 				this.view.setTplData(tplFile, tplData);
-				return cb(null, true);
+				return Promise.resolve(true);
 			})
-			.catch(Errors.ValidationError, Errors.AlreadyInUseError, function(err)
-			{
-				//такие ошибки не уводят со страницы.
-				tplData.formError.error = true;
-				tplData.formError.errorName = err.name;
+			.catch(Errors.FormError, (err) => {
 
-				this.view.setTplData(tplFile, tplData);
-
-				return cb(null, true);
+				this.view.setTplData(tplFile, err.data);
+				return Promise.resolve(true);
 			})
-			.catch(function(err)
-			{
-				return cb(err);
+			.catch((err) => {
+				throw err;
 			});
 	}
 
-	/!**
+	/**
 	 * обработка POST событий над формами
 	 *
 	 * @param tplData
 	 * @returns {Promise}
-	 *!/
+	 */
 	albumPostActions(tplData)
 	{
+		if (!tplData["btn_save_album"])
+			throw new Errors.HttpError(400);
+
 		switch(tplData["btn_save_album"])
 		{
 			default:
 				tplData.formError.error = true;
 				tplData.formError.message = 'Невереные данные';
 
-				return Promise.reject(new Errors.HttpStatusError(400, tplData.formError.message));
+				throw new Errors.HttpError(400, tplData.formError.message);
 				break;
 
 			case 'add_album':
@@ -296,193 +284,164 @@ class ProfilePhoto extends CtrlMain
 			case 'sort_img':
 				return this.sortImg(tplData);
 				break;
+
+			case 'del_album':
+				return this.delAlbum(tplData);
+				break;
 		}
 	}
 
-	/!**
+	/**
 	 * сорхранение позиций фотографий после их сортировке на клиенте
 	 *
 	 * @param tplData
-	 *!/
+	 */
 	sortImg(tplData)
 	{
 		if (!tplData["i_a_id"] || !tplData.hasOwnProperty("ai_pos") || !tplData["ai_pos"].length)
 			return Promise.resolve(tplData);
 
-		return this.getClass('user/photo').sortImgUpd(this.getUserId(), tplData["i_a_id"], tplData["ai_pos"])
-			.then(function ()
-			{
+		return this.getClass('user/photo')
+			.sortImgUpd(this.getUserId(), tplData["i_a_id"], tplData["ai_pos"])
+			.then(() => {
 				return Promise.resolve(tplData);
 			});
 	}
 
-	/!**
+	/**
 	 * создание фотоальбома
 	 *
 	 * @param tplData
 	 * @returns {Promise}
-	 *!/
+	 */
 	addNamedAlbum(tplData)
 	{
-		let errors = {};
+		if (!tplData["i_u_id"] || tplData["i_u_id"] != this.getUserId())
+			throw new Errors.HttpError(400);
 
-		tplData["s_album_name"] = (tplData["s_album_name"] || '').trim();
+		tplData = CtrlMain.stripTags(tplData, ["s_album_name", "t_album_text"]);
+
+		let errors = {};
 
 		if (tplData["s_album_name"] == '')
 			errors["s_album_name"] = 'Укажите название альбома';
 
 		return Promise.resolve(errors)
-			.bind(this)
-			.then(function(errors)
-			{
-				let errKeys = Object.keys(errors);
-
-				if (errKeys.length)
-				{
-					errKeys.forEach(function(f)
-					{
-						tplData.formError.fields[f] = errors[f];
-					});
-
-					tplData.formError.message = 'Ошибка при создании фотоальбома';
-					throw(new Errors.ValidationError(tplData.formError.message));
-				}
-
-				return Promise.resolve(tplData);
+			.then((errors) => {
+				if (this.parseFormErrors(tplData, errors, 'Ошибка при создании фотоальбома'))
+					return Promise.resolve(tplData);
 			})
-			.then(function (tplData)
-			{
-				return this.getClass('user/photo').addNamedAlbum(this.getUserId(), tplData["s_album_name"], tplData["s_album_text"])
-					.then(function (a_id)
-					{
+			.then((tplData) => {
+				return this.getClass('user/photo')
+					.addNamedAlbum(this.getUserId(), tplData["s_album_name"], tplData["t_album_text"])
+					.then((a_id) => {
 						tplData["a_id"] = a_id;
 						return Promise.resolve(tplData);
 					});
 			});
 	}
 
-	/!**
+	/**
 	 * радактирование названия и описания фотоальбома
 	 *
 	 * @param tplData
 	 * @returns {Promise}
-	 *!/
+	 */
 	editAlbum(tplData)
 	{
+		tplData = CtrlMain.stripTags(tplData, ["s_album_name", "t_album_text"]);
+
+		if (!tplData["i_a_id"] || !tplData.hasOwnProperty("s_album_name") || !tplData.hasOwnProperty("t_album_text"))
+			throw new Errors.HttpError(400);
+
 		let errors = {};
-
-		tplData["s_album_name"] = (tplData["s_album_name"] || '').trim();
-
-		if (!tplData["i_a_id"] || !tplData.hasOwnProperty("s_album_name") || !tplData.hasOwnProperty("s_album_text"))
-			return Promise.reject(new Errors.HttpStatusError(400, 'Bad request'));
-
 		if (tplData["s_album_name"] == '')
 			errors["s_album_name"] = 'Укажите название альбома';
 
 		return Promise.resolve(errors)
-			.bind(this)
-			.then(function(errors)
-			{
-				let errKeys = Object.keys(errors);
-
-				if (errKeys.length)
-				{
-					errKeys.forEach(function(f)
-					{
-						tplData.formError.fields[f] = errors[f];
-					});
-
-					tplData.formError.message = 'Ошибка при редактировании фотоальбома';
-					return Promise.reject(new Errors.ValidationError(tplData.formError.message));
-				}
-
-				return Promise.resolve(tplData);
+			.then((errors) => {
+				if (this.parseFormErrors(tplData, errors, 'Ошибка при редактировании фотоальбома'))
+					return Promise.resolve(tplData);
 			})
-			.then(function (tplData)
-			{
-				return this.getClass('user/photo').getAlbum(this.getUserId(), this.getUserId(), tplData["i_a_id"])
-					.bind(this)
-					.then(function (album)
-					{
+			.then((tplData) => {
+
+				return this.getClass('user/photo')
+					.getAlbum(this.getUserId(), this.getUserId(), tplData["i_a_id"])
+					.then((album) => {
+
 						if (!album || !album["a_is_owner"])
 							throw new Errors.HttpStatusError(400, "Bad request");
 
-						return this.getClass('user/photo').editAlbumNamed(this.getUserId(), tplData["i_a_id"], tplData["s_album_name"], tplData["s_album_text"])
-							.then(function (a_id)
-							{
-								tplData["a_id"] = a_id;
-								return Promise.resolve(tplData);
-							});
+						return this.getClass('user/photo')
+							.editAlbumNamed(this.getUserId(), tplData["i_a_id"], tplData["s_album_name"], tplData["t_album_text"]);
 					});
+			})
+			.then((a_id) => {
+				tplData["a_id"] = a_id;
+				return Promise.resolve(tplData);
 			});
 	}
 
-	/!**
+	/**
 	 * обновляем описание фотографии
 	 *
 	 * @param tplData
 	 * @returns {Promise}
-	 *!/
+	 */
 	updImgText(tplData)
 	{
-		if (!tplData["i_a_id"] || !tplData["i_ai_id"] || !tplData.hasOwnProperty("s_ai_text"))
-			return Promise.reject(new Errors.HttpStatusError(400, 'Bad request'));
+		if (!tplData["i_a_id"] || !tplData["i_ai_id"] || !tplData.hasOwnProperty("t_ai_text"))
+			return new Errors.HttpError(400);
 
-		tplData["s_ai_text"] = (tplData["s_ai_text"] || '').trim();
+		tplData = CtrlMain.stripTags(tplData, ["t_ai_text"]);
 
-		return this.getClass('user/photo').updImgText(this.getUserId(), tplData["i_a_id"], tplData["i_ai_id"], tplData["s_ai_text"])
-			.then(function ()
-			{
+		return this.getClass('user/photo')
+			.updImgText(this.getUserId(), tplData["i_a_id"], tplData["i_ai_id"], tplData["t_ai_text"])
+			.then(() => {
 				return Promise.resolve(tplData);
 			});
 	}
 
-	/!**
+	/**
 	 * удаление фотографии пользователем
 	 *
 	 * @param tplData
 	 * @returns {Promise}
-	 *!/
+	 */
 	delImg(tplData)
 	{
 		if (!tplData["i_a_id"] || !tplData["i_ai_id"])
-			return Promise.reject(new Errors.HttpStatusError(400, 'Bad request'));
+			throw new Errors.HttpError(400);
 
-		//return Promise.resolve(tplData);
-
-		return this.getClass('user/photo').delImage(this.getUserId(), tplData["i_a_id"], tplData["i_ai_id"])
-			.then(function ()
-			{
+		return this.getClass('user/photo')
+			.delImage(this.getUserId(), tplData["i_a_id"], tplData["i_ai_id"])
+			.then(() => {
 				return Promise.resolve(tplData);
 			})
-			.catch(Errors.io.FileNotFoundError, function(err){
+			.catch(Errors.io.FileNotFoundError, (err) => {
 				Logger.error(err);
-				throw new Errors.HttpStatusError(404, 'Фотография не найдена');
+				throw new Errors.HttpError(404, 'Фотография не найдена');
 			});
 	}
 
-	/!**
+	/**
 	 * загружаем новую фотографю в альбом
 	 *
-	 * @param cb
 	 * @returns {Promise}
-	 *!/
-	uploadActionPost(cb)
+	 */
+	uploadActionPost()
 	{
-		let self = this;
 		let tplFile = 'user/profile/photo/albums.ejs';
-		let tplData = self.getParsedBody();
+		let tplData = this.getParsedBody();
 
-		this.getRes().on('cancelUploadedFile', function(file)
-		{
+		this.getRes().on('cancelUploadedFile', (file) => {
 			if (file["u_id"] && file["a_id"] && file["ai_id"])
-			return self.getClass('user/photo').delImage(file["u_id"], file["a_id"], file["ai_id"], file);
+				return this.getClass('user/photo').delImage(file["u_id"], file["a_id"], file["ai_id"], file);
 		});
 
-		self.getClass('user/photo')
+		return this.getClass('user/photo')
 			.uploadImage(this.getUserId(), this.getReq(), this.getRes())
-			.then(function (file)
-			{
+			.then((file) => {
 				//console.log(file);
 				tplData = {
 					a_id: file.a_id,
@@ -497,23 +456,39 @@ class ProfilePhoto extends CtrlMain
 					size: file.size,
 					previews: file.previews
 				};
-				self.view.setTplData(tplFile, tplData);
+				this.view.setTplData(tplFile, tplData);
 
-				return cb(null, true);
+				return Promise.resolve(true);
 			})
-			.catch(function (err)
-			{
+			.catch((err) => {
 				Logger.error(err);
 				tplData.formError.text = err.message;
 				tplData.formError.error = true;
 				tplData.formError.errorName = err.name;
 
-				self.view.setTplData(tplFile, tplData);
+				this.view.setTplData(tplFile, tplData);
 
-				return cb(null, true);
+				return Promise.resolve(true);
+			});
+	}
+
+	/**
+	 * удаление указанного альбома
+	 *
+	 * @param tplData
+	 * @returns {Promise}
+	 */
+	delAlbum(tplData)
+	{
+		if (!tplData["i_a_id"])
+			throw new Errors.HttpError(400);
+
+		return this.getClass('user/photo').delAlbum(this.getUserId(), tplData["i_a_id"])
+			.then(() => {
+				return Promise.resolve(tplData);
 			});
 	}
 }
-//!************************************************************************* module.exports
+//************************************************************************* module.exports
 //писать после class Name....{}
-module.exports = ProfilePhoto;*/
+module.exports = ProfilePhoto;

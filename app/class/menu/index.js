@@ -40,10 +40,11 @@ class Menu extends Base
 	 * @param menuH1
 	 * @param menuDesc
 	 * @param menuControllerId
+	 * @param mType
 	 */
-	updById(menuId, menuPid, menuAfterId, menuPath, menuName, menuTitle, menuH1, menuDesc, menuControllerId)
+	updById(menuId, menuPid, menuAfterId, menuPath, menuName, menuTitle, menuH1, menuDesc, menuControllerId, mType)
 	{
-		return this.model('menu').updById(menuId, menuPid, menuAfterId, menuPath, menuName, menuTitle, menuH1, menuDesc, menuControllerId);
+		return this.model('menu').updById(menuId, menuPid, menuAfterId, menuPath, menuName, menuTitle, menuH1, menuDesc, menuControllerId, mType);
 	}
 
 	/**
@@ -57,13 +58,14 @@ class Menu extends Base
 	 * @param mH1
 	 * @param mDesc
 	 * @param mCId
+	 * @param mType
 	 * @throws
 	 *  DbError
 	 *
 	 */
-	add(mPid, mAfterId, mPath, mName, mTitle, mH1, mDesc, mCId)
+	add(mPid, mAfterId, mPath, mName, mTitle, mH1, mDesc, mCId, mType)
 	{
-		return this.model('menu').add(mPid, mAfterId, mPath, mName, mTitle, mH1, mDesc, mCId);
+		return this.model('menu').add(mPid, mAfterId, mPath, mName, mTitle, mH1, mDesc, mCId, mType);
 	}
 
 }

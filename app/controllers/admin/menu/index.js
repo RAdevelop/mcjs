@@ -187,7 +187,7 @@ class Menu extends CtrlMain
 				tplData["i_menu_pid"]           = parseInt(tplData["i_menu_pid"], 10)           || 0;
 				tplData["i_menu_after_id"]      = parseInt(tplData["i_menu_after_id"], 10)      || 0;
 				tplData["i_menu_controller_id"] = parseInt(tplData["i_menu_controller_id"], 10) || 0;
-				tplData["ui_menu_type"]          = parseInt(tplData["ui_menu_type"], 10)          || 0;
+				tplData["ui_menu_type"]          = parseInt(tplData["ui_menu_type"], 10)        || 0;
 
 				let errors = {};
 

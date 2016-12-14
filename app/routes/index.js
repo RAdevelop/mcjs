@@ -25,10 +25,7 @@ module.exports = function(Classes, Control)
 
 	//router.use(require('app/middlewares/_reqbody'));
 	router.use(require('app/middlewares/user/load.js')(Classes));
-
-	//сработает для всех адресов site.com/admin*
-	//router.use('/admin', UserIsAuth);
-
+	
 	router.use(require('app/middlewares/menu/site.js')(Classes));
 
 	
@@ -39,11 +36,6 @@ module.exports = function(Classes, Control)
 	//GET home page.
 	
 	//именно после верхних роутеров, которых нет в меню (в БД)
-	//TODO наверное после '*', добавить миддле варе для проверки прав юзера у текущего пункта меню
-	//а возможно лучше добавить в класс /app/lib/controller/index.js
-	//и проверять по имени метода разрешенного.. get_edit post_edit post_add get_index ...
-	//и если права есть, то права на владение редактируемого объекта проверять в контроллере
-	//например, редактировать фотоальбом может только его владелец u_id
 	router.all('*', function(req, res, next)
 	{
 

@@ -26,7 +26,7 @@
         <form id="menuEditForm" class="form-horizontal" action="<%= menuItem['m_path'] %>/edit/" method="post">
             <input type="hidden" id="i_menu_id" name="i_menu_id" value="<%= menuId %>"/>
             <div class="form-group ui_menu_type">
-                <label class="col-sm-3 control-label" for="ui_menu_type">Тип меню</label>
+                <label class="col-sm-3 control-label" for="ui_menu_type">Тип меню *</label>
                 <div class="col-sm-9">
                         <select id="ui_menu_type" name="ui_menu_type" class="form-control">
                         <option value="0">для админки</option>
@@ -56,7 +56,7 @@
                 </div>
             </div>
             <div class="form-group i_menu_controller_id">
-                <label class="col-sm-3 control-label" for="i_menu_controller_id">Укажите роутер</label>
+                <label class="col-sm-3 control-label" for="i_menu_controller_id">Укажите контроллер *</label>
                 <div class="col-sm-9">
                     <select id="i_menu_controller_id" name="i_menu_controller_id" class="form-control">
                         <option value="0"></option>
@@ -69,35 +69,35 @@
                 </div>
             </div>
             <div class="form-group s_menu_path">
-                <label class="col-sm-3 control-label" for="s_menu_path">URL меню</label>
+                <label class="col-sm-3 control-label" for="s_menu_path">URL меню *</label>
                 <div class="col-sm-9">
                     <input type="text" id="s_menu_path" name="s_menu_path" value="<%= menuPath %>" maxlength="255" class="form-control" placeholder="url меню" autofocus aria-describedby="menuPathHelpBlock" required/>
                     <span id="menuPathHelpBlock" class="help-block">пример: /menu/path</span>
                 </div>
             </div>
             <div class="form-group s_menu_name">
-                <label class="col-sm-3 control-label" for="s_menu_name">Название меню</label>
+                <label class="col-sm-3 control-label" for="s_menu_name">Название меню *</label>
                 <div class="col-sm-9">
                 <input type="text" id="s_menu_name" name="s_menu_name" value="<%= menuName %>" maxlength="100" class="form-control" placeholder="Название меню" required autofocus aria-describedby="menuNameHelpBlock"/>
                     <span id="menuNameHelpBlock" class="help-block">от 3 до 100 символов</span>
                 </div>
             </div>
             <div class="form-group s_menu_title">
-                <label class="col-sm-3 control-label" for="s_menu_title">Заголовок страниц</label>
+                <label class="col-sm-3 control-label" for="s_menu_title">Заголовок страниц *</label>
                 <div class="col-sm-9">
                     <input type="text" id="s_menu_title" name="s_menu_title" value="<%= menuTitle %>" maxlength="255" class="form-control" placeholder="Заголовок страниц" required autofocus aria-describedby="menuTitleHelpBlock"/>
                     <span id="menuTitleHelpBlock" class="help-block">&lt;title&gt;&lt;title&gt; от 3 до 255 символов</span>
                 </div>
             </div>
             <div class="form-group s_menu_h1">
-                <label class="col-sm-3 control-label" for="s_menu_h1">H1 страниц</label>
+                <label class="col-sm-3 control-label" for="s_menu_h1">H1 страниц *</label>
                 <div class="col-sm-9">
                     <input type="text" id="s_menu_h1" name="s_menu_h1" value="<%= menuH1 %>" maxlength="100" class="form-control" placeholder="Заголовок страниц" required autofocus aria-describedby="menuH1HelpBlock"/>
                     <span id="menuTitleHelpBlock" class="help-block">&lt;h1&gt;&lt;h1&gt; от 3 до 100 символов</span>
                 </div>
             </div>
             <div class="form-group t_menu_desc">
-                <label class="col-sm-3 control-label" for="t_menu_desc">Описание меню</label>
+                <label class="col-sm-3 control-label" for="t_menu_desc">Описание меню *</label>
                 <div class="col-sm-9">
                     <textarea rows="5" maxlength="255" id="t_menu_desc" name="t_menu_desc" class="form-control" placeholder="Описание роутера"><%= menuDesc %></textarea>
                     <span id="menuDescHelpBlock" class="help-block">&lt;meta description="" /&gt; до 255 символов</span>
