@@ -42,16 +42,13 @@ class ProfilePhoto extends CtrlMain
 		let {i_u_id=this.getUserId(), i_a_id} = this.routeArgs;
 
 		return this.getUser(i_u_id)
-			.then((userData) => {
-
+			.then((userData) =>
+			{
 				if (!userData["u_id"])
 					throw new Errors.HttpError(404);
 
 				userData["u_is_owner"] = this.isTheSameUser(i_u_id);
 
-				return Promise.resolve(userData);
-			})
-			.then((userData) => {
 				let tplData = {
 					"user": userData
 					,   "albums": null
@@ -81,17 +78,11 @@ class ProfilePhoto extends CtrlMain
 	{
 		let {i_page=1} = this.routeArgs;
 
-		return Promise.resolve(tplData)
-			.then((tplData) => {
-				return this.getClass('user/photo')
-					.getAlbumList(this.getUserId(), i_u_id, new Pages(i_page, limit_per_page))
-					.spread((albums, Pages) => {
-
-						tplData["albums"]   = albums;
-						return [tplData, Pages];
-					});
-			})
-			.spread((tplData, Pages) => {
+		return this.getClass('user/photo')
+			.getAlbumList(this.getUserId(), i_u_id, new Pages(i_page, limit_per_page))
+			.spread((albums, Pages) =>
+			{
+				tplData["albums"] = albums;
 
 				let exposeAlbums = 'albums';
 				Pages.setLinksUri(this.getBaseUrl()+'/'+ i_u_id)
@@ -118,7 +109,7 @@ class ProfilePhoto extends CtrlMain
 
 				this.getRes().expose(tplData["albums"], exposeAlbums);
 				this.getRes().expose(tplData["pages"], 'pages');
-
+				Pages = null;
 				return Promise.resolve(isAjax);
 			});
 	}
@@ -134,21 +125,14 @@ class ProfilePhoto extends CtrlMain
 	{
 		let {i_a_id, i_page=1} = this.routeArgs;
 
-		return Promise.resolve(tplData)
-			.then((tplData) => {
+		return this.getClass('user/photo')
+			.getAlbum(this.getUserId(), i_u_id, i_a_id)
+			.then((album) =>
+			{
+				if (!album)
+					throw new Errors.HttpError(404);
 
-				return this.getClass('user/photo')
-					.getAlbum(this.getUserId(), i_u_id, i_a_id)
-					.then((album) => {
-
-						if (!album)
-							throw new Errors.HttpError(404);
-
-						tplData["album"] = album;
-						return Promise.resolve(tplData);
-					});
-			})
-			.then((tplData) => {
+				tplData["album"] = album;
 
 				if (!tplData["album"]["a_img_cnt"])
 				{
@@ -158,8 +142,8 @@ class ProfilePhoto extends CtrlMain
 
 				return this.getClass('user/photo')
 					.getAlbumImages(i_u_id, i_a_id, new Pages(i_page, limit_per_page, tplData["album"]["a_img_cnt"]))
-					.spread((Pages, images, allPreviews) => {
-
+					.spread((Pages, images, allPreviews) =>
+					{
 						Pages.setLinksUri(this.getBaseUrl()+'/'+i_u_id+'/'+i_a_id);
 
 						tplData["album"]["images"] = images;
@@ -167,8 +151,8 @@ class ProfilePhoto extends CtrlMain
 						return [tplData, allPreviews, Pages];
 					});
 			})
-			.spread((tplData, allPreviews, Pages) => {
-
+			.spread((tplData, allPreviews, Pages) =>
+			{
 				if (!isAjax)
 				{
 					tplData = Object.assign(tplData, FileUpload.createToken('user_photo', {"a_id": i_a_id}) );
@@ -211,7 +195,7 @@ class ProfilePhoto extends CtrlMain
 				this.getRes().expose(tplData["album"]["images"], exposeAlbumImages);
 				this.getRes().expose(allPreviews, 'albumPreviews');
 				this.getRes().expose(tplData["pages"], 'pages');
-
+				Pages = null;
 				return Promise.resolve(isAjax);
 			});
 	}
@@ -323,17 +307,18 @@ class ProfilePhoto extends CtrlMain
 			errors["s_album_name"] = 'Укажите название альбома';
 
 		return Promise.resolve(errors)
-			.then((errors) => {
+			.then((errors) =>
+			{
 				if (this.parseFormErrors(tplData, errors, 'Ошибка при создании фотоальбома'))
-					return Promise.resolve(tplData);
-			})
-			.then((tplData) => {
-				return this.getClass('user/photo')
-					.addNamedAlbum(this.getUserId(), tplData["s_album_name"], tplData["t_album_text"])
-					.then((a_id) => {
-						tplData["a_id"] = a_id;
-						return Promise.resolve(tplData);
-					});
+				{
+					return this.getClass('user/photo')
+						.addNamedAlbum(this.getUserId(), tplData["s_album_name"], tplData["t_album_text"])
+						.then((a_id) =>
+						{
+							tplData["a_id"] = a_id;
+							return Promise.resolve(tplData);
+						});
+				}
 			});
 	}
 
@@ -357,20 +342,18 @@ class ProfilePhoto extends CtrlMain
 		return Promise.resolve(errors)
 			.then((errors) => {
 				if (this.parseFormErrors(tplData, errors, 'Ошибка при редактировании фотоальбома'))
-					return Promise.resolve(tplData);
-			})
-			.then((tplData) => {
+				{
+					return this.getClass('user/photo')
+						.getAlbum(this.getUserId(), this.getUserId(), tplData["i_a_id"])
+						.then((album) => {
 
-				return this.getClass('user/photo')
-					.getAlbum(this.getUserId(), this.getUserId(), tplData["i_a_id"])
-					.then((album) => {
+							if (!album || !album["a_is_owner"])
+								throw new Errors.HttpError(400);
 
-						if (!album || !album["a_is_owner"])
-							throw new Errors.HttpError(400);
-
-						return this.getClass('user/photo')
-							.editAlbumNamed(this.getUserId(), tplData["i_a_id"], tplData["s_album_name"], tplData["t_album_text"]);
-					});
+							return this.getClass('user/photo')
+								.editAlbumNamed(this.getUserId(), tplData["i_a_id"], tplData["s_album_name"], tplData["t_album_text"]);
+						});
+				}
 			})
 			.then((a_id) => {
 				tplData["a_id"] = a_id;

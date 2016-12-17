@@ -130,11 +130,14 @@ class Events extends Base
 	/**
 	 * список локаций, к которым привязаны события (включая родительские районы, города, страны..)
 	 *
+	 * @param start_ts
+	 * @param end_ts
+	 * @param l_id
 	 * @returns {Promise}
 	 */
-	getLocations()
+	getLocations(start_ts, end_ts, l_id = null)
 	{
-		return this.model('events').getLocations();
+		return this.model('events').getLocations(start_ts, end_ts, l_id);
 	}
 
 	/**

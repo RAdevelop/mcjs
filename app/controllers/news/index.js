@@ -4,6 +4,7 @@ const Errors = require('app/lib/errors');
 const Promise = require("bluebird");
 const Pages = require("app/lib/pages");
 const FileUpload = require('app/lib/file/upload');
+const Mail = require('app/lib/mail');
 
 const EmbedContent = require("app/lib/embed/content");
 
@@ -78,10 +79,6 @@ class News extends CtrlMain
 				if (!news || news["n_alias"] != s_alias)
 					throw new Errors.HttpError(404);
 
-				return Promise.resolve(news);
-			})
-			.then((news) =>
-			{
 				return this.getClass('news').getImageList(news.n_id)
 					.spread((images, allPreviews) => {
 						return Promise.resolve([news, images, allPreviews]);
@@ -128,8 +125,7 @@ class News extends CtrlMain
 		let {i_page=1} = this.routeArgs;
 		let show = (this.getLocalAccess()['post_edit'] ? null : 1);
 
-		return Promise.resolve(this.getClass("news")
-			.getNews(new Pages(i_page, limit_per_page), show))
+		return Promise.resolve(this.getClass("news").getNews(new Pages(i_page, limit_per_page), show))
 			.spread((newsList, Pages) =>
 			{
 				tplData["newsList"] = newsList;
@@ -215,21 +211,44 @@ class News extends CtrlMain
 		let tplFile = "news/edit.ejs";
 
 		return Promise.resolve(errors)
-			
-			.then((errors) => {
+			.then((errors) =>
+			{
 				if (this.parseFormErrors(tplData, errors))
-					return Promise.resolve(tplData);
+				{
+					return this.getClass('news')
+						.add(this.getUserId(), tplData["s_n_title"], tplData["t_n_notice"], tplData["t_n_text"], tplData["dt_show_ts"], tplData["b_show"])
+						.then((i_news_id)=>{
+
+							process.nextTick(()=>{
+
+								const Mailer = new Mail('gmail');
+
+								let title = 'Добавлена новость на сайте www.MotoCommunity.ru';
+								let sendParams = {
+									//to:         '',
+									subject:    title,
+									tplName:    'news/new',
+									tplData: {
+										title: title,
+										links: 'https://'+this.getHostPort(),
+										link: 'http://'+this.getHostPort(),
+										link_to: this.getMenuItem['m_path']+'/edit/'+i_news_id
+									}
+								};
+
+								Mailer.send(sendParams,  (err) => {
+
+									if(err)
+										Logger.error(new Errors.AppMailError('Ошибка при отправке письма', err));
+								});
+							});
+							tplData["i_news_id"] = i_news_id;
+							return Promise.resolve(tplData);
+						});
+				}
 			})
 			.then((tplData) => {
-				return this.getClass('news')
-					.add(this.getUserId(), tplData["s_n_title"], tplData["t_n_notice"], tplData["t_n_text"], tplData["dt_show_ts"], tplData["b_show"])
-					
-					.then((i_news_id) => {
-						tplData["i_news_id"] = i_news_id;
-						return Promise.resolve(tplData);
-					});
-			})
-			.then((tplData) => {
+
 				this.view.setTplData(tplFile, tplData);
 				return Promise.resolve(true);
 			})
@@ -338,7 +357,8 @@ class News extends CtrlMain
 	 */
 	editNews(tplData, tplFile)
 	{
-		return this.getClass('news').get(tplData["i_news_id"])
+		return this.getClass('news')
+			.get(tplData["i_news_id"])
 			.then((news) => {
 				if (!news)
 					throw new Errors.HttpError(404);
@@ -359,18 +379,40 @@ class News extends CtrlMain
 
 				if (!tplData["t_n_text"])
 					errors["t_n_text"] = "Укажите описание новости";
-				
-				return Promise.resolve([errors, tplData]);
-			})
-			.spread((errors, tplData) => {
+
 				if (this.parseFormErrors(tplData, errors))
 					return Promise.resolve(tplData);
 			})
 			.then((tplData) => {
+
 				return this.getClass('news').edit(
 					tplData["i_news_id"], this.getUserId(),
 					tplData["s_n_title"], tplData["t_n_notice"], tplData["t_n_text"], tplData["dt_show_ts"], tplData["b_show"])
 					.then(() => {
+
+						process.nextTick(()=>
+						{
+							const Mailer = new Mail('gmail');
+
+							let title = 'Изменена новость на сайте www.MotoCommunity.ru';
+							let sendParams = {
+								//to:         '',
+								subject:    title,
+								tplName:    'news/new',
+								tplData: {
+									title: title,
+									links: 'https://'+this.getHostPort(),
+									link: 'http://'+this.getHostPort(),
+									link_to: this.getMenuItem['m_path']+'/edit/'+tplData["i_news_id"]
+								}
+							};
+
+							Mailer.send(sendParams,  (err) => {
+
+								if(err)
+									Logger.error(new Errors.AppMailError('Ошибка при отправке письма', err));
+							});
+						});
 
 						this.view.setTplData(tplFile, tplData);
 						return Promise.resolve(true);
@@ -415,7 +457,7 @@ class News extends CtrlMain
 	}
 
 	/**
-	 * добавляем фотографи к событию
+	 * добавляем фотографи к новости
 	 *
 	 * @returns {Promise}
 	 */
@@ -470,14 +512,15 @@ class News extends CtrlMain
 	delImg(tplData, tplFile)
 	{
 		return Promise.resolve(tplData)
-			.then((tplData) => {
-
+			.then((tplData) =>
+			{
 				if (!tplData["i_ni_id"])
 					throw new Errors.HttpError(400);
 
 				return this.getClass('news')
 					.delImage(this.getUserId(), tplData["i_news_id"], tplData["i_ni_id"])
-					.then(() => {
+					.then(() =>
+					{
 						this.view.setTplData(tplFile, tplData);
 						return Promise.resolve(true);
 					});
@@ -497,16 +540,18 @@ class News extends CtrlMain
 	delNews(tplData, tplFile)
 	{
 		return Promise.resolve(tplData)
-			.then((tplData) => {
-
+			.then((tplData) =>
+			{
 				return this.getClass('news')
 					.delNews(this.getUserId(), tplData["i_news_id"])
-					.then(() => {
+					.then(() =>
+					{
 						this.view.setTplData(tplFile, tplData);
 						return Promise.resolve(true);
 					});
 			})
-			.catch((err) => {
+			.catch((err) =>
+			{
 				throw err;
 			});
 	}

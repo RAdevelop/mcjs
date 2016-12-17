@@ -167,27 +167,41 @@ class Events extends BaseModel
 	}
 
 	/**
-	 * список локаций, к которым привязано событие (включая родительские районы, города, страны..)
+	 * список локаций, к которым привязаны события (включая родительские районы, города, страны..)
 	 *
+	 * @param start_ts
+	 * @param end_ts
+	 * @param l_id
 	 * @returns {Promise}
 	 */
-	getLocations()
+	getLocations(start_ts, end_ts, l_id = null)
 	{
-		//TODO передавать год месяц день
 		let kinds = ['country','province','locality'];
+		let sqlData = [];
+		sqlData.unshift(start_ts, end_ts);
+
+		let on_events_locations = (l_id ? ` el.l_id = ? AND ` : ``);
+		if (l_id > 0)
+			sqlData.push(l_id);
+
+		sqlData = sqlData.concat(kinds);
 
 		let sql =
 			`SELECT l.l_id, l.l_pid, l.l_level, l.l_lk, l.l_rk
 			, ln.l_kind, ln.l_name, ln.l_full_name, ln.l_latitude , ln.l_longitude
 			, IF(l.l_rk - l.l_lk = 0, 0, 1) AS l_has_child
 			, IF(ln.l_kind = 'country', 0, IF(ln.l_kind = 'province', 1, IF(ln.l_kind = 'locality' AND l.l_level < 3, 1, 2))) AS l_e_level
-			 FROM events_locations AS el
-			 JOIN location_names AS ln ON(el.l_id = ln.l_id  AND ln.l_kind IN(${(new Array(kinds.length)).fill('?').join(',')}))
+			 FROM (SELECT NULL) AS z
+			 JOIN events_list AS e ON(e.e_end_ts >= ? AND e.e_start_ts < ?)
+			 JOIN events_locations AS el ON(${on_events_locations} el.e_id = e.e_id )
+			 JOIN location_names AS ln ON(el.l_id = ln.l_id AND ln.l_kind IN(${(new Array(kinds.length)).fill('?').join(',')}))
 			 JOIN location AS l ON(l.l_id = ln.l_id)
 			 GROUP BY el.l_id
 			 ORDER BY l.l_lk`;//, ln.l_name
 
-		return this.constructor.conn().s(sql, kinds);
+		//console.log(sql, sqlData);
+
+		return this.constructor.conn().s(sql, sqlData);
 	}
 
 	/**

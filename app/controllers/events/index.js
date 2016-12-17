@@ -115,10 +115,6 @@ class Events extends CtrlMain
 				if (!event || event["e_alias"] != s_alias)
 					throw new Errors.HttpStatusError(404, "Not found");
 
-				return Promise.resolve(event);
-			})
-			.then( (event) => {
-
 				return this.getClass('events')
 					.getImageList(event.e_id)
 					.spread( (images, allPreviews) => {
@@ -234,7 +230,7 @@ class Events extends CtrlMain
 
 		return Promise.props({
 			eventDates: this.getClass("events").getEventsDate(startDate.getTime()/1000, endDate.getTime()/1000, l_id),
-			eventLocations: this.getClass("events").getLocations()
+			eventLocations: this.getClass("events").getLocations(startDate.getTime()/1000, endDate.getTime()/1000, l_id)
 		})
 			.then((proprs) => {
 				let eventDates = [], eStartTs, eEndTs, eDelta, i;
@@ -369,68 +365,69 @@ class Events extends CtrlMain
 		let tplFile = "events/edit.ejs";
 
 		return Promise.resolve(errors)
-			.then((errors) => {
-				if (this.parseFormErrors(tplData, errors, 'Ошибки при заполнении формы'))
-					return Promise.resolve(tplData);
+			.then((errors) =>
+			{
+				if (this.parseFormErrors(tplData, errors))
+				{
+					return this.getClass('location')
+						.geoCoder(tplData["s_e_address"])
+						.then( (locationData) => {
+							return this.getClass('location').create(locationData);
+						})
+						.then( (location_id) => {
+
+							tplData["i_location_id"] = location_id;
+							return Promise.resolve(tplData);
+						});
+				}
 			})
-			.then((tplData) => {
+			.then((tplData) =>
+			{
+				return this.getClass('events')
+					.add(this.getUserId(), tplData["s_e_title"], tplData["t_e_notice"],
+						tplData["t_e_text"], tplData["s_e_address"], tplData["f_e_lat"],
+						tplData["f_e_lng"], tplData["i_location_id"], tplData["dd_start_ts"],
+						tplData["dd_end_ts"])
+					.then( (i_event_id) => 
+					{
+						process.nextTick(()=>
+						{
+							const Mailer = new Mail('gmail');
 
-				return this.getClass('location')
-					.geoCoder(tplData["s_e_address"])
-					.then( (locationData) => {
-						return this.getClass('location').create(locationData);
-					})
-					.then( (location_id) => {
+							let title = 'Новое МотоСобытие на сайте www.MotoCommunity.ru';
+							let sendParams = {
+								//to:         '',
+								subject:    title,
+								tplName:    'events/new',
+								tplData: {
+									title: title,
+									links: 'https://'+this.getHostPort(),
+									link: 'http://'+this.getHostPort(),
+									event_link: this.getMenuItem['m_path']+'/edit/'+i_event_id
+								}
+							};
 
-						tplData["i_location_id"] = location_id;
-						return Promise.resolve(tplData);
-					});
-			})
-			.then((tplData) => {
-				return this.getClass('events').add(this.getUserId(),
-					tplData["s_e_title"], tplData["t_e_notice"], tplData["t_e_text"], tplData["s_e_address"],
-					tplData["f_e_lat"], tplData["f_e_lng"], tplData["i_location_id"], tplData["dd_start_ts"], tplData["dd_end_ts"]
-				)
-					.then( (i_event_id) => {
-
-						tplData["i_event_id"] = i_event_id;
-
-						const Mailer = new Mail('gmail');
-
-						let title = 'Новое МотоСобытие на сайте www.MotoCommunity.ru';
-						let sendParams = {
-							//to:         '',
-							subject:    title,
-							tplName:    'events/new',
-							tplData: {
-								title: title,
-								links: 'https://'+this.getHostPort(),
-								link: 'http://'+this.getHostPort(),
-								event_link: 'events/edit/'+i_event_id
-							}
-						};
-
-						Mailer.send(sendParams,  (err) => {
-
-							if(err)
-								Logger.error(new Errors.AppMailError('Ошибка при отправке письма', err));
+							Mailer.send(sendParams,  (err) => 
+							{
+								if(err)
+									Logger.error(new Errors.AppMailError('Ошибка при отправке письма', err));
+							});
 						});
 
-						return Promise.resolve(tplData);
+						tplData["i_event_id"] = i_event_id;
+						this.view.setTplData(tplFile, tplData);
+						return Promise.resolve(true);
 					});
 			})
-			.then( (tplData) => {
-
-				this.view.setTplData(tplFile, tplData);
-				return Promise.resolve(true);
-			})
-			.catch(Errors.ValidationError,  (err) => {
+			.catch(Errors.ValidationError,  (err) => 
+			{
 				//такие ошибки не уводят со страницы.
 				this.view.setTplData(tplFile, err.data);
 
 				return Promise.resolve(true);
 			})
-			.catch( (err) => {
+			.catch( (err) => 
+			{
 				throw err;
 			});
 	}
@@ -451,9 +448,6 @@ class Events extends CtrlMain
 				if (!event)
 					throw new Errors.HttpStatusError(404, "Not found");
 
-				return Promise.resolve(event);
-			})
-			.then((event) => {
 				return this.getClass('events').getImageList(event.e_id)
 					.spread((images, allPreviews) => {
 						return Promise.resolve([event, images, allPreviews]);
@@ -523,16 +517,13 @@ class Events extends CtrlMain
 
 	editEvent(tplData, tplFile)
 	{
-		return this.getClass('events').get(tplData["i_event_id"])
+		return this.getClass('events')
+			.get(tplData["i_event_id"])
 			.then((event) =>
 			{
 				if (!event)
 					throw new Errors.HttpStatusError(404, "Not found");
 
-				return Promise.resolve(true);
-			})
-			.then(() =>
-			{
 				let errors = {};
 
 				tplData = CtrlMain.stripTags(tplData, ["dd_start_ts", "dd_end_ts", "s_e_title","t_e_notice", "s_e_address"]);
@@ -560,24 +551,19 @@ class Events extends CtrlMain
 				if (!tplData["f_e_lat"] || !tplData["f_e_lng"])
 					errors["s_e_address"] = "Укажите адрес события";
 
-				return Promise.resolve([errors, tplData]);
-			})
-			.spread((errors, tplData) => {
-				if (this.parseFormErrors(tplData, errors, 'Ошибки при заполнении формы'))
-					return Promise.resolve(tplData);
-			})
-			.then((tplData) => {
+				if (this.parseFormErrors(tplData, errors))
+				{
+					return this.getClass('location')
+						.geoCoder(tplData["s_e_address"])
+						.then( (locationData) => {
+							return this.getClass('location').create(locationData);
+						})
+						.then( (location_id) => {
 
-				return this.getClass('location')
-					.geoCoder(tplData["s_e_address"])
-					.then( (locationData) => {
-						return this.getClass('location').create(locationData);
-					})
-					.then( (location_id) => {
-
-						tplData["i_location_id"] = location_id;
-						return Promise.resolve(tplData);
-					});
+							tplData["i_location_id"] = location_id;
+							return Promise.resolve(tplData);
+						});
+				}
 			})
 			.then((tplData) => {
 				return this.getClass('events').edit(
@@ -585,11 +571,35 @@ class Events extends CtrlMain
 					tplData["s_e_title"], tplData["t_e_notice"], tplData["t_e_text"], tplData["s_e_address"],
 					tplData["f_e_lat"], tplData["f_e_lng"], tplData["i_location_id"], tplData["dd_start_ts"], tplData["dd_end_ts"]
 				)
-					.then( () => {
+					.then(()=>{
 						return Promise.resolve(tplData);
 					});
 			})
 			.then((tplData) => {
+
+				process.nextTick(()=>{
+					const Mailer = new Mail('gmail');
+
+					let title = 'Изменено МотоСобытие на сайте www.MotoCommunity.ru';
+					let sendParams = {
+						//to:         '',
+						subject:    title,
+						tplName:    'events/new',
+						tplData: {
+							title: title,
+							links: 'https://'+this.getHostPort(),
+							link: 'http://'+this.getHostPort(),
+							link_to: this.getMenuItem['m_path']+'/edit/'+tplData["i_event_id"]
+						}
+					};
+
+					Mailer.send(sendParams,  (err) => {
+
+						if(err)
+							Logger.error(new Errors.AppMailError('Ошибка при отправке письма', err));
+					});
+				});
+
 				this.view.setTplData(tplFile, tplData);
 
 				return Promise.resolve(true);
@@ -614,28 +624,28 @@ class Events extends CtrlMain
 	sortImg(tplData, tplFile)
 	{
 		return Promise.resolve(tplData)
-			.then((tplData) => {
+			.then((tplData) =>
+			{
 				if (!tplData["i_event_id"] || !tplData.hasOwnProperty("ei_pos") || !tplData["ei_pos"].length)
 					return Promise.resolve(tplData);
 
-				return this.getClass('events').sortImgUpd(tplData["i_event_id"], tplData["ei_pos"])
+				return this.getClass('events')
+					.sortImgUpd(tplData["i_event_id"], tplData["ei_pos"])
 					.then(() => {
-						return Promise.resolve(tplData);
+						this.view.setTplData(tplFile, tplData);
+
+						return Promise.resolve(true);
 					});
 			})
-			.then((tplData) => {
-				this.view.setTplData(tplFile, tplData);
-
-				return Promise.resolve(true);
-			})
-			.catch((err) => {
+			.catch((err) =>
+			{
 				throw err;
 			});
 	}
 	/**
-	 * просмотр треков на карте
+	 * просмотр событий на карте
 	 *
-	 * @returns {Promise.<T>}
+	 * @returns {Promise}
 	 */
 	mapActionGet()
 	{
@@ -675,8 +685,8 @@ class Events extends CtrlMain
 		let tplFile = 'events/event_images.ejs';
 		let tplData = this.getParsedBody();
 
-		this.getRes().on('cancelUploadedFile', (file) => {
-
+		this.getRes().on('cancelUploadedFile', (file) =>
+		{
 			if (file["u_id"] && file["e_id"] && file["ei_id"])
 				return this.getClass('events').delImage(file["u_id"], file["e_id"], file["ei_id"], file);
 		});

@@ -5,7 +5,6 @@ const Promise = require("bluebird");
 const Errors = require('app/lib/errors');
 const Cheerio = require("app/lib/cheerio");
 const Template = require('app/lib/template');
-//const _ = require('lodash');
 
 /*
  console.log("req.method %s", req.method);
@@ -20,19 +19,35 @@ class Base
 	{
 		this.setReq(req);
 		this.setRes(res);
+		this._setMenuItem();
+
+		this._setAction();
+		this._setBaseUrl(this.getReq());
 
 		this._setClasses(Classes);
 		this._getClasses().setSession(this.getReq().session);
-		//this.setControls(Controls);
 
-		this.setArgs([]);
+		//this.setControls(Controls);
+		//this.setArgs([]);
 		this.routeArgs = {};
 	}
-	
-	_setBaseUrl(req, res)
+
+	_setMenuItem()
 	{
-		//console.log('res.locals.menuItem.m_path = ', res.locals.menuItem.m_path);
-		req.baseUrl = res.locals.menuItem.m_path + '/' + (this.getActionName() == 'index' ? '' : this.getActionName());
+		if (!this._menuItem)
+			this._menuItem = this.getRes().locals.menuItem || {};
+
+		return this;
+	}
+
+	get getMenuItem()
+	{
+		return this._menuItem;
+	}
+
+	_setBaseUrl(req)
+	{
+		req.baseUrl = this.getMenuItem['m_path']+ '/' + (this.getActionName() == 'index' ? '' : this.getActionName());
 		//console.log('req.baseUrl = ', req.baseUrl);
 		return this;
 	}
@@ -127,7 +142,7 @@ class Base
 	/**
 	 * определяем action
 	 */
-	setAction()
+	_setAction()
 	{
 		//HTTP методы GET POST...
 		this._httpMethod = this.getReq().method.toLowerCase();
@@ -135,7 +150,7 @@ class Base
 		let method = f + this._httpMethod.substr(1, this._httpMethod.length-1);
 		method = 'Action'+method;
 		
-		let action = this.getReq().path.substring(this.getRes().locals.menuItem.m_path.length) ;
+		let action = this.getReq().path.substring(this.getMenuItem['m_path'].length) ;
 		let args = action.split('/');
 
 		args.forEach((item, i) => {
@@ -183,7 +198,7 @@ class Base
 
 	_setActionName(method)
 	{
-		this._actionName = this._action.replace(method, '');
+		this._actionName = this.getAction().replace(method, '');
 		//this._actionName = (this._actionName == 'index' ? '' : this._actionName);
 		return this;
 	}
@@ -283,6 +298,8 @@ class Base
 			return true;*/
 
 		let actionName = this.getActionName();
+
+
 		let routePaths = this.routePaths();
 		let reqPath = this.getPath();
 
@@ -342,8 +359,8 @@ class Base
 
 	callAction()
 	{
-		this.setAction();
-		this._setBaseUrl(this.getReq(), this.getRes());
+		//this._setAction();
+		//this._setBaseUrl(this.getReq(), this.getRes());
 
 		if (!this.isAction() || !this._parseRoutePaths())
 			throw new Errors.HttpError(404);
@@ -353,7 +370,7 @@ class Base
 
 				let check_method = this.httpMethod+'_'+this.getActionName();
 
-				if (this.getRes().locals.menuItem.m_id && !localAccess[check_method])
+				if (this.getMenuItem['m_id'] && !localAccess[check_method])
 					throw new Errors.HttpError(403);
 
 				return Promise.resolve(localAccess);
@@ -379,10 +396,10 @@ class Base
 	checkAccess(m_id = null)
 	{
 		//когда меню из файла /app/middlewares/menu/menu.js
-		if (!this.getRes().locals.menuItem.m_id)
+		if (!this.getMenuItem['m_id'])
 			return Promise.resolve({});
 
-		m_id = m_id || this.getRes().locals.menuItem.m_id;
+		m_id = m_id || this.getMenuItem['m_id'];
 
 		return this.getUser(this.getUserId())
 			.then((user) => {

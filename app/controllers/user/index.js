@@ -56,14 +56,13 @@ class User extends CtrlMain
 				};
 
 				const Pages = props.users.Pages.setLinksUri(this.getBaseUrl());
-				delete props.users.Pages;
-
+				
 				tplData["pages"] = Pages.pages();
 
 				this.view.setTplData(tplFile, tplData);
 				this.view.addPartialData("user/left", {user: tplData.user});
 				//self.view.addPartialData("user/right", {}); //TODO
-
+				props = null;
 				return Promise.resolve(null);
 			})
 			.catch((err) => {

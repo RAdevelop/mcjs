@@ -76,7 +76,7 @@ class MariaSQL
 			.then((sql) => {
 
 				if (sql.indexOf('SELECT') != 0)
-					return Promise.reject(DbErrors(new Error("не select запрос")));
+					throw (DbErrors(new Error("не select запрос")));
 
 				return Promise.using(this.conn(), (conn) => {
 					return conn.queryAsync(sql, sqlData, { useArray: false });
@@ -100,7 +100,7 @@ class MariaSQL
 			.then((sql) => {
 
 				if (sql.indexOf('SELECT') != 0)
-					return Promise.reject(DbErrors(new Error("не select запрос")));
+					throw (DbErrors(new Error("не select запрос")));
 
 				return Promise.using(this.conn(), (conn) => {
 					return conn.queryAsync(sql, sqlData, { useArray: false });
@@ -135,7 +135,8 @@ class MariaSQL
 		return Promise.resolve(sql)
 			.then((sql) => {
 
-				if (sql.indexOf('SELECT') != 0) return Promise.reject(DbErrors(new Error("не select запрос")));
+				if (sql.indexOf('SELECT') != 0)
+					throw (DbErrors(new Error("не select запрос")));
 
 				return Promise.using(this.conn(), (conn) => {
 					let prep = conn.prepare(sql);
@@ -161,7 +162,7 @@ class MariaSQL
 			.then((sql) => {
 
 				if (sql.indexOf('SELECT') != 0)
-					return Promise.reject(DbErrors(new Error("не select запрос")));
+					throw (DbErrors(new Error("не select запрос")));
 
 				return Promise.using(this.conn(), (conn) => {
 
@@ -206,7 +207,8 @@ class MariaSQL
 		return Promise.resolve(sql)
 			.then((sql) => {
 
-				if (sql.indexOf('UPDATE') != 0) return Promise.reject(DbErrors(new Error("не UPDATE запрос")));
+				if (sql.indexOf('UPDATE') != 0)
+					throw (DbErrors(new Error("не UPDATE запрос")));
 
 				return Promise.using(this.conn(), (conn) => {
 
@@ -244,7 +246,7 @@ class MariaSQL
 			.then((sql) => {
 
 				if (sql.indexOf('DELETE') != 0)
-					return Promise.reject(DbErrors(new Error("не DELETE запрос")));
+					throw (DbErrors(new Error("не DELETE запрос")));
 
 				return Promise.using(this.conn(), (conn) => {
 					return conn.queryAsync(sql, sqlData, { useArray: false })
@@ -287,7 +289,7 @@ class MariaSQL
 			.then((sql) => {
 
 				if (sql.indexOf('INSERT') != 0)
-					return Promise.reject(DbErrors(new Error("не INSERT запрос")));
+					throw (DbErrors(new Error("не INSERT запрос")));
 
 				return Promise.using(this.conn(), (conn) => {
 
@@ -331,7 +333,7 @@ class MariaSQL
 			.then((sql) => {
 
 				if (sql.indexOf('CALL') != 0)
-					return Promise.reject(DbErrors(new Error("не CALL запрос")));
+					throw (DbErrors(new Error("не CALL запрос")));
 
 				return Promise.using(this.conn(), (conn) => {
 					return conn.queryAsync(sql, sqlData, { useArray: false });
@@ -362,8 +364,6 @@ class MariaSQL
 	{
 		return Promise.resolve(sql)
 			.then((sql) => {
-
-				//if (sql.indexOf('SELECT') != 0) return Promise.reject(DbErrors(new Error("не select запрос")));
 
 				return Promise.using(this.conn(), (conn) => {
 					return conn.queryAsync(sql, sqlData, { useArray: false });

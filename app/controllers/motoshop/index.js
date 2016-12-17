@@ -51,7 +51,8 @@ class Motoshop extends CtrlMain
 			return this.motoshopList(i_loc_id, mts_show);
 
 		return this.motoshopData(i_mts_id, mts_show)
-			.spread((motoshop, motoshopList, motoshopLocations) => {
+			.spread((motoshop, motoshopList, motoshopLocations) =>
+			{
 				let tplData = {};
 				tplData.motoshop = motoshop || null;
 				tplData.motoshopList = motoshopList || null;
@@ -107,7 +108,8 @@ class Motoshop extends CtrlMain
 			location: this.getClass("location").getLocationById(i_loc_id)
 		})
 			//.spread((motoshopList, Pages)
-			.then((props) => {
+			.then((props) =>
+			{
 				//если не нашли список салонов
 				if (!props.list[0])
 					throw new Errors.HttpError(404);
@@ -151,7 +153,8 @@ class Motoshop extends CtrlMain
 
 				return Promise.resolve(null);
 			})
-			.catch((err) => {
+			.catch((err) =>
+			{
 				throw err;
 			});
 	}
@@ -170,8 +173,8 @@ class Motoshop extends CtrlMain
 
 		return this.getClass('motoshop')
 			.getMotoshop(i_mts_id, mts_show)
-			.then((motoshop) => {
-
+			.then((motoshop) =>
+			{
 				if (!motoshop || s_mts_alias != motoshop["mts_alias"])
 					throw new Errors.HttpError(404);
 
@@ -187,7 +190,8 @@ class Motoshop extends CtrlMain
 	motoshopLocations(mts_show)
 	{
 		return this.getClass("motoshop").getMotoshopLocations(mts_show)
-			.then((motoshopLocations) => {
+			.then((motoshopLocations) =>
+			{
 				return Promise.resolve([null, null, motoshopLocations]);
 			});
 	}
@@ -247,27 +251,25 @@ class Motoshop extends CtrlMain
 			.then((errors) => {
 
 				if (this.parseFormErrors(tplData, errors))
-					return Promise.resolve(tplData);
+				{
+					return this.getClass('motoshop').add(
+						this.getUserId(),
+						tplData["b_mts_show"],
+						tplData["s_mts_name"],
+						tplData["link_mts_website"],
+						tplData["m_mts_email"],
+						tplData["t_mts_descrip"]
+					)
+						.then((i_mts_id) => {
+							tplData["i_mts_id"] = i_mts_id;
+
+							this.view.setTplData(tplFile, tplData);
+							return Promise.resolve(true);
+						});
+				}
 			})
-			.then((tplData) => {
-				return this.getClass('motoshop').add(
-					this.getUserId(),
-					tplData["b_mts_show"],
-					tplData["s_mts_name"],
-					tplData["link_mts_website"],
-					tplData["m_mts_email"],
-					tplData["t_mts_descrip"]
-				)
-				.then((i_mts_id) => {
-					tplData["i_mts_id"] = i_mts_id;
-					return Promise.resolve(tplData);
-				});
-			})
-			.then((tplData) => {
-				this.view.setTplData(tplFile, tplData);
-				return Promise.resolve(true);
-			})
-			.catch(Errors.ValidationError, (err) => {//такие ошибки не уводят со страницы.
+			.catch(Errors.ValidationError, (err) =>
+			{//такие ошибки не уводят со страницы.
 				this.view.setTplData(tplFile, err.data);
 				return Promise.resolve(true);
 			})
@@ -369,8 +371,8 @@ class Motoshop extends CtrlMain
 		let tplFile = "motoshop/edit.ejs";
 
 		return Promise.resolve(tplData)
-			.then((tplData) => {
-
+			.then((tplData) =>
+			{
 				tplData = CtrlMain.stripTags(tplData, ["s_mts_name", "m_mts_email", "link_mts_website"]);
 				tplData["t_mts_descrip"] = CtrlMain.cheerio(tplData["t_mts_descrip"]).root().cleanTagEvents().html();
 
@@ -390,24 +392,24 @@ class Motoshop extends CtrlMain
 					errors["m_mts_email"] = "E-mail указан не верно";
 
 				if (this.parseFormErrors(tplData, errors))
-					return Promise.resolve(tplData);
+				{
+					return this.getClass('motoshop').edit(
+						this.getUserId(),
+						tplData["i_mts_id"],
+						tplData["b_mts_show"],
+						tplData["s_mts_name"],
+						tplData["link_mts_website"],
+						tplData["m_mts_email"],
+						tplData["t_mts_descrip"]
+					)
+						.then(() => {
+							this.view.setTplData(tplFile, tplData);
+							return Promise.resolve(true);
+						});
+				}
 			})
-			.then((tplData) => {
-				return this.getClass('motoshop').edit(
-					this.getUserId(),
-					tplData["i_mts_id"],
-					tplData["b_mts_show"],
-					tplData["s_mts_name"],
-					tplData["link_mts_website"],
-					tplData["m_mts_email"],
-					tplData["t_mts_descrip"]
-				)
-					.then(() => {
-						this.view.setTplData(tplFile, tplData);
-						return Promise.resolve(true);
-					});
-			})
-			.catch(Errors.ValidationError, (err) => { //такие ошибки не уводят со страницы
+			.catch(Errors.ValidationError, (err) =>
+			{ //такие ошибки не уводят со страницы
 
 				this.view.setTplData(tplFile, err.data);
 				return Promise.resolve(true);
@@ -450,30 +452,28 @@ class Motoshop extends CtrlMain
 					errors["s_mts_address"] = "Укажите адрес";
 
 				if (this.parseFormErrors(tplData, errors))
-					return Promise.resolve(tplData);
-			})
-			.then((tplData) => {
+				{
+					return this.getClass('motoshop').addAddress(
+						tplData["i_mts_id"],
+						tplData["b_mts_address_show"],
+						tplData["link_address_website"],
+						tplData["m_mts_address_email"],
+						tplData["s_mts_address_phones"],
+						tplData["s_mts_address"],
+						tplData["f_mts_address_lat"],
+						tplData["f_mts_address_lng"]
+					)
+						.then((i_mts_address_id) =>
+						{
+							tplData['i_mts_address_id'] = i_mts_address_id;
 
-				return this.getClass('motoshop').addAddress(
-					tplData["i_mts_id"],
-					tplData["b_mts_address_show"],
-					tplData["link_address_website"],
-					tplData["m_mts_address_email"],
-					tplData["s_mts_address_phones"],
-					tplData["s_mts_address"],
-					tplData["f_mts_address_lat"],
-					tplData["f_mts_address_lng"]
-				)
-					.then((i_mts_address_id) => {
-						tplData['i_mts_address_id'] = i_mts_address_id;
-						return Promise.resolve(tplData);
-					});
+							this.view.setTplData(tplFile, tplData);
+							return Promise.resolve(true);
+						});
+				}
 			})
-			.then((tplData) => {
-				this.view.setTplData(tplFile, tplData);
-				return Promise.resolve(true);
-			})
-			.catch(Errors.ValidationError, (err) => { //такие ошибки не уводят со страницы
+			.catch(Errors.ValidationError, (err) =>
+			{ //такие ошибки не уводят со страницы
 				this.view.setTplData(tplFile, err.data);
 				return Promise.resolve(true);
 			})
@@ -497,7 +497,8 @@ class Motoshop extends CtrlMain
 
 				let found = false;
 
-				motoshop["address_list"].forEach((item) => {
+				motoshop["address_list"].forEach((item) =>
+				{
 
 					if (item["mts_address_id"] == tplData["i_mts_address_id"])
 						found = true;
@@ -527,30 +528,30 @@ class Motoshop extends CtrlMain
 					errors["s_mts_address"] = "Укажите адрес";
 
 				if (this.parseFormErrors(tplData, errors))
-					return Promise.resolve(tplData);
+				{
+					return this.getClass('motoshop').editAddress(
+						tplData["i_mts_address_id"],
+						tplData["b_mts_address_show"],
+						tplData["link_address_website"],
+						tplData["m_mts_address_email"],
+						tplData["s_mts_address_phones"],
+						tplData["s_mts_address"],
+						tplData["f_mts_address_lat"],
+						tplData["f_mts_address_lng"]
+					)
+						.then(() => {
+							this.view.setTplData(tplFile, tplData);
+							return Promise.resolve(true);
+						});
+				}
 			})
-			.then((tplData) => {
-
-				return this.getClass('motoshop').editAddress(
-					tplData["i_mts_address_id"],
-					tplData["b_mts_address_show"],
-					tplData["link_address_website"],
-					tplData["m_mts_address_email"],
-					tplData["s_mts_address_phones"],
-					tplData["s_mts_address"],
-					tplData["f_mts_address_lat"],
-					tplData["f_mts_address_lng"]
-				)
-					.then(() => {
-						this.view.setTplData(tplFile, tplData);
-						return Promise.resolve(true);
-					});
-			})
-			.catch(Errors.ValidationError, (err) => { //такие ошибки не уводят со страницы
+			.catch(Errors.ValidationError, (err) =>
+			{ //такие ошибки не уводят со страницы
 				this.view.setTplData(tplFile, err.data);
 				return Promise.resolve(true);
 			})
-			.catch((err) => {
+			.catch((err) =>
+			{
 				throw err;
 			});
 	}
@@ -565,9 +566,10 @@ class Motoshop extends CtrlMain
 	{
 		let tplFile = "motoshop/edit.ejs";
 
-		return this.getClass('motoshop').delMotoshop(tplData["i_mts_id"])
-			.then((tplData) => {
-
+		return this.getClass('motoshop')
+			.delMotoshop(tplData["i_mts_id"])
+			.then((tplData) =>
+			{
 				this.view.setTplData(tplFile, tplData);
 				return Promise.resolve(true);
 			})
@@ -586,12 +588,15 @@ class Motoshop extends CtrlMain
 	{
 		let tplFile = "motoshop/edit.ejs";
 		
-		return this.getClass('motoshop').delAddress(tplData["i_mts_id"], tplData["i_mts_address_id"])
-			.then(() => {
+		return this.getClass('motoshop')
+			.delAddress(tplData["i_mts_id"], tplData["i_mts_address_id"])
+			.then(() =>
+			{
 				this.view.setTplData(tplFile, tplData);
 				return Promise.resolve(true);
 			})
-			.catch((err) => {
+			.catch((err) =>
+			{
 				throw err;
 			});
 	}
@@ -608,36 +613,38 @@ class Motoshop extends CtrlMain
 			motoshopList: this.getClass("motoshop").getAllMotoshop(mts_show),
 			motoshopLocations: this.getClass("motoshop").getMotoshopLocations(mts_show)
 		})
-			.then((props) => {
+			.then((props) =>
+			{
 				let mtsIds = [];
-				props.motoshopList.forEach((item) => {
+				props.motoshopList.forEach((item) =>
+				{
 					mtsIds.push(item["mts_id"]);
 				});
 
 				return this.getClass("motoshop")
 					.getMotoshopAddressList(mtsIds, mts_show)
-					.then((addressList) => {
-						return Promise.resolve([props.motoshopList, props.motoshopLocations, addressList]);
+					.then((addressList) =>
+					{
+						let tplData = {
+							motoshop: null,
+							//motoshopList: motoshopList || [],
+							motoshopLocations: props.motoshopLocations || []
+						};
+
+						let tplFile = "motoshop/map.ejs";
+						this.view.setTplData(tplFile, tplData);
+
+						//экспрот данных в JS на клиента
+						this.getRes().expose(props.motoshopList, 'motoshopList');
+						this.getRes().expose(props.motoshopLocations, 'motoshopLocations');
+						this.getRes().expose(addressList, 'motoshopAddressList');
+						props = null;
+						return Promise.resolve(null);
+
 					});
 			})
-			.spread((motoshopList, motoshopLocations, addressList) => {
-				let tplData = {
-					motoshop: null,
-					//motoshopList: motoshopList || [],
-					motoshopLocations: motoshopLocations || []
-				};
-
-				let tplFile = "motoshop/map.ejs";
-				this.view.setTplData(tplFile, tplData);
-
-				//экспрот данных в JS на клиента
-				this.getRes().expose(motoshopList, 'motoshopList');
-				this.getRes().expose(motoshopLocations, 'motoshopLocations');
-				this.getRes().expose(addressList, 'motoshopAddressList');
-
-				return Promise.resolve(null);
-			})
-			.catch((err) => {
+			.catch((err) =>
+			{
 				throw err;
 			});
 	}
