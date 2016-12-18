@@ -65,7 +65,7 @@
 						});
 
 				//TODO удалить
-				$mtsLocationsNames.show();
+				//$mtsLocationsNames.show();
 			})
 			.fail(function (err)
 			{
@@ -181,22 +181,28 @@
 		{
 			event.preventDefault();
 			var self = this;
+			var $parent = $(self).parents('li');
 
-			$linkName.removeClass('selected');
+			$mtsLocationsNames.find('li').removeClass('selected');
+			$mtsLocationsNames.find(".locLevel1 ul").hide();
 
-			$(self).parents('.locLevel1').find('> a').addClass('selected');
+			$parent.addClass('selected');
+
+			if ($parent.find('ul').length)
+				$parent.find('ul').show();
 
 			var coords = $(self).data("coords").split(',');
 			var l_id = $(self).data("locationId");
 
-			var bounds =  getLocationPointsCoords(l_id);
-			var cnt = bounds.length;
-				bounds = bounds.concat([coords]);
+			var bounds =  getLocationPointsCoords(l_id)||[];
 
-			var centerAndZoom = ymaps.util.bounds.getCenterAndZoom(bounds, MtsMap.container.getSize());
+			var cnt = bounds.length;
+				bounds.push(coords);
+
+			//var centerAndZoom = ymaps.util.bounds.getCenterAndZoom(bounds, MtsMap.container.getSize());
 				bounds =  ymaps.util.bounds.fromPoints(bounds);
-			//var center = ymaps.util.bounds.getCenter(bounds);
-			var center = (cnt > 1 ? ymaps.util.bounds.getCenter(bounds) : bounds[1]);
+			var center = ymaps.util.bounds.getCenter(bounds);
+			//var center = (cnt > 1 ? ymaps.util.bounds.getCenter(bounds) : bounds[0]);
 
 			MtsMap.setBounds(bounds, {checkZoomRange: false})
 					.then(function ()
@@ -204,6 +210,10 @@
 						MtsMap.setCenter(center, MtsMap.getZoom()-1, {checkZoomRange: false});
 						$locNamesBtn.click();
 						$locNamesBtnText.text($(self).text());
+					})
+					.fail(function (err)
+					{
+						console.log(err);
 					});
 		});
 	}

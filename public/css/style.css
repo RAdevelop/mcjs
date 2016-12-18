@@ -1561,7 +1561,7 @@ iframe.iframeVideoEmbed {
   display: none;
   margin: 10px 0px 10px 0px;
 }
-@media (max-width: 768px) {
+@media (max-width: 992px) {
   .motoshopMapContainer .mtsLocationsNames button.dropdown-toggle {
     display: block;
   }

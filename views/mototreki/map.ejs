@@ -176,8 +176,7 @@
 			$mttLocationsNames.find(square).addClass(squarePlus);
 			$(this).removeClass(squarePlus).addClass(squareMinus);
 
-			$ul.toggle();
-
+			$ul.show();
 		});
 
 		var $linkName = $mttLocationsNames.find("a");
@@ -185,39 +184,37 @@
 		$linkName.on('click', function (event)
 		{
 			event.preventDefault();
+			event.stopPropagation();
 			var self = this;
 
 			$linkName.removeClass('selected');
 
-			$(self).parents('.locLevel1').find('> a').addClass('selected');
+			var $parentRoot = $(self).parents('.locLevel1');
+			$parentRoot.find('> a').addClass('selected');
 
-			var coords = $(this).attr("data-coords").split(',');
-			var l_id = $(this).attr("data-location-id");
+			var coords = $(self).data("coords").split(',');
+			var l_id = $(self).data("locationId");
 
-			var bounds =  getLocationPointsCoords(l_id);
+			var bounds =  getLocationPointsCoords(l_id)||[];
+
 			var cnt = bounds.length;
-				bounds = bounds.concat([coords]);
+			bounds.push(coords);
 
-			var centerAndZoom = ymaps.util.bounds.getCenterAndZoom(bounds, MttMap.container.getSize());
-				bounds =  ymaps.util.bounds.fromPoints(bounds);
-
-			//var center = ymaps.util.bounds.getCenter(bounds);
-			var center = (cnt > 1 ? ymaps.util.bounds.getCenter(bounds) : bounds[0]);
-
-			MttMap.setCenter(center, centerAndZoom.zoom, {checkZoomRange: false});
+			//var centerAndZoom = ymaps.util.bounds.getCenterAndZoom(bounds, MtsMap.container.getSize());
+			bounds =  ymaps.util.bounds.fromPoints(bounds);
+			var center = ymaps.util.bounds.getCenter(bounds);
+			//var center = (cnt > 1 ? ymaps.util.bounds.getCenter(bounds) : bounds[0]);
 
 			MttMap.setBounds(bounds, {checkZoomRange: false})
 					.then(function ()
 					{
-						MttMap.setCenter(center, MttMap.getZoom()-1, {checkZoomRange: false});
+						var zoom = MttMap.getZoom();
+							zoom = (cnt > 1 ? zoom-3 : zoom-1);
+						MttMap.setCenter(center, zoom, {checkZoomRange: false});
 						//MttMap.setCenter(center, centerAndZoom.zoom, {checkZoomRange: false});
 						$locNamesBtn.click();
 						$locNamesBtnText.text($(self).text());
-
-						if ($(self).parent().find("ul").css('display') == 'none')
-						{
-							$(self).parent().find($square).click();
-						}
+						$parentRoot.find($square).click();
 					});
 		});
 

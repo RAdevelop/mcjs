@@ -17,10 +17,10 @@
 		<div class="btn-group btn-group-sm" role="group" aria-label="список событий">
 			<a href="<%=menuItem.m_path+'/'%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-calendar"></i> календарь</a>
 		</div>
-		<div class="btn-group btn-group-sm" role="group" aria-label="список событий на карте">
+		<!-- div class="btn-group btn-group-sm" role="group" aria-label="список событий на карте">
 			<a href="<%=menuItem.m_path+'/map/'%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-map-o"></i> на карте</a>
-		</div>
-		<% if (eventLocations && eventLocations.list && eventLocations.list.length){%>
+		</div --><%
+		if (eventLocations && eventLocations.list && eventLocations.list.length){%>
 		<div class="btn-group btn-group-sm" role="group" aria-label="Выбор региона">
 			<button type="button" class="btn btn-default dropdown-toggle toolbarBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-fw fa-map-marker"></i><%
 				let selectedReg = 'регионы';

@@ -34,9 +34,9 @@ class Events extends CtrlMain
 				'^\/?[0-9]+\/?$': ['i_event_id']
 				,'^\/?$': null
 			},
-			"map": {
+			/*"map": {
 				'^\/?$': null
-			},
+			},*/
 			"upload": {
 				'^\/?$': null
 			}
@@ -647,7 +647,7 @@ class Events extends CtrlMain
 	 *
 	 * @returns {Promise}
 	 */
-	mapActionGet()
+	/*mapActionGet()
 	{
 		return Promise.props({
 			eventList: this.getClass("events").getAll(),
@@ -673,7 +673,7 @@ class Events extends CtrlMain
 			.catch((err) => {
 				throw err;
 			});
-	}
+	}*/
 
 	/**
 	 * добавляем фотографи к событию

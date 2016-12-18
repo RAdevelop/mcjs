@@ -139,7 +139,7 @@
 				event.preventDefault();
 				event.stopPropagation();
 
-				var coords = $(this).attr("data-coords").split(',');
+				var coords = $(this).data("coords").split(',');
 
 				MtsMap.setCenter(coords, 14, {checkZoomRange: true});
 

@@ -121,29 +121,28 @@ class Mototreki extends CtrlMain
 			trekList: this.getClass("mototrek").getAll(),
 			trekLocations: this.getClass("mototrek").getLocations()
 		})
-			.then((proprs) =>
+			.then((props) =>
 			{
+				props.trekLocations = props.trekLocations.reverse();
+				props.trekList = props.trekList.reverse();
 
-				proprs.trekLocations = proprs.trekLocations.reverse();
-				proprs.trekList = proprs.trekList.reverse();
-
-				let length = proprs.trekList.length;
+				let length = props.trekList.length;
 
 				for(let t = 0; t < length; t++)
 				{
-					for(let l = 0; l < proprs.trekLocations.length; l++)
+					for(let l = 0; l < props.trekLocations.length; l++)
 					{
 						if (
-							proprs.trekList.hasOwnProperty(t)
-							&&	proprs.trekList[t]["mtt_location_id"] == proprs.trekLocations[l]["l_id"]
+							props.trekList.hasOwnProperty(t)
+							&&	props.trekList[t]["mtt_location_id"] == props.trekLocations[l]["l_id"]
 						)
 						{
-							if (!proprs.trekLocations[l].hasOwnProperty("treks"))
-								proprs.trekLocations[l]["treks"] = [];
+							if (!props.trekLocations[l].hasOwnProperty("treks"))
+								props.trekLocations[l]["treks"] = [];
 
-							proprs.trekLocations[l]["treks"].push(proprs.trekList[t]);
+							props.trekLocations[l]["treks"].push(props.trekList[t]);
 
-							proprs.trekList.splice(t, 1);
+							props.trekList.splice(t, 1);
 
 							length--;
 							t--;
@@ -151,26 +150,26 @@ class Mototreki extends CtrlMain
 					}
 				}
 
-				length = proprs.trekList.length;
+				length = props.trekList.length;
 
 				for(let t = 0; t < length; t++)
 				{
-					let pids = (proprs.trekList[t]["mtt_location_pids"]).split(',');
+					let pids = (props.trekList[t]["mtt_location_pids"]).split(',');
 
-					for(let l = 0; l < proprs.trekLocations.length; l++)
+					for(let l = 0; l < props.trekLocations.length; l++)
 					{
 
-						let last = pids.lastIndexOf(proprs.trekLocations[l]["l_id"]);
+						let last = pids.lastIndexOf(props.trekLocations[l]["l_id"]);
 
 						if (last == -1)
 							continue;
 
-						if (!proprs.trekLocations[l].hasOwnProperty("treks"))
-							proprs.trekLocations[l]["treks"] = [];
+						if (!props.trekLocations[l].hasOwnProperty("treks"))
+							props.trekLocations[l]["treks"] = [];
 
-						proprs.trekLocations[l]["treks"].push(proprs.trekList[t]);
+						props.trekLocations[l]["treks"].push(props.trekList[t]);
 
-						proprs.trekList.splice(t, 1);
+						props.trekList.splice(t, 1);
 
 						length--;
 						t--;
@@ -179,10 +178,10 @@ class Mototreki extends CtrlMain
 					}
 				}
 
-				proprs.trekLocations = proprs.trekLocations.reverse();
+				props.trekLocations = props.trekLocations.reverse();
 
 				let pIndex, trekList = [];
-				proprs.trekLocations.forEach((locItem, locIndex, locNames) =>
+				props.trekLocations.forEach((locItem, locIndex, locNames) =>
 				{
 					if (locItem["l_mtt_level"] <= 1)
 					{
@@ -203,7 +202,7 @@ class Mototreki extends CtrlMain
 
 				});
 
-				proprs = null;
+				props = null;
 
 				return Promise.resolve([null, trekList]);
 			});
