@@ -39,13 +39,16 @@
 					mapCluster = cluster(motoshop);
 
 					MtsMap.geoObjects.add(mapCluster);
+					var bounds = mapCluster.getBounds();
 
-					MtsMap.setBounds(mapCluster.getBounds(),
+					return MtsMap.setBounds(bounds, {checkZoomRange: true})
+							.then(function ()
 							{
-								checkZoomRange: true
+								MtsMap.setZoom(MtsMap.getZoom()-1);
+
+								onClickMtsAddress(MtsMap);
+								return ymaps.vow.resolve(MtsMap);
 							});
-					onClickMtsAddress(MtsMap);
-					return ymaps.vow.resolve(MtsMap);
 				})
 				.fail(function (err)
 				{

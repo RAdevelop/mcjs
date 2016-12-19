@@ -265,7 +265,7 @@ class Base
 	 * }
 	 * @returns {{}}
 	 */
-	routePaths()
+	static routePaths()
 	{
 		return {
 			"index":{
@@ -299,8 +299,7 @@ class Base
 
 		let actionName = this.getActionName();
 
-
-		let routePaths = this.routePaths();
+		let routePaths = this.constructor.routePaths();
 		let reqPath = this.getPath();
 
 		if (!routePaths[actionName])

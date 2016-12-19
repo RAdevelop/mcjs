@@ -38,16 +38,13 @@ module.exports = function(Classes, Control)
 	//именно после верхних роутеров, которых нет в меню (в БД)
 	router.all('*', function(req, res, next)
 	{
-
 		let cName = (res.locals.menuItem.c_path[0] == '/') ? res.locals.menuItem.c_path.substr(1) : res.locals.menuItem.c_path;
 		console.log('cName = ' + cName);
 		//let C = new (Control.get(cName))(req, res, Classes);
 
 		let cn = {[cName]:cName};
 		if (!Controllers.has(cn))
-		{
 			Controllers.set(cn, new (Control.get(cName))(req, res, Classes) );
-		}
 
 		Controllers.get(cn)
 			.callAction()
@@ -56,8 +53,10 @@ module.exports = function(Classes, Control)
 				return Controllers.get(cn).view.render(json)
 					.then(() =>
 					{
+						//console.log('\n-----------RA 6');
 						calcTimeForGC();
-						//Controllers.get(cn) = null;  //так как Controllers это WeakMap то пока закомментим = null
+						//так как Controllers это WeakMap то пока закомментим
+						//Controllers.get(cn) = null;
 
 						//console.log("response time: ", end.getTime() - startDate.getTime() + " ms");
 					});
@@ -65,7 +64,8 @@ module.exports = function(Classes, Control)
 			.catch((err) =>
 			{
 				//Logger.error(err);
-				//C = null; //так как Controllers это WeakMap то пока закомментим = null
+				//так как Controllers это WeakMap то пока закомментим = null
+				//C = null;
 				return next(err);
 			});
 	});

@@ -11,7 +11,7 @@ let limit_per_page = 20;
 
 class User extends CtrlMain
 {
-	routePaths()
+	static routePaths()
 	{
 		return {
 			"index": {

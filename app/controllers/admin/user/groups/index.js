@@ -11,7 +11,7 @@ class AdminUserGroups extends CtrlMain
 	 * @see Base.routePaths()
 	 * @returns {{index: {^\/?$: Array}}}
 	 */
-	routePaths()
+	static routePaths()
 	{
 		return {
 			"index": {

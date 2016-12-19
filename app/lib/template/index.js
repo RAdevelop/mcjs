@@ -41,14 +41,13 @@ function Template(req, res, Controller = null)
 	//this.next = next;
 
 	this.res.locals._reqQuery       = req.query;
-	this.res.locals._isXHR           = req.xhr;
+	this.res.locals._isXHR          = req.xhr;
 	this.res.locals._reqOriginalUrl = req.originalUrl;
 	this.res.locals._reqBaseUrl     = (this.controller() ? this.controller().getBaseUrl() : req.baseUrl);
 	//this.res.locals._reqPath        = req.path;
 	this.res.locals._reqPath        = (this.controller() ? this.controller().getPath() : req.path);
 	this.res.locals._action         = (this.controller() ? this.controller().getActionName() : '');
 	this.res.locals._access        = (this.controller() ? this.controller().getLocalAccess() : {});
-
 }
 
 Template.getTemplate = function (Controller)
@@ -141,8 +140,6 @@ Template.prototype.setDataNull = function()
 	return this;
 };
 
-
-
 /**
  *
  * рисуем и отдаем шаблон
@@ -152,52 +149,53 @@ Template.prototype.setDataNull = function()
  */
 Template.prototype.render = function(json = false)
 {
+	if (this.res.headersSent)
+		return Promise.resolve(true);
+
 	json = (json || this.req.xhr);
 
-	const self = this;
-	let renderData = self.getPageData(json);
+	let renderData = this.getPageData(json);
 
 	if (!_.isObject(renderData))
 		throw new Error("Template: renderData is not object");
-		//return self.next(new Error("Template: renderData is not object"));
 
 	if (json)//то renderData - должен быть Объектом {}
 	{
-		self.setAjaxData(renderData["data"]);
+		this.setAjaxData(renderData["data"]);
 
-		let ajaxData = self.getAjaxData();
+		let ajaxData = this.getAjaxData();
 
-		return new Promise(function (resolve, reject)
+		return new Promise((resolve, reject)=>
 		{
-			if (self.res.headersSent)
-				return resolve(true);
+			//if (this.res.headersSent)
+			//	return resolve(true);
 
-			if (self.ajaxWithHtml())
+			if (this.ajaxWithHtml())
 			{
 				let tplFile = renderData["tpl"];
 
-				return self.res.render(tplFile, ajaxData, function(err, html)
+				this.res.render(tplFile, ajaxData, (err, html)=>
 				{
-					self.setController(null);
+					this.setController(null);
 
 					if (err)
 						return reject(err);
 
 					ajaxData["html"] = html;
 
-					self.res.json(ajaxData);
+					this.res.json(ajaxData);
 					return resolve(true);
 				});
 			}
 			else
 			{
-				//if (!self.req.xhr)
-				self.res.set('Content-Type', 'application/json');
+				//if (!this.req.xhr)
+				this.res.set('Content-Type', 'application/json');
 
-				self.setController(null);
+				this.setController(null);
 				ajaxData["html"] = '';
 
-				self.res.json(ajaxData);
+				this.res.json(ajaxData);
 				return resolve(true);
 			}
 		});
@@ -207,90 +205,77 @@ Template.prototype.render = function(json = false)
 	console.log(renderData);
 	console.log('==========END renderData==============');*/
 
-	return self.partialRender(renderData["partial"])
-		.then(function (partialsHtml)
+	return this.partialRender(renderData["partial"])
+		.then((partialsHtml)=>
 		{
 			/*console.log('--------partialsHtml----------');
 			console.log(partialsHtml)
-			console.log('--------END partialsHtml----------');*/
+			console.log('--------END partialsHtml----------\n');*/
 
-			partialsHtml.forEach(function(item)
+			partialsHtml.forEach((item)=>
 			{
-				self.setData(item);
+				this.setData(item);
 			});
 
 			let tplFile;
 			if (renderData["tpl"])
 			{
 				tplFile = Object.keys(renderData["tpl"]).shift();
-				self.setData(renderData["tpl"][tplFile]);
+				this.setData(renderData["tpl"][tplFile]);
 			}
 			else
 				tplFile = 'empty.ejs';
 
-			return new Promise(function (resolve, reject)
+			return new Promise((resolve, reject)=>
 			{
-				self.res.render(tplFile, self.getData(), function(err, html)
+				this.res.render(tplFile, this.getData(), (err, html)=>
 				{
 					if(err)
 						return reject(err);
 
-					if (self.res.headersSent) //TODO ??? надо ли тут это???
-						return resolve(true);
+					//if (this.res.headersSent) //TODO ??? надо ли тут это???
+					//	return resolve(true);
 
-					self.setController(null);
-					self.res.send(html);
-					return resolve();
+					this.setController(null);
+					this.res.send(html);
+					return resolve(true);
 				});
 			});
 		})
-		.catch(function (err)
+		.catch((err)=>
 		{
-			self.setController(null);
+			this.setController(null);
 			throw err;
 		});
 };
 
 Template.prototype.partialRender = function(partials)
 {
-	const self = this;
 	/*console.log('==========partials==============');
 	console.log(partials);
 	console.log('==========END partials==============');*/
-	if (partials.length == 0) return Promise.resolve([]);
+	if (partials.length == 0)
+		return Promise.resolve([]);
 
-	let blocks = partials.map(function(data)
+	let blocks = partials.map((data)=>
 	{
 		let tpl = Object.keys(data).shift();
-		return self.partial(tpl, data[tpl]);
+		return this.partial(tpl, data[tpl]);
 	});
 
-	return Promise.all(blocks)
-		.catch(function (err)
-		{
-			/*console.log('partials.map(function(data)');
-			console.log(err);*/
-			throw err;
-		});
+	return Promise.all(blocks);
 };
-
 
 Template.prototype.partial = function(tplFile, tplData)
 {
-	const self = this;
-	return new Promise(function(resolve, reject)
+	return new Promise((resolve, reject)=>
 	{
-		self.res.render(tplFile, tplData, function(err, html)
+		this.res.render(tplFile, tplData, (err, html)=>
 		{
-
-			if(err) return reject(err);
+			if(err)
+				return reject(err);
 
 			return resolve({[tplFile.split('/').join('_')]:html});
-		}).catch(function (err)
-		{
-			/*console.log('self.res.render');
-			console.log(err);*/
-			throw err;
 		});
 	});
 };
@@ -327,7 +312,7 @@ Template.prototype.getPageData = function(json = false)
 
 	if (partialData && partialData.size)
 	{
-		partialData.forEach(function (partData, partFile)
+		partialData.forEach((partData, partFile)=>
 		{
 			pageData["partial"].push({[partFile]: partData});
 		});

@@ -107,7 +107,9 @@ class Menu extends BaseModel
 
 		where = (where.length ? `WHERE ${where.join(' AND ')}` : ``);
 
-		let sql = `SELECT m.m_id, m.m_pid, m.m_path, m.m_name, m.m_title, m.m_h1, m.m_desc, m.m_level, m.m_lk, m.m_rk, REPEAT('&nbsp;', IF(m.m_level > 1, (m.m_level-1)*2, 0)) AS m_nbsp, m.m_type, 
+		let sql = `SELECT m.m_id, m.m_pid, m.m_path, m.m_name, m.m_title, m.m_h1, m.m_desc, m.m_level, 
+		m.m_lk, m.m_rk, REPEAT('&nbsp;', IF(m.m_level > 1, (m.m_level-1)*2, 0)) AS m_nbsp, m.m_type,
+		IF(m.m_type = 0, 'admin', IF(m.m_type = 1, 'site', IF(m.m_type = 2, 'profile', ''))) AS m_type_alias,
 		c.c_id, c.c_path 
 		FROM menu AS m
 		JOIN controllers AS c ON(c.c_id = m.c_id)
@@ -162,7 +164,9 @@ class Menu extends BaseModel
 			menu_type = ([0,1,2].indexOf(menu_type) != -1 ? [menu_type] : [1]);
 		
 		let sql = `SELECT m.m_id, m.m_pid, m.m_path, m.m_name, m.m_title, m.m_h1, m.m_desc, m.m_level, m.m_lk, m.m_rk, 
-		REPEAT('&nbsp;', IF(m.m_level > 1, m.m_level*2, 0)) AS m_nbsp, m.m_type, c.c_id, c.c_path
+		REPEAT('&nbsp;', IF(m.m_level > 1, m.m_level*2, 0)) AS m_nbsp, m.m_type, 
+		IF(m.m_type = 0, 'admin', IF(m.m_type = 1, 'site', IF(m.m_type = 2, 'profile', ''))) AS m_type_alias,
+		c.c_id, c.c_path
 		FROM menu AS m
 		JOIN controllers AS c ON(c.c_id = m.c_id)
 		WHERE m.m_type IN(${menu_type.join(',')}) AND m.m_path IN(${pHolders.join(',')} )

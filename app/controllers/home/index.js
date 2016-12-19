@@ -9,6 +9,19 @@ const CtrlMain = require('app/lib/controller');
 class Home extends CtrlMain
 {
 	/**
+	 * @see Base.routePaths()
+	 * @returns {{index: {^\/?$: Array}}}
+	 */
+	static routePaths()
+	{
+		return {
+			"index": {
+				'^\/?$': null
+			}
+		};
+	}
+
+	/**
 	 *
 	 * @returns {Promise}
 	 */

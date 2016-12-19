@@ -34,7 +34,7 @@ module.exports = function(app)
 				tplData: {error: err}
 			};
 
-			Mailer.send(sendParams, function (err)
+			Mailer.send(sendParams, (err)=>
 			{
 				if (err)
 				{
@@ -43,24 +43,18 @@ module.exports = function(app)
 				}
 			});
 		}
-		let error = err;
 
 		if(app.get('env') === 'prod')
-			error.stack = '';
+			err.stack = '';
 
 		let tplData = {
-			error: error,
-			title: error.message
+			error: err,
+			title: (err.status == 500 ? 'Internal Server Error' :err.message)
 		};
 
-		res.status(err.status || 500);
-
+		res.status(err.status);
+		let tplFile = (err.status >=500 ? 'error500' : 'error');
 		const View = new Template(req, res);
-		View.setTplData("error", tplData);
-		View.render(false)
-			.catch(function (err)
-			{
-				Logger.error(err);
-			});
+		View.setTplData(tplFile, tplData).render(false);
 	}
 };
