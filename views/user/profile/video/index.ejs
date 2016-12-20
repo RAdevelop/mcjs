@@ -1,0 +1,41 @@
+<%  if(!_isXHR){%><%- layout('layout/user/index.ejs') %><% } %>
+<%- include toolbar.ejs %>
+<h1><%=_pageH1%></h1><%
+if (videoAlbum){%><%- include video.ejs %><%}
+else if (videoAlbums){%><%- include video_list.ejs %>
+<%- include ../../../pages/index.ejs %><%} %>
+<p>по аналогии с фотоальбомами</p>
+<p>создать видео альбом (даилог с переходом в созданный альбом)</p>
+<p>добавить в альбом видео (диалог, с вводом url)
+	<ul>
+	<li>получить: заголовок, описание, картинку, код для видео</li>
+	<li>заголовок, описание, картинку? с возможностью редактирования</li>
+	<li>дата создания/редактирования</li>
+	<li>флаг публикации (доступно для просмотра или нет)</li>
+	<li>для заголовка сохранять транслит версию</li>
+	<li>сохранить в указанный альбом</li>
+	</ul>
+</p>
+<script type="text/javascript" src="/js/jquery/video_album.js"></script>
+<script type="text/javascript">
+//<!--
+(function($)
+{
+	var videoAlbumProps = {
+		uri: '<%=_reqBaseUrl%>'
+		, albumToolbar: '.js-video-albums-toolbar a[data-action]'
+		, albumWrapper: '.albums .imageList'
+		, albumImages: '.image'
+		, albumName: '#a_name'
+		, albumText: '#a_text'
+		, u_id: '<%=(_user["u_id"])%>'
+	};
+	<% if(videoAlbum && videoAlbum["va_is_owner"]) { %>
+	//videoAlbumProps["s_token"] = '<%=(typeof s_token === 'undefined' ? '' : s_token)%>';
+	//videoAlbumProps["i_time"] = '<%=(typeof i_time === 'undefined' ? '' : i_time)%>';
+	videoAlbumProps["sortable"] = (<%=(videoAlbum && videoAlbum["u_id"] == _user["u_id"])%>);
+	<%}%>
+	$('videoAlbum').videoAlbum(videoAlbumProps);
+})($);
+//-->
+</script>

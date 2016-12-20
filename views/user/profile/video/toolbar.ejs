@@ -1,0 +1,18 @@
+<div class="row">
+	<div class="btn-toolbar btnsToolbar" role="toolbar" aria-label="Опции для видео"><%
+		if (user["u_is_owner"] && Object.keys(_access).some(function(m){return (['post_add','post_edit'].indexOf(m) >= 0);}))
+		{%><div class="btn-group btn-group-sm" role="group" aria-label="Опции для видео">
+			<button type="button" class="btn btn-default dropdown-toggle toolbarBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-fw fa-cog"></i> опции <i class="caret"></i></button>
+			<ul class="dropdown-menu js-video-albums-toolbar"><%
+				if (_access['post_add']) {%><li><a href="<%=menuItem.m_path%>/add/" data-action="add"><i class="fa fa-fw fa-plus-square-o"></i> добавить видео</a></li><% }
+				if (_access['post_edit'] && videoAlbum && videoAlbum['va_id']) {
+				%><li><a href="<%=menuItem.m_path+'/edit/'+videoAlbum['va_id']%>/"><i class="fa fa-fw fa-edit"></i> редактировать видео-альбом</a></li>
+				<li><a href="javascript:void(0);" data-action="delete" data-video-id="<%=''%>"><i class="fa fa-fw fa-trash-o"></i> удалить видео</a></li><% }%>
+			</ul>
+		</div><% }%>
+		<div class="btn-group btn-group-sm" role="group" aria-label="список видео">
+			<a href="<%=menuItem.m_path+'/'+user['u_id']%>/" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-list"></i> все видео</a>
+		</div>
+		<div class="sharingSocNet" data-soc-list="vk,ok,fb,tw,gp"></div>
+	</div>
+</div>

@@ -1,0 +1,14 @@
+<div class="albumList">
+<% videoAlbums.forEach(function (video)
+{
+%><div class="album">
+	<a class="albumImg" href="<%=[_reqBaseUrl, video['u_id'], video['va_id']].join('/')%>/">img and name</a>
+	<div class="albumTools">
+		<span class="badge"><i class="fa fa-fw fa-camera"></i> cnt</span>
+	</div>
+	<div class="albumTitle">
+		<div class="albumName">name</div>
+		<div class="albumText">if v_text show v_text</div>
+	</div>
+</div><%})%>
+</div>
