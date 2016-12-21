@@ -34,13 +34,13 @@
 				case 'add':
 					options.btnSaveAlbumVal = 'add_album';
 					var dialogBtnAdd = 'btn_add_video_album';
-
+					var formAddAlbumId = 'formAddAlbum';
 					$('__add_album_dialog__').mcDialog({
 						title: 'Создание нового альбома'
-						, body: formAddAlbum(options)
+						, body: formAddAlbum(formAddAlbumId, options, videoAlbum)
 						, onOpen: function ($dialog)
 						{
-							$dialog.find('#formAddAlbum').postRes({
+							$dialog.find('#'+formAddAlbumId).postRes({
 								btnId: $dialog.find('#'+dialogBtnAdd),
 								onSuccess: function($respDialog, resp)
 								{
@@ -96,7 +96,7 @@
 								{
 									if (resp.hasOwnProperty("formError") && resp["formError"].hasOwnProperty("error") && !resp["formError"]["error"])
 									{
-										window.location.href = '<%=menuItem.m_path%>';
+										window.location.href = [options.uri,options.u_id].join('/')+'/';
 										return false;//не показать диалог
 									}
 									else
@@ -139,14 +139,14 @@
 			}
 		});
 
-		function formAddAlbum(options, album)
+		function formAddAlbum(formAddAlbumId, options, album)
 		{
 			var aName = (album['va_name'] || '').htmlspecialchars(album['va_name'] || '');
 			var aText = (album['va_text'] || '').htmlspecialchars(album['va_text'] || '');
 
 			var va_id = (album['va_is_owner'] ? album['va_id'] : null);
 
-			return '<form class="form-horizontal" action="'+options.uri+'" method="post" id="formAddAlbum">' +
+			return '<form class="form-horizontal" action="'+options.uri+'" method="post" id="'+formAddAlbumId+'">' +
 				'<input type="hidden" name="btn_save_album" value="'+options.btnSaveAlbumVal+'"/>' +
 				'<input type="hidden" name="ui_u_id" value="'+options.u_id+'"/>' +
 				(va_id ?'<input type="hidden" name="ui_va_id" value="'+va_id+'"/>' : '') +

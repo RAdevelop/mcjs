@@ -1,24 +1,21 @@
 <div class="row">
 	<div class="btn-toolbar btnsToolbar" role="toolbar" aria-label="Опции для мотосалонов"><%
-		if (Object.keys(_access).some((m)=>{
-					return (['post_add','post_edit'].indexOf(m) != -1);
-		})) {%>
-		<div class="btn-group btn-group-sm" role="group" aria-label="Опции для мотосалонов">
+		if (Object.keys(_access).some(function(m){return (['post_add','post_edit'].indexOf(m)>=0);}))
+		{%><div class="btn-group btn-group-sm" role="group" aria-label="Опции для мотосалонов">
 			<button type="button" class="btn btn-default dropdown-toggle toolbarBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-fw fa-cog"></i> опции <i class="caret"></i></button>
 			<ul class="dropdown-menu "><%
-				if (_access['post_add']) {%><li><a href="<%=menuItem.m_path+'/add/'%>" ><i class="fa fa-fw fa-plus-square-o"></i> добавить мотосалон</a></li><% }
+				if (_access['post_add']) {%><li><a href="<%=menuItem['m_path']+'/add/'%>" ><i class="fa fa-fw fa-plus-square-o"></i> добавить мотосалон</a></li><% }
 				if (_access['post_edit'] && motoshop && motoshop["mts_id"])
-				{%><li><a href="<%=menuItem.m_path+'/edit/'+motoshop["mts_id"]%>/"><i class="fa fa-fw fa-edit"></i> редактировать мотосалон</a></li>
+				{%><li><a href="<%=menuItem['m_path']+'/edit/'+motoshop["mts_id"]%>/"><i class="fa fa-fw fa-edit"></i> редактировать мотосалон</a></li>
 				<li><a href="javascript:void(0)" class="js-motoshop-tools" data-action="delete"><i class="fa fa-fw fa-trash-o"></i> удалить мотосалон</a></li><% }%>
 			</ul>
-		</div>
-		<% }%>
-
+		</div><%
+		}%>
 		<div class="btn-group btn-group-sm" role="group" aria-label="список мотосалонов">
-			<a href="<%=menuItem.m_path+'/'%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-list"></i> все мотосалоны</a>
+			<a href="<%=menuItem['m_path']+'/'%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-list"></i> все мотосалоны</a>
 		</div>
 		<div class="btn-group btn-group-sm" role="group" aria-label="список мотосалонов на карте">
-			<a href="<%=menuItem.m_path+'/map/'%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-map-o"></i> на карте</a>
+			<a href="<%=menuItem['m_path']+'/map/'%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-map-o"></i> на карте</a>
 		</div>
 		<div class="sharingSocNet" data-soc-list="vk,ok,fb,tw,gp"></div>
 	</div>
@@ -48,10 +45,10 @@
 
 		var formDel = 'formDelMotoshop';
 		var btnName = 'btn_del_motoshop';
-		var html = '<form class="form-horizontal" action="<%=menuItem.m_path%>/edit/" method="post" id="'+formDel+'">' +
+		var html = '<form class="form-horizontal" action="<%=menuItem['m_path']%>/edit/" method="post" id="'+formDel+'">' +
 				'<input type="hidden" name="btn_save_motoshop" value="delete"/>' +
-				'<input type="hidden" name="i_mts_id" value="'+motoshop["mts_id"]+'"/>' +
-				'<div class="form-group"><div class="col-sm-12 text-center">Удалить мотосалон: ' + motoshop["mts_name"] + '?</div>' +
+				'<input type="hidden" name="i_mts_id" value="'+motoshop['mts_id']+'"/>' +
+				'<div class="form-group"><div class="col-sm-12 text-center">Удалить мотосалон: ' + motoshop['mts_name'] + '?</div>' +
 				'</div></form>';
 
 		$('__del_motoshop_dialog__').mcDialog({
@@ -66,7 +63,7 @@
 						if (resp.hasOwnProperty("formError") && resp["formError"].hasOwnProperty("error") && !resp["formError"]["error"]
 						|| !resp.hasOwnProperty("formError"))
 						{
-							window.location.href = '<%=menuItem.m_path%>';
+							window.location.href = '<%=menuItem['m_path']%>';
 							return false;//не показать диалог
 						}
 						return true;

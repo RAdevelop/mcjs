@@ -1,9 +1,13 @@
 <%  if(!_isXHR){%><%- layout('layout/user/index.ejs') %><% } %>
 <%- include toolbar.ejs %>
-<h1><%=_pageH1%></h1><%
+<h1><%=_pageH1%></h1>
+<div class="row albums">
+	<div class="col-xs-12 col-sm-12 col-md-12"><%
 if (videoAlbum){%><%- include video.ejs %><%}
 else if (videoAlbums){%><%- include video_list.ejs %>
 <%- include ../../../pages/index.ejs %><%} %>
+	</div>
+</div>
 <p>по аналогии с фотоальбомами</p>
 <p>создать видео альбом (даилог с переходом в созданный альбом)</p>
 <p>добавить в альбом видео (диалог, с вводом url)

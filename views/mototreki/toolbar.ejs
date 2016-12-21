@@ -1,22 +1,19 @@
 <div class="row">
-	<div class="btn-toolbar btnsToolbar" role="toolbar" aria-label="Опции для мототреков">
-
-		<% if (Object.keys(_access).some((m)=>{
-					return (['post_add','post_edit'].indexOf(m) != -1);
-		})) {%>
-		<div class="btn-group btn-group-sm" role="group" aria-label="Опции для мототреков">
+	<div class="btn-toolbar btnsToolbar" role="toolbar" aria-label="Опции для мототреков"><%
+		if (Object.keys(_access).some(function(m){return (['post_add','post_edit'].indexOf(m)>=0);}))
+		{%><div class="btn-group btn-group-sm" role="group" aria-label="Опции для мототреков">
 			<button type="button" class="btn btn-default dropdown-toggle toolbarBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-fw fa-cog"></i> опции <i class="caret"></i></button>
 			<ul class="dropdown-menu "><%
-				if (_access['post_add']) {%><li><a href="<%=menuItem.m_path+'/add/'%>" ><i class="fa fa-fw fa-plus-square-o"></i> добавить мототрек</a></li><%
-				} if (_access['post_edit'] && trek && trek.mtt_id) {%>
-				<li><a href="<%=menuItem.m_path+'/edit/'+trek.mtt_id%>/"><i class="fa fa-fw fa-edit"></i> редактировать мототрек</a></li><% } %>
+				if (_access['post_add']) {%><li><a href="<%=menuItem['m_path']+'/add/'%>" ><i class="fa fa-fw fa-plus-square-o"></i> добавить мототрек</a></li><%
+				} if (_access['post_edit'] && trek && trek['mtt_id']) {%>
+				<li><a href="<%=menuItem['m_path']+'/edit/'+trek['mtt_id']%>/"><i class="fa fa-fw fa-edit"></i> редактировать мототрек</a></li><% } %>
 			</ul>
 		</div><% } %>
 		<div class="btn-group btn-group-sm" role="group" aria-label="список мототреков">
-			<a href="<%=menuItem.m_path+'/'%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-list"></i> все мототреки</a>
+			<a href="<%=menuItem['m_path']+'/'%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-list"></i> все мототреки</a>
 		</div>
 		<div class="btn-group btn-group-sm" role="group" aria-label="список мототреков на карте">
-			<a href="<%=menuItem.m_path+'/map/'%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-map-o"></i> на карте</a>
+			<a href="<%=menuItem['m_path']+'/map/'%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-map-o"></i> на карте</a>
 		</div>
 		<div class="sharingSocNet" data-soc-list="vk,ok,fb,tw,gp"></div>
 	</div>

@@ -1,6 +1,6 @@
 "use strict";
 
-//const Errors = require('app/lib/errors');
+const Errors = require('app/lib/errors');
 const Moment = require('moment'); //работа со временем
 const Promise = require("bluebird");
 const Video = require('app/models/video');
@@ -27,18 +27,18 @@ class VideoAlbums extends Video
 	{
 		offset = parseInt(offset, 10) || 0;
 		limit = parseInt(limit, 10) || 10;
+		
+		let sql = `SELECT va.va_id, va.u_id, va.va_name, va.va_alias, va.va_text, va.va_cnt, va.va_create_ts, 
+		va.va_update_ts, v.v_id, v.v_img
+		FROM (SELECT NULL) AS z
+		JOIN video_albums AS va ON (va.u_id = ?)
+		LEFT JOIN video AS v ON (v.va_id = va.va_id AND v.u_id = va.u_id AND v.v_pos = ?)
+		ORDER BY va.va_update_ts DESC
+		LIMIT ${limit} OFFSET ${offset}`;
 
-		//TODO добавить join к таблице со списком видео для получения картинок к ним
+		//console.log(sql);
 
-		let sql = `SELECT va.va_id, va.u_id, va.va_name, va.va_alias, va.va_text, va.va_cnt, va.va_create_ts,
-		     va.va_update_ts
-			 FROM (SELECT NULL) AS z
-			 JOIN video_albums AS va ON (va.u_id = ?)
-			 ORDER BY va.va_update_ts DESC
-			 LIMIT ${limit} OFFSET ${offset}`;
-
-		return this.constructor.conn()
-			.s(sql, [u_id]);
+		return this.constructor.conn().s(sql, [u_id, 0]);
 	}
 
 	addVideoAlbum(u_id, va_name, va_alias, va_text)
@@ -50,8 +50,16 @@ class VideoAlbums extends Video
 
 		return this.constructor.conn()
 			.ins(sql, [u_id, va_name, va_alias, va_text, now_ts, now_ts])
-			.then((res) => {
+			.then((res) =>
+			{
 				return Promise.resolve(res['insertId'])
+			})
+			.catch((err)=>
+			{
+				if (err.name == 'DbErrDuplicateEntry')
+					throw new Errors.AlreadyInUseError();
+
+				throw err;
 			});
 	}
 }

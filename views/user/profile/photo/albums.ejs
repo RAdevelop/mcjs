@@ -1,7 +1,7 @@
 <%  if(!_isXHR){%><%- layout('layout/user/index') %><% }%>
 <ol class="breadcrumb">
-	<li><a href="<%=menuItem.m_path%>/"><%=menuItem.m_name%></a></li>
-	<li><a href="<%=(menuItem.m_path+'/'+user.u_id+'/')%>"><%=(user.u_login ? user.u_login : (user.u_name || user.u_surname ? [user.u_name, user.u_surname].join(' ') : ''))%></a></li>
+	<li><a href="<%=menuItem['m_path']%>/"><%=menuItem['m_name']%></a></li>
+	<li><a href="<%=(menuItem['m_path']+'/'+user['u_id']+'/')%>"><%=user['u_display_name']%></a></li>
 </ol>
 <div class="row album-list-toolbar">
 	<div class="btn-toolbar" role="toolbar" aria-label="Опции для фотоальбомов"><%
@@ -20,7 +20,7 @@
 		</div><% }
 		if(album){ %>
 		<div class="btn-group btn-group-sm" role="group" aria-label="список альбомов">
-			<a href="<%=_reqBaseUrl+(user ? '/'+user.u_id : '')%>/" class="btn btn-default"><i class="fa fa-fw fa-list"></i> все альбомы</a>
+			<a href="<%=_reqBaseUrl+(user ? '/'+user['u_id'] : '')%>/" class="btn btn-default"><i class="fa fa-fw fa-list"></i> все альбомы</a>
 		</div><%
 		} %>
 	</div>

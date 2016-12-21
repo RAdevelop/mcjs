@@ -56,6 +56,7 @@ class ProfileVideo extends CtrlMain
 					,"videoAlbum": null
 					,"pages": null
 				};
+
 				let xhr = this.getReq().xhr;
 				if (i_va_id)
 					return this.album(i_u_id, tplData, xhr);
@@ -127,7 +128,17 @@ class ProfileVideo extends CtrlMain
 				this.view.setTplData(tplFile, tplData);
 				return Promise.resolve(true);
 			})
-			.catch(Errors.FormError, (err) => {
+			.catch(Errors.FormError, Errors.AlreadyInUseError, (err) =>
+			{
+				if (err.name == 'AlreadyInUseError')
+				{
+					tplData.formError.message = 'Такой альбом уже существует';
+					tplData.formError.fields['s_va_name'] = "Укажите название альбома";
+					tplData.formError.error = true;
+					tplData.formError.errorName = err.name;
+
+					err['data'] = tplData;
+				}
 
 				this.view.setTplData(tplFile, err.data);
 				return Promise.resolve(true);

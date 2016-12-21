@@ -1,30 +1,28 @@
 <div class="row">
 	<div class="btn-toolbar btnsToolbar" role="toolbar" aria-label="Опции для событий"><%
-		if (Object.keys(_access).some((m)=>{
-					return (['post_add','post_edit'].indexOf(m) != -1);
-		})) { %>
-		<div class="btn-group btn-group-sm" role="group" aria-label="Опции для событий">
+		if (Object.keys(_access).some(function(m){return (['post_add','post_edit'].indexOf(m) >=0);}))
+		{ %><div class="btn-group btn-group-sm" role="group" aria-label="Опции для событий">
 			<button type="button" class="btn btn-default dropdown-toggle toolbarBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-fw fa-cog"></i> опции <i class="caret"></i></button>
 			<ul class="dropdown-menu eventToolBar">
 				<% if (_access['post_add']){%>
-				<li><a href="<%=menuItem.m_path+'/add/'%>" ><i class="fa fa-fw fa-plus-square-o"></i> добавить событие</a></li><% }
-				if (_access['post_edit'] && event && event.e_id) {%>
-				<li><a href="<%=menuItem.m_path+'/edit/'+event.e_id%>/"><i class="fa fa-fw fa-edit"></i> редактировать событие</a></li>
-				<li><a href="javascript:void(0);" data-action="delete" data-event-id="<%=event.e_id%>"><i class="fa fa-fw fa-trash-o"></i> удалить событие</a></li>
-				<% }%>
+				<li><a href="<%=menuItem['m_path']+'/add/'%>" ><i class="fa fa-fw fa-plus-square-o"></i> добавить событие</a></li><% }
+				if (_access['post_edit'] && event && event['e_id']) {%>
+				<li><a href="<%=menuItem['m_path']+'/edit/'+event['e_id']%>/"><i class="fa fa-fw fa-edit"></i> редактировать событие</a></li>
+				<li><a href="javascript:void(0);" data-action="delete" data-event-id="<%=event['e_id']%>"><i class="fa fa-fw fa-trash-o"></i> удалить событие</a></li><%
+				}%>
 			</ul>
 		</div><% }%>
 		<div class="btn-group btn-group-sm" role="group" aria-label="список событий">
-			<a href="<%=menuItem.m_path+'/'%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-calendar"></i> календарь</a>
+			<a href="<%=menuItem['m_path']+'/'%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-calendar"></i> календарь</a>
 		</div>
 		<!-- div class="btn-group btn-group-sm" role="group" aria-label="список событий на карте">
-			<a href="<%=menuItem.m_path+'/map/'%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-map-o"></i> на карте</a>
+			<a href="<%=menuItem['m_pat']h+'/map/'%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-map-o"></i> на карте</a>
 		</div --><%
-		if (eventLocations && eventLocations.list && eventLocations.list.length){%>
+		if (eventLocations && eventLocations['list'] && eventLocations['list'].length){%>
 		<div class="btn-group btn-group-sm" role="group" aria-label="Выбор региона">
 			<button type="button" class="btn btn-default dropdown-toggle toolbarBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-fw fa-map-marker"></i><%
 				let selectedReg = 'регионы';
-				eventLocations.list.forEach(function (eLoc)
+				eventLocations['list'].forEach(function (eLoc)
 				{
 					if (eventLocations["l_id"] == eLoc["l_id"])
 						selectedReg = eLoc["l_name"];
@@ -116,13 +114,10 @@
 	{
 		var html = '<form class="form-horizontal" action="'+uri+'/" method="post" id="formDelEvent">' +
 				'<input type="hidden" name="btn_save_event" value="del_event"/>' +
-				'<input type="hidden" name="i_event_id" value="'+event.e_id+'"/>' +
-				'<div class="form-group">' +
-				'<div class="col-sm-12 text-center">' +
-				'Удалить мотособытие: ' + event.e_title + '?' +
-				'</div>' +
-				'</div>' +
-				'</form>';
+				'<input type="hidden" name="i_event_id" value="'+event['e_id']+'"/>' +
+				'<div class="form-group"><div class="col-sm-12 text-center">' +
+				'Удалить мотособытие: ' + event['e_title'] + '?' +
+				'</div></div></form>';
 
 		return html;
 	}

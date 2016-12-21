@@ -1,14 +1,20 @@
-<div class="albumList">
-<% videoAlbums.forEach(function (video)
+<div class="albumList"><%
+videoAlbums.forEach(function (video)
 {
+	let img = '';
+	if(video["v_img"])
+		img = '<img src="'+video['v_img']+'" alt="'+video['va_name']+'"/>';
+	else
+		img = '<img src="/img/no_image.png" alt="'+video['va_name']+'" class="noImg"/>';
+
 %><div class="album">
-	<a class="albumImg" href="<%=[_reqBaseUrl, video['u_id'], video['va_id']].join('/')%>/">img and name</a>
+	<a class="albumImg" href="<%=[_reqBaseUrl, video['u_id'], video['va_id'], video['va_alias']].join('/')%>/"><%-img%></a>
 	<div class="albumTools">
-		<span class="badge"><i class="fa fa-fw fa-camera"></i> cnt</span>
+		<span class="badge"><i class="fa fa-fw fa-camera"></i> <%=video['va_cnt']%></span>
 	</div>
 	<div class="albumTitle">
-		<div class="albumName">name</div>
-		<div class="albumText">if v_text show v_text</div>
+		<div class="albumName"><%=video["va_name"]%></div>
+		<% if(video["va_text"]){%><div class="albumText"><%=video['va_text']%></div><%}%>
 	</div>
 </div><%})%>
 </div>
