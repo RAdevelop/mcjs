@@ -16,19 +16,23 @@ let limit_per_page = 20;
 class ProfileVideo extends CtrlMain
 {
 	/**
-	 * @see Base.routePaths()
+	 * @see CtrlMain.routePaths()
 	 * @returns {{index: {^\/?$: Array}}}
 	 */
 	static routePaths()
 	{
 		return {
 			"index": {
-				"^\/?[1-9]+[0-9]*\/[1-9]+[0-9]*\/page\/[1-9]+[0-9]*\/?$" : ["i_u_id", "i_va_id", ,"i_page"] //список фоток в альбоме с постраничкой
-				,"^\/?[1-9]+[0-9]*\/[1-9]+[0-9]*\/?$" : ["i_u_id", "i_va_id"] //список фоток в альбоме юзера
-
-				,"^\/?[1-9]+[0-9]*\/page\/[1-9]+[0-9]*\/?$" : ["i_u_id", ,"i_page"] //список видео юзера с постраничкой
-				,"^\/?[1-9]+[0-9]*\/?$" : ["i_u_id"] //список видео пользователя
-				,"^\/?$" : null //список юзеров
+				//список видео в альбоме с постраничкой
+				"^\/?[1-9]+[0-9]*\/[1-9]+[0-9]*\/\\S+\/page\/[1-9]+[0-9]*\/?$" : ["i_u_id", "i_va_id", "s_va_alias", ,"i_page"]
+				//список видео в альбоме юзера
+				,"^\/?[1-9]+[0-9]*\/[1-9]+[0-9]*\/\\S+\/?$" : ["i_u_id", "i_va_id", "s_va_alias"]
+				//список видео юзера с постраничкой
+				,"^\/?[1-9]+[0-9]*\/page\/[1-9]+[0-9]*\/?$" : ["i_u_id", ,"i_page"]
+				//список видео пользователя
+				,"^\/?[1-9]+[0-9]*\/?$" : ["i_u_id"]
+				//список
+				,"^\/?$" : null
 			}
 		};
 	}
@@ -59,9 +63,95 @@ class ProfileVideo extends CtrlMain
 
 				let xhr = this.getReq().xhr;
 				if (i_va_id)
-					return this.album(i_u_id, tplData, xhr);
+					return this.videoAlbum(i_u_id, tplData, xhr);
 
-				return this.albumList(i_u_id, tplData, xhr);
+				return this.videoAlbumList(i_u_id, tplData, xhr);
+			});
+	}
+
+	/**
+	 * просмотр альбома
+	 *
+	 * @param i_u_id
+	 * @param tplData
+	 * @param isAjax
+	 */
+	videoAlbum(i_u_id, tplData, isAjax = false)
+	{
+		let {i_va_id, s_va_alias, i_page=1} = this.routeArgs;
+
+		return this.getClass('video')
+			.getVideoAlbum(this.getUserId(), i_u_id, i_va_id)
+			.then((album) =>
+			{
+				if (!album || album['va_alias'] != s_va_alias)
+					throw new Errors.HttpError(404);
+
+				tplData["videoAlbum"] = album;
+				tplData["videoAlbum"]["videos"] = [];
+
+				if (tplData["videoAlbum"]["va_cnt"] == 0)
+				{
+					return [tplData, [], null];
+				}
+				console.log(tplData["videoAlbum"]);
+				return this.getClass('video')
+					.getAlbumVideos(i_u_id, i_va_id, new Pages(i_page, limit_per_page, tplData["videoAlbum"]["va_cnt"]))
+					.spread((Pages, videos, allPreviews) =>
+					{
+						Pages.setLinksUri([this.getBaseUrl(),i_u_id,i_va_id,album['va_alias']].join('/'));
+
+						tplData["videoAlbum"]["videos"] = videos;
+						//return Promise.resolve(tplData);
+						return [tplData, allPreviews, Pages];
+					});
+			})
+			.spread((tplData, allPreviews, Pages) =>
+			{
+				/*if (!isAjax)
+				{
+					tplData = Object.assign(tplData, FileUpload.createToken('user_photo', {"va_id": i_va_id}) );
+
+					this.getRes().expose(FileUpload.exposeUploadOptions('user_photo'), 'albumUploadOpts');
+				}*/
+
+				let exposeAlbumVideos = 'albumVideos';
+				if (Pages)
+				{
+					Pages.setAjaxPagesType(true)
+						.setAjaxDataSrc(['album', 'images'])
+						.setAjaxDataTarget(exposeAlbumVideos)
+						.setJquerySelectorData('.imageList .image');
+
+					tplData["pages"] = Pages.pages();
+				}
+
+				let tplFile = '';
+
+				if (isAjax)
+				{
+					tplFile = 'user/profile/video/video.ejs';
+				}
+				else
+				{
+					tplFile = 'user/profile/video/index.ejs';
+					this.view.addPartialData('user/left', {user: tplData["user"]});
+
+					this.view.setPageTitle(tplData["videoAlbum"]["va_name"]);
+					this.view.setPageDescription(CtrlMain.cheerio(tplData["videoAlbum"]["va_text"]).text());
+
+					if (tplData["videoAlbum"]["va_img"])
+						this.view.setPageOgImage(tplData["videoAlbum"]["va_img"]);
+				}
+
+				this.view.setTplData(tplFile, tplData, isAjax);
+
+				this.getRes().expose(tplData["videoAlbum"], 'videoAlbum');
+				this.getRes().expose(tplData["videoAlbum"]["videos"], exposeAlbumVideos);
+				//this.getRes().expose(allPreviews, 'albumPreviews');
+				this.getRes().expose(tplData["pages"], 'pages');
+				Pages = null;
+				return Promise.resolve(isAjax);
 			});
 	}
 
@@ -73,11 +163,11 @@ class ProfileVideo extends CtrlMain
 	 * @param isAjax
 	 * @returns {Promise}
 	 */
-	albumList(i_u_id, tplData, isAjax = false)
+	videoAlbumList(i_u_id, tplData, isAjax = false)
 	{
 		let {i_page=1} = this.routeArgs;
 
-		return this.getClass('video/albums')
+		return this.getClass('video')
 			.getVideoAlbumList(this.getUserId(), i_u_id, new Pages(i_page, limit_per_page))
 			.spread((videoAlbums, Pages) =>
 			{
@@ -122,7 +212,8 @@ class ProfileVideo extends CtrlMain
 		//console.log(tplData);
 
 		return this.albumPostActions(tplData)
-			.then((tplData) => { //если валидация успешна
+			.then((tplData) =>
+			{ //если валидация успешна
 
 				//tplData.formError.error = false;
 				this.view.setTplData(tplFile, tplData);
@@ -208,7 +299,7 @@ class ProfileVideo extends CtrlMain
 			{
 				if (this.parseFormErrors(tplData, errors, 'Ошибка при создании фотоальбома'))
 				{
-					return this.getClass('video/albums')
+					return this.getClass('video')
 						.addVideoAlbum(this.getUserId(), tplData["s_va_name"], tplData["t_va_text"])
 						.then((va_id) =>
 						{
@@ -216,6 +307,45 @@ class ProfileVideo extends CtrlMain
 							return Promise.resolve(tplData);
 						});
 				}
+			});
+	}
+
+	/**
+	 * радактирование названия и описания альбома
+	 *
+	 * @param tplData
+	 * @returns {Promise}
+	 */
+	editAlbum(tplData)
+	{
+		tplData = CtrlMain.stripTags(tplData, ["s_va_name", "t_va_text"]);
+
+		if (!tplData["ui_va_id"] || !tplData.hasOwnProperty("s_va_name"))
+			throw new Errors.HttpError(400);
+
+		let errors = {};
+		if (tplData["s_va_name"] == '')
+			errors["s_va_name"] = 'Укажите название альбома';
+
+		return Promise.resolve(errors)
+			.then((errors) => {
+				if (this.parseFormErrors(tplData, errors))
+				{
+					return this.getClass('video')
+						.getVideoAlbum(this.getUserId(), this.getUserId(), tplData["ui_va_id"])
+						.then((album) => {
+
+							if (!album || !album["va_is_owner"])
+								throw new Errors.HttpError(400);
+
+							return this.getClass('video')
+								.editVideoAlbum(this.getUserId(), tplData["ui_va_id"], tplData["s_va_name"], tplData["t_va_text"]);
+						});
+				}
+			})
+			.then((va_id) => {
+				tplData["va_id"] = va_id;
+				return Promise.resolve(tplData);
 			});
 	}
 

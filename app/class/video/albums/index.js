@@ -8,7 +8,7 @@ class VideoAlbums extends Base
 {
 	getVideoAlbumList(u_id, owner_u_id, Pages)
 	{
-		return this.model('video/albums').countUserVideoAlbums(owner_u_id)
+		return this.model('video').countUserVideoAlbums(owner_u_id)
 			.then((va_cnt) =>
 			{
 				Pages.setTotal(va_cnt);
@@ -19,7 +19,7 @@ class VideoAlbums extends Base
 				if (Pages.limitExceeded())
 					throw new Errors.HttpError(404);
 
-				return this.model('video/albums')
+				return this.model('video')
 					.getVideoAlbumList(owner_u_id, Pages.getOffset(), Pages.getLimit())
 					.then((albums) => {
 
@@ -42,7 +42,46 @@ class VideoAlbums extends Base
 	{
 		let va_alias = this.helpers.translit(va_name);
 		va_alias = this.helpers.clearSymbol(va_alias, '-');
-		return this.model('video/albums').addVideoAlbum(u_id, va_name, va_alias, va_text);
+		return this.model('video').addVideoAlbum(u_id, va_name, va_alias, va_text);
+	}
+
+	/**
+	 * выбранный альбом пользователя
+	 *
+	 * @param u_id - кто запросил
+	 * @param owner_u_id - чей альбом запросил
+	 * @param va_id
+	 * @returns {Promise}
+	 */
+	getVideoAlbum(u_id, owner_u_id, va_id)
+	{
+		return this.model('video').getVideoAlbum(owner_u_id, va_id)
+			.then((album) =>
+			{
+				if (!album)
+					return Promise.resolve(null);
+
+				album["va_is_owner"] = (album["u_id"] == u_id);
+
+				return Promise.resolve(album);
+			});
+	}
+
+	/**
+	 * редактируем название и описание альбома пользователя
+	 *
+	 * @param u_id
+	 * @param va_id
+	 * @param va_name
+	 * @param va_text
+	 * @returns {Promise}
+	 */
+	editVideoAlbum(u_id, va_id, va_name, va_text)
+	{
+		let va_alias = this.helpers.translit(va_name);
+		va_alias = this.helpers.clearSymbol(va_alias, '-');
+
+		return this.model('video').editVideoAlbum(u_id, va_id, va_name, va_alias, va_text);
 	}
 }
 //************************************************************************* module.exports

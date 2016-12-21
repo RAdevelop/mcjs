@@ -29,23 +29,48 @@
 			event.stopPropagation();
 
 			var $this = $(this)
-			switch($this.data('action'))
+			var action = $this.data('action');
+			switch(action)
 			{
+				case 'edit':
 				case 'add':
-					options.btnSaveAlbumVal = 'add_album';
-					var dialogBtnAdd = 'btn_add_video_album';
+					var dialogBtn, title;
+					if (action == 'add')
+					{
+						options.btnSaveAlbumVal = 'add_album';
+						dialogBtn = 'btn_add_video_album';
+						title = 'Создание нового альбома';
+					}
+					else
+					{
+						options.btnSaveAlbumVal = 'edit_album';
+						dialogBtn = 'btn_edit_video_album';
+						title = 'Редактирование альбома';
+					}
 					var formAddAlbumId = 'formAddAlbum';
 					$('__add_album_dialog__').mcDialog({
-						title: 'Создание нового альбома'
+						title: title
 						, body: formAddAlbum(formAddAlbumId, options, videoAlbum)
 						, onOpen: function ($dialog)
 						{
 							$dialog.find('#'+formAddAlbumId).postRes({
-								btnId: $dialog.find('#'+dialogBtnAdd),
+								btnId: $dialog.find('#'+dialogBtn),
 								onSuccess: function($respDialog, resp)
 								{
-									if(resp["va_id"])
-									window.location.href = [options.uri, options.u_id,resp["va_id"]].join('/')+'/';
+									if (action == 'add')
+									{
+										if(resp["va_id"])
+											window.location.href = [options.uri, options.u_id,resp["va_id"]].join('/')+'/';
+									}
+									else
+									{
+										$(options.albumName).text(resp["s_va_name"]);
+										$(options.albumText).text(resp["t_va_text"]);
+										videoAlbum['va_name'] = resp["s_va_name"];
+										videoAlbum['va_text'] = resp["t_va_text"];
+										
+										$dialog.modal('hide');
+									}
 
 									//не показать диалог
 									return false;
@@ -64,7 +89,7 @@
 						, buttons: [
 							{
 								title: 'сохранить'
-								, name: dialogBtnAdd
+								, name: dialogBtn
 								, cssClass: 'btn-success'
 							},
 							{
@@ -87,7 +112,7 @@
 					var dialogBtnDel = 'btn_del_video_album';
 					$('__del_video_album_dialog__').mcDialog({
 						title: 'Удаление видео-альбома'
-						, body: formDelVideoAlbum(videoAlbum||{}, options.uri)
+						, body: formDelVideoAlbum(videoAlbum, options.uri)
 						, onOpen: function ($dialog)
 						{
 							$dialog.find('#formDelVideoAlbum').postRes({

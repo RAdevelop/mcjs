@@ -133,12 +133,10 @@ class ProfilePhoto extends CtrlMain
 					throw new Errors.HttpError(404);
 
 				tplData["album"] = album;
-
-				if (!tplData["album"]["a_img_cnt"])
-				{
-					tplData["album"]["images"] = [];
+				tplData["album"]["images"] = [];
+				
+				if (tplData["album"]["a_img_cnt"] == 0)
 					return [tplData, [], null];
-				}
 
 				return this.getClass('user/photo')
 					.getAlbumImages(i_u_id, i_a_id, new Pages(i_page, limit_per_page, tplData["album"]["a_img_cnt"]))
@@ -332,7 +330,7 @@ class ProfilePhoto extends CtrlMain
 	{
 		tplData = CtrlMain.stripTags(tplData, ["s_album_name", "t_album_text"]);
 
-		if (!tplData["i_a_id"] || !tplData.hasOwnProperty("s_album_name") || !tplData.hasOwnProperty("t_album_text"))
+		if (!tplData["i_a_id"] || !tplData.hasOwnProperty("s_album_name"))
 			throw new Errors.HttpError(400);
 
 		let errors = {};

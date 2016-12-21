@@ -1,0 +1,14 @@
+<h4><span class="label label-default displayInlineBlock"><i class="fa fa-fw fa-camera"></i>&nbsp;<span class="albumImgCnt"><%=videoAlbum["va_cnt"]%></span></span>&nbsp;<span id="va_name"><%=videoAlbum["va_name"]%></span></h4>
+<% if (videoAlbum["va_text"]){%><p id="va_text"><%=videoAlbum["va_text"]%></p><%}
+if (videoAlbum["videos"].length)
+{%>
+<div class="imageList">
+	<% videoAlbum["videos"].forEach(function (video)
+	{
+		let imgSrc = (video["v_img"] ? video["v_img"] : '/_0.gif');
+	%>
+	<div class="image">
+		<img src="<%=imgSrc%>" alt="<%=video["v_name"]%>" data-video-id="<%=video["v_id"]%>"/>
+	</div>
+	<%})%>
+</div><%}%>
