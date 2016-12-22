@@ -681,7 +681,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1482354745,'MotoCommunity',1,'1'),(12,'roalexey@mail.ru','$2a$12$kZC3laKG9y9dU7Xh2kVJA.','$2a$12$kZC3laKG9y9dU7Xh2kVJA.2.I7Fb5Drdk6yLwdUJFII/U1uAr5MFC',1480860847,1482272648,'RoLex',1,'3');
+INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1482449101,'MotoCommunity',1,'1'),(12,'roalexey@mail.ru','$2a$12$kZC3laKG9y9dU7Xh2kVJA.','$2a$12$kZC3laKG9y9dU7Xh2kVJA.2.I7Fb5Drdk6yLwdUJFII/U1uAr5MFC',1480860847,1482442365,'RoLex',1,'3');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -819,6 +819,8 @@ CREATE TABLE `video` (
   `v_name` varchar(255) NOT NULL,
   `v_text` varchar(255) NOT NULL,
   `v_img` varchar(225) NOT NULL,
+  `v_content` text NOT NULL,
+  `v_url` varchar(255) NOT NULL,
   PRIMARY KEY (`v_id`),
   KEY `vaid_uid_pos` (`va_id`,`u_id`,`v_pos`,`v_update_ts`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -861,7 +863,7 @@ CREATE TABLE `video_albums` (
 
 LOCK TABLES `video_albums` WRITE;
 /*!40000 ALTER TABLE `video_albums` DISABLE KEYS */;
-INSERT INTO `video_albums` VALUES (1,1,'MotoGP 2016','motogp-2016','MotoGP 2016',0,1482271546,1482354745);
+INSERT INTO `video_albums` VALUES (1,1,'MotoGP 2016','motogp-2016','MotoGP 2016',0,1482271546,1482437496);
 /*!40000 ALTER TABLE `video_albums` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3331,4 +3333,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-12-22  0:13:23
+-- Dump completed on 2016-12-23  2:26:22

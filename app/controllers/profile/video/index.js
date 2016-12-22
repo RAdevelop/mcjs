@@ -211,6 +211,9 @@ class ProfileVideo extends CtrlMain
 
 		//console.log(tplData);
 
+		if (tplData["b_load_embed_content"])
+			return EmbedContent.content(tplData, tplFile, this);
+
 		return this.albumPostActions(tplData)
 			.then((tplData) =>
 			{ //если валидация успешна
@@ -267,8 +270,8 @@ class ProfileVideo extends CtrlMain
 				return this.editAlbum(tplData);
 				break;
 
-			case 'upd_img_text':
-				return this.updImgText(tplData);
+			case 'add_video':
+				return this.addVideo(tplData);
 				break;
 
 			case 'del_img':
@@ -328,13 +331,14 @@ class ProfileVideo extends CtrlMain
 			errors["s_va_name"] = 'Укажите название альбома';
 
 		return Promise.resolve(errors)
-			.then((errors) => {
+			.then((errors) =>
+			{
 				if (this.parseFormErrors(tplData, errors))
 				{
 					return this.getClass('video')
 						.getVideoAlbum(this.getUserId(), this.getUserId(), tplData["ui_va_id"])
-						.then((album) => {
-
+						.then((album) =>
+						{
 							if (!album || !album["va_is_owner"])
 								throw new Errors.HttpError(400);
 
@@ -343,9 +347,51 @@ class ProfileVideo extends CtrlMain
 						});
 				}
 			})
-			.then((va_id) => {
-				tplData["va_id"] = va_id;
-				return Promise.resolve(tplData);
+			.then((videoAlbum) =>
+			{
+				return Promise.resolve(videoAlbum);
+			});
+	}
+
+	addVideo(tplData)
+	{
+		tplData = CtrlMain.stripTags(tplData, ['link_v_url', 'link_v_img', 's_v_name', 't_v_text']);
+
+		if (!tplData["ui_va_id"])
+			throw new Errors.HttpError(400);
+
+		let errors = {};
+		if (tplData["s_va_name"] == '')
+			errors["s_va_name"] = 'Укажите название альбома';
+
+		if (!tplData["link_v_url"] || tplData["link_v_url"] == '')
+			errors["link_v_url"] = 'Укажите cсылку на видеоролик';
+//TODO перед сохранением слать ли еще раз запрос на получение данных?
+		//только надо будет тут описывать iframe, как на клиенте
+		console.log(tplData);
+
+		return Promise.resolve(errors)
+			.then((errors) =>
+			{
+				if (this.parseFormErrors(tplData, errors))
+				{
+					return Promise.resolve(tplData);
+
+					return this.getClass('video')
+						.getVideoAlbum(this.getUserId(), this.getUserId(), tplData["ui_va_id"])
+						.then((album) =>
+						{
+							if (!album || !album["va_is_owner"])
+								throw new Errors.HttpError(400);
+
+							return this.getClass('video')
+								.editVideoAlbum(this.getUserId(), tplData["ui_va_id"], tplData["s_va_name"], tplData["t_va_text"]);
+						});
+				}
+			})
+			.then((videoAlbum) =>
+			{
+				return Promise.resolve(videoAlbum);
 			});
 	}
 

@@ -639,7 +639,7 @@
 						},
 						onClose: function ($respDialog)
 						{
-							$dialog.show();
+							$dialog.show().css('overflow', 'visible');
 						}
 					});
 				}
@@ -693,7 +693,7 @@
 						},
 						onClose: function ($respDialog)
 						{
-							$dialog.show();
+							$dialog.show().css('overflow', 'visible');
 						}
 					});
 				}
@@ -752,7 +752,7 @@
 						},
 						onClose: function ($respDialog)
 						{
-							$dialog.show();
+							$dialog.show().css('overflow', 'visible');
 						}
 					});
 				}

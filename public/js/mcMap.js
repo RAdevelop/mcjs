@@ -24,13 +24,9 @@
 		var mapIsInit = $('#'+this.mapId).attr('data-map-init');
 
 		if (mapIsInit == 'true' || mapIsInit == '1')
-		{
 			return true;
-		}
 		else
-		{
 			return false;
-		}
 	};
 
 	/**

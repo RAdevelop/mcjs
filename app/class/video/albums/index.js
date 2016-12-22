@@ -81,7 +81,11 @@ class VideoAlbums extends Base
 		let va_alias = this.helpers.translit(va_name);
 		va_alias = this.helpers.clearSymbol(va_alias, '-');
 
-		return this.model('video').editVideoAlbum(u_id, va_id, va_name, va_alias, va_text);
+		return this.model('video').editVideoAlbum(u_id, va_id, va_name, va_alias, va_text)
+			.then((va_id)=>
+			{
+				return Promise.resolve({u_id:u_id, va_id:va_id, va_name:va_name, va_alias:va_alias, va_text:va_text});
+			});
 	}
 }
 //************************************************************************* module.exports

@@ -10,9 +10,9 @@ function _htmlDialog(data)
 	};
 	var options = $.extend({}, defaults, data);
 	var modal_size = (options.large ? 'modal-lg' : '');
-
+	var style= 'position: absolute; ';//overflow: visible;
 	var htmlDialog = '';
-	htmlDialog += '<div class="modal fade" id="'+options.id+'" tabindex="-1" role="dialog" aria-labelledby="'+options.id+'">';
+	htmlDialog += '<div class="modal fade" id="'+options.id+'" tabindex="-1" role="dialog" aria-labelledby="'+options.id+'" style="'+style+'">';
 	htmlDialog += '<div class="modal-dialog '+modal_size+' " role="document">';
 	htmlDialog += '<div class="modal-content">';
 	htmlDialog += '<div class="modal-header">';
