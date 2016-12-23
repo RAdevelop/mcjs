@@ -44,9 +44,10 @@
 						, body: formAddVideo(formId, options, videoAlbum)
 						, onOpen: function ($dialog)
 						{
+							var $dialogBtn = $dialog.find('.modal-footer #'+dialogBtn).attr('disabled', true);
 							var $formVideo = $dialog.find('#'+formId);
 							$formVideo.postRes({
-								btnId: $dialog.find('#'+dialogBtn),
+								btnId: $dialogBtn,
 								onSuccess: function($respDialog, resp)
 								{
 									console.log(resp);
@@ -66,7 +67,7 @@
 								}
 							});
 
-							$formVideo.find('#link_v_url').on('change', [$formVideo], postRequestVideoLink);
+							$formVideo.find('#get_video').on('click', [$dialog, $dialogBtn, $formVideo.find('#link_v_url')], postRequestVideoLink);
 						}
 						, buttons: buttonsDialog(dialogBtn, 'сохранить')
 					});
@@ -181,16 +182,44 @@
 			}
 		});
 
+		function loadingError($dialog, $dialogBtn, $loadingInfo, $loadingError, err_msg)
+		{
+			$dialogBtn.attr('disabled', true);
+			$loadingInfo.hide();
+
+			$loadingError.html(err_msg).show();
+
+			$dialog.find('#videoData').hide();
+
+			$dialog.find('#link_v_img').val('');
+			$dialog.find('#embed_image').attr('src', '');
+			$dialog.find('#t_v_content').val('');
+			$dialog.find('#embed_content').html('');
+			$dialog.find('#s_v_name').val('');
+			$dialog.find('#t_v_text').val('');
+		}
+		var videoLink;
 		function postRequestVideoLink(event)
 		{
 			event.stopPropagation();
-			var $form = event['data'][0];
-			var $self = $(this);
+
+			var $dialog = event['data'][0];
+			var $dialogBtn = event['data'][1];
+			var $self = event['data'][2];
+
+			if (videoLink ==  $self.val())
+				return;
+
+			if (!videoLink)
+				videoLink = $self.val();
+
+			var $loadingInfo = $dialog.find('#loadingVideoData').show();
+			var $loadingError = $dialog.find('#loadingError').hide();
+
 			var uri = $self.val();
 			if (!isLink(uri))
 			{
-				//TODO какое-то сообщение надо
-				alert('TODO сообщение об ошибке');
+				loadingError($dialog, $dialogBtn, $loadingInfo, $loadingError, 'Укажите cсылку на видеоролик');
 				return;
 			}
 
@@ -200,10 +229,8 @@
 				"s_uri": uri
 			};
 
-			var $loadingInfo = $form.find('#loadingVideoData').show();
-
 			$.ajax({
-				url: $form.attr('action'),//'embed_content',
+				url: $dialog.find('form').attr('action'),//'embed_content',
 				method: "POST",
 				data: postData,
 				dataType: "json"
@@ -212,25 +239,22 @@
 				{
 					if (!respData["embed_url_video"])
 					{
-						//TODO сообщение об ошибке
-						alert('TODO сообщение об ошибке');
+						loadingError($dialog, $dialogBtn, $loadingInfo, $loadingError, 'Не удалось загрузить видео по данной ссылке.');
 						return;
 					}
 					var	embedContent = '<iframe src="'+respData["embed_url_video"]+'" data-link="'+uri+'" class="iframeVideoEmbed" frameborder="0" webkitallowfullscreen="webkitallowfullscreen" mozallowfullscreen="mozallowfullscreen" allowfullscreen="allowfullscreen" scrolling="no"></iframe>';
 
-					$form.find('#link_v_img').val(respData.embed_image);
-					$form.find('#embed_image').attr('src', respData.embed_image);
-					$form.find('#t_v_content').val(embedContent);
-					$form.find('#embed_content').html(embedContent);
-					$form.find('#s_v_name').val(respData.embed_title);
-					$form.find('#t_v_text').val(respData.embed_text);
+					$dialog.find('#link_v_img').val(respData.embed_image);
+					$dialog.find('#embed_image').attr('src', respData.embed_image);
+					$dialog.find('#t_v_content').val(embedContent);
+					$dialog.find('#embed_content').html(embedContent);
+					$dialog.find('#s_v_name').val(respData.embed_title);
+					$dialog.find('#t_v_text').val(respData.embed_text);
 
 					$loadingInfo.hide();
-					//$self.parent().hide();
-					$form.find('#videoData').show();
+					$dialog.find('#videoData').show();
+					$dialogBtn.attr('disabled', false);
 
-					console.log('respData = ', respData);
-					console.log('embedContent = ', embedContent);
 				})
 				.fail(function(respData)
 				{
@@ -271,11 +295,15 @@
 				'<div class="form-group">' +
 					'<div class="col-sm-12 text-center">Вы можете указать ссылку на страницу видеозаписи на таких сайтах, как<br/> Вконтакте, Youtube, Rutube, Vimeo и др.</div>' +
 				'</div>' +
-				'<div class="form-group link_v_url">' +
-					'<label for="link_v_url">cсылка на видеоролик *</label>' +
-					'<input type="text" class="form-control" id="link_v_url" name="link_v_url" value="https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/" placeholder="cсылка на видеоролик *" required />' +
+				'<div class="form-group text-center link_v_url">' +
+					'<label for="link_v_url">cсылка на видеоролик *</label><br/>' +
+					'<input type="text" class="input-sm" style="width: 80%;" id="link_v_url" name="link_v_url" value="https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/" placeholder="cсылка на видеоролик *" required />' +
+					'<button type="button" class="btn-primary btn-xs" id="get_video">загрузить видео</button>' +
 				'</div>' +
+				'<div class="form-group text-center">' +
+
 				'<div id="loadingVideoData" style="display: none;" class="text-center"><i class="fa fa-spinner fa-spin fa-fw"></i>&nbsp;<span>Загрузка...</span></div>' +
+				'<div id="loadingError" style="display: none;" class="text-center alert alert-danger" role="alert alert"></div>' +
 				'<div id="videoData" style="display: none;">' +
 					'<div class="form-group text-center link_v_img">' +
 						'<input type="text" class="form-control hidden" id="link_v_img" name="link_v_img" value="" />' +
