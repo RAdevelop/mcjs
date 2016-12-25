@@ -108,6 +108,12 @@ class VideoAlbums extends BaseModel
 				throw err;
 			});
 	}
+
+	delVideoAlbum(u_id, va_id)
+	{
+		let sql = `CALL video_album_delete(?,?);`;
+		return this.constructor.conn().call(sql, [u_id, va_id])
+	}
 }
 
 //************************************************************************* module.exports

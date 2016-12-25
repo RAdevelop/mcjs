@@ -11,7 +11,7 @@ const EmbedContent = require("app/lib/embed/content");
 //const Moment = require('moment'); //работа со временем
 const CtrlMain = require('app/lib/controller');
 
-let limit_per_page = 20;
+let limit_per_page = 2;
 
 class ProfileVideo extends CtrlMain
 {
@@ -91,10 +91,8 @@ class ProfileVideo extends CtrlMain
 				tplData["videoAlbum"]["videos"] = [];
 
 				if (tplData["videoAlbum"]["va_cnt"] == 0)
-				{
 					return [tplData, [], null];
-				}
-				console.log(tplData["videoAlbum"]);
+
 				return this.getClass('video')
 					.getAlbumVideos(i_u_id, i_va_id, new Pages(i_page, limit_per_page, tplData["videoAlbum"]["va_cnt"]))
 					.spread((Pages, videos, allPreviews) =>
@@ -115,13 +113,16 @@ class ProfileVideo extends CtrlMain
 					this.getRes().expose(FileUpload.exposeUploadOptions('user_photo'), 'albumUploadOpts');
 				}*/
 
-				let exposeAlbumVideos = 'albumVideos';
+				let exposeAlbumVideos = 'videoAlbums';
 				if (Pages)
 				{
-					Pages.setAjaxPagesType(true)
-						.setAjaxDataSrc(['album', 'images'])
+					let linksUri = [this.getBaseUrl(),i_u_id,tplData['videoAlbum']['va_id'],tplData['videoAlbum']['va_alias']].join('/');
+
+					Pages.setLinksUri(linksUri)
+						.setAjaxPagesType(true)
+						.setAjaxDataSrc(['videoAlbums'])
 						.setAjaxDataTarget(exposeAlbumVideos)
-						.setJquerySelectorData('.imageList .image');
+						.setJquerySelectorData('.albumList .album');
 
 					tplData["pages"] = Pages.pages();
 				}
@@ -173,10 +174,10 @@ class ProfileVideo extends CtrlMain
 			{
 				tplData["videoAlbums"] = videoAlbums;
 
-				let exposeAlbums = 'albums';
+				let exposeAlbums = 'videoAlbums';
 				Pages.setLinksUri(this.getBaseUrl()+'/'+ i_u_id)
 					.setAjaxPagesType(true)
-					.setAjaxDataSrc(['albums'])
+					.setAjaxDataSrc(['videoAlbums'])
 					.setAjaxDataTarget(exposeAlbums)
 					.setJquerySelectorData('.albumList .album');
 
@@ -250,7 +251,7 @@ class ProfileVideo extends CtrlMain
 	 */
 	albumPostActions(tplData)
 	{
-		if (!tplData["btn_save_album"] || !tplData["ui_u_id"] || tplData["ui_u_id"] != this.getUserId())
+		if (!tplData["btn_save_album"] || tplData["ui_u_id"] != this.getUserId())
 			throw new Errors.HttpError(400);
 
 		switch(tplData["btn_save_album"])
@@ -274,6 +275,10 @@ class ProfileVideo extends CtrlMain
 				return this.addVideo(tplData);
 				break;
 
+			case 'del_video_album':
+				return this.delVideoAlbum(tplData);
+				break;
+
 			case 'del_img':
 				return this.delImg(tplData);
 				break;
@@ -282,9 +287,6 @@ class ProfileVideo extends CtrlMain
 				return this.sortImg(tplData);
 				break;
 
-			case 'del_album':
-				return this.delAlbum(tplData);
-				break;
 		}
 	}
 
@@ -304,10 +306,9 @@ class ProfileVideo extends CtrlMain
 				{
 					return this.getClass('video')
 						.addVideoAlbum(this.getUserId(), tplData["s_va_name"], tplData["t_va_text"])
-						.then((va_id) =>
+						.then((album) =>
 						{
-							tplData["va_id"] = va_id;
-							return Promise.resolve(tplData);
+							return Promise.resolve(album);
 						});
 				}
 			});
@@ -368,7 +369,7 @@ class ProfileVideo extends CtrlMain
 			errors["link_v_url"] = 'Укажите cсылку на видеоролик';
 //TODO перед сохранением слать ли еще раз запрос на получение данных?
 		//только надо будет тут описывать iframe, как на клиенте
-		console.log(tplData);
+		//console.log(tplData);
 
 		return Promise.resolve(errors)
 			.then((errors) =>
@@ -385,13 +386,21 @@ class ProfileVideo extends CtrlMain
 								throw new Errors.HttpError(400);
 
 							return this.getClass('video')
-								.editVideoAlbum(this.getUserId(), tplData["ui_va_id"], tplData["s_va_name"], tplData["t_va_text"]);
+								.addVideo(this.getUserId(), tplData["ui_va_id"], tplData["s_v_name"], tplData["t_v_text"], tplData["link_v_img"], tplData["t_v_content"], tplData["link_v_url"]);
 						});
 				}
-			})
-			.then((videoAlbum) =>
+			});
+	}
+
+	delVideoAlbum(tplData)
+	{
+		if (!tplData["ui_va_id"])
+			throw new Errors.HttpError(400);
+
+		return this.getClass('video').delVideoAlbum(this.getUserId(), tplData["ui_va_id"])
+			.then(()=>
 			{
-				return Promise.resolve(videoAlbum);
+				return Promise.resolve(tplData);
 			});
 	}
 

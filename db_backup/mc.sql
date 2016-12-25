@@ -681,7 +681,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1482449101,'MotoCommunity',1,'1'),(12,'roalexey@mail.ru','$2a$12$kZC3laKG9y9dU7Xh2kVJA.','$2a$12$kZC3laKG9y9dU7Xh2kVJA.2.I7Fb5Drdk6yLwdUJFII/U1uAr5MFC',1480860847,1482442365,'RoLex',1,'3');
+INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1482695065,'MotoCommunity',1,'1'),(12,'roalexey@mail.ru','$2a$12$kZC3laKG9y9dU7Xh2kVJA.','$2a$12$kZC3laKG9y9dU7Xh2kVJA.2.I7Fb5Drdk6yLwdUJFII/U1uAr5MFC',1480860847,1482442365,'RoLex',1,'3');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -817,13 +817,14 @@ CREATE TABLE `video` (
   `v_update_ts` int(10) unsigned NOT NULL DEFAULT '0',
   `v_pos` smallint(5) unsigned NOT NULL DEFAULT '0',
   `v_name` varchar(255) NOT NULL,
+  `v_alias` varchar(255) NOT NULL,
   `v_text` varchar(255) NOT NULL,
   `v_img` varchar(225) NOT NULL,
-  `v_content` text NOT NULL,
+  `v_content` varchar(255) NOT NULL,
   `v_url` varchar(255) NOT NULL,
   PRIMARY KEY (`v_id`),
   KEY `vaid_uid_pos` (`va_id`,`u_id`,`v_pos`,`v_update_ts`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -854,7 +855,7 @@ CREATE TABLE `video_albums` (
   PRIMARY KEY (`va_id`),
   UNIQUE KEY `uid` (`u_id`,`va_name`),
   KEY `uid_ts` (`u_id`,`va_update_ts`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -863,7 +864,7 @@ CREATE TABLE `video_albums` (
 
 LOCK TABLES `video_albums` WRITE;
 /*!40000 ALTER TABLE `video_albums` DISABLE KEYS */;
-INSERT INTO `video_albums` VALUES (1,1,'MotoGP 2016','motogp-2016','MotoGP 2016',0,1482271546,1482437496);
+INSERT INTO `video_albums` VALUES (2,1,'MotoGP 2016','motogp-2016','MotoGP 2016',0,1482595295,1482595295),(3,1,'MotoGP 2015','motogp-2015','MotoGP 2015',0,1482595415,1482595415),(4,1,'MotoGP 2014','motogp-2014','MotoGP 2014',0,1482595472,1482595472);
 /*!40000 ALTER TABLE `video_albums` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3323,6 +3324,35 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `video_album_delete` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`mc`@`%` PROCEDURE `video_album_delete`(IN inUid INT(11), IN inVAid INT)
+BEGIN
+
+	DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
+	START TRANSACTION;
+    
+    DELETE FROM `video_albums`
+	WHERE va_id = inVAid AND u_id = inUid;
+    
+    DELETE FROM `video`
+	WHERE va_id = inVAid AND u_id = inUid;
+    
+    COMMIT;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -3333,4 +3363,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-12-23  2:26:22
+-- Dump completed on 2016-12-25 22:45:24

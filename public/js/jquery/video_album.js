@@ -1,6 +1,6 @@
 (function($)
 {
-	$.fn.videoAlbum = function(params)
+	$.videoAlbum = function(params)
 	{
 		/* значение по умолчанию */
 		var defaults = {
@@ -53,6 +53,8 @@
 									console.log(resp);
 									$dialog.modal('hide');
 									//TODO добавить ролик в список на страницу
+
+									prependVideo(resp, options);
 									//не показать диалог
 									return false;
 								},
@@ -160,9 +162,7 @@
 										return false;//не показать диалог
 									}
 									else
-									{
 										return true;
-									}
 								},
 								onFail: function ($respDialog, resp)
 								{
@@ -182,13 +182,32 @@
 			}
 		});
 
+		function prependVideo(resp, options)
+		{
+			var html = '';
+			html += '<div class="album">';
+				html += '<a class="albumImg" href="'+options.uri+'"><img src="'+resp['link_v_img']+'" /></a>';
+				html += '<div class="albumTools">';
+					html += '<span class="badge"><i class="fa fa-fw fa-video-camera"></i> TODO</span>';
+				html += '</div>';
+				html += '<div class="albumTitle">';
+					html += '<div class="albumName">'+resp['s_v_name']+'</div>';
+					html += '<div class="albumText">'+resp['t_v_text']+'</div>';
+				html += '</div>';
+			html += '</div>';
+
+			$(options.albumWrapper).prepend(html);
+
+			//TODO add data to videoAlbums
+		}
+
+		var videoLink;
 		function loadingError($dialog, $dialogBtn, $loadingInfo, $loadingError, err_msg)
 		{
+			videoLink = null;
 			$dialogBtn.attr('disabled', true);
 			$loadingInfo.hide();
-
 			$loadingError.html(err_msg).show();
-
 			$dialog.find('#videoData').hide();
 
 			$dialog.find('#link_v_img').val('');
@@ -198,7 +217,7 @@
 			$dialog.find('#s_v_name').val('');
 			$dialog.find('#t_v_text').val('');
 		}
-		var videoLink;
+
 		function postRequestVideoLink(event)
 		{
 			event.stopPropagation();
@@ -210,8 +229,7 @@
 			if (videoLink ==  $self.val())
 				return;
 
-			if (!videoLink)
-				videoLink = $self.val();
+			videoLink = $self.val();
 
 			var $loadingInfo = $dialog.find('#loadingVideoData').show();
 			var $loadingError = $dialog.find('#loadingError').hide();
@@ -239,7 +257,9 @@
 				{
 					if (!respData["embed_url_video"])
 					{
-						loadingError($dialog, $dialogBtn, $loadingInfo, $loadingError, 'Не удалось загрузить видео по данной ссылке.');
+						var err_msg = '<p>Не удалось загрузить видео по данной ссылке.</p>';
+							err_msg += '<p>Возможно, автор видео запретил встраивание видео на других сайтах.</p>';
+						loadingError($dialog, $dialogBtn, $loadingInfo, $loadingError, err_msg);
 						return;
 					}
 					var	embedContent = '<iframe src="'+respData["embed_url_video"]+'" data-link="'+uri+'" class="iframeVideoEmbed" frameborder="0" webkitallowfullscreen="webkitallowfullscreen" mozallowfullscreen="mozallowfullscreen" allowfullscreen="allowfullscreen" scrolling="no"></iframe>';
@@ -352,8 +372,9 @@
 		function formDelVideoAlbum(formId, album, options)
 		{
 			var html = '<form class="form-horizontal" action="'+options.uri+'/" method="post" id="'+formId+'">' +
-				'<input type="hidden" name="btn_save_video_album" value="del_video_album"/>' +
+				'<input type="hidden" name="btn_save_album" value="del_video_album"/>' +
 				'<input type="hidden" name="ui_va_id" value="'+album['va_id']+'"/>' +
+				'<input type="hidden" name="ui_u_id" value="'+options.u_id+'"/>' +
 				'<div class="form-group">' +
 				'<div class="col-sm-12 text-center">Удалить видео-альбом: ' + album['va_name'] + '?</div>' +
 				'</div>' +
@@ -361,5 +382,7 @@
 
 			return html;
 		}
+
+		return this;
 	};
 })(jQuery);

@@ -406,6 +406,9 @@ class EmbedContent
 
 		 return Content.getContent()
 			 .then((contentData) => {
+
+				 //console.log(contentData);
+
 				 Object.assign(tplData, contentData);
 				 Controller.view.setTplData(tplFile, tplData);
 

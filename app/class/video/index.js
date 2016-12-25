@@ -38,6 +38,17 @@ class Video extends VideoAlbums
 				return [Pages, videos, allPreviews];
 			});
 	}
+
+	addVideo(u_id, va_id, v_name, v_text, v_img, v_content, v_url)
+	{
+		let v_alias = this.helpers.translit(v_name);
+		v_alias = this.helpers.clearSymbol(v_alias, '-');
+		return this.model('video').addVideo(u_id, va_id, v_name, v_alias, v_text, v_img, v_content, v_url)
+			.then((v_id)=>
+			{
+				return Promise.resolve({v_id: v_id, u_id:u_id, va_id:va_id, v_name:v_name, v_text:v_text, v_img:v_img, v_content:v_content, v_url:v_url});
+			});
+	}
 }
 //************************************************************************* module.exports
 //писать после class Name....{}

@@ -878,6 +878,7 @@ iframe.iframeVideoEmbed {
   max-height: 248px;*/
   max-width: 216px;
   max-height: 162px;
+  min-height: 162px;
   /*@media (max-width: 1024px)*/
 }
 .albums .albumList .album .albumImg {
