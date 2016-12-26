@@ -113,7 +113,7 @@ class ProfileVideo extends CtrlMain
 					this.getRes().expose(FileUpload.exposeUploadOptions('user_photo'), 'albumUploadOpts');
 				}*/
 
-				let exposeAlbumVideos = 'videoAlbums';
+
 				if (Pages)
 				{
 					let linksUri = [this.getBaseUrl(),i_u_id,tplData['videoAlbum']['va_id'],tplData['videoAlbum']['va_alias']].join('/');
@@ -121,8 +121,8 @@ class ProfileVideo extends CtrlMain
 					Pages.setLinksUri(linksUri)
 						.setAjaxPagesType(true)
 						.setAjaxDataSrc(['videoAlbums'])
-						.setAjaxDataTarget(exposeAlbumVideos)
-						.setJquerySelectorData('.albumList .album');
+						.setAjaxDataTarget('videoAlbums')
+						.setJquerySelectorData('.mediaList .media');
 
 					tplData["pages"] = Pages.pages();
 				}
@@ -148,7 +148,7 @@ class ProfileVideo extends CtrlMain
 				this.view.setTplData(tplFile, tplData, isAjax);
 
 				this.getRes().expose(tplData["videoAlbum"], 'videoAlbum');
-				this.getRes().expose(tplData["videoAlbum"]["videos"], exposeAlbumVideos);
+				//this.getRes().expose(tplData["videoAlbum"]["videos"], exposeAlbumVideos);
 				//this.getRes().expose(allPreviews, 'albumPreviews');
 				this.getRes().expose(tplData["pages"], 'pages');
 				Pages = null;
@@ -174,12 +174,11 @@ class ProfileVideo extends CtrlMain
 			{
 				tplData["videoAlbums"] = videoAlbums;
 
-				let exposeAlbums = 'videoAlbums';
 				Pages.setLinksUri(this.getBaseUrl()+'/'+ i_u_id)
 					.setAjaxPagesType(true)
 					.setAjaxDataSrc(['videoAlbums'])
-					.setAjaxDataTarget(exposeAlbums)
-					.setJquerySelectorData('.albumList .album');
+					.setAjaxDataTarget('videoAlbums')
+					.setJquerySelectorData('.mediaList .media');
 
 				tplData["pages"] = Pages.pages();
 

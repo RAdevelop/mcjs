@@ -26,7 +26,7 @@
 		if (!Pagination.pages || !MCJS[Pagination.pages.ajaxDataTarget])
 			return;
 
-		var strPages = md5(Pagination.sPages(Pagination.pages));
+		//var strPages = md5(Pagination.sPages(Pagination.pages));
 
 		var page = Pagination.pages.page;
 		var pagesUri = Pagination.pages.uri;

@@ -845,29 +845,24 @@ iframe.iframeVideoEmbed {
 }
 
 /******************************** END uploader  */
-/**********  controllers **************/
-.method-item {
-  margin-bottom: 15px;
-}
-
 /********** список фотоальбомов **************/
-.album-list-toolbar {
+.media-list-toolbar {
   margin: 10px 0 10px 0;
 }
 
-.album-list-toolbar .dropdown-menu > li > a {
+.media-list-toolbar .dropdown-menu > li > a {
   padding: 3px 5px;
 }
 
-.albums {
+.mediaWrapper {
   /********** список фоток в альбоме **************/
   /********** END список фоток в альбоме **************/
 }
-.albums .albumList {
+.mediaWrapper .mediaList {
   overflow: hidden;
   min-height: 175px;
 }
-.albums .albumList .album {
+.mediaWrapper .mediaList .media {
   position: relative;
   display: block;
   overflow: hidden;
@@ -879,28 +874,28 @@ iframe.iframeVideoEmbed {
   max-width: 216px;
   max-height: 162px;
   min-height: 162px;
-  /*@media (max-width: 1024px)*/
+  /*@mediaWrapper (max-width: 1024px)*/
 }
-.albums .albumList .album .albumImg {
+.mediaWrapper .mediaList .media .mediaImg {
   position: relative;
   display: block;
   overflow: hidden;
   text-align: center;
   background: #F1F1F1;
 }
-.albums .albumList .album .albumImg .fa-camera {
+.mediaWrapper .mediaList .media .mediaImg .fa-camera {
   font-size: 115px;
   font-size: 8em;
   line-height: 213px;
   color: #ccc;
   text-decoration: none;
 }
-.albums .albumList .album .albumImg img {
+.mediaWrapper .mediaList .media .mediaImg img {
   width: calc(100%);
   width: -moz-calc(100%);
   width: -webkit-calc(100%);
 }
-.albums .albumList .album .albumTools {
+.mediaWrapper .mediaList .media .mediaTools {
   position: absolute;
   top: 0;
   left: 0;
@@ -911,26 +906,26 @@ iframe.iframeVideoEmbed {
   background-color: rgba(102, 102, 102, 0.6);
   z-index: 1;
 }
-.albums .albumList .album .albumTools:hover {
+.mediaWrapper .mediaList .media .mediaTools:hover {
   background-color: rgba(255, 255, 255, 0.6);
 }
-.albums .albumList .album .albumTools a, .albums .albumList .album .albumTools span {
+.mediaWrapper .mediaList .media .mediaTools a, .mediaWrapper .mediaList .media .mediaTools span {
   color: rgba(0, 0, 0, 0.6);
   display: inline-block;
   text-decoration: none;
 }
-.albums .albumList .album .albumTools a {
+.mediaWrapper .mediaList .media .mediaTools a {
   line-height: 18px;
   font-size: 21px;
   background-color: transparent;
 }
-.albums .albumList .album .albumTools .badge {
+.mediaWrapper .mediaList .media .mediaTools .badge {
   font-size: 12px;
   vertical-align: top;
   color: #fff;
   background-color: rgba(0, 0, 0, 0.6);
 }
-.albums .albumList .album .albumTitle {
+.mediaWrapper .mediaList .media .mediaTitle {
   position: absolute;
   padding: 0;
   left: 0;
@@ -945,19 +940,19 @@ iframe.iframeVideoEmbed {
   -o-transition: top 0.5s ease-out 0.1s;
   transition: top 0.5s ease-out 0.1s;
 }
-.albums .albumList .album .albumTitle:hover {
+.mediaWrapper .mediaList .media .mediaTitle:hover {
   bottom: 0;
   top: 24px;
 }
-.albums .albumList .album .albumTitle .albumName {
+.mediaWrapper .mediaList .media .mediaTitle .mediaName {
   padding: 5px;
 }
-.albums .albumList .album .albumTitle .albumText {
+.mediaWrapper .mediaList .media .mediaTitle .mediaText {
   padding: 5px;
   border-top: 1px dotted #fff;
 }
-@media (max-width: 768px) {
-  .albums .albumList .album {
+@mediaWrapper (max-width: $screen-sm) {
+  .mediaWrapper .mediaList .media {
     max-width: calc(33%);
     max-width: -moz-calc(33%);
     max-width: -webkit-calc(33%);
@@ -966,8 +961,8 @@ iframe.iframeVideoEmbed {
     max-height: -webkit-calc(162px);
   }
 }
-@media (max-width: 768px) {
-  .albums .albumList .album {
+@mediaWrapper (max-width: $screen-sm) {
+  .mediaWrapper .mediaList .media {
     max-width: calc(47%);
     max-width: -moz-calc(47%);
     max-width: -webkit-calc(47%);
@@ -976,8 +971,8 @@ iframe.iframeVideoEmbed {
     max-height: -webkit-calc(162px);
   }
 }
-@media (min-width: 320px) and (max-width: 480px) {
-  .albums .albumList .album {
+@mediaWrapper (min-width: $screen-xxs) and (max-width: $screen-xs) {
+  .mediaWrapper .mediaList .media {
     max-width: calc(100%);
     max-width: -moz-calc(100%);
     max-width: -webkit-calc(100%);
@@ -986,13 +981,13 @@ iframe.iframeVideoEmbed {
     max-height: -webkit-calc(162px);
   }
 }
-.albums .imageList {
+.mediaWrapper .imageList {
   min-height: calc(162px);
   min-height: -moz-calc(162px);
   min-height: -webkit-calc(162px);
   overflow: hidden;
 }
-.albums .imageList .image {
+.mediaWrapper .imageList .image {
   cursor: move;
   float: left;
   overflow: hidden;
@@ -1003,17 +998,17 @@ iframe.iframeVideoEmbed {
   max-height: calc(162px);
   max-height: -moz-calc(162px);
   max-height: -webkit-calc(162px);
-  /*@media (max-width: 1024px)*/
-  /*@media (max-width: 768px)*/
+  /*@mediaWrapper (max-width: 1024px)*/
+  /*@mediaWrapper (max-width: 768px)*/
 }
-.albums .imageList .image img {
+.mediaWrapper .imageList .image img {
   cursor: move;
   width: calc(100%);
   width: -moz-calc(100%);
   width: -webkit-calc(100%);
 }
-@media (max-width: 992px) {
-  .albums .imageList .image {
+@mediaWrapper (max-width: $screen-md) {
+  .mediaWrapper .imageList .image {
     max-width: calc(32%);
     max-width: -moz-calc(32%);
     max-width: -webkit-calc(32%);
@@ -1022,8 +1017,8 @@ iframe.iframeVideoEmbed {
     max-height: -webkit-calc(162px);
   }
 }
-@media (max-width: 768px) {
-  .albums .imageList .image {
+@mediaWrapper (max-width: $screen-sm) {
+  .mediaWrapper .imageList .image {
     max-width: calc(47%);
     max-width: -moz-calc(47%);
     max-width: -webkit-calc(47%);
@@ -1032,8 +1027,8 @@ iframe.iframeVideoEmbed {
     max-height: -webkit-calc(162px);
   }
 }
-@media (min-width: 320px) and (max-width: 480px) {
-  .albums .imageList .image {
+@mediaWrapper (min-width: $screen-xxs) and (max-width: $screen-xs) {
+  .mediaWrapper .imageList .image {
     max-width: calc(100%);
     max-width: -moz-calc(100%);
     max-width: -webkit-calc(100%);
@@ -1042,19 +1037,18 @@ iframe.iframeVideoEmbed {
     max-height: -webkit-calc(162px);
   }
 }
-
-.albumImageDialog {
-  /*@media (min-width: 768px)*/
-  /*@media (max-width: 1024px)*/
+.mediaImageDialog {
+  /*@mediaWrapper (min-width: 768px)*/
+  /*@mediaWrapper (max-width: 1024px)*/
 }
-.albumImageDialog .modal-header {
+.mediaImageDialog .modal-header {
   padding: 15px 10px 5px 10px;
 }
-.albumImageDialog .modal-body {
+.mediaImageDialog .modal-body {
   padding: 0;
   position: relative;
 }
-.albumImageDialog .modal-body .imageModalBody {
+.mediaImageDialog .modal-body .imageModalBody {
   border: 1px solid red;
   max-width: calc(70%);
   max-width: -moz-calc(70%);
@@ -1066,12 +1060,12 @@ iframe.iframeVideoEmbed {
   display: block;
   float: left;
 }
-.albumImageDialog .modal-body .imageModalBody img.imageInModal {
+.mediaImageDialog .modal-body .imageModalBody img.imageInModal {
   max-width: calc(100%);
   max-width: -moz-calc(100%);
   max-width: -webkit-calc(100%);
 }
-.albumImageDialog .modal-body .imageModalBody .mcMap {
+.mediaImageDialog .modal-body .imageModalBody .mcMap {
   min-width: calc(100%);
   min-width: -moz-calc(100%);
   min-width: -webkit-calc(100%);
@@ -1079,14 +1073,14 @@ iframe.iframeVideoEmbed {
   min-height: -moz-calc(100%);
   min-height: -webkit-calc(100%);
 }
-.albumImageDialog .modal-body .imageModalBody .mcMap .albumImageInMapBalloon {
+.mediaImageDialog .modal-body .imageModalBody .mcMap .mediaImageInMapBalloon {
   width: 158px;
   overflow: hidden;
 }
-.albumImageDialog .modal-body .imageModalBody .mcMap .albumImageInMapBalloon img {
+.mediaImageDialog .modal-body .imageModalBody .mcMap .mediaImageInMapBalloon img {
   width: 100%;
 }
-.albumImageDialog .modal-body .imageModalContent {
+.mediaImageDialog .modal-body .imageModalContent {
   border: 1px solid green;
   display: block;
   overflow-y: scroll;
@@ -1098,7 +1092,7 @@ iframe.iframeVideoEmbed {
   max-height: -moz-calc(100%);
   max-height: -webkit-calc(100%);
 }
-.albumImageDialog .modal-body .imageModalContent textarea#imageText {
+.mediaImageDialog .modal-body .imageModalContent textarea#imageText {
   width: 100%;
   height: 70px;
   overflow: hidden;
@@ -1111,26 +1105,30 @@ iframe.iframeVideoEmbed {
   padding: 5px;
   background-color: rgba(0, 0, 0, 0.5);
 }
-@media (min-width: 768px) {
-  .albumImageDialog {
+@mediaWrapper (min-width: $screen-sm) {
+  .mediaImageDialog {
     width: 700px;
     margin: 10px auto;
   }
 }
-@media (max-width: 992px) {
-  .albumImageDialog .modal-body .imageModalBody, .albumImageDialog .modal-body .imageModalContent {
+@mediaWrapper (max-width: $screen-md) {
+  .mediaImageDialog .modal-body .imageModalBody, .mediaImageDialog .modal-body .imageModalContent {
     min-width: calc(100%);
     min-width: -moz-calc(100%);
     min-width: -webkit-calc(100%);
   }
-  .albumImageDialog .modal-body .imageModalBody {
+  .mediaImageDialog .modal-body .imageModalBody {
     min-height: calc(70%);
     min-height: -moz-calc(70%);
     min-height: -webkit-calc(70%);
   }
 }
-
 /********** END список фоток в альбоме **************/
+/**********  controllers **************/
+.method-item {
+  margin-bottom: 15px;
+}
+
 /**********  СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ  **************/
 .eventLocationsMenu li.selected {
   background-color: #f5f5f5;

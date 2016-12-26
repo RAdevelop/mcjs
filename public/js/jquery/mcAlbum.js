@@ -104,7 +104,7 @@
 
 			var htmlDialog = '';
 			htmlDialog += '<div class="modal " id="'+options.id+'" tabindex="-1" role="dialog" aria-labelledby="'+options.id+'">';
-			htmlDialog += '<div class="albumImageDialog modal-dialog" role="document">';
+			htmlDialog += '<div class="mediaImageDialog modal-dialog" role="document">';
 			htmlDialog += '<div class="modal-content">';
 			htmlDialog += '<div class="modal-header">';
 
@@ -229,10 +229,10 @@
 										{
 											$modal.modal('hide');
 											$img.parent().remove();
-											var imgCnt = parseInt($(options.albumName).parent().find('.albumImgCnt').text(), 10) - 1;
+											var imgCnt = parseInt($(options.albumName).parent().find('.mediaImgCnt').text(), 10) - 1;
 
 											imgCnt = (!imgCnt ? 0 : imgCnt);
-											$(options.albumName).parent().find('.albumImgCnt').text(imgCnt);
+											$(options.albumName).parent().find('.mediaImgCnt').text(imgCnt);
 
 											updImg(img["ai_id"]);//удалим
 										}
@@ -289,7 +289,7 @@
 					var imgPlacemark = new ymaps.Placemark(imgMcMap.getCenter(),
 						{
 							//balloonContentHeader: 'Заголовок балуна',
-							balloonContentBody: '<div class="albumImageInMapBalloon"><img src="'+img["previews"]["512_384"]+'"/></div>'
+							balloonContentBody: '<div class="mediaImageInMapBalloon"><img src="'+img["previews"]["512_384"]+'"/></div>'
 						},
 						{
 							balloonCloseButton: false,
@@ -388,7 +388,7 @@
 			w = Math.ceil(winW - (winW * deltaW));
 			h = Math.ceil(winH - (winH * deltaH));
 
-			var $modalBody = $modal.find('.albumImageDialog .modal-body');
+			var $modalBody = $modal.find('.mediaImageDialog .modal-body');
 
 			$modalBody.find('.imageModalBody img.imageInModal').one('load', function ()
 			{
@@ -405,7 +405,7 @@
 
 				if (smallWin)
 				{
-					$modal.find('.albumImageDialog').css('height', h);
+					$modal.find('.mediaImageDialog').css('height', h);
 					if ( (portrait && !imgHorizontal) || !portrait)
 					{
 						$(this).css('max-height', h-2);
@@ -429,8 +429,8 @@
 					//console.log('ratio = ' + ratio);
 					//console.log('w = ' + w);
 
-					$modal.find('.albumImageDialog').css('width', 'auto');
-					$modal.find('.albumImageDialog').css('min-width', w);
+					$modal.find('.mediaImageDialog').css('width', 'auto');
+					$modal.find('.mediaImageDialog').css('min-width', w);
 				}
 			});
 			$modalBody.on('change', '.imageModalContent textarea#imageText', function ()
@@ -562,9 +562,9 @@
 				html = '<div class="image"><img src="'+imgSrc+'" alt="'+image["ai_text"]+'" data-img-id="'+image["ai_id"]+'"/></div>';
 				$albumWrapper.prepend(html);
 
-				var imgCnt = parseInt($(options.albumName).parent().find('.albumImgCnt').text(), 10);
+				var imgCnt = parseInt($(options.albumName).parent().find('.mediaImgCnt').text(), 10);
 				imgCnt = (!imgCnt ? 0 : imgCnt) + 1;
-				$(options.albumName).parent().find('.albumImgCnt').text(imgCnt);
+				$(options.albumName).parent().find('.mediaImgCnt').text(imgCnt);
 
 				MCJS["albumImages"].unshift(image);
 			}

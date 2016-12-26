@@ -1,7 +1,7 @@
-<h4><span class="label label-default displayInlineBlock"><i class="fa fa-fw fa-video-camera"></i>&nbsp;<span class="albumImgCnt"><%=videoAlbum["va_cnt"]%></span></span>&nbsp;<span id="va_name"><%=videoAlbum["va_name"]%></span></h4>
+<h4><span class="label label-default displayInlineBlock"><i class="fa fa-fw fa-video-camera"></i>&nbsp;<span class="mediaImgCnt"><%=videoAlbum["va_cnt"]%></span></span>&nbsp;<span id="va_name"><%=videoAlbum["va_name"]%></span></h4>
 
 <% if (videoAlbum["va_text"]){%><p id="va_text"><%=videoAlbum["va_text"]%></p><%}%>
-<div class="albumList"><%
+<div class="mediaList js-video-albums"><%
 	videoAlbum["videos"].forEach(function (video)
 	{
 		let img = '';
@@ -10,14 +10,14 @@
 		else
 			img = '<img src="/img/no_image.png" alt="'+video['v_name']+'" class="noImg"/>';
 
-	%><div class="album">
-		<a class="albumImg" href="<%=[_reqBaseUrl, videoAlbum['u_id'], videoAlbum['va_id'], videoAlbum['va_alias'], video['v_id'], video['v_alias']].join('/')%>/"><%-img%></a>
-		<div class="albumTools">
+	%><div class="media">
+		<a class="mediaImg" href="<%=[_reqBaseUrl, videoAlbum['u_id'], videoAlbum['va_id'], videoAlbum['va_alias'], video['v_id'], video['v_alias']].join('/')%>/"><%-img%></a>
+		<div class="mediaTools">
 			<span class="badge"><i class="fa fa-fw fa-video-camera"></i> TODO</span>
 		</div>
-		<div class="albumTitle">
-			<div class="albumName"><%=video["v_name"]%></div>
-			<% if(video["v_text"]){%><div class="albumText"><%=video['v_text']%></div><%}%>
+		<div class="mediaTitle">
+			<div class="mediaName"><%=video["v_name"]%></div>
+			<% if(video["v_text"]){%><div class="mediaText"><%=video['v_text']%></div><%}%>
 		</div>
 	</div><%})%>
 </div>

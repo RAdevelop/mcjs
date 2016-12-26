@@ -3,7 +3,7 @@
 	<li><a href="<%=menuItem['m_path']%>/"><%=menuItem['m_name']%></a></li>
 	<li><a href="<%=(menuItem['m_path']+'/'+user['u_id']+'/')%>"><%=user['u_display_name']%></a></li>
 </ol>
-<div class="row album-list-toolbar">
+<div class="row media-list-toolbar">
 	<div class="btn-toolbar" role="toolbar" aria-label="Опции для фотоальбомов"><%
 		if(user && user["u_is_owner"]){%>
 		<div class="btn-group btn-group-sm" role="group" aria-label="Опции для фотоальбомов">
@@ -25,7 +25,7 @@
 		} %>
 	</div>
 </div>
-<div class="row albums">
+<div class="row mediaWrapper albums">
 	<div class="col-xs-12 col-sm-12 col-md-12"><%
 		if(albums){ %><%- include album_list.ejs %><% }
 		if(album){ %><%- include image_list.ejs %><% }
@@ -43,8 +43,8 @@
 {
 	var mcAlbumProps = {
 		uri: '<%=_reqBaseUrl%>'
-		, albumToolbar: '.album-list-toolbar'
-		, albumWrapper: '.albums .imageList'
+		, albumToolbar: '.media-list-toolbar'
+		, albumWrapper: '.mediaWrapper .imageList'
 		, albumImages: '.image'
 		, albumName: '#a_name'
 		, albumText: '#a_text'

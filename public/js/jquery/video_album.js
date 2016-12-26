@@ -53,7 +53,7 @@
 									console.log(resp);
 									$dialog.modal('hide');
 									//TODO добавить ролик в список на страницу
-
+									//TODO обновлять значение кол-во видео в альбоме (cnt)
 									prependVideo(resp, options);
 									//не показать диалог
 									return false;
@@ -185,14 +185,14 @@
 		function prependVideo(resp, options)
 		{
 			var html = '';
-			html += '<div class="album">';
-				html += '<a class="albumImg" href="'+options.uri+'"><img src="'+resp['link_v_img']+'" /></a>';
-				html += '<div class="albumTools">';
+			html += '<div class="media">';
+				html += '<a class="mediaImg" href="'+options.uri+'"><img src="'+resp['link_v_img']+'" /></a>';
+				html += '<div class="mediaTools">';
 					html += '<span class="badge"><i class="fa fa-fw fa-video-camera"></i> TODO</span>';
 				html += '</div>';
-				html += '<div class="albumTitle">';
-					html += '<div class="albumName">'+resp['s_v_name']+'</div>';
-					html += '<div class="albumText">'+resp['t_v_text']+'</div>';
+				html += '<div class="mediaTitle">';
+					html += '<div class="mediaName">'+resp['s_v_name']+'</div>';
+					html += '<div class="mediaText">'+resp['t_v_text']+'</div>';
 				html += '</div>';
 			html += '</div>';
 

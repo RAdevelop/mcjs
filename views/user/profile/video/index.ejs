@@ -1,7 +1,7 @@
 <%  if(!_isXHR){%><%- layout('layout/user/index.ejs') %><% } %>
 <%- include toolbar.ejs %>
 <h1><%=_pageH1%></h1>
-<div class="row albums videoAlbums">
+<div class="row mediaWrapper videoAlbums js-media">
 	<div class="col-xs-12 col-sm-12 col-md-12"><%
 		if (videoAlbum){%><%- include video.ejs %><%}
 		else if (videoAlbums){%><%- include video_list.ejs %><%} %>
@@ -27,8 +27,8 @@
 {
 	var videoAlbumProps = {
 		uri: '<%=_reqBaseUrl%>'
-		, albumToolbar: '.js-video-albums-toolbar a[data-action]'
-		, albumWrapper: '.albums .albumList'
+		, albumToolbar: '.js-toolbar a[data-action]'
+		, albumWrapper: '.js-media .js-video-albums'
 		, albumImages: '.image'
 		, albumName: '#va_name'
 		, albumText: '#va_text'

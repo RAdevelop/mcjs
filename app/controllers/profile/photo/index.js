@@ -8,7 +8,7 @@ const Errors = require('app/lib/errors');
 const FileUpload = require('app/lib/file/upload');
 const CtrlMain = require('app/lib/controller');
 
-let limit_per_page = 20;
+let limit_per_page = 2;
 
 class ProfilePhoto extends CtrlMain
 {
@@ -84,12 +84,11 @@ class ProfilePhoto extends CtrlMain
 			{
 				tplData["albums"] = albums;
 
-				let exposeAlbums = 'albums';
 				Pages.setLinksUri(this.getBaseUrl()+'/'+ i_u_id)
 					.setAjaxPagesType(true)
 					.setAjaxDataSrc(['albums'])
-					.setAjaxDataTarget(exposeAlbums)
-					.setJquerySelectorData('.albumList .album');
+					.setAjaxDataTarget('albums')
+					.setJquerySelectorData('.mediaList .media');
 
 				tplData["pages"] = Pages.pages();
 
@@ -107,7 +106,7 @@ class ProfilePhoto extends CtrlMain
 
 				this.view.setTplData(tplFile, tplData, isAjax);
 
-				this.getRes().expose(tplData["albums"], exposeAlbums);
+				this.getRes().expose(tplData["albums"], 'albums');
 				this.getRes().expose(tplData["pages"], 'pages');
 				Pages = null;
 				return Promise.resolve(isAjax);
