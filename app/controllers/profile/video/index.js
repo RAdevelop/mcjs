@@ -140,9 +140,9 @@ class ProfileVideo extends CtrlMain
 
 					this.view.setPageTitle(tplData["videoAlbum"]["va_name"]);
 					this.view.setPageDescription(CtrlMain.cheerio(tplData["videoAlbum"]["va_text"]).text());
-
-					if (tplData["videoAlbum"]["va_img"])
-						this.view.setPageOgImage(tplData["videoAlbum"]["va_img"]);
+					
+					if (tplData["videoAlbum"]["v_img"])
+						this.view.setPageOgImage(tplData["videoAlbum"]["v_img"]);
 				}
 
 				this.view.setTplData(tplFile, tplData, isAjax);
@@ -375,7 +375,7 @@ class ProfileVideo extends CtrlMain
 			{
 				if (this.parseFormErrors(tplData, errors))
 				{
-					return Promise.resolve(tplData);
+					//return Promise.resolve(tplData);
 
 					return this.getClass('video')
 						.getVideoAlbum(this.getUserId(), this.getUserId(), tplData["ui_va_id"])

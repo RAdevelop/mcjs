@@ -23,8 +23,8 @@ class Video extends VideoAlbums
 		/*console.log('limit = ', limit);
 		 console.log('offset = ', offset);*/
 
-		let sql = `SELECT va.va_id, va.u_id, v.v_id, v.v_create_ts, v.v_update_ts, v.v_pos, v.v_name, v.v_alias, v.v_text, 
-		v.v_img, v.v_content, v.v_url
+		let sql = `SELECT va.va_id, va.u_id, v.v_id, v.v_create_ts, v.v_update_ts, v.v_pos, v.v_name, v.v_alias, 
+		v.v_text, v.v_img, v.v_content, v.v_url
 		 FROM (SELECT NULL) AS z
 		 JOIN video_albums AS va ON (va.va_id = ? AND va.u_id = ?)
 		 JOIN video AS v ON (v.va_id = va.va_id)

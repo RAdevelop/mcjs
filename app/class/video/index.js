@@ -46,7 +46,7 @@ class Video extends VideoAlbums
 		return this.model('video').addVideo(u_id, va_id, v_name, v_alias, v_text, v_img, v_content, v_url)
 			.then((v_id)=>
 			{
-				return Promise.resolve({v_id: v_id, u_id:u_id, va_id:va_id, v_name:v_name, v_text:v_text, v_img:v_img, v_content:v_content, v_url:v_url});
+				return Promise.resolve({v_id: v_id, u_id:u_id, va_id:va_id, v_name:v_name, v_alias:v_alias, v_text:v_text, v_img:v_img, v_content:v_content, v_url:v_url});
 			});
 	}
 }

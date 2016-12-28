@@ -9,7 +9,7 @@
 			, album: null
 			, albumToolbar: null
 			, albumWrapper: null //родитель списка видео в альбоме
-			, albumImages: null //список видео в альбоме
+			, albumVideos: null //список видео в альбоме
 			, albumName: null
 			, albumText: null
 			, s_token: null
@@ -152,7 +152,7 @@
 						, body: formDelVideoAlbum(formId, videoAlbum, options)
 						, onOpen: function ($dialog)
 						{
-							$dialog.find('#formDelVideoAlbum').postRes({
+							$dialog.find('#'+formId).postRes({
 								btnId: $dialog.find('#'+dialogBtn),
 								onSuccess: function($respDialog, resp)
 								{
@@ -182,23 +182,57 @@
 			}
 		});
 
+		$(document).on('click', options.albumWrapper+' '+options.albumVideos, function (event)
+		{
+			event.preventDefault();
+			event.stopPropagation();
+			var vId = $(this).data('videoId');
+
+			videoAlbum["videos"].some(function (item)
+			{
+				if (item['v_id'] == vId)
+				{
+					$('__view_video_dialog__').mcDialog({
+						title: item['v_name']
+						, body: item['v_content']
+						, onOpen: function ($dialog)
+						{
+							$dialog.find('iframe').css('width', '100%');
+						}
+					});
+					return true;
+				}
+				return false;
+			});
+		});
+
 		function prependVideo(resp, options)
 		{
 			var html = '';
 			html += '<div class="media">';
-				html += '<a class="mediaImg" href="'+options.uri+'"><img src="'+resp['link_v_img']+'" /></a>';
+				html += '<a class="mediaImg js-video" href="javascript:void(0);" data-video-id="'+resp['v_id']+'"><img src="'+resp['v_img']+'" /></a>';
 				html += '<div class="mediaTools">';
 					html += '<span class="badge"><i class="fa fa-fw fa-video-camera"></i> TODO</span>';
 				html += '</div>';
 				html += '<div class="mediaTitle">';
-					html += '<div class="mediaName">'+resp['s_v_name']+'</div>';
-					html += '<div class="mediaText">'+resp['t_v_text']+'</div>';
+					html += '<div class="mediaName">'+resp['v_name']+'</div>';
+					html += '<div class="mediaText">'+resp['v_text']+'</div>';
 				html += '</div>';
 			html += '</div>';
 
 			$(options.albumWrapper).prepend(html);
+			mediaImgCnt(1);
+			videoAlbum["videos"].unshift(resp);
+		}
 
-			//TODO add data to videoAlbums
+		function mediaImgCnt(delta)
+		{
+			delta = parseInt(delta, 10)||0;
+
+			var $mediaImgCnt = $('.js-mediaImgCnt');
+			var cnt = (parseInt($mediaImgCnt.text(), 10)||0)+delta;
+			cnt = (cnt<0 ? 0 :cnt);
+			$mediaImgCnt.text(cnt);
 		}
 
 		var videoLink;

@@ -1,4 +1,4 @@
-<h4><span class="label label-default displayInlineBlock"><i class="fa fa-fw fa-video-camera"></i>&nbsp;<span class="mediaImgCnt"><%=videoAlbum["va_cnt"]%></span></span>&nbsp;<span id="va_name"><%=videoAlbum["va_name"]%></span></h4>
+<h4><span class="label label-default displayInlineBlock"><i class="fa fa-fw fa-video-camera"></i>&nbsp;<span class="mediaImgCnt js-mediaImgCnt"><%=videoAlbum["va_cnt"]%></span></span>&nbsp;<span id="va_name"><%=videoAlbum["va_name"]%></span></h4>
 
 <% if (videoAlbum["va_text"]){%><p id="va_text"><%=videoAlbum["va_text"]%></p><%}%>
 <div class="mediaList js-video-albums"><%
@@ -11,9 +11,9 @@
 			img = '<img src="/img/no_image.png" alt="'+video['v_name']+'" class="noImg"/>';
 
 	%><div class="media">
-		<a class="mediaImg" href="<%=[_reqBaseUrl, videoAlbum['u_id'], videoAlbum['va_id'], videoAlbum['va_alias'], video['v_id'], video['v_alias']].join('/')%>/"><%-img%></a>
+		<a class="mediaImg js-video" href="javascript:void(0);" data-video-id="<%=video["v_id"]%>"><%-img%></a>
 		<div class="mediaTools">
-			<span class="badge"><i class="fa fa-fw fa-video-camera"></i> TODO</span>
+			<a href="javascript:void(0);" data-action="delete_video" data-video-id="<%=video["v_id"]%>"><i class="fa fa-fw fa-trash-o"></i></a>
 		</div>
 		<div class="mediaTitle">
 			<div class="mediaName"><%=video["v_name"]%></div>

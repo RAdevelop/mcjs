@@ -13,9 +13,9 @@
 <p>интересы: ...</p>
 
 <% if (albums){ %>
-<div class="albums blocks">
+<div class="mediaWrapper blocks">
 	<h4><a href="<%=(_reqBaseUrl+'/photo/'+user["u_id"])%>/"><span class="badge"><i class="fa fa-fw fa-camera"></i> <%=albums["a_cnt"]%></span> Фотоальбомы</a></h4>
-<div class="albumList">
+<div class="mediaList">
 	<% albums.forEach(function (album)
 	{
 		let img = '';
@@ -26,14 +26,14 @@
 			img = '<img src="/img/no_image.png" alt="'+album["a_name"]+'" class="noImg"/>';
 		}
 	%>
-	<div class="album">
-		<a class="albumImg" href="<%=(_reqBaseUrl+'/photo/'+album["u_id"]+'/'+album["a_id"])%>/"><%-img%></a>
-		<div class="albumTools">
+	<div class="media">
+		<a class="mediaImg" href="<%=(_reqBaseUrl+'/photo/'+album["u_id"]+'/'+album["a_id"])%>/"><%-img%></a>
+		<div class="mediaTools">
 			<span class="badge"><i class="fa fa-fw fa-camera"></i> <%=album["a_img_cnt"]%></span>
 		</div>
-		<div class="albumTitle">
-			<div class="albumName"><%=album["a_name"]%></div>
-			<% if (album["a_text"]){%><div class="albumText"><%=album["a_text"]%></div><%}%>
+		<div class="mediaTitle">
+			<div class="mediaName"><%=album["a_name"]%></div>
+			<% if (album["a_text"]){%><div class="mediaText"><%=album["a_text"]%></div><%}%>
 		</div>
 	</div>
 	<%})%>
