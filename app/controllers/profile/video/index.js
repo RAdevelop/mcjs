@@ -113,15 +113,14 @@ class ProfileVideo extends CtrlMain
 					this.getRes().expose(FileUpload.exposeUploadOptions('user_photo'), 'albumUploadOpts');
 				}*/
 
-
 				if (Pages)
 				{
 					let linksUri = [this.getBaseUrl(),i_u_id,tplData['videoAlbum']['va_id'],tplData['videoAlbum']['va_alias']].join('/');
 
 					Pages.setLinksUri(linksUri)
 						.setAjaxPagesType(true)
-						.setAjaxDataSrc(['videoAlbums'])
-						.setAjaxDataTarget('videoAlbums')
+						.setAjaxDataSrc(['videoList'])
+						.setAjaxDataTarget('videoList')
 						.setJquerySelectorData('.mediaList .media');
 
 					tplData["pages"] = Pages.pages();
@@ -131,6 +130,7 @@ class ProfileVideo extends CtrlMain
 
 				if (isAjax)
 				{
+					tplData["videoList"] = tplData["videoAlbum"]["videos"];
 					tplFile = 'user/profile/video/video.ejs';
 				}
 				else
@@ -148,7 +148,7 @@ class ProfileVideo extends CtrlMain
 				this.view.setTplData(tplFile, tplData, isAjax);
 
 				this.getRes().expose(tplData["videoAlbum"], 'videoAlbum');
-				//this.getRes().expose(tplData["videoAlbum"]["videos"], exposeAlbumVideos);
+				this.getRes().expose(tplData["videoAlbum"]["videos"], 'videoList');
 				//this.getRes().expose(allPreviews, 'albumPreviews');
 				this.getRes().expose(tplData["pages"], 'pages');
 				Pages = null;
@@ -278,8 +278,8 @@ class ProfileVideo extends CtrlMain
 				return this.delVideoAlbum(tplData);
 				break;
 
-			case 'del_img':
-				return this.delImg(tplData);
+			case 'del_video':
+				return this.delVideo(tplData);
 				break;
 
 			case 'sort_img':
@@ -396,7 +396,23 @@ class ProfileVideo extends CtrlMain
 		if (!tplData["ui_va_id"])
 			throw new Errors.HttpError(400);
 
-		return this.getClass('video').delVideoAlbum(this.getUserId(), tplData["ui_va_id"])
+		return this.getClass('video')
+			.delVideoAlbum(this.getUserId(), tplData["ui_va_id"])
+			.then(()=>
+			{
+				return Promise.resolve(tplData);
+			});
+	}
+
+	delVideo(tplData)
+	{
+		if (!tplData["ui_va_id"] || !tplData["ui_v_id"])
+			throw new Errors.HttpError(400);
+
+		//return Promise.resolve(tplData);
+
+		return this.getClass('video')
+			.delVideo(this.getUserId(), tplData["ui_va_id"], tplData["ui_v_id"])
 			.then(()=>
 			{
 				return Promise.resolve(tplData);

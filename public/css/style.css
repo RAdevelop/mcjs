@@ -1129,6 +1129,12 @@ iframe.iframeVideoEmbed {
   margin-bottom: 15px;
 }
 
+.mediaWrapper .mediaList .media .videoTools a {
+  line-height: 21px;
+  font-size: 17px;
+  color: #fff;
+}
+
 /**********  СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ  **************/
 .eventLocationsMenu li.selected {
   background-color: #f5f5f5;

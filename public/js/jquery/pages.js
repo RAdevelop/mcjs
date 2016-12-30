@@ -23,6 +23,8 @@
 	{
 		Pagination.setPages(MCJS["pages"] || null);
 
+		//console.log((!Pagination.pages || !MCJS[Pagination.pages.ajaxDataTarget]));
+
 		if (!Pagination.pages || !MCJS[Pagination.pages.ajaxDataTarget])
 			return;
 

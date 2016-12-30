@@ -62,6 +62,13 @@ class Video extends VideoAlbums
 					});
 			});
 	}
+
+	delVideo(u_id, va_id, v_id)
+	{
+		let sql = `DELETE FROM video WHERE v_id = ? AND va_id = ? AND u_id = ?;
+		UPDATE video_albums SET va_cnt = IF(va_cnt-1 <= 0, 0, va_cnt-1) WHERE va_id = ? AND u_id = ?;`;
+		return this.constructor.conn().multis(sql, [v_id, va_id, u_id, va_id, u_id]);
+	}
 }
 
 //************************************************************************* module.exports

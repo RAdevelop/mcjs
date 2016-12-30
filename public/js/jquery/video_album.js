@@ -10,6 +10,7 @@
 			, albumToolbar: null
 			, albumWrapper: null //родитель списка видео в альбоме
 			, albumVideos: null //список видео в альбоме
+			, albumVideoTools: null //опции для отдельного видео
 			, albumName: null
 			, albumText: null
 			, s_token: null
@@ -19,9 +20,75 @@
 
 		var videoAlbums = MCJS["videoAlbums"] || [];
 		var videoAlbum = MCJS["videoAlbum"] || {};
+		var videoList = MCJS["videoList"] || {};
 
 		/*при многократном вызове функции настройки будут сохранятся, и замещаться при необходимости*/
 		var options = $.extend({}, defaults, params);
+
+		$(document).on('click', options.albumVideoTools, function(event)
+		{
+			event.preventDefault();
+			event.stopPropagation();
+			var $self = $(this);
+			var vId = $self.data('videoId');
+			var action = $self.data('action');
+			var video = {}, inx;
+			MCJS["videoList"].forEach(function (item, i, videoList)
+			{
+				if (item['v_id'] == vId)
+				{
+					inx = i;
+					video = videoList[i];
+
+					return true;
+				}
+				return false;
+			});
+			
+			switch (action)
+			{
+				case 'delete_video':
+
+					var dialogBtn = 'btn_del_video';
+					var formId = 'formDelVideo';
+					$('__del_video_dialog__').mcDialog({
+						title: 'Удаление видео'
+						, body: formDelVideo(formId, video, options)
+						, onOpen: function ($dialog)
+						{
+							$dialog.find('#'+formId).postRes({
+								btnId: $dialog.find('#'+dialogBtn),
+								onSuccess: function($respDialog, resp)
+								{
+									if (resp.hasOwnProperty("formError") && resp["formError"].hasOwnProperty("error") && !resp["formError"]["error"])
+									{
+										MCJS["videoList"].splice(inx, 1);
+										//$self.parents('.js-media').find('[data-video-id="'+vId+'"]').remove();
+										$self.parents('.js-media').remove();
+										mediaImgCnt(-1);
+										$dialog.modal('hide');
+										return false;//не показать диалог
+									}
+									else
+										return true;
+								},
+								onFail: function ($respDialog, resp)
+								{
+									$dialog.hide();
+									return true;
+								},
+								onClose: function ($respDialog)
+								{
+									$dialog.show().css('overflow', 'visible');
+								}
+							});
+						}
+						, buttons: buttonsDialog(dialogBtn, 'да')
+					});
+
+					break;
+			}
+		});
 
 		$(options.albumToolbar).click(function(event)
 		{
@@ -50,10 +117,7 @@
 								btnId: $dialogBtn,
 								onSuccess: function($respDialog, resp)
 								{
-									console.log(resp);
 									$dialog.modal('hide');
-									//TODO добавить ролик в список на страницу
-									//TODO обновлять значение кол-во видео в альбоме (cnt)
 									prependVideo(resp, options);
 									//не показать диалог
 									return false;
@@ -188,7 +252,7 @@
 			event.stopPropagation();
 			var vId = $(this).data('videoId');
 
-			videoAlbum["videos"].some(function (item)
+			MCJS["videoList"].forEach(function (item)
 			{
 				if (item['v_id'] == vId)
 				{
@@ -209,10 +273,11 @@
 		function prependVideo(resp, options)
 		{
 			var html = '';
-			html += '<div class="media">';
+			html += '<div class="media js-media" data-video-id="'+resp['v_id']+'">';
 				html += '<a class="mediaImg js-video" href="javascript:void(0);" data-video-id="'+resp['v_id']+'"><img src="'+resp['v_img']+'" /></a>';
-				html += '<div class="mediaTools">';
-					html += '<span class="badge"><i class="fa fa-fw fa-video-camera"></i> TODO</span>';
+				html += '<div class="mediaTools videoTools js-video-tools">';
+					html += '<a href="javascript:void(0);" title="удалить" data-toggle="tooltip" data-action="delete_video" data-video-id="'+resp['v_id']+'"><i class="fa fa-fw fa-trash-o"></i></a>';
+					html += '';
 				html += '</div>';
 				html += '<div class="mediaTitle">';
 					html += '<div class="mediaName">'+resp['v_name']+'</div>';
@@ -222,7 +287,7 @@
 
 			$(options.albumWrapper).prepend(html);
 			mediaImgCnt(1);
-			videoAlbum["videos"].unshift(resp);
+			MCJS["videoList"].unshift(resp);
 		}
 
 		function mediaImgCnt(delta)
@@ -411,6 +476,21 @@
 				'<input type="hidden" name="ui_u_id" value="'+options.u_id+'"/>' +
 				'<div class="form-group">' +
 				'<div class="col-sm-12 text-center">Удалить видео-альбом: ' + album['va_name'] + '?</div>' +
+				'</div>' +
+				'</form>';
+
+			return html;
+		}
+
+		function formDelVideo(formId, video, options)
+		{
+			var html = '<form class="form-horizontal" action="'+options.uri+'/" method="post" id="'+formId+'">' +
+				'<input type="hidden" name="btn_save_album" value="del_video"/>' +
+				'<input type="hidden" name="ui_va_id" value="'+video['va_id']+'"/>' +
+				'<input type="hidden" name="ui_v_id" value="'+video['v_id']+'"/>' +
+				'<input type="hidden" name="ui_u_id" value="'+options.u_id+'"/>' +
+				'<div class="form-group">' +
+				'<div class="col-sm-12 text-center">Удалить видео: ' + video['v_name'] + '?</div>' +
 				'</div>' +
 				'</form>';
 
