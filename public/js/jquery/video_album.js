@@ -39,14 +39,63 @@
 				{
 					inx = i;
 					video = videoList[i];
+					video['v_name'] = (video['v_name']).htmlspecialchars(video['v_name']);
+					video['v_text'] = (video['v_text']).htmlspecialchars(video['v_text']);
+					//video['v_content'] = (video['v_content']).htmlspecialchars(video['v_content']);
 
 					return true;
 				}
 				return false;
 			});
-			
+
 			switch (action)
 			{
+				case 'edit_video':
+					options.btnSaveAlbumVal = 'edit_video';
+					var dialogBtn = 'btn_edit_video';
+					var title = 'Редактирование видео '+videoAlbum['va_name'];
+					var formId = 'formEditVideo';
+
+					$('__edit_video_dialog__').mcDialog({
+						title: title
+						, body: formAddVideo(formId, options, videoAlbum, video)
+						, onOpen: function ($dialog)
+						{
+							//https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/
+							//https://youtu.be/pNEVFxG_tes
+
+							var $dialogBtn = $dialog.find('.modal-footer #'+dialogBtn).attr('disabled', false);
+							var $formVideo = $dialog.find('#'+formId);
+
+							$formVideo.find('#videoData').show();
+
+							$formVideo.postRes({
+								btnId: $dialogBtn,
+								onSuccess: function($respDialog, resp)
+								{
+									$dialog.modal('hide');
+									MCJS["videoList"][inx] = resp;
+									//не показать диалог
+									return false;
+								},
+								onFail: function ($respDialog, resp)
+								{
+									$dialog.hide();
+									return true;
+								},
+								onClose: function ($respDialog)
+								{
+									$dialog.show().css('overflow', 'visible');
+								}
+							});
+
+							$formVideo.find('#get_video').on('click', [$dialog, $dialogBtn, $formVideo.find('#link_v_url')], postRequestVideoLink);
+						}
+						, buttons: buttonsDialog(dialogBtn, 'сохранить')
+					});
+
+					break;
+
 				case 'delete_video':
 
 					var dialogBtn = 'btn_del_video';
@@ -63,7 +112,6 @@
 									if (resp.hasOwnProperty("formError") && resp["formError"].hasOwnProperty("error") && !resp["formError"]["error"])
 									{
 										MCJS["videoList"].splice(inx, 1);
-										//$self.parents('.js-media').find('[data-video-id="'+vId+'"]').remove();
 										$self.parents('.js-media').remove();
 										mediaImgCnt(-1);
 										$dialog.modal('hide');
@@ -276,8 +324,8 @@
 			html += '<div class="media js-media" data-video-id="'+resp['v_id']+'">';
 				html += '<a class="mediaImg js-video" href="javascript:void(0);" data-video-id="'+resp['v_id']+'"><img src="'+resp['v_img']+'" /></a>';
 				html += '<div class="mediaTools videoTools js-video-tools">';
+					html += '<a href="javascript:void(0);" title="редактировать" data-toggle="tooltip" data-action="edit_video" data-video-id="'+resp['v_id']+'"><i class="fa fa-fw fa-edit"></i></a>';
 					html += '<a href="javascript:void(0);" title="удалить" data-toggle="tooltip" data-action="delete_video" data-video-id="'+resp['v_id']+'"><i class="fa fa-fw fa-trash-o"></i></a>';
-					html += '';
 				html += '</div>';
 				html += '<div class="mediaTitle">';
 					html += '<div class="mediaName">'+resp['v_name']+'</div>';
@@ -363,12 +411,16 @@
 					}
 					var	embedContent = '<iframe src="'+respData["embed_url_video"]+'" data-link="'+uri+'" class="iframeVideoEmbed" frameborder="0" webkitallowfullscreen="webkitallowfullscreen" mozallowfullscreen="mozallowfullscreen" allowfullscreen="allowfullscreen" scrolling="no"></iframe>';
 
-					$dialog.find('#link_v_img').val(respData.embed_image);
-					$dialog.find('#embed_image').attr('src', respData.embed_image);
+
+					respData['embed_title'] = respData['embed_title'].htmlspecialchars_decode(respData['embed_title']);
+					respData['embed_text'] = respData['embed_text'].htmlspecialchars_decode(respData['embed_text']);
+
+					$dialog.find('#link_v_img').val(respData['embed_image']);
+					$dialog.find('#embed_image').attr('src', respData['embed_image']);
 					$dialog.find('#t_v_content').val(embedContent);
 					$dialog.find('#embed_content').html(embedContent);
-					$dialog.find('#s_v_name').val(respData.embed_title);
-					$dialog.find('#t_v_text').val(respData.embed_text);
+					$dialog.find('#s_v_name').val(respData['embed_title']);
+					$dialog.find('#t_v_text').val(respData['embed_text']);
 
 					$loadingInfo.hide();
 					$dialog.find('#videoData').show();
@@ -401,22 +453,25 @@
 				}
 			];
 		}
-		
-		function formAddVideo(formId, options, album)
+
+		function formAddVideo(formId, options, album, video)
 		{
+			var video = video || {};
 			var va_id = (album['va_is_owner'] ? album['va_id'] : null);
+			var v_id = (album['va_is_owner']&&video['v_id'] ? video['v_id'] : null);
 
 			return '<form class="" action="'+options.uri+'" method="post" id="'+formId+'">' +
 				'<input type="hidden" name="btn_save_album" value="'+options.btnSaveAlbumVal+'"/>' +
 				'<input type="hidden" name="ui_u_id" value="'+options.u_id+'"/>' +
 				(va_id ?'<input type="hidden" name="ui_va_id" value="'+va_id+'"/>' : '') +
+				(v_id ?'<input type="hidden" name="ui_v_id" value="'+v_id+'"/>' : '') +
 
 				'<div class="form-group">' +
 					'<div class="col-sm-12 text-center">Вы можете указать ссылку на страницу видеозаписи на таких сайтах, как<br/> Вконтакте, Youtube, Rutube, Vimeo и др.</div>' +
 				'</div>' +
 				'<div class="form-group text-center link_v_url">' +
 					'<label for="link_v_url">cсылка на видеоролик *</label><br/>' +
-					'<input type="text" class="input-sm" style="width: 80%;" id="link_v_url" name="link_v_url" value="https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/" placeholder="cсылка на видеоролик *" required />' +
+					'<input type="text" class="input-sm" style="width: 80%;" id="link_v_url" name="link_v_url" value="'+(video['v_url']||'')+'" placeholder="cсылка на видеоролик *" required />' +
 					'<button type="button" class="btn-primary btn-xs" id="get_video">загрузить видео</button>' +
 				'</div>' +
 				'<div class="form-group text-center">' +
@@ -425,22 +480,22 @@
 				'<div id="loadingError" style="display: none;" class="text-center alert alert-danger" role="alert alert"></div>' +
 				'<div id="videoData" style="display: none;">' +
 					'<div class="form-group text-center link_v_img">' +
-						'<input type="text" class="form-control hidden" id="link_v_img" name="link_v_img" value="" />' +
-						'<img  src="" id="embed_image" width="100%" style="width: 100%"/>' +
+						'<input type="text" class="form-control hidden" id="link_v_img" name="link_v_img" value="'+(video['v_img']||'')+'" />' +
+						'<img  src="'+(video['v_img']||'')+'" id="embed_image" width="100%" style="width: 100%"/>' +
 					'</div>' +
 					'<div class="form-group text-center t_v_content">' +
 						'<div class="col-sm-12">' +
-						'<textarea class="form-control hidden" id="t_v_content" name="t_v_content"></textarea>' +
-						'<div id="embed_content"></div>' +
+						'<textarea class="form-control hidden" id="t_v_content" name="t_v_content">'+(video['v_content']||'')+'</textarea>' +
+						'<div id="embed_content">'+(video['v_content']||'')+'</div>' +
 						'</div>' +
 					'</div>' +
 					'<div class="form-group s_v_name">' +
 						'<label for="s_v_name">название видео *</label>' +
-						'<input type="text" class="form-control" id="s_v_name" name="s_v_name" value="" placeholder="название видео *" required maxlength="100"/>' +
+						'<input type="text" class="form-control" id="s_v_name" name="s_v_name" value="'+(video['v_name'] || '')+'" placeholder="название видео *" required maxlength="100"/>' +
 					'</div>' +
 					'<div class="form-group t_v_text">' +
 						'<label for="t_v_text">описание видео</label>' +
-						'<textarea class="form-control" id="t_v_text" name="t_v_text" placeholder="описание видео" maxlength="255"></textarea>' +
+						'<textarea class="form-control" id="t_v_text" name="t_v_text" placeholder="описание видео" maxlength="255">'+(video['v_text'] || '')+'</textarea>' +
 					'</div>'+
 				'</div>'+
 				'</form>';

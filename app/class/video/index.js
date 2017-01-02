@@ -50,6 +50,18 @@ class Video extends VideoAlbums
 			});
 	}
 
+	editVideo(u_id, v_id, va_id, v_name, v_text, v_img, v_content, v_url)
+	{
+		let v_alias = this.helpers.translit(v_name);
+		v_alias = this.helpers.clearSymbol(v_alias, '-');
+		
+		return this.model('video').editVideo(u_id, v_id, va_id, v_name, v_alias, v_text, v_img, v_content, v_url)
+			.then((v_id)=>
+			{
+				return Promise.resolve({v_id: v_id, u_id:u_id, va_id:va_id, v_name:v_name, v_alias:v_alias, v_text:v_text, v_img:v_img, v_content:v_content, v_url:v_url});
+			});
+	}
+
 	delVideo(u_id, va_id, v_id)
 	{
 		return this.model('video').delVideo(u_id, va_id, v_id);

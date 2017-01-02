@@ -681,7 +681,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1482695065,'MotoCommunity',1,'1'),(12,'roalexey@mail.ru','$2a$12$kZC3laKG9y9dU7Xh2kVJA.','$2a$12$kZC3laKG9y9dU7Xh2kVJA.2.I7Fb5Drdk6yLwdUJFII/U1uAr5MFC',1480860847,1482442365,'RoLex',1,'3');
+INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1483370848,'MotoCommunity',1,'1'),(12,'roalexey@mail.ru','$2a$12$kZC3laKG9y9dU7Xh2kVJA.','$2a$12$kZC3laKG9y9dU7Xh2kVJA.2.I7Fb5Drdk6yLwdUJFII/U1uAr5MFC',1480860847,1482442365,'RoLex',1,'3');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -820,11 +820,11 @@ CREATE TABLE `video` (
   `v_alias` varchar(255) NOT NULL,
   `v_text` varchar(255) NOT NULL,
   `v_img` varchar(225) NOT NULL,
-  `v_content` varchar(255) NOT NULL,
+  `v_content` text NOT NULL,
   `v_url` varchar(255) NOT NULL,
   PRIMARY KEY (`v_id`),
   KEY `vaid_uid_pos` (`va_id`,`u_id`,`v_pos`,`v_update_ts`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -833,6 +833,7 @@ CREATE TABLE `video` (
 
 LOCK TABLES `video` WRITE;
 /*!40000 ALTER TABLE `video` DISABLE KEYS */;
+INSERT INTO `video` VALUES (9,4,1,1483365182,1483370110,1,'DYTTO/ FrontRow/ World of Dance Dallas 2016','dytto-frontrow-world-of-dance-dallas-2016','Выступление DYTTO на #worldofdance  #dance #wod','https://pic.rutube.ru/video/2a/ae/2aae3a95de963fd9fa9262f789dcb1ca.jpg','<iframe src=\"https://rutube.ru/play/embed/8577873\" data-link=\"https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/\" class=\"iframeVideoEmbed\" frameborder=\"0\" webkitallowfullscreen=\"webkitallowfullscreen\" mozallowfullscreen=\"mozallowfullscreen\" allowfullscreen=\"allowfullscreen\" scrolling=\"no\"></iframe>','https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/'),(11,4,1,1483370578,1483370578,0,'Иду так не спеша, 200+, а тут жигуль 5ка такая обгоняет...','idu-tak-ne-spesha-200-a-tut-gigul-5ka-takaya-obgonyaet','Иду так не спеша, 200+, а тут жигуль 5ка такая обгоняет...','https://pp.vk.me/c543207/u175133767/video/l_fb395cf1.jpg','<iframe src=\"//vk.com/video_ext.php?oid=5844452&id=169535027&hash=e6d792083c37c43c\" data-link=\"https://vk.com/video5844452_169535027\" class=\"iframeVideoEmbed\" frameborder=\"0\" webkitallowfullscreen=\"webkitallowfullscreen\" mozallowfullscreen=\"mozallowfullscreen\" allowfullscreen=\"allowfullscreen\" scrolling=\"no\"></iframe>','https://vk.com/video5844452_169535027');
 /*!40000 ALTER TABLE `video` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -864,7 +865,7 @@ CREATE TABLE `video_albums` (
 
 LOCK TABLES `video_albums` WRITE;
 /*!40000 ALTER TABLE `video_albums` DISABLE KEYS */;
-INSERT INTO `video_albums` VALUES (2,1,'MotoGP 2016','motogp-2016','MotoGP 2016',0,1482595295,1482595295),(3,1,'MotoGP 2015','motogp-2015','MotoGP 2015',0,1482595415,1482595415),(4,1,'MotoGP 2014','motogp-2014','MotoGP 2014',0,1482595472,1482595472);
+INSERT INTO `video_albums` VALUES (3,1,'MotoGP 2015','motogp-2015','MotoGP 2015',0,1482595415,1482595415),(4,1,'MotoGP 2014','motogp-2014','MotoGP 2014',2,1482595472,1482595472);
 /*!40000 ALTER TABLE `video_albums` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3353,6 +3354,74 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `video_reorder` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`mc`@`%` PROCEDURE `video_reorder`(IN inUid INT(11), IN inVaid INT)
+BEGIN
+	
+	DECLARE done, res, pos, vId INT DEFAULT 0;
+    
+    /*Объявление курсора*/
+	DECLARE getVideos CURSOR FOR 
+    SELECT v_id
+    FROM `video` 
+    WHERE va_id = inVaid AND u_id = inUid
+    ORDER BY v_pos, v_update_ts DESC, v_id DESC;
+    
+	DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
+    DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done=1;
+    
+    SET done=0;
+    SET pos=0;
+    
+    START TRANSACTION;
+		/* открытие курсора */
+		OPEN getVideos;
+		/*извлекаем данные */
+		REPEAT
+        FETCH getVideos INTO vId;
+			#делаем нужные нам действия 
+			IF NOT done THEN     
+			  UPDATE `video` SET 
+			  v_pos = pos
+			  WHERE v_id = vId;
+			  
+			  SET pos = pos + 1;
+			END IF;
+		UNTIL done END REPEAT;
+		
+		/*закрытие курсора */
+		CLOSE getVideos;
+        
+        SET done = 0;
+        
+        SELECT v_pos INTO pos
+        FROM `video`
+        WHERE va_id = inVaid AND u_id = inUid
+		ORDER BY v_pos, v_update_ts DESC, v_id DESC
+        LIMIT 1;
+        
+        IF NOT done AND pos = 1 THEN
+			UPDATE `video` SET 
+			v_pos = v_pos-1
+			WHERE va_id = inVaid AND u_id = inUid;
+        END IF;
+        
+    COMMIT;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -3363,4 +3432,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-12-25 22:45:24
+-- Dump completed on 2017-01-02 18:28:27

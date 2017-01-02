@@ -282,8 +282,8 @@ class ProfileVideo extends CtrlMain
 				return this.delVideo(tplData);
 				break;
 
-			case 'sort_img':
-				return this.sortImg(tplData);
+			case 'edit_video':
+				return this.editVideo(tplData);
 				break;
 
 		}
@@ -366,7 +366,8 @@ class ProfileVideo extends CtrlMain
 
 		if (!tplData["link_v_url"] || tplData["link_v_url"] == '')
 			errors["link_v_url"] = 'Укажите cсылку на видеоролик';
-//TODO перед сохранением слать ли еще раз запрос на получение данных?
+
+		//TODO перед сохранением слать ли еще раз запрос на получение данных?
 		//только надо будет тут описывать iframe, как на клиенте
 		//console.log(tplData);
 
@@ -416,6 +417,45 @@ class ProfileVideo extends CtrlMain
 			.then(()=>
 			{
 				return Promise.resolve(tplData);
+			});
+	}
+
+	editVideo(tplData)
+	{
+		tplData = CtrlMain.stripTags(tplData, ['link_v_url', 'link_v_img', 's_v_name', 't_v_text']);
+
+		if (!tplData["ui_va_id"] || !tplData["ui_v_id"])
+			throw new Errors.HttpError(400);
+
+		let errors = {};
+		if (tplData["s_va_name"] == '')
+			errors["s_va_name"] = 'Укажите название альбома';
+
+		if (!tplData["link_v_url"] || tplData["link_v_url"] == '')
+			errors["link_v_url"] = 'Укажите cсылку на видеоролик';
+
+		//TODO перед сохранением слать ли еще раз запрос на получение данных?
+		//только надо будет тут описывать iframe, как на клиенте
+		//console.log(tplData);
+
+		return Promise.resolve(errors)
+			.then((errors) =>
+			{
+				if (this.parseFormErrors(tplData, errors))
+				{
+					//return Promise.resolve(tplData);
+
+					return this.getClass('video')
+						.getVideoAlbum(this.getUserId(), this.getUserId(), tplData["ui_va_id"])
+						.then((album) =>
+						{
+							if (!album || !album["va_is_owner"])
+								throw new Errors.HttpError(400);
+
+							return this.getClass('video')
+								.editVideo(this.getUserId(), tplData["ui_v_id"], tplData["ui_va_id"], tplData["s_v_name"], tplData["t_v_text"], tplData["link_v_img"], tplData["t_v_content"], tplData["link_v_url"]);
+						});
+				}
 			});
 	}
 

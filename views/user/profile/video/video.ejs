@@ -9,9 +9,10 @@
 			img = '<img src="'+video['v_img']+'" alt="'+video['v_name']+'"/>';
 		else
 			img = '<img src="/img/no_image.png" alt="'+video['v_name']+'" class="noImg"/>';
-	%><div class="media js-mdeia" data-video-id="<%=video["v_id"]%>">
+	%><div class="media js-media" data-video-id="<%=video["v_id"]%>">
 		<a class="mediaImg js-video" href="javascript:void(0);" data-video-id="<%=video["v_id"]%>"><%-img%></a>
 		<div class="mediaTools videoTools js-video-tools">
+			<a href="javascript:void(0);" title="редактировать" data-toggle="tooltip" data-action="edit_video" data-video-id="<%=video["v_id"]%>"><i class="fa fa-fw fa-edit"></i></a>
 			<a href="javascript:void(0);" title="удалить" data-toggle="tooltip" data-action="delete_video" data-video-id="<%=video["v_id"]%>"><i class="fa fa-fw fa-trash-o"></i></a>
 		</div>
 		<div class="mediaTitle">
