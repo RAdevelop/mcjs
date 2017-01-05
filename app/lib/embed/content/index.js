@@ -13,9 +13,10 @@ const Iconv = require('iconv-lite');//надо использовать
 
 class EmbedContent
 {
-	constructor(uri)
+	constructor(uri, b_iframe = false)
 	{
 		this.setUri(uri)
+			.setIframeSrc(b_iframe)
 			.setCharsetEncoding('utf8')
 			.setHtml();
 	}
@@ -24,7 +25,7 @@ class EmbedContent
 	 * названия сайтов, с которых мы умеем получаем данные
 	 * @returns [{}]
 	 */
-	get hostList()
+	static get hostList()
 	{
 		return [
 			/*{"host": "rutube.ru",       "encoding":"utf8"},
@@ -34,6 +35,11 @@ class EmbedContent
 			{"host": "vkontakte.ru",    "encoding":"win1251"},
 			{"host": "vk.com",          "encoding":"win1251"}
 		];
+	}
+
+	static get vkHostList()
+	{
+		return ['vkontakte', 'vk'];
 	}
 
 	/**
@@ -55,6 +61,16 @@ class EmbedContent
 	getUri()
 	{
 		return this._uri;
+	}
+
+	setIframeSrc(b_iframe)
+	{
+		this._iframe_src = b_iframe;
+		return this;
+	}
+	getIframeSrc()
+	{
+		return this._iframe_src;
 	}
 
 	setHostName(hostname)
@@ -95,7 +111,7 @@ class EmbedContent
 	{
 		let re = new RegExp( hostName, 'gi');
 
-		this.hostList.some((host) => {
+		EmbedContent.hostList.some((host) => {
 			if(re.test(host["host"]))
 			{
 				let hName = host["host"].toLowerCase().split('.');
@@ -165,48 +181,48 @@ class EmbedContent
 	 */
 	sendRequest()
 	{
-		const self = this;
-		let options = {
-			hostname: '',
-			port: null,
-			path: '',
-			method: 'GET',
-			headers: {
-				'Connection': 'keep-alive'
-				,'Content-Type': 'text/plain'
-				//,'Content-Length': Buffer.byteLength(postData)
-			}
-		};
-		let uriData = {};
-
-		if (Helpers.isLink(self.getUri()))//if(self.getUri())
-			uriData = Url.parse(self.getUri());
-		else
-			return Promise.reject(new Errors.URIError());
-
-		if (!uriData.hostname)
-			uriData.hostname = this.getHostName();
-
-		const H = (uriData["protocol"] == 'http:' ? Http : Https);
-
-		Object.assign(options, uriData);
-
-		self.setVideoHosting(uriData.hostname);
-
-		return new Promise(function(resolve, reject)
+		return new Promise((resolve, reject)=>
 		{
-			/*let writableStream = ConcatStream({encoding: 'string'},function (body)
+			let options = {
+				hostname: '',
+				port: null,
+				path: '',
+				method: 'GET',
+				headers: {
+					'Connection': 'keep-alive'
+					,'Content-Type': 'text/plain'
+					//,'Content-Length': Buffer.byteLength(postData)
+				}
+			};
+			let uriData = {};
+
+			if (Helpers.isLink(this.getUri()))//if(this.getUri())
+				uriData = Url.parse(this.getUri());
+			else
+				return reject(new Errors.URIError());
+
+			if (!uriData.hostname)
+				uriData.hostname = this.getHostName();
+
+			const H = (uriData["protocol"] == 'http:' ? Http : Https);
+
+			Object.assign(options, uriData);
+
+			this.setVideoHosting(uriData.hostname);
+
+			/*let writableStream = ConcatStream({encoding: 'string'}, (body)=>
 			 {
-			 self.setHtml(body);
+			 this.setHtml(body);
 			 return resolve(body !== '');
 			 });*/
 
-			let req = H.request(options, (res) => {
+			let req = H.request(options, (res) =>
+			{
 				res.on('error', (err) => {
 					return reject(err);
 				});
 
-				res.on('close', function()
+				res.on('close', ()=>
 				{
 					res.destroy();
 					return reject(new Errors.HttpError(502));
@@ -215,23 +231,40 @@ class EmbedContent
 
 				//res.pipe(writableStream);
 
-				self.setHostName(options["hostname"]);
+				this.setHostName(options["hostname"]);
 
-				res.pipe(Iconv.decodeStream(self.getCharsetEncoding())).collect(function(err, body)
+				res.pipe(Iconv.decodeStream(this.getCharsetEncoding())).collect((err, body)=>
 				{
-					self.setHtml(body);
+					if (err)
+						return reject(err);
+
+					this.setHtml(body);
 					return resolve(body !== '');
 				});
 
 				//имеено после res.pip ... иначе запрос остается "незавершенным"!!!!
 				if (res.statusCode >= 300 && res.statusCode < 400)
 				{
-					self.setUri(res.headers.location);
-					return resolve(self.sendRequest());
+					//https://vimeo.com/pierrealnorris/ewtkb2
+
+					let redir = Url.parse(res.headers.location);
+
+					let uri = '';
+					if (!redir['hostname'])
+					{
+						//uri = uriData['protocol']+'//'+uriData['hostname']+'/'+res.headers.location;
+						uri = uriData['protocol']+'//'+uriData['hostname']+res.headers.location;
+					}
+					else
+						uri = res.headers.location;
+
+					this.setUri(uri);
+					return resolve(this.sendRequest());
 				}
 			});
 
-			req.on('error', (err) => {
+			req.on('error', (err) =>
+			{
 				return reject(err);
 			});
 
@@ -246,12 +279,16 @@ class EmbedContent
 	 * @returns {{}}
 	 * @private
 	 */
-	_parseMetaTag()
+	static _parseMetaTag(html = '')
 	{
-		let meta = Cheerio(this.getHtml()).root().find('meta');
+		let meta = Cheerio(html).root().find('meta');
 		let data = {};
 
-		Object.keys(meta).forEach((key) => {
+		if (!Object.keys(meta).length)
+			return data;
+		
+		Object.keys(meta).forEach((key) =>
+		{
 			let item = meta[key];
 
 			if (item.hasOwnProperty('attribs') && item["attribs"].hasOwnProperty('name'))
@@ -321,16 +358,41 @@ class EmbedContent
 		return data;
 	}
 
+
+	static _getCanonicalHref(html = '')
+	{
+		let link = Cheerio(html).root().find('link[rel="canonical"]');
+		let canonicalHref = null;
+
+		if (!Object.keys(link).length)
+			return canonicalHref;
+
+		let item;
+		Object.keys(link).forEach((key) =>
+		{
+			item = link[key];
+			//console.log('item = ', item);
+			if (item.hasOwnProperty('attribs') && item['attribs']['rel'] == 'canonical')
+			{
+				if (Helpers.isLink(item['attribs']['href']) && !canonicalHref)
+					canonicalHref = item['attribs']['href'];
+			}
+		});
+		item = null;
+
+		return canonicalHref;
+	}
+
 	/*youtube()
 	{
-		this.setData(this._parseMetaTag());
+		this.setData(EmbedContent._parseMetaTag());
 
 		return this;
 	}
 
 	vimeo()
 	{
-		this.setData(this._parseMetaTag());
+		this.setData(EmbedContent._parseMetaTag());
 
 		return this;
 	}*/
@@ -345,26 +407,77 @@ class EmbedContent
 	{
 		return this._vk();
 	}
+
 	_vk()
 	{
-		let data = this._parseMetaTag();
+/*
+		TODO добавить обработку if (this.getIframeSrc())
+		если true, то надо из getUri собрать обратную ссылку на видео в ВК вида:
+		https://vk.com/video-34886964_456239081 => newUri = https://vk.com/video${oid}_${vid}
+
+		отправить запрос на эту страницу:
+
+		 this.setIframeSrc(false)
+		 .setUri(newUri);
+
+		 return this.sendRequest(); - получить getHtml() распарсить на предмет
+		 описания, заголовка, картинки
+*/
+		let data = EmbedContent._parseMetaTag(this.getHtml());
+
+		//let meta = Cheerio(this.getHtml()).root().find('meta');
 
 		if (!data["embed_url_video"])
+		{
+			console.log('getUri = ', this.getUri());
+			//console.log('getHtml = ');
+			//console.log(this.getHtml());
+			this._parseVK();
 			return this;
+		}
 
-		let url = Url.parse(data["embed_url_video"], true);
+	/*
 
-		let oid     = (url.hasOwnProperty("query") && url["query"]["oid"] ? url["query"]["oid"] : null);
-		let id      = (url.hasOwnProperty("query") && url["query"]["vid"] ? url["query"]["vid"] : null);
-		let hash    = (url.hasOwnProperty("query") && url["query"]["embed_hash"] ? url["query"]["embed_hash"] : null);
+	 https://vk.com/video-34886964_456239081
+	 <iframe src="//vk.com/video_ext.php?oid=-34886964&id=456239081&hash=2c43699c660f43ea&hd=2" width="853" height="480" frameborder="0" allowfullscreen></iframe>
+
+	*/
+
+		let url = {};
+		try
+		{
+			//data["embed_url_video"] = 'https://vk.com';
+			url = Url.parse(data["embed_url_video"], true);
+		}
+		catch (err)
+		{
+			//console.log(err);
+			this.setData({});
+			return this;
+		}
+
+		let oid = null, id = null, hash = null;
+
+		if (url.hasOwnProperty("query"))
+		{
+			oid     = (url["query"]["oid"] ? url["query"]["oid"] : null);
+			id      = (url["query"]["vid"] ? url["query"]["vid"] : null);
+			hash    = (url["query"]["embed_hash"] ? url["query"]["embed_hash"] : null);
+		}
 
 		if (oid && id && hash)
 			data["embed_url_video"] = `//${url["hostname"]}/video_ext.php?oid=${oid}&id=${id}&hash=${hash}`;
 		else
 			data["embed_url_video"] = '';
 
+		console.log(data);
 		this.setData(data);
 		return this;
+	}
+
+	_parseVK()
+	{
+		console.log(this.getHtml());
 	}
 
 	/**
@@ -374,19 +487,49 @@ class EmbedContent
 	getContent()
 	{
 		return this.sendRequest()
-			.then((hasBody) => {
+			.then((hasBody) =>
+			{
 				if (!hasBody)
 					return Promise.resolve(this.getData());
 
-				if(typeof this['_'+this.getVideoHosting()] == 'function')
+				/*если this.getIframeSrc() === true то надо парсить this.getHtml()
+				на предмет данных вида link rel="canonical" href=...
+				<link rel="canonical" href="https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/">
+					если найдено href
+				1 выставить this.setIframeSrc(false);
+				2 послать запрос на этот адрес href
+*/
+
+				if (EmbedContent.vkHostList.indexOf(this.getVideoHosting()) >= 0)
+				{
+					this._vk();
+				}
+				/*else if(typeof this['_'+this.getVideoHosting()] == 'function')
+				{
 					this['_'+this.getVideoHosting()]();
+				}*/
+				else if (this.getIframeSrc())
+				{
+					let canonicalHref = EmbedContent._getCanonicalHref(this.getHtml());
+					//canonicalHref = 'https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/';
+
+					if (!canonicalHref)
+						return Promise.resolve(this.getData());
+
+					this.setIframeSrc(false)
+						.setUri(canonicalHref);
+
+					return this.getContent();
+				}
 				else
-					this.setData(this._parseMetaTag());
+					this.setData(EmbedContent._parseMetaTag(this.getHtml()));
+
+				//console.log('this.getData() = ', this.getData());
 
 				return Promise.resolve(this.getData());
 			})
-			.catch(() => {//err
-				//console.log(err);
+			.catch((err) => {//err
+				console.log(err);
 				return Promise.resolve(this.getData());
 			});
 	}
@@ -402,11 +545,11 @@ class EmbedContent
 	static content(tplData, tplFile, Controller)
 	{
 		 //test https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/
-		 const Content = new EmbedContent(tplData["s_uri"]);
+		 const Content = new EmbedContent(tplData["s_uri"], tplData["b_iframe"]||false);
 
 		 return Content.getContent()
-			 .then((contentData) => {
-
+			 .then((contentData) =>
+			 {
 				 //console.log(contentData);
 
 				 Object.assign(tplData, contentData);

@@ -75,17 +75,20 @@
 								{
 									$dialog.modal('hide');
 									MCJS["videoList"][inx] = resp;
+									videoLink = null;
 									//не показать диалог
 									return false;
 								},
 								onFail: function ($respDialog, resp)
 								{
 									$dialog.hide();
+									videoLink = null;
 									return true;
 								},
 								onClose: function ($respDialog)
 								{
 									$dialog.show().css('overflow', 'visible');
+									videoLink = null;
 								}
 							});
 
@@ -166,6 +169,7 @@
 								onSuccess: function($respDialog, resp)
 								{
 									$dialog.modal('hide');
+									videoLink = null;
 									prependVideo(resp, options);
 									//не показать диалог
 									return false;
@@ -173,15 +177,21 @@
 								onFail: function ($respDialog, resp)
 								{
 									$dialog.hide();
+									videoLink = null;
 									return true;
 								},
 								onClose: function ($respDialog)
 								{
+									videoLink = null;
 									$dialog.show().css('overflow', 'visible');
 								}
 							});
 
 							$formVideo.find('#get_video').on('click', [$dialog, $dialogBtn, $formVideo.find('#link_v_url')], postRequestVideoLink);
+						},
+						onClose: function ($mcDialog)
+						{
+							videoLink = null;
 						}
 						, buttons: buttonsDialog(dialogBtn, 'сохранить')
 					});
@@ -382,16 +392,27 @@
 			var $loadingError = $dialog.find('#loadingError').hide();
 
 			var uri = $self.val();
+			var iframeSrc = false;
 			if (!isLink(uri))
 			{
-				loadingError($dialog, $dialogBtn, $loadingInfo, $loadingError, 'Укажите cсылку на видеоролик');
-				return;
+				var $iframe = $('<div>'+uri+'</div>').find('iframe');
+
+				iframeSrc = !!$iframe.length;
+				if (!iframeSrc)
+				{
+					loadingError($dialog, $dialogBtn, $loadingInfo, $loadingError, 'Укажите cсылку на видеоролик');
+					return;
+				}
+
+				uri = $iframe.attr('src').replace(/(https?:)?\/\//ig, '');
+				//console.log('uri = ', uri);
 			}
 
 			//https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/
 			var postData = {
 				"b_load_embed_content": "1",
-				"s_uri": uri
+				"s_uri": uri,
+				"b_iframe": iframeSrc
 			};
 
 			$.ajax({
@@ -414,6 +435,11 @@
 
 					respData['embed_title'] = respData['embed_title'].htmlspecialchars_decode(respData['embed_title']);
 					respData['embed_text'] = respData['embed_text'].htmlspecialchars_decode(respData['embed_text']);
+					//приходится дважды
+					respData['embed_text'] = respData['embed_text'].htmlspecialchars_decode(respData['embed_text']);
+
+					if(respData['embed_url'])
+					$dialog.find('#link_v_url').val(respData['embed_url']);
 
 					$dialog.find('#link_v_img').val(respData['embed_image']);
 					$dialog.find('#embed_image').attr('src', respData['embed_image']);
@@ -429,6 +455,9 @@
 				})
 				.fail(function(respData)
 				{
+					var err_msg = '<p>Не удалось загрузить видео по данной ссылке.</p>';
+					err_msg += '<p>Возможно, автор видео запретил встраивание видео на других сайтах.</p>';
+					loadingError($dialog, $dialogBtn, $loadingInfo, $loadingError, err_msg);
 					console.log(respData);
 				});
 		}
@@ -448,6 +477,7 @@
 					,func: {
 						"click": function($mcDialog) {
 							$mcDialog.modal('hide');
+							videoLink = null;
 						}
 					}
 				}
@@ -470,8 +500,10 @@
 					'<div class="col-sm-12 text-center">Вы можете указать ссылку на страницу видеозаписи на таких сайтах, как<br/> Вконтакте, Youtube, Rutube, Vimeo и др.</div>' +
 				'</div>' +
 				'<div class="form-group text-center link_v_url">' +
-					'<label for="link_v_url">cсылка на видеоролик *</label><br/>' +
-					'<input type="text" class="input-sm" style="width: 80%;" id="link_v_url" name="link_v_url" value="'+(video['v_url']||'')+'" placeholder="cсылка на видеоролик *" required />' +
+					'<label for="link_v_url">cсылка на видеоролик или html код для вставки *</label><br/>' +
+					'<textarea type="text" class="input-sm" style="width: 100%;" id="link_v_url" name="link_v_url" placeholder="cсылка на видеоролик или html код для вставки" required >'+(video['v_url']||'')+'</textarea>' +
+				'</div>' +
+				'<div class="form-group text-center">' +
 					'<button type="button" class="btn-primary btn-xs" id="get_video">загрузить видео</button>' +
 				'</div>' +
 				'<div class="form-group text-center">' +

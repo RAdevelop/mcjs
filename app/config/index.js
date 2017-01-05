@@ -178,6 +178,13 @@ var config = {
 			],
 			cropSize: []
 		}
+	},
+	vk: {
+		app_id: 5806988, //он же client_id
+		app_secret: 'pUOrjr4Z3SVcdIkQBPig',
+		group_id: 34886964,
+		api_service: 'https://api.vk.com/method/',
+		api_vers: '5.60'
 	}
 };
 
