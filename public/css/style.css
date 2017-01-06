@@ -868,7 +868,7 @@ iframe.iframeVideoEmbed {
   overflow: hidden;
   margin: 0 10px 10px 0;
   float: left;
-  background-color: #fff;
+  background-color: #000;
   /*max-width: 329px;
   max-height: 248px;*/
   max-width: 216px;
@@ -1848,7 +1848,8 @@ ul.shopListContainer .shopItem .motoshopAddress .motoshopAddressData {
 }
 /********** профиль просматриваемого юзера **************/
 .userProfile .blocks {
-  max-width: calc(45%);
-  max-width: -moz-calc(45%);
-  max-width: -webkit-calc(45%);
+  float: left;
+  max-width: calc(34%);
+  max-width: -moz-calc(34%);
+  max-width: -webkit-calc(34%);
 }

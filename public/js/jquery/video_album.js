@@ -328,6 +328,11 @@
 			});
 		});
 
+		$(document).on('click', '.js-mediaTitle', function()
+		{
+			$(this).parent().find('.js-video').click();
+		});
+
 		function prependVideo(resp, options)
 		{
 			var html = '';
@@ -337,7 +342,7 @@
 					html += '<a href="javascript:void(0);" title="редактировать" data-toggle="tooltip" data-action="edit_video" data-video-id="'+resp['v_id']+'"><i class="fa fa-fw fa-edit"></i></a>';
 					html += '<a href="javascript:void(0);" title="удалить" data-toggle="tooltip" data-action="delete_video" data-video-id="'+resp['v_id']+'"><i class="fa fa-fw fa-trash-o"></i></a>';
 				html += '</div>';
-				html += '<div class="mediaTitle">';
+				html += '<div class="mediaTitle js-mediaTitle">';
 					html += '<div class="mediaName">'+resp['v_name']+'</div>';
 					html += '<div class="mediaText">'+resp['v_text']+'</div>';
 				html += '</div>';

@@ -3,6 +3,7 @@
 const Promise = require("bluebird");
 const Helpers = require("app/helpers");
 const Errors = require("app/lib/errors");
+const Logger = require('app/lib/logger');
 
 const Http = require("http");
 const Https = require("https");
@@ -411,73 +412,137 @@ class EmbedContent
 	_vk()
 	{
 /*
-		TODO добавить обработку if (this.getIframeSrc())
-		если true, то надо из getUri собрать обратную ссылку на видео в ВК вида:
-		https://vk.com/video-34886964_456239081 => newUri = https://vk.com/video${oid}_${vid}
+ https://vk.com/video-34886964_456239081
+ <iframe src="//vk.com/video_ext.php?oid=-34886964&id=456239081&hash=2c43699c660f43ea&hd=2" width="853" height="480" frameborder="0" allowfullscreen></iframe>
 
-		отправить запрос на эту страницу:
-
-		 this.setIframeSrc(false)
-		 .setUri(newUri);
-
-		 return this.sendRequest(); - получить getHtml() распарсить на предмет
-		 описания, заголовка, картинки
 */
-		let data = EmbedContent._parseMetaTag(this.getHtml());
+		EmbedContent._oid   = EmbedContent._oid||null;
+		EmbedContent._vid   = EmbedContent._vid||null;
+		EmbedContent._hash  = EmbedContent._hash||null;
 
-		//let meta = Cheerio(this.getHtml()).root().find('meta');
+		let url = {};
+		console.log('this.getUri() = ', this.getUri());
+		if (this.getIframeSrc())
+		{
+			url = Url.parse(this.getUri(), true);
+			EmbedContent._oid = (url["query"]["oid"] ? url["query"]["oid"] : null);
+			EmbedContent._vid = (url["query"]["id"] ? url["query"]["id"] : null);
+			EmbedContent._hash    = (url["query"]["hash"] ? url["query"]["hash"] : null);
+			url = `https://vk.com/video${EmbedContent._oid}_${EmbedContent._vid}`;
+			return url;
+		}
+		let data = EmbedContent._parseMetaTag(this.getHtml());
 
 		if (!data["embed_url_video"])
 		{
-			console.log('getUri = ', this.getUri());
-			//console.log('getHtml = ');
-			//console.log(this.getHtml());
-			this._parseVK();
-			return this;
+			Object.assign(data, this._parseVK());
 		}
-
-	/*
-
-	 https://vk.com/video-34886964_456239081
-	 <iframe src="//vk.com/video_ext.php?oid=-34886964&id=456239081&hash=2c43699c660f43ea&hd=2" width="853" height="480" frameborder="0" allowfullscreen></iframe>
-
-	*/
-
-		let url = {};
-		try
-		{
-			//data["embed_url_video"] = 'https://vk.com';
-			url = Url.parse(data["embed_url_video"], true);
-		}
-		catch (err)
-		{
-			//console.log(err);
-			this.setData({});
-			return this;
-		}
-
-		let oid = null, id = null, hash = null;
-
-		if (url.hasOwnProperty("query"))
-		{
-			oid     = (url["query"]["oid"] ? url["query"]["oid"] : null);
-			id      = (url["query"]["vid"] ? url["query"]["vid"] : null);
-			hash    = (url["query"]["embed_hash"] ? url["query"]["embed_hash"] : null);
-		}
-
-		if (oid && id && hash)
-			data["embed_url_video"] = `//${url["hostname"]}/video_ext.php?oid=${oid}&id=${id}&hash=${hash}`;
 		else
-			data["embed_url_video"] = '';
+		{
+			url = Url.parse(data["embed_url_video"], true);
 
-		console.log(data);
+			if (url.hasOwnProperty("query"))
+			{
+				EmbedContent._oid     = (url["query"]["oid"] ? url["query"]["oid"] : EmbedContent._oid);
+				EmbedContent._vid     = (url["query"]["vid"] ? url["query"]["vid"] : EmbedContent._vid);
+				EmbedContent._hash    = (url["query"]["embed_hash"] ? url["query"]["embed_hash"] : EmbedContent._hash);
+			}
+		}
+
+		if (EmbedContent._oid && EmbedContent._vid && EmbedContent._hash)
+		{
+			data["embed_url_video"] = `//vk.com/video_ext.php?oid=${EmbedContent._oid}&id=${EmbedContent._vid}&hash=${EmbedContent._hash}`;
+		}
+		else
+		{
+			data["embed_url_video"] = '';
+		}
+
 		this.setData(data);
 		return this;
 	}
 
 	_parseVK()
 	{
-		console.log(this.getHtml());
+		let data = {};
+		try
+		{
+			let params = this.getUri().match(/(-\d+)_(\d+)/);
+
+			if (params)
+			{
+				EmbedContent._oid = params[1];
+				EmbedContent._vid = params[2];
+			}
+			else
+				return data;
+
+			data['embed_url'] = this.getUri();
+
+			let script = Cheerio(this.getHtml()).root().find('script');
+
+			if (!Object.keys(script).length)
+				return this;
+
+			let html = '';
+			let reg = new RegExp('extend\\(cur,\\s*\\{(.+)\\}\\)','im');
+
+			Object.keys(script).forEach((key) =>
+			{
+				let item = script[key];
+				if (item.hasOwnProperty('children') && item['children'][0] && item['children'][0].hasOwnProperty('data'))
+				{
+					let found = item['children'][0]['data'].match(reg);
+
+					if (found && found[1])
+					{
+						html = found[1];
+					}
+				}
+			});
+
+			html = `{${html}}`;
+
+			let pageVideosList  = JSON.parse(html)['pageVideosList'][EmbedContent._oid];
+			//console.log(pageVideosList);
+
+			let found = false;
+			pageVideosList['all']['list'].some((item)=>
+			{
+				if(item[0] == EmbedContent._oid && item[1] == EmbedContent._vid)
+				{
+					data["embed_image"] = item[2];
+					data["embed_title"] = item[3];
+					found = true;
+					return true;
+				}
+				return false;
+			});
+
+			if (!found)
+			{
+				pageVideosList['uploaded']['list'].some((item)=>
+				{
+					if(item[0] == EmbedContent._oid && item[1] == EmbedContent._vid)
+					{
+						found = true;
+						data["embed_image"] = item[2];
+						data["embed_title"] = item[3];
+
+						return true;
+					}
+					return false;
+				});
+			}
+
+			script = html = pageVideosList = null;
+		}
+		catch(err)
+		{
+			Logger.error(err);
+		}
+
+		return data;
 	}
 
 	/**
@@ -502,7 +567,12 @@ class EmbedContent
 
 				if (EmbedContent.vkHostList.indexOf(this.getVideoHosting()) >= 0)
 				{
-					this._vk();
+					let uri = this._vk();
+					if (typeof uri === 'string')
+					{
+						this.setIframeSrc(false).setUri(uri);
+						return this.getContent();
+					}
 				}
 				/*else if(typeof this['_'+this.getVideoHosting()] == 'function')
 				{
@@ -513,13 +583,11 @@ class EmbedContent
 					let canonicalHref = EmbedContent._getCanonicalHref(this.getHtml());
 					//canonicalHref = 'https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/';
 
-					if (!canonicalHref)
-						return Promise.resolve(this.getData());
-
-					this.setIframeSrc(false)
-						.setUri(canonicalHref);
-
-					return this.getContent();
+					if (canonicalHref)
+					{
+						this.setIframeSrc(false).setUri(canonicalHref);
+						return this.getContent();
+					}
 				}
 				else
 					this.setData(EmbedContent._parseMetaTag(this.getHtml()));
@@ -529,7 +597,7 @@ class EmbedContent
 				return Promise.resolve(this.getData());
 			})
 			.catch((err) => {//err
-				console.log(err);
+				Logger.error(err);
 				return Promise.resolve(this.getData());
 			});
 	}

@@ -12,11 +12,11 @@
     <p>мотоцикл CBR1000RA</p>
     <p>интересы: ...</p>
 
-    <% if (albums){ %>
-    <div class="mediaWrapper blocks">
-        <h4><a href="<%=(_reqBaseUrl+'/photo/'+user["u_id"])%>/"><span class="badge"><i class="fa fa-fw fa-camera"></i> <%=albums["a_cnt"]%></span> Фотоальбомы</a></h4>
-        <div class="mediaList">
-            <% albums.forEach(function (album)
+    <% if (photoAlbums){
+    %><div class="mediaWrapper blocks">
+        <h4><a href="<%=(_reqBaseUrl+'/photo/'+user["u_id"])%>/"><span class="badge"><i class="fa fa-fw fa-camera"></i> <%=photoAlbums["a_cnt"]%></span> Фотографии</a></h4>
+        <div class="mediaList"><%
+            photoAlbums.forEach(function (album)
             {
                 let img = '';
                 if(album["previews"]["512_384"])
@@ -25,9 +25,8 @@
                 }else{
                     img = '<img src="/img/no_image.png" alt="'+album["a_name"]+'" class="noImg"/>';
                 }
-            %>
-            <div class="media">
-                <a class="mediaImg" href="<%=(_reqBaseUrl+'/photo/'+album["u_id"]+'/'+album["a_id"])%>/"><%-img%></a>
+            %><div class="media">
+                <a class="mediaImg" href="<%=[_reqBaseUrl,'photo',album["u_id"],album["a_id"]].join('/')%>/"><%-img%></a>
                 <div class="mediaTools">
                     <span class="badge"><i class="fa fa-fw fa-camera"></i> <%=album["a_img_cnt"]%></span>
                 </div>
@@ -35,9 +34,33 @@
                     <div class="mediaName"><%=album["a_name"]%></div>
                     <% if (album["a_text"]){%><div class="mediaText"><%=album["a_text"]%></div><%}%>
                 </div>
-            </div>
-            <%})%>
+            </div><%
+            })%>
         </div>
-    </div>
-    <%}%>
+    </div><%
+    } if (videoAlbums){
+    %><div class="mediaWrapper blocks">
+        <h4><a href="<%=(_reqBaseUrl+'/video/'+user["u_id"])%>/"><span class="badge"><i class="fa fa-fw fa-video-camera"></i> <%=videoAlbums["va_cnt"]%></span> Видео</a></h4>
+        <div class="mediaList"><%
+            videoAlbums.forEach(function (album)
+            {
+                let img = '';
+                if(album["v_img"])
+                    img = '<img src="'+album['v_img']+'" alt="'+album['va_name']+'"/>';
+                else
+                    img = '<img src="/img/no_image.png" alt="'+album['va_name']+'" class="noImg"/>';
+            %><div class="media">
+                <a class="mediaImg" href="<%=[_reqBaseUrl,'video',album["u_id"],album["va_id"],album["va_alias"]].join('/')%>/"><%-img%></a>
+                <div class="mediaTools">
+                    <span class="badge"><i class="fa fa-fw fa-camera"></i> <%=album["va_cnt"]%></span>
+                </div>
+                <div class="mediaTitle">
+                    <div class="mediaName"><%=album["va_name"]%></div>
+                    <% if (album["va_text"]){%><div class="mediaText"><%=album["va_text"]%></div><%}%>
+                </div>
+            </div><%
+            })%>
+        </div>
+    </div><%
+    }%>
 </div>

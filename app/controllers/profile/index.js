@@ -60,20 +60,23 @@ class Profile extends CtrlMain
 				if (!userData || !userData.u_id)
 					throw new Errors.HttpError(404);
 
-				return this.getClass('user/photo')
-					.getAlbumList(this.getUserId(), i_u_id, new Pages(1, 4))
-					.spread((albums, Pages) =>
+				return Promise.props({
+					photoAlbums: this.getClass('user/photo').getAlbumList(this.getUserId(), i_u_id, new Pages(1, 4)),
+					videoAlbums: this.getClass('video').getVideoAlbumList(this.getUserId(), i_u_id, new Pages(1, 4))
+				})
+					.then((props)=>
 					{
-						Pages = null;
-
 						let tplFile = "user/profile/index.ejs";
 						let tplData = {
 							user: userData,
-							albums: albums
+							photoAlbums: props.photoAlbums[0]||null,
+							videoAlbums: props.videoAlbums[0]||null
 						};
+
+						props = null;
 						this.view.setTplData(tplFile, tplData);
 						this.view.addPartialData("user/left", {user: userData});
-						//self.view.addPartialData("user/right", {}); //TODO
+						//self.view.addPartialData("user/right", {}); //TODO?
 
 						return Promise.resolve(null);
 					});

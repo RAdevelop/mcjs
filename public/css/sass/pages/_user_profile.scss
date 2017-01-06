@@ -3,6 +3,7 @@
 {
   & .blocks
   {
-    @include mix-max-width-calc(45%);
+    float: left;
+    @include mix-max-width-calc(34%);
   }
 }
