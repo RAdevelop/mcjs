@@ -75,7 +75,8 @@ class Registration extends CtrlMain
 		tplData = this.getReqBody();
 
 		return this._formRegValidation(tplData)
-		.then((tplData) => { //если регистрация успешна
+		.then((tplData) =>
+		{ //если регистрация успешна
 
 			this.view.setTplData(tplFile, tplData);
 			return Promise.resolve(null);
@@ -123,16 +124,16 @@ class Registration extends CtrlMain
 		const self = this;
 		
 		return Promise.resolve(errors)
-		.then(function(errors)
+		.then((errors)=>
 		{
 			if (self.parseFormErrors(tplData, errors))
 				return Promise.resolve(tplData);
 		})
-		.then(function(tplData)
+		.then((tplData)=>
 		{
-			return new Promise(function(resolve, reject)
+			return new Promise((resolve, reject)=>
 			{
-				self.model("user/auth").reg(tplData.m_email, tplData.s_password, function(err, userData)
+				self.model("user/auth").reg(tplData.m_email, tplData.s_password, (err, userData)=>
 				{
 					tplData.s_password = '';
 					tplData.s_password2 = '';
@@ -144,33 +145,33 @@ class Registration extends CtrlMain
 					return resolve(tplData);
 				});
 			})
-				.then(function (tplData)
+				.then((tplData)=>
 				{
 					return self.getClass('user/groups').getGroupsOnRegister()
-						.then(function (list)
+						.then((list)=>
 						{
 							let ug_ids = [];
 
-							list.forEach(function (item)
+							list.forEach((item)=>
 							{
 								ug_ids.push(item['ug_id']);
 							});
 							return Promise.resolve([tplData, ug_ids]);
 						});
 				})
-				.spread(function (tplData, ug_ids)
+				.spread((tplData, ug_ids)=>
 				{
 					return self.getClass('user/groups').addUserToGroups(tplData.userData.u_id, ug_ids)
-						.then(function ()
+						.then(()=>
 						{
 							return Promise.resolve(tplData);
 						});
 				});
 		})
-		.then(function(tplData)
+		.then((tplData)=>
 		{
 			//отправка почты
-			return new Promise(function(resolve, reject)
+			return new Promise((resolve, reject)=>
 			{
 				const Mailer = new Mail('gmail');
 				
@@ -189,7 +190,7 @@ class Registration extends CtrlMain
 					}
 				};
 				
-				Mailer.send(sendParams, function (err)
+				Mailer.send(sendParams, (err)=>
 				{
 					if(err)
 					{
@@ -203,7 +204,7 @@ class Registration extends CtrlMain
 				});
 			});
 		})
-		.catch(Errors.AlreadyInUseError, function(err)
+		.catch(Errors.AlreadyInUseError, (err)=>
 		{
 			tplData.formError.message = 'Такой пользователь уже существует';
 
@@ -213,18 +214,44 @@ class Registration extends CtrlMain
 
 	confirmed(tplData, u_id, key)
 	{
-		const self = this;
-
-		return new Promise(function(resolve, reject)
+		return new Promise((resolve, reject)=>
 		{
 			if (!u_id)
 				return reject(new Errors.HttpError(404));
 
-			self.model("user/auth").regConfirm(u_id, key, function(err, valid)
+			this.model("user/auth").regConfirm(u_id, key, (err, valid)=>
 			{
-				if (err) return reject(err);
+				if (err)
+					return reject(err);
 
 				tplData.confirmed = valid;
+
+				if (valid)
+				{
+					process.nextTick(()=>
+					{
+						const Mailer = new Mail('gmail');
+
+						let title = 'Подтверждение регистрации на сайте www.MotoCommunity.ru';
+						let sendParams = {
+							//to:         '',
+							subject:    title,
+							tplName:    'auth/user/new',
+							tplData: {
+								title: title,
+								links: 'https://'+this.getHostPort(),
+								link: 'http://'+this.getHostPort(),
+								u_id: u_id
+							}
+						};
+
+						Mailer.send(sendParams,  (err) =>
+						{
+							if(err)
+								Logger.error(new Errors.AppMailError('Ошибка при отправке письма', err));
+						});
+					});
+				}
 				return resolve(tplData);
 			});
 		});
@@ -248,11 +275,13 @@ class Registration extends CtrlMain
 		let tplData = {confirmed: false};
 
 		return this.confirmed(tplData, u_id, s_key)
-		.then((tplData) => {
+		.then((tplData)=>
+		{
 			this.view.setTplData('auth/confirm', tplData);
 			return Promise.resolve(null);
 		})
-		.catch((err) => {
+		.catch((err)=>
+		{
 			throw err;
 		});
 	}

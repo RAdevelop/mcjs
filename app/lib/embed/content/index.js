@@ -421,7 +421,7 @@ class EmbedContent
 		EmbedContent._hash  = EmbedContent._hash||null;
 
 		let url = {};
-		console.log('this.getUri() = ', this.getUri());
+		//console.log('this.getUri() = ', this.getUri());
 		if (this.getIframeSrc())
 		{
 			url = Url.parse(this.getUri(), true);
@@ -504,7 +504,7 @@ class EmbedContent
 			html = `{${html}}`;
 
 			let pageVideosList  = JSON.parse(html)['pageVideosList'][EmbedContent._oid];
-			//console.log(pageVideosList);
+			//console.log(pageVideosList['all']['list']);
 
 			let found = false;
 			pageVideosList['all']['list'].some((item)=>

@@ -39,6 +39,20 @@ class Video extends VideoAlbums
 			});
 	}
 
+	getMove(u_id, v_id)
+	{
+		return this.model('video').getMove(v_id)
+			.then((move)=>
+			{
+				if (!move)
+					return Promise.resolve(null);
+
+				move['va_is_owner'] = move['v_is_owner'] = (u_id == move['u_id']);
+
+				return Promise.resolve(move);
+			});
+	}
+
 	addVideo(u_id, va_id, v_name, v_text, v_img, v_content, v_url)
 	{
 		let v_alias = this.helpers.translit(v_name);

@@ -1,25 +1,25 @@
 <%  if(!_isXHR){%><%- layout('layout/user/index.ejs') %><% } %>
+<ol class="breadcrumb">
+	<li><a href="<%=menuItem['m_path']%>/"><%=menuItem['m_name']%></a></li>
+	<li><a href="<%=(menuItem['m_path']+'/'+user['u_id']+'/')%>"><%=user['u_display_name']%></a></li>
+	<% if (videoMove){%>
+	<li><a href="<%=[menuItem['m_path'],user['u_id'],videoMove['va_id'],videoMove['va_alias']].join('/')%>/"><%=videoMove['va_name']%></a></li>
+	<li><%=videoMove['v_name']%></li>
+	<%} %>
+</ol>
 <%- include toolbar.ejs %>
 <h1><%=_pageH1%></h1>
 <div class="row mediaWrapper videoAlbums js-mediaWrapper">
 	<div class="col-xs-12 col-sm-12 col-md-12"><%
-		if (videoAlbum){%><%- include video.ejs %><%}
-		else if (videoAlbums){%><%- include video_list.ejs %><%} %>
+		if (videoAlbum)
+		{
+			if (videoMove){%><%- include move.ejs %><%}
+			else {%><%- include video.ejs %><%}
+		}
+		else if (videoAlbums) { %><%- include video_list.ejs %><%} %>
 	</div>
 </div>
 <%- include ../../../pages/index.ejs %>
-<p>по аналогии с фотоальбомами</p>
-<p>создать видео альбом (даилог с переходом в созданный альбом)</p>
-<p>добавить в альбом видео (диалог, с вводом url)
-	<ul>
-	<li>получить: заголовок, описание, картинку, код для видео</li>
-	<li>заголовок, описание, картинку? с возможностью редактирования</li>
-	<li>дата создания/редактирования</li>
-	<li>флаг публикации (доступно для просмотра или нет)</li>
-	<li>для заголовка сохранять транслит версию</li>
-	<li>сохранить в указанный альбом</li>
-	</ul>
-</p>
 <script type="text/javascript" src="/js/jquery/video_album.js"></script>
 <script type="text/javascript">
 //<!--
@@ -36,8 +36,6 @@
 		, u_id: '<%=(_user["u_id"])%>'
 	};
 	<% if(videoAlbum && videoAlbum["va_is_owner"]) { %>
-	//videoAlbumProps["s_token"] = '<%=(typeof s_token === 'undefined' ? '' : s_token)%>';
-	//videoAlbumProps["i_time"] = '<%=(typeof i_time === 'undefined' ? '' : i_time)%>';
 	videoAlbumProps["sortable"] = (<%=(videoAlbum && videoAlbum["u_id"] == _user["u_id"])%>);
 	<%}%>
 	$.videoAlbum(videoAlbumProps);

@@ -6,6 +6,12 @@ iframe.iframeVideoEmbed
   width: 303px;
   height: 227px;
 }
+
+.videoMove iframe.iframeVideoEmbed
+{
+  width: 100%;
+}
+
 @media (min-width: 1200px)
 {
   iframe.iframeVideoEmbed

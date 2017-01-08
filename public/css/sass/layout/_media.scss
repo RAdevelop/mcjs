@@ -135,8 +135,8 @@
         }
       }
 
-      /*@mediaWrapper (max-width: 1024px)*/
-      @mediaWrapper (max-width: $screen-sm)
+      /*@media (max-width: 1024px)*/
+      @media (max-width: $screen-sm)
       {
         &
         {
@@ -145,7 +145,7 @@
         }
       }
 
-      @mediaWrapper (max-width: $screen-sm)
+      @media (max-width: $screen-sm)
       {
         &
         {
@@ -154,7 +154,7 @@
         }
       }
 
-      @mediaWrapper (min-width: $screen-xxs) and (max-width: $screen-xs)
+      @media (min-width: $screen-xxs) and (max-width: $screen-xs)
       {
         &
         {
@@ -188,8 +188,8 @@
         @include mix-width-calc(100%);
       }
 
-      /*@mediaWrapper (max-width: 1024px)*/
-      @mediaWrapper (max-width: $screen-md)
+      /*@media (max-width: 1024px)*/
+      @media (max-width: $screen-md)
       {
         &
         {
@@ -198,8 +198,8 @@
         }
       }
 
-      /*@mediaWrapper (max-width: 768px)*/
-      @mediaWrapper (max-width: $screen-sm)
+      /*@media (max-width: 768px)*/
+      @media (max-width: $screen-sm)
       {
         &
         {
@@ -208,7 +208,7 @@
         }
       }
 
-      @mediaWrapper (min-width: $screen-xxs) and (max-width: $screen-xs)
+      @media (min-width: $screen-xxs) and (max-width: $screen-xs)
       {
         &
         {
@@ -298,8 +298,8 @@
     }
   }
 
-  /*@mediaWrapper (min-width: 768px)*/
-  @mediaWrapper (min-width: $screen-sm)
+  /*@media (min-width: 768px)*/
+  @media (min-width: $screen-sm)
   {
     &
     {
@@ -308,8 +308,8 @@
     }
   }
 
-  /*@mediaWrapper (max-width: 1024px)*/
-  @mediaWrapper (max-width: $screen-md)
+  /*@media (max-width: 1024px)*/
+  @media (max-width: $screen-md)
   {
     & .modal-body .imageModalBody,
     & .modal-body .imageModalContent

@@ -1,0 +1,9 @@
+<h4><%=[videoMove["va_name"], videoMove["v_name"]].join(' / ')%></h4>
+<%
+	let hasText = (videoMove["v_text"] ? true : false);
+	let colSm = (hasText ? 4 : 12);
+%>
+	<div class="col-xs-12 col-sm-<%=colSm%> videoMove">
+		<%-videoMove["v_content"]%>
+	</div><%
+if (hasText){ %><div class="col-xs-12 col-sm-8"><%=videoMove["v_text"]%></div><%}%>

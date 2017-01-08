@@ -185,14 +185,17 @@
 			geolocation.get({
 				provider: 'yandex',
 				mapStateAutoApply: true
-			}),
-			geolocation.get({
+			})
+			, geolocation.get({
 				provider: 'browser',
 				mapStateAutoApply: true
 			})
 		]).then(function(res)
 		{
-			if (!res.metaData.geocoder.found)
+			//if (!res.metaData.geocoder.found)
+			//	throw new ErrorMcMapGetLocation();
+
+			if (!res.hasOwnProperty('geoObjects') || !res.geoObjects.get(0))
 				throw new ErrorMcMapGetLocation();
 
 			var info = res.geoObjects.get(0).properties.get('metaDataProperty')["GeocoderMetaData"];

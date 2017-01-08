@@ -25,6 +25,8 @@ class ProfileVideo extends CtrlMain
 			"index": {
 				//список видео в альбоме с постраничкой
 				"^\/?[1-9]+[0-9]*\/[1-9]+[0-9]*\/\\S+\/page\/[1-9]+[0-9]*\/?$" : ["i_u_id", "i_va_id", "s_va_alias", ,"i_page"]
+				//выбранный ролик видео в альбоме юзера
+				,"^\/?move\/[1-9]+[0-9]*\/\\S+\/?$" : [, "i_v_id", "s_v_alias"]
 				//список видео в альбоме юзера
 				,"^\/?[1-9]+[0-9]*\/[1-9]+[0-9]*\/\\S+\/?$" : ["i_u_id", "i_va_id", "s_va_alias"]
 				//список видео юзера с постраничкой
@@ -44,7 +46,19 @@ class ProfileVideo extends CtrlMain
 	 */
 	indexActionGet()
 	{
-		let {i_u_id=this.getUserId(), i_va_id=null} = this.routeArgs;
+		let {i_u_id=this.getUserId(), i_va_id=null, i_v_id=null} = this.routeArgs;
+
+		let tplData = {
+			"user": null
+			,"videoAlbums": null
+			,"videoAlbum": null
+			,"videoMove": null
+			,"pages": null
+		};
+		let xhr = this.getReq().xhr;
+
+		if (i_v_id)
+			return this.videoMove(tplData, xhr);
 
 		return this.getUser(i_u_id)
 			.then((userData) =>
@@ -54,18 +68,68 @@ class ProfileVideo extends CtrlMain
 
 				userData["u_is_owner"] = this.isTheSameUser(i_u_id);
 
-				let tplData = {
-					 "user": userData
-					,"videoAlbums": null
-					,"videoAlbum": null
-					,"pages": null
-				};
-
-				let xhr = this.getReq().xhr;
+				tplData["user"] = userData;
+				
 				if (i_va_id)
 					return this.videoAlbum(i_u_id, tplData, xhr);
 
 				return this.videoAlbumList(i_u_id, tplData, xhr);
+			});
+	}
+
+	/**
+	 * просмотра выбранного видео-ролика
+	 * @param tplData
+	 * @param xhr
+	 * @returns {Promise}
+	 */
+	videoMove(tplData, xhr)
+	{
+		let {i_v_id, s_v_alias} = this.routeArgs;
+
+		return this.getClass('video').getMove(this.getUserId(), i_v_id)
+			.then((move)=>
+			{
+				//console.log(move);
+
+				if (!move || move['v_alias'] != s_v_alias)
+					throw new Errors.HttpError(404);
+
+				tplData['videoMove'] = move;
+
+				return Promise.props({
+					userData: this.getUser(move['u_id']),
+					videoAlbum: this.getClass('video').getVideoAlbum(this.getUserId(), move['u_id'], move['va_id'])
+				})
+					.then((props)=>
+					{
+						props.userData["u_is_owner"] = this.isTheSameUser(move['u_id']);
+						tplData['user'] = props.userData;
+						tplData['videoAlbum'] = props.videoAlbum;
+
+						props = null;
+
+						return Promise.resolve(tplData);
+					});
+			})
+			.then((tplData)=>
+			{
+				let tplFile = 'user/profile/video/index.ejs';
+
+				this.view.setPageTitle(tplData["videoMove"]["v_name"]);
+				if (tplData["videoMove"]["v_text"])
+					this.view.setPageDescription(CtrlMain.cheerio(tplData["videoMove"]["v_text"]).text());
+
+				if (tplData["videoMove"]["v_img"])
+					this.view.setPageOgImage(tplData["videoMove"]["v_img"]);
+
+				this.view.setTplData(tplFile, tplData, xhr);
+				this.view.addPartialData('user/left', {user: tplData["user"]});
+
+				this.getRes().expose(tplData['videoAlbum'], 'videoAlbum');
+				this.getRes().expose([tplData["videoMove"]], 'videoList');
+
+				return Promise.resolve(xhr);
 			});
 	}
 

@@ -8,7 +8,10 @@
 				if (_access['post_edit'] && videoAlbum && videoAlbum['va_id'])
 				{ %><li><a href="javascript:void(0);" data-action="edit"><i class="fa fa-fw fa-edit"></i> редактировать видео-альбом</a></li>
 				<li><a href="javascript:void(0);" data-action="delete" data-video-id="<%=videoAlbum['va_id']%>"><i class="fa fa-fw fa-trash-o"></i> удалить видео-альбом</a></li>
-				<li><a href="javascript:void(0);" data-action="add_video"><i class="fa fa-fw fa-video-camera"></i> добавить видео в альбом</a></li><%
+				<li role="separator" class="divider"></li>
+				<li><a href="javascript:void(0);" data-action="add_video"><i class="fa fa-fw fa-video-camera"></i> добавить видео в альбом</a></li>
+				<% if (videoMove)
+				{%><li><a href="javascript:void(0);" data-action="edit_video" data-video-id="<%=videoMove['v_id']%>"><i class="fa fa-fw fa-edit"></i> редактировать видео</a></li><% }
 				}%>
 			</ul>
 		</div><% }%>

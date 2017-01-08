@@ -1,18 +1,18 @@
 <%  if(!_isXHR){%><%- layout('layout/user/index') %><% } %>
 <ol class="breadcrumb">
     <li><a href="<%=menuItem.m_path%>/"><%=menuItem.m_name%></a></li>
-    <li><a href="<%=(menuItem.m_path+'/'+user.u_id+'/')%>"><%=(user.u_login ? user.u_login : (user.u_name || user.u_surname ? [user.u_name, user.u_surname].join(' ') : ''))%></a></li>
+    <li><a href="<%=(menuItem.m_path+'/'+user.u_id+'/')%>"><%=user.u_display_name%></a></li>
 </ol>
 <div class="userProfile">
-    <p>логин <%=user.u_login%></p>
-    <p>фи <%=[user.u_name, user.u_surname].join(' ')%></p>
-    <p>пол <%=user.u_sex_name%></p>
-    <p>населенный пункт <%=user.l_name%> u_location_id = <%=user.u_location_id%></p>
-    <p>ДР <%=user.bd_birthday%></p>
-    <p>мотоцикл CBR1000RA</p>
-    <p>интересы: ...</p>
-
-    <% if (photoAlbums){
+    <ul>
+        <li><%=user.u_login%><% if (user.u_name || user.u_surname) {%>&nbsp;(<%=[user.u_name, user.u_surname].join(' ')%>)<% }%></li>
+        <li>пол <%=user.u_sex_name%></li>
+        <li>населенный пункт <%=user.l_name%> u_location_id = <%=user.u_location_id%></li>
+        <li>день рождения <%=user.bd_birthday%></li>
+        <li>мотоцикл CBR1000RA</li>
+        <li>интересы: ...</li>
+    </ul><%
+    if (photoAlbums){
     %><div class="mediaWrapper blocks">
         <h4><a href="<%=(_reqBaseUrl+'/photo/'+user["u_id"])%>/"><span class="badge"><i class="fa fa-fw fa-camera"></i> <%=photoAlbums["a_cnt"]%></span> Фотографии</a></h4>
         <div class="mediaList"><%

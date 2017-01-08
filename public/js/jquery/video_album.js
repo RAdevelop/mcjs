@@ -13,13 +13,12 @@
 			, albumVideoTools: null //опции для отдельного видео
 			, albumName: null
 			, albumText: null
-			, s_token: null
-			, i_time: null
 			, sortable: false
 		};
 
 		var videoAlbums = MCJS["videoAlbums"] || [];
 		var videoAlbum = MCJS["videoAlbum"] || {};
+
 		var videoList = MCJS["videoList"] || {};
 
 		/*при многократном вызове функции настройки будут сохранятся, и замещаться при необходимости*/
@@ -29,74 +28,17 @@
 		{
 			event.preventDefault();
 			event.stopPropagation();
+
 			var $self = $(this);
+
 			var vId = $self.data('videoId');
 			var action = $self.data('action');
-			var video = {}, inx;
-			MCJS["videoList"].forEach(function (item, i, videoList)
-			{
-				if (item['v_id'] == vId)
-				{
-					inx = i;
-					video = videoList[i];
-					video['v_name'] = (video['v_name']).htmlspecialchars(video['v_name']);
-					video['v_text'] = (video['v_text']).htmlspecialchars(video['v_text']);
-					//video['v_content'] = (video['v_content']).htmlspecialchars(video['v_content']);
-
-					return true;
-				}
-				return false;
-			});
+			var move = findVideoMove(vId);
 
 			switch (action)
 			{
 				case 'edit_video':
-					options.btnSaveAlbumVal = 'edit_video';
-					var dialogBtn = 'btn_edit_video';
-					var title = 'Редактирование видео '+videoAlbum['va_name'];
-					var formId = 'formEditVideo';
-
-					$('__edit_video_dialog__').mcDialog({
-						title: title
-						, body: formAddVideo(formId, options, videoAlbum, video)
-						, onOpen: function ($dialog)
-						{
-							//https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/
-							//https://youtu.be/pNEVFxG_tes
-
-							var $dialogBtn = $dialog.find('.modal-footer #'+dialogBtn).attr('disabled', false);
-							var $formVideo = $dialog.find('#'+formId);
-
-							$formVideo.find('#videoData').show();
-
-							$formVideo.postRes({
-								btnId: $dialogBtn,
-								onSuccess: function($respDialog, resp)
-								{
-									$dialog.modal('hide');
-									MCJS["videoList"][inx] = resp;
-									videoLink = null;
-									//не показать диалог
-									return false;
-								},
-								onFail: function ($respDialog, resp)
-								{
-									$dialog.hide();
-									videoLink = null;
-									return true;
-								},
-								onClose: function ($respDialog)
-								{
-									$dialog.show().css('overflow', 'visible');
-									videoLink = null;
-								}
-							});
-
-							$formVideo.find('#get_video').on('click', [$dialog, $dialogBtn, $formVideo.find('#link_v_url')], postRequestVideoLink);
-						}
-						, buttons: buttonsDialog(dialogBtn, 'сохранить')
-					});
-
+					editVideoMove(options, videoAlbum, move['video'], move['inx']);
 					break;
 
 				case 'delete_video':
@@ -105,7 +47,7 @@
 					var formId = 'formDelVideo';
 					$('__del_video_dialog__').mcDialog({
 						title: 'Удаление видео'
-						, body: formDelVideo(formId, video, options)
+						, body: formDelVideo(formId, move['video'], options)
 						, onOpen: function ($dialog)
 						{
 							$dialog.find('#'+formId).postRes({
@@ -114,7 +56,7 @@
 								{
 									if (resp.hasOwnProperty("formError") && resp["formError"].hasOwnProperty("error") && !resp["formError"]["error"])
 									{
-										MCJS["videoList"].splice(inx, 1);
+										MCJS["videoList"].splice(move['inx'], 1);
 										$self.parents('.js-media').remove();
 										mediaImgCnt(-1);
 										$dialog.modal('hide');
@@ -150,6 +92,13 @@
 			var action = $this.data('action');
 			switch(action)
 			{
+				case 'edit_video':
+					var vId = $this.data('videoId');
+					var move = findVideoMove(vId);
+
+					editVideoMove(options, videoAlbum, move['video'], move['inx']);
+					break;
+
 				case 'add_video':
 
 					options.btnSaveAlbumVal = 'add_video';
@@ -207,6 +156,7 @@
 						dialogBtn = 'btn_add_video_album';
 						title = 'Создание нового альбома';
 						formId = 'formAddAlbum';
+						videoAlbum = {};
 					}
 					else
 					{
@@ -333,11 +283,81 @@
 			$(this).parent().find('.js-video').click();
 		});
 
+		function findVideoMove(vId)
+		{
+			var video = {}, inx;
+			MCJS["videoList"].forEach(function (item, i, videoList)
+			{
+				if (item['v_id'] == vId)
+				{
+					inx = i;
+					video = videoList[i];
+					video['v_name'] = (video['v_name']).htmlspecialchars(video['v_name']);
+					video['v_text'] = (video['v_text']).htmlspecialchars(video['v_text']);
+					//video['v_content'] = (video['v_content']).htmlspecialchars(video['v_content']);
+
+					return true;
+				}
+				return false;
+			});
+
+			return {video:video, inx:inx};
+		}
+
+		function editVideoMove(options, videoAlbum, video, inx)
+		{
+			options.btnSaveAlbumVal = 'edit_video';
+			var dialogBtn = 'btn_edit_video';
+			var title = 'Редактирование видео '+videoAlbum['va_name'];
+			var formId = 'formEditVideo';
+
+			$('__edit_video_dialog__').mcDialog({
+				title: title
+				, body: formAddVideo(formId, options, videoAlbum, video)
+				, onOpen: function ($dialog)
+				{
+					//https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/
+					//https://youtu.be/pNEVFxG_tes
+
+					var $dialogBtn = $dialog.find('.modal-footer #'+dialogBtn).attr('disabled', false);
+					var $formVideo = $dialog.find('#'+formId);
+
+					$formVideo.find('#videoData').show();
+
+					$formVideo.postRes({
+						btnId: $dialogBtn,
+						onSuccess: function($respDialog, resp)
+						{
+							$dialog.modal('hide');
+							MCJS["videoList"][inx] = resp;
+							videoLink = null;
+							//не показать диалог
+							return false;
+						},
+						onFail: function ($respDialog, resp)
+						{
+							$dialog.hide();
+							videoLink = null;
+							return true;
+						},
+						onClose: function ($respDialog)
+						{
+							$dialog.show().css('overflow', 'visible');
+							videoLink = null;
+						}
+					});
+
+					$formVideo.find('#get_video').on('click', [$dialog, $dialogBtn, $formVideo.find('#link_v_url')], postRequestVideoLink);
+				}
+				, buttons: buttonsDialog(dialogBtn, 'сохранить')
+			});
+		}
+
 		function prependVideo(resp, options)
 		{
 			var html = '';
 			html += '<div class="media js-media" data-video-id="'+resp['v_id']+'">';
-				html += '<a class="mediaImg js-video" href="javascript:void(0);" data-video-id="'+resp['v_id']+'"><img src="'+resp['v_img']+'" /></a>';
+				html += '<a class="mediaImg js-video" href="'+[options.uri,'move',resp["v_id"],resp["v_alias"]].join('/')+'/" data-video-id="'+resp['v_id']+'"><img src="'+resp['v_img']+'" /></a>';
 				html += '<div class="mediaTools videoTools js-video-tools">';
 					html += '<a href="javascript:void(0);" title="редактировать" data-toggle="tooltip" data-action="edit_video" data-video-id="'+resp['v_id']+'"><i class="fa fa-fw fa-edit"></i></a>';
 					html += '<a href="javascript:void(0);" title="удалить" data-toggle="tooltip" data-action="delete_video" data-video-id="'+resp['v_id']+'"><i class="fa fa-fw fa-trash-o"></i></a>';

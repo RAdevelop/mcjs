@@ -607,6 +607,10 @@ iframe.iframeVideoEmbed {
   height: 227px;
 }
 
+.videoMove iframe.iframeVideoEmbed {
+  width: 100%;
+}
+
 @media (max-width: 1024px) {
   iframe.iframeVideoEmbed {
     /*width: 100%;*/
@@ -874,7 +878,7 @@ iframe.iframeVideoEmbed {
   max-width: 216px;
   max-height: 162px;
   min-height: 162px;
-  /*@mediaWrapper (max-width: 1024px)*/
+  /*@media (max-width: 1024px)*/
 }
 .mediaWrapper .mediaList .media .mediaImg {
   position: relative;
@@ -951,7 +955,7 @@ iframe.iframeVideoEmbed {
   padding: 5px;
   border-top: 1px dotted #fff;
 }
-@mediaWrapper (max-width: $screen-sm) {
+@media (max-width: 768px) {
   .mediaWrapper .mediaList .media {
     max-width: calc(33%);
     max-width: -moz-calc(33%);
@@ -961,7 +965,7 @@ iframe.iframeVideoEmbed {
     max-height: -webkit-calc(162px);
   }
 }
-@mediaWrapper (max-width: $screen-sm) {
+@media (max-width: 768px) {
   .mediaWrapper .mediaList .media {
     max-width: calc(47%);
     max-width: -moz-calc(47%);
@@ -971,7 +975,7 @@ iframe.iframeVideoEmbed {
     max-height: -webkit-calc(162px);
   }
 }
-@mediaWrapper (min-width: $screen-xxs) and (max-width: $screen-xs) {
+@media (min-width: 320px) and (max-width: 480px) {
   .mediaWrapper .mediaList .media {
     max-width: calc(100%);
     max-width: -moz-calc(100%);
@@ -998,8 +1002,8 @@ iframe.iframeVideoEmbed {
   max-height: calc(162px);
   max-height: -moz-calc(162px);
   max-height: -webkit-calc(162px);
-  /*@mediaWrapper (max-width: 1024px)*/
-  /*@mediaWrapper (max-width: 768px)*/
+  /*@media (max-width: 1024px)*/
+  /*@media (max-width: 768px)*/
 }
 .mediaWrapper .imageList .image img {
   cursor: move;
@@ -1007,7 +1011,7 @@ iframe.iframeVideoEmbed {
   width: -moz-calc(100%);
   width: -webkit-calc(100%);
 }
-@mediaWrapper (max-width: $screen-md) {
+@media (max-width: 992px) {
   .mediaWrapper .imageList .image {
     max-width: calc(32%);
     max-width: -moz-calc(32%);
@@ -1017,7 +1021,7 @@ iframe.iframeVideoEmbed {
     max-height: -webkit-calc(162px);
   }
 }
-@mediaWrapper (max-width: $screen-sm) {
+@media (max-width: 768px) {
   .mediaWrapper .imageList .image {
     max-width: calc(47%);
     max-width: -moz-calc(47%);
@@ -1027,7 +1031,7 @@ iframe.iframeVideoEmbed {
     max-height: -webkit-calc(162px);
   }
 }
-@mediaWrapper (min-width: $screen-xxs) and (max-width: $screen-xs) {
+@media (min-width: 320px) and (max-width: 480px) {
   .mediaWrapper .imageList .image {
     max-width: calc(100%);
     max-width: -moz-calc(100%);
@@ -1037,9 +1041,10 @@ iframe.iframeVideoEmbed {
     max-height: -webkit-calc(162px);
   }
 }
+
 .mediaImageDialog {
-  /*@mediaWrapper (min-width: 768px)*/
-  /*@mediaWrapper (max-width: 1024px)*/
+  /*@media (min-width: 768px)*/
+  /*@media (max-width: 1024px)*/
 }
 .mediaImageDialog .modal-header {
   padding: 15px 10px 5px 10px;
@@ -1105,13 +1110,13 @@ iframe.iframeVideoEmbed {
   padding: 5px;
   background-color: rgba(0, 0, 0, 0.5);
 }
-@mediaWrapper (min-width: $screen-sm) {
+@media (min-width: 768px) {
   .mediaImageDialog {
     width: 700px;
     margin: 10px auto;
   }
 }
-@mediaWrapper (max-width: $screen-md) {
+@media (max-width: 992px) {
   .mediaImageDialog .modal-body .imageModalBody, .mediaImageDialog .modal-body .imageModalContent {
     min-width: calc(100%);
     min-width: -moz-calc(100%);
@@ -1123,6 +1128,7 @@ iframe.iframeVideoEmbed {
     min-height: -webkit-calc(70%);
   }
 }
+
 /********** END список фоток в альбоме **************/
 /**********  controllers **************/
 .method-item {
@@ -1848,8 +1854,6 @@ ul.shopListContainer .shopItem .motoshopAddress .motoshopAddressData {
 }
 /********** профиль просматриваемого юзера **************/
 .userProfile .blocks {
-  float: left;
-  max-width: calc(34%);
-  max-width: -moz-calc(34%);
-  max-width: -webkit-calc(34%);
+  /*float: left;
+  @include mix-max-width-calc(34%);*/
 }

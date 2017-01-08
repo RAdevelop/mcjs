@@ -35,6 +35,21 @@ class Video extends VideoAlbums
 		return this.constructor.conn().s(sql, [va_id, u_id]);
 	}
 
+	getMove(v_id)
+	{
+		let sql = `SELECT va.va_id, va.u_id, va.va_name, va.va_alias, 
+		v.v_id, v.v_create_ts, v.v_update_ts, v.v_pos, v.v_name, v.v_alias, 
+		v.v_text, v.v_img, v.v_content, v.v_url
+		 FROM (SELECT NULL) AS z
+		 JOIN video AS v ON (v.v_id = ?)
+		 JOIN video_albums AS va ON (va.va_id = v.va_id AND va.u_id = v.u_id);`;
+
+		/*console.log(sql);
+		console.log([v_id]);*/
+
+		return this.constructor.conn().sRow(sql, [v_id]);
+	}
+
 	addVideo(u_id, va_id, v_name, v_alias, v_text, v_img, v_content, v_url)
 	{
 		let sqlData = [va_id, u_id];

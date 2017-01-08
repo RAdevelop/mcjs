@@ -21,8 +21,8 @@ class VideoAlbums extends Base
 
 				return this.model('video')
 					.getVideoAlbumList(owner_u_id, Pages.getOffset(), Pages.getLimit())
-					.then((albums) => {
-
+					.then((albums) =>
+					{
 						//let sizeParams = FileUpload.getUploadConfig('user_photo').sizeParams;
 
 						albums.forEach((album) =>
