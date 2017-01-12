@@ -9,7 +9,7 @@ pPath = (_user && user && user.u_id && _user.u_id != user.u_id ? '/profile/'+use
         let ava = (user.previews && user.previews["180_180"]);
         let avaSrc = (ava ? user.previews["180_180"] : '/_0.gif');
         %><img class="img-circle img-responsive <%=(ava ? '':'hidden')%>" src="<%=avaSrc%>" />
-        <span class="fa fa-user <%=(ava ? 'hidden':'')%>"></span>
+        <i class="fa fa-user <%=(ava ? 'hidden':'')%>"></i>
     </a>
 </div>
 <div class="col-xs-12 col-sm-12 col-md-12 ">
@@ -18,11 +18,11 @@ pPath = (_user && user && user.u_id && _user.u_id != user.u_id ? '/profile/'+use
         <div class="col-xs-6 col-sm-12 col-md-12"><a href="/profile/edit/"><span class="fa fa-edit fa-fw"></span> редактировать</a></div>
         <% } if (user.u_display_name) {%>
         <div class="col-xs-6 col-sm-12 col-md-12">
-            <span class="fa fa-user fa-fw" aria-hidden="true"></span> <%= user.u_display_name %>
+            <i class="fa fa-user fa-fw" aria-hidden="true"></i> <%= user.u_display_name %>
         </div><% }
         if (user.l_name) {%>
         <div class="col-xs-6 col-sm-12 col-md-12 cursor-pointer">
-            <span data-toggle="tooltip" title="<%= user.l_full_name%>" data-container="body" data-placement="auto"><span class="fa fa-map-marker fa-fw" aria-hidden="true"></span> <%= user.l_name%></span>
+            <span data-toggle="tooltip" title="<%= user.l_full_name%>" data-container="body" data-placement="auto"><i class="fa fa-map-marker fa-fw" aria-hidden="true"></i> <%= user.l_name%></span>
         </div><% }%>
         <div class="col-xs-6 col-sm-12 col-md-12"><span class="fa fa-motorcycle fa-fw"></span> CBR1000RA</div>
         <% if(user.u_id){%>

@@ -5,14 +5,14 @@
 </ol>
 <div class="userProfile">
     <ul>
-        <li><%=user.u_login%><% if (user.u_name || user.u_surname) {%>&nbsp;(<%=[user.u_name, user.u_surname].join(' ')%>)<% }%></li>
+        <li>логин <%=user.u_login%><% if (user.u_name || user.u_surname) {%>&nbsp;(<%=[user.u_name, user.u_surname].join(' ')%>)<% }%></li>
         <li>пол <%=user.u_sex_name%></li>
         <li>населенный пункт <%=user.l_name%> u_location_id = <%=user.u_location_id%></li>
         <li>день рождения <%=user.bd_birthday%></li>
         <li>мотоцикл CBR1000RA</li>
         <li>интересы: ...</li>
     </ul><%
-    if (photoAlbums){
+    if (photoAlbums && photoAlbums["a_cnt"]>0){
     %><div class="mediaWrapper blocks">
         <h4><a href="<%=(_reqBaseUrl+'/photo/'+user["u_id"])%>/"><span class="badge"><i class="fa fa-fw fa-camera"></i> <%=photoAlbums["a_cnt"]%></span> Фотографии</a></h4>
         <div class="mediaList"><%
@@ -38,7 +38,7 @@
             })%>
         </div>
     </div><%
-    } if (videoAlbums){
+    } if (videoAlbums && videoAlbums["va_cnt"]>0){
     %><div class="mediaWrapper blocks">
         <h4><a href="<%=(_reqBaseUrl+'/video/'+user["u_id"])%>/"><span class="badge"><i class="fa fa-fw fa-video-camera"></i> <%=videoAlbums["va_cnt"]%></span> Видео</a></h4>
         <div class="mediaList"><%

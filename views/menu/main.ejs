@@ -6,7 +6,7 @@ menuSite.forEach(function(item)
 {
 	let css_class = (menuItem && menuItem['m_id'] == item['m_id'] ? 'active': '');
 	uri = [item['m_path']];
-	if (u_id) uri.push(u_id);
+	if (u_id && item['m_type_alias'] == 'profile') uri.push(u_id);
 	%><li class="<%- css_class%>"><a href="<%= uri.join('/') %>/"><%=item['m_name']%></a></li><%
 	}); %></ul>
 <!--<ul class="nav navbar-nav">

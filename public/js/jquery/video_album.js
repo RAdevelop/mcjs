@@ -525,8 +525,11 @@
 					'<div class="col-sm-12 text-center">Вы можете указать ссылку на страницу видеозаписи на таких сайтах, как<br/> Вконтакте, Youtube, Rutube, Vimeo и др.</div>' +
 				'</div>' +
 				'<div class="form-group text-center link_v_url">' +
-					'<label for="link_v_url">cсылка на видеоролик или html код для вставки *</label><br/>' +
-					'<textarea type="text" class="input-sm" style="width: 100%;" id="link_v_url" name="link_v_url" placeholder="cсылка на видеоролик или html код для вставки" required >'+(video['v_url']||'')+'</textarea>' +
+					'<label for="link_v_url">cсылка на видеоролик или html код для вставки <span class="popoverHelp " id="videoHelpAddMove">*</span></label>' +
+					'<div class="popoverContent" data-popover-for="#videoHelpAddMove">' +
+						'если по ссылке не удалось загрузить видеоролик, попробуйте html код для вставки, который предлагает видео-ресурс.' +
+					'</div>' +
+					'<br/><textarea type="text" class="input-sm" style="width: 100%;" id="link_v_url" name="link_v_url" placeholder="cсылка на видеоролик или html код для вставки" required >'+(video['v_url']||'')+'</textarea>' +
 				'</div>' +
 				'<div class="form-group text-center">' +
 					'<button type="button" class="btn-primary btn-xs" id="get_video">загрузить видео</button>' +

@@ -1,0 +1,41 @@
+/********** список пользователей **************/
+.user-list
+{
+  &_user
+  {
+    &:hover{
+      background-color: #e8e8e8;
+      text-decoration: none;
+      @include mix-border-radius(5px);
+
+      & > .fa-user {
+        color: #fff;
+      }
+    }
+
+    display: inline-block;
+    text-align: center;
+    overflow: hidden;
+    text-decoration: none;
+    @include mix-width-calc(250px);
+
+    & > .fa-user {
+      color: #e8e8e8;
+      font-size: 94px;
+      line-height: 81px;
+    }
+
+    &-ava {
+     @include mix-width-calc(33%);
+      float: left;
+    }
+    &_name,
+    &_location {
+      display: inline-block;
+      @include mix-width-calc(66%);
+      text-align: left;
+      color: #000;
+      white-space: nowrap;
+    }
+  }
+}

@@ -1857,3 +1857,45 @@ ul.shopListContainer .shopItem .motoshopAddress .motoshopAddressData {
   /*float: left;
   @include mix-max-width-calc(34%);*/
 }
+
+/********** список пользователей **************/
+.user-list_user {
+  display: inline-block;
+  text-align: center;
+  overflow: hidden;
+  text-decoration: none;
+  width: calc(250px);
+  width: -moz-calc(250px);
+  width: -webkit-calc(250px);
+}
+.user-list_user:hover {
+  background-color: #e8e8e8;
+  text-decoration: none;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  border-radius: 5px;
+}
+.user-list_user:hover > .fa-user {
+  color: #fff;
+}
+.user-list_user > .fa-user {
+  color: #e8e8e8;
+  font-size: 94px;
+  line-height: 81px;
+}
+.user-list_user-ava {
+  width: calc(33%);
+  width: -moz-calc(33%);
+  width: -webkit-calc(33%);
+  float: left;
+}
+.user-list_user_name, .user-list_user_location {
+  display: inline-block;
+  width: calc(66%);
+  width: -moz-calc(66%);
+  width: -webkit-calc(66%);
+  text-align: left;
+  color: #000;
+  white-space: nowrap;
+}
