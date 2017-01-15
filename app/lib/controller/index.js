@@ -1,6 +1,6 @@
 "use strict";
 
-//const Helpers = require("app/helpers");
+const Helpers = require("app/helpers");
 const Promise = require("bluebird");
 const Errors = require('app/lib/errors');
 const Cheerio = require("app/lib/cheerio");
@@ -89,6 +89,11 @@ class Base
 	static get cheerio()
 	{
 		return Cheerio;
+	}
+	
+	static get helpers()
+	{
+		return Helpers;
 	}
 
 	get httpMethod()

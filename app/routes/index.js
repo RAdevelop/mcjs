@@ -4,8 +4,6 @@ const express = require('express');
 const router = express.Router();
 //const Errors = require('app/lib/errors');
 
-//const UserIsAuth = require('app/middlewares/user/auth.js');
-
 let Controllers = new WeakMap();
 
 //let startDate = new Date();

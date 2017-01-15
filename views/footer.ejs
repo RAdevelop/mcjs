@@ -9,5 +9,13 @@
 </footer>
 <script src="/bootstrap/dist/js/ie10-viewport-bug-workaround.js"></script>
 <script src="/js/helpers.js"></script>
+<script src="/js/jquery/topTools.js"></script>
+<script type="text/javascript">
+//<!--
+$('.navbar-user-top .top-tools').topTools({
+    u_id: "<%= (_user && _user.u_id? _user.u_id : '')%>"
+});
+//-->
+</script>
 </body>
 </html>

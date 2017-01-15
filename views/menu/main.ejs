@@ -4,6 +4,9 @@ let uri = [];
 %><ul class="nav navbar-nav"><%
 menuSite.forEach(function(item)
 {
+	if (item['m_level'] == 1)
+		return;
+
 	let css_class = (menuItem && menuItem['m_id'] == item['m_id'] ? 'active': '');
 	uri = [item['m_path']];
 	if (u_id && item['m_type_alias'] == 'profile') uri.push(u_id);

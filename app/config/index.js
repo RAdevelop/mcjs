@@ -15,6 +15,7 @@ var config = {
 	server_closing: 'server_closing', //название переменной для app.set(name, value) при выключении или перезагрузки сервера
 	document_root: document_root,
 	session:  {
+		name: 'sessionId',
 		saveUninitialized: true, // saved new sessions
 		resave           : true, // false do not automatically write to the session store
 		secret           : 'varRy Sicret str0ka',
@@ -63,6 +64,7 @@ var config = {
 	},
 	mail: {
 		from: 'info@motocommunity.ru',
+		to: 'info@motocommunity.ru',
 		services: {
 			gmail: {
 				service: 'Gmail',

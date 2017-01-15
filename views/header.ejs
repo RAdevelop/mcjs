@@ -70,17 +70,25 @@
 <body class="mc-project">
 <iframe charset="utf-8" name="null_frame" id="null_frame" src="about:blank" height="0" width="0" style="display:none;visibility:hidden;height:0; width:0;"></iframe>
 <nav class="navbar navbar-default navbar-fixed-top" id="navbarFixedTop">
-	<div class="container-fluid navbar-social">
-            <span class="social">Мы в социальных сетях</span>
-            <a class="social fa fa-vk fa-fw" href="https://vk.com/motocommunityru" target="_blank" rel="nofollow" title="MotoСommunity ВКонтакте"></a>
-            <a class="social fa fa-odnoklassniki fa-fw" href="http://odnoklassniki.ru/group/53882214612996" target="_blank" rel="nofollow" title="MotoСommunity в Одноклассниках"></a>
-            <a class="social fa fa-facebook fa-fw" href="https://www.facebook.com/groups/MotoCommunityRu/" target="_blank" rel="nofollow" title="MotoСommunity в FaceBook"></a>
-            <a class="social fa fa-twitter fa-fw" href="https://twitter.com/#!/MotoCommunityRu" target="_blank" rel="nofollow" title="MotoСommunity в Twitter"></a>
-            <a class="social fa fa-google-plus fa-fw" href="https://plus.google.com/+MotocommunityRu/" target="_blank" rel="nofollow" title="MotoСommunity в Google+"></a>
-		<% if(_user) {%><a class="userProfileTop" href="/profile/"><%
-				let ava = (_user.previews && _user.previews["50_50"]);
-				let avaSrc = (ava ? _user.previews["50_50"] : '/_0.gif');%><img class="img-circle img-responsive <%=(ava ? '':'hidden')%>" src="<%=avaSrc%>" /><span class="fa fa-user <%=(ava ? 'hidden':'')%>"></span></a><% }%>
-    </div>
+	<div class="container-fluid row" style="background-color: #fff;">
+		<div class="col-xs-12 col-md-8 navbar-social">
+				<span class="social">Мы в социальных сетях</span>
+				<a class="social fa fa-vk fa-fw" href="https://vk.com/motocommunityru" target="_blank" rel="nofollow" title="MotoСommunity ВКонтакте"></a>
+				<a class="social fa fa-odnoklassniki fa-fw" href="http://odnoklassniki.ru/group/53882214612996" target="_blank" rel="nofollow" title="MotoСommunity в Одноклассниках"></a>
+				<a class="social fa fa-facebook fa-fw" href="https://www.facebook.com/groups/MotoCommunityRu/" target="_blank" rel="nofollow" title="MotoСommunity в FaceBook"></a>
+				<a class="social fa fa-twitter fa-fw" href="https://twitter.com/#!/MotoCommunityRu" target="_blank" rel="nofollow" title="MotoСommunity в Twitter"></a>
+				<a class="social fa fa-google-plus fa-fw" href="https://plus.google.com/+MotocommunityRu/" target="_blank" rel="nofollow" title="MotoСommunity в Google+"></a>
+		</div>
+		<div class="col-xs-12 col-md-4 navbar-user-top">
+			<%
+			if(_user) {%><a class="userProfileTop" href="/profile/"><%
+					let ava = (_user.previews && _user.previews["50_50"]);
+					let avaSrc = (ava ? _user.previews["50_50"] : '/_0.gif');%><img class="img-circle img-responsive <%=(ava ? '':'hidden')%>" src="<%=avaSrc%>" /><span class="fa fa-user <%=(ava ? 'hidden':'')%>"></span></a><%
+			}%>
+			<a class="top-tools" data-action="feedback" href="javascript:void(0);"><i class="fa fa-fw fa-envelope-o"></i>&nbsp;</a>
+			<a class="top-tools" data-action="" href="javascript:void(0);"><i class="fa fa-fw fa-bell-o"></i>&nbsp;</a>
+		</div>
+	</div>
 	<div class="container-fluid">
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">

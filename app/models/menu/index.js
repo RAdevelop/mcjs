@@ -103,7 +103,7 @@ class Menu extends BaseModel
 		where.push(`m.m_type IN(${menu_type.join(',')})`);
 
 		if (!all)
-			where.push('m.m_level > 1');
+			where.push('m.m_level != 0');
 
 		where = (where.length ? `WHERE ${where.join(' AND ')}` : ``);
 
@@ -177,7 +177,8 @@ class Menu extends BaseModel
 
 		this.constructor.conn().sRow(sql, resPath, (err, res) => {
 
-			if (err) return cb(err);
+			if (err)
+				return cb(err);
 			
 			//не нашли
 			//if(res["info"]["numRows"] == 0) return cb(null, null);

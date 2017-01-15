@@ -27,7 +27,7 @@ module.exports = function siteMenu(Classes)
 		//TODO ???
 		//if(req.xhr) return next();
 
-		menu(Classes, req, function(err, menuData)
+		menu(Classes, req, (err, menuData)=>
 		{
 			if (err)
 				return next(err);
@@ -96,13 +96,13 @@ function menu(Classes, req, cb)
 		[
 			function (aCb)
 			{
-				if(req.xhr)
-					return aCb(null, menuData);
+				//if(req.xhr) return aCb(null, menuData);
 				
-				Classes.model("menu").getAll(menu_type, false, function(err, menuList)
+				Classes.model("menu").getAll(menu_type, false, (err, menuList)=>
 				{
-					if (err) return aCb(err, menuData);
-					
+					if (err)
+						return aCb(err, menuData);
+
 					menuData.menuList = menuList || [];
 					return aCb(null, menuData);
 				});
@@ -133,14 +133,15 @@ function menu(Classes, req, cb)
 						return aCb(null, menuData);
 					}
 				}
-				
+
 				//если там нет, смотрим тут
 				Classes.model("menu").getByPath(req.path, menu_type, function(err, menuItem)
 				{
 					if (err)
 						return aCb(err, menuData);
-					
-					menuData.menuItem = menuItem;
+
+					menuData.menuItem = (menuItem ? menuItem : getRootMenuItem(menuData.menuList));
+
 					return aCb(null, menuData);
 				});
 			}
@@ -152,4 +153,20 @@ function menu(Classes, req, cb)
 			return cb(null, menuData);
 		}
 	);
+}
+
+function getRootMenuItem(list)
+{
+	let menuItem = {};
+	list.some((item)=>
+	{
+		if (item['m_pid'] == 0 && item['m_level'] == 1)
+		{
+			menuItem = item;
+			return true;
+		}
+		else
+		return false;
+	});
+	return menuItem;
 }

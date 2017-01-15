@@ -13,17 +13,15 @@ class Logout extends CtrlMain
 		if(this.getReq().signedCookies.rtid)
 			Cookie.clearUserId(this.getReq(), this.getRes());
 		
-		let self = this;
-		
-		return new Promise(function (resolve, reject)
+		return new Promise((resolve, reject)=>
 		{
-			self.getReq().session.destroy(function(err)
+			this.getReq().session.destroy((err) =>
 			{
 				if(err)
 					return reject(err);
 
-				delete self.getReq().session;
-				self.getRes().redirect('/login');
+				delete this.getReq().session;
+				this.getRes().redirect('/login');
 			});
 		});
 	}

@@ -25,6 +25,7 @@ const Mailer = function(serviceName){
 
 	this.service = config.mail.services[serviceName];
 	this.mailFrom = config.mail.from;
+	this.mailTo = config.mail.to;
 	this.transport = null;
 };
 
@@ -32,9 +33,9 @@ const Mailer = function(serviceName){
  * возвращаем инстанс nodemailer.createTransport
  * @returns {null|*}
  */
-Mailer.prototype.transporter = function(){
-
-	if(this.transport) return this.transport;
+Mailer.prototype.transporter = function()
+{
+	if(!this.transport)
 	this.transport = nodemailer.createTransport(this.service);
 
 	return this.transport;
@@ -60,8 +61,12 @@ Mailer.prototype.send = function (params, callback){
 	if(!_.isPlainObject(params))
 	return callback(new errors.ArgumentError('params'));
 
+	if (params['mailFrom'])
+		this.mailFrom = params['mailFrom'];
+
 	params = _.assign({
-		to:this.mailFrom,
+		to:this.mailTo,
+		from:this.mailFrom,
 		subject: '',
 		tplName:'',
 		tplData: {}
@@ -76,34 +81,37 @@ Mailer.prototype.send = function (params, callback){
 	if(!_.isPlainObject(params.tplData))
 		return callback(new errors.ArgumentError('tplData'));
 
-	const self = this;
-
 	//путь к шаблону html
 	let template = __dirname + '/views/' +params.tplName+'.ejs';
 	let content = params.tplData;
-	let to = params.to;
+	//let to = params.to;
 	let subject = params.subject;
 
 	// Use fileSystem module to read template file
 
-	fs.readFile(template, 'utf8', function (err, file){
-
-		if(err) return callback (err);
+	fs.readFile(template, 'utf8', (err, file)=>
+	{
+		if(err)
+			return callback (err);
 
 		//ejs.render(file, content); returns a string that will set in mailOptions
 		let html = ejs.render(file, content);
 
 		let mailOptions = {
-			from: self.mailFrom,
-			to: to,
+			from: params.from,
+			to: params.to,
+			replyTo: params.from,
 			subject: subject,
 			html: html
 		};
 
-		//пытаемся отправить письмо
-		self.transporter().sendMail(mailOptions, function (err){//, info
+		//console.log(mailOptions);
 
-			if(err) return callback(err);
+		//пытаемся отправить письмо
+		this.transporter().sendMail(mailOptions, (err)=>//, info
+		{
+			if(err)
+				return callback(err);
 			//console.log(info);
 
 			//успешная отправка

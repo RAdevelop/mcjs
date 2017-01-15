@@ -157,7 +157,7 @@ CREATE TABLE `controllers_methods` (
   `c_id` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`cm_id`),
   UNIQUE KEY `c_id_method` (`c_id`,`cm_method`)
-) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=65 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -166,7 +166,7 @@ CREATE TABLE `controllers_methods` (
 
 LOCK TABLES `controllers_methods` WRITE;
 /*!40000 ALTER TABLE `controllers_methods` DISABLE KEYS */;
-INSERT INTO `controllers_methods` VALUES (1,'get_index','','','1'),(2,'post_index','','','1'),(5,'get_add','','','1'),(6,'post_add','','','1'),(7,'get_edit','','','1'),(8,'post_edit','','','1'),(9,'get_index','','','21'),(10,'get_index','','','22'),(11,'post_edit','','','22'),(12,'get_index','','','5'),(13,'get_edit','','','5'),(14,'post_edit','','','5'),(15,'get_index','','','4'),(16,'get_edit','','','4'),(17,'post_edit','','','4'),(19,'get_index','','','20'),(20,'post_edit','','','20'),(21,'get_index','','','13'),(22,'get_index','','','11'),(23,'get_add','','','11'),(24,'post_add','','','11'),(25,'get_edit','','','11'),(26,'post_edit','','','11'),(27,'get_map','','','11'),(28,'get_index','','','10'),(29,'get_add','','','10'),(30,'post_add','','','10'),(31,'get_edit','','','10'),(32,'post_edit','','','10'),(33,'get_map','','','10'),(34,'get_index','','','9'),(35,'get_index','','','8'),(36,'get_add','','','8'),(37,'post_add','','','8'),(38,'get_edit','','','8'),(39,'post_edit','','','8'),(40,'get_map','','','8'),(41,'post_upload','','','8'),(42,'get_index','','','6'),(43,'get_add','','','6'),(44,'post_add','','','6'),(45,'get_edit','','','6'),(46,'post_edit','','','6'),(47,'post_upload','','','6'),(48,'get_edit','','','22'),(50,'get_edit','','','20'),(51,'get_index','','','23'),(52,'get_edit','','','23'),(53,'post_edit','','','23'),(54,'get_change','','','23'),(55,'post_ava','','','23'),(56,'get_index','','','24'),(57,'post_index','','','24'),(58,'post_upload','','','24'),(59,'get_index','','','25'),(60,'post_add','','','25'),(61,'post_index','','','25'),(62,'post_edit','','','25');
+INSERT INTO `controllers_methods` VALUES (1,'get_index','','','1'),(2,'post_index','','','1'),(5,'get_add','','','1'),(6,'post_add','','','1'),(7,'get_edit','','','1'),(8,'post_edit','','','1'),(9,'get_index','','','21'),(10,'get_index','','','22'),(11,'post_edit','','','22'),(12,'get_index','','','5'),(13,'get_edit','','','5'),(14,'post_edit','','','5'),(15,'get_index','','','4'),(16,'get_edit','','','4'),(17,'post_edit','','','4'),(19,'get_index','','','20'),(20,'post_edit','','','20'),(21,'get_index','','','13'),(22,'get_index','','','11'),(23,'get_add','','','11'),(24,'post_add','','','11'),(25,'get_edit','','','11'),(26,'post_edit','','','11'),(27,'get_map','','','11'),(28,'get_index','','','10'),(29,'get_add','','','10'),(30,'post_add','','','10'),(31,'get_edit','','','10'),(32,'post_edit','','','10'),(33,'get_map','','','10'),(34,'get_index','','','9'),(35,'get_index','','','8'),(36,'get_add','','','8'),(37,'post_add','','','8'),(38,'get_edit','','','8'),(39,'post_edit','','','8'),(40,'get_map','','','8'),(41,'post_upload','','','8'),(42,'get_index','','','6'),(43,'get_add','','','6'),(44,'post_add','','','6'),(45,'get_edit','','','6'),(46,'post_edit','','','6'),(47,'post_upload','','','6'),(48,'get_edit','','','22'),(50,'get_edit','','','20'),(51,'get_index','','','23'),(52,'get_edit','','','23'),(53,'post_edit','','','23'),(54,'get_change','','','23'),(55,'post_ava','','','23'),(56,'get_index','','','24'),(57,'post_index','','','24'),(58,'post_upload','','','24'),(59,'get_index','','','25'),(60,'post_add','','','25'),(61,'post_index','','','25'),(62,'post_edit','','','25'),(63,'post_index','','','21'),(64,'post_feedback','','','21');
 /*!40000 ALTER TABLE `controllers_methods` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -672,7 +672,7 @@ CREATE TABLE `users` (
   PRIMARY KEY (`u_id`),
   UNIQUE KEY `mail` (`u_mail`),
   KEY `login` (`u_login`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -681,7 +681,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1483370848,'MotoCommunity',1,'1'),(12,'roalexey@mail.ru','$2a$12$kZC3laKG9y9dU7Xh2kVJA.','$2a$12$kZC3laKG9y9dU7Xh2kVJA.2.I7Fb5Drdk6yLwdUJFII/U1uAr5MFC',1480860847,1482442365,'RoLex',1,'3');
+INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1484506661,'MotoCommunity',1,'1'),(12,'roalexey@mail.ru','$2a$12$kZC3laKG9y9dU7Xh2kVJA.','$2a$12$kZC3laKG9y9dU7Xh2kVJA.2.I7Fb5Drdk6yLwdUJFII/U1uAr5MFC',1480860847,1483898678,'RoLex',1,'3'),(13,'ra@zero.ru','$2a$12$.1PK0Bzgl/m.x0A/3CfAoO','$2a$12$.1PK0Bzgl/m.x0A/3CfAoOu09nMeFXE2xshnJJJfRQ1Ac5MDrs9E2',1483898742,1484330676,'',1,'3');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -712,7 +712,7 @@ CREATE TABLE `users_data` (
 
 LOCK TABLES `users_data` WRITE;
 /*!40000 ALTER TABLE `users_data` DISABLE KEYS */;
-INSERT INTO `users_data` VALUES (1,'Алексей','Романов',1,359409600,357,54.53289490,36.25665364),(12,'RoLex','RoLex',1,1480798800,353,55.67162424,37.66540588);
+INSERT INTO `users_data` VALUES (1,'Алексей','Романов',1,359409600,357,54.53289490,36.25665364),(12,'RoLex','RoLex',1,1480798800,353,55.67162424,37.66540588),(13,'','',2,0,278,55.75396000,37.62039300);
 /*!40000 ALTER TABLE `users_data` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -774,7 +774,7 @@ CREATE TABLE `users_groups_rights` (
 
 LOCK TABLES `users_groups_rights` WRITE;
 /*!40000 ALTER TABLE `users_groups_rights` DISABLE KEYS */;
-INSERT INTO `users_groups_rights` VALUES (1,1,9,34),(1,2,6,42),(1,2,6,43),(1,2,6,44),(1,2,6,45),(1,2,6,46),(1,2,6,47),(1,3,13,21),(1,5,8,35),(1,5,8,36),(1,5,8,37),(1,5,8,38),(1,5,8,39),(1,5,8,40),(1,5,8,41),(1,7,10,28),(1,7,10,29),(1,7,10,30),(1,7,10,31),(1,7,10,32),(1,7,10,33),(1,8,11,22),(1,8,11,23),(1,8,11,24),(1,8,11,25),(1,8,11,26),(1,8,11,27),(1,10,20,19),(1,10,20,20),(1,10,20,50),(1,11,21,9),(1,12,1,1),(1,12,1,2),(1,12,1,5),(1,12,1,6),(1,12,1,7),(1,12,1,8),(1,13,5,12),(1,13,5,13),(1,13,5,14),(1,14,4,15),(1,14,4,16),(1,14,4,17),(1,15,22,10),(1,15,22,11),(1,15,22,48),(1,16,23,51),(1,16,23,52),(1,16,23,53),(1,16,23,54),(1,16,23,55),(1,17,24,56),(1,17,24,57),(1,17,24,58),(1,18,25,59),(1,18,25,60),(1,18,25,61),(1,18,25,62),(2,1,9,34),(2,2,6,42),(2,2,6,43),(2,2,6,44),(2,2,6,45),(2,2,6,46),(2,2,6,47),(2,3,13,21),(2,5,8,35),(2,5,8,36),(2,5,8,37),(2,5,8,38),(2,5,8,39),(2,5,8,40),(2,5,8,41),(2,7,10,28),(2,7,10,29),(2,7,10,30),(2,7,10,31),(2,7,10,32),(2,7,10,33),(2,8,11,22),(2,8,11,23),(2,8,11,24),(2,8,11,25),(2,8,11,26),(2,8,11,27),(2,10,20,19),(2,10,20,20),(2,10,20,50),(2,11,21,9),(2,12,1,1),(2,12,1,2),(2,12,1,5),(2,12,1,6),(2,12,1,7),(2,12,1,8),(2,13,5,12),(2,13,5,13),(2,13,5,14),(2,14,4,15),(2,14,4,16),(2,14,4,17),(2,15,22,10),(2,15,22,11),(2,15,22,48),(2,16,23,51),(2,16,23,52),(2,16,23,53),(2,16,23,54),(2,16,23,55),(2,17,24,56),(2,17,24,57),(2,17,24,58),(2,18,25,59),(2,18,25,60),(2,18,25,61),(2,18,25,62),(3,1,9,34),(3,2,6,42),(3,3,13,21),(3,5,8,35),(3,5,8,40),(3,7,10,28),(3,7,10,33),(3,8,11,22),(3,8,11,27),(3,11,21,9),(3,16,23,51),(3,16,23,52),(3,16,23,53),(3,16,23,54),(3,16,23,55),(3,17,24,56),(3,17,24,57),(3,17,24,58),(3,18,25,59),(3,18,25,60),(3,18,25,61),(3,18,25,62),(4,1,9,34),(4,2,6,42),(4,5,8,35),(4,5,8,40),(4,7,10,28),(4,7,10,33),(4,8,11,22),(4,8,11,27),(4,11,21,9);
+INSERT INTO `users_groups_rights` VALUES (1,1,9,34),(1,2,6,42),(1,2,6,43),(1,2,6,44),(1,2,6,45),(1,2,6,46),(1,2,6,47),(1,3,13,21),(1,5,8,35),(1,5,8,36),(1,5,8,37),(1,5,8,38),(1,5,8,39),(1,5,8,40),(1,5,8,41),(1,7,10,28),(1,7,10,29),(1,7,10,30),(1,7,10,31),(1,7,10,32),(1,7,10,33),(1,8,11,22),(1,8,11,23),(1,8,11,24),(1,8,11,25),(1,8,11,26),(1,8,11,27),(1,10,20,19),(1,10,20,20),(1,10,20,50),(1,11,21,9),(1,11,21,63),(1,11,21,64),(1,12,1,1),(1,12,1,2),(1,12,1,5),(1,12,1,6),(1,12,1,7),(1,12,1,8),(1,13,5,12),(1,13,5,13),(1,13,5,14),(1,14,4,15),(1,14,4,16),(1,14,4,17),(1,15,22,10),(1,15,22,11),(1,15,22,48),(1,16,23,51),(1,16,23,52),(1,16,23,53),(1,16,23,54),(1,16,23,55),(1,17,24,56),(1,17,24,57),(1,17,24,58),(1,18,25,59),(1,18,25,60),(1,18,25,61),(1,18,25,62),(2,1,9,34),(2,2,6,42),(2,2,6,43),(2,2,6,44),(2,2,6,45),(2,2,6,46),(2,2,6,47),(2,3,13,21),(2,5,8,35),(2,5,8,36),(2,5,8,37),(2,5,8,38),(2,5,8,39),(2,5,8,40),(2,5,8,41),(2,7,10,28),(2,7,10,29),(2,7,10,30),(2,7,10,31),(2,7,10,32),(2,7,10,33),(2,8,11,22),(2,8,11,23),(2,8,11,24),(2,8,11,25),(2,8,11,26),(2,8,11,27),(2,10,20,19),(2,10,20,20),(2,10,20,50),(2,11,21,9),(2,11,21,63),(2,11,21,64),(2,12,1,1),(2,12,1,2),(2,12,1,5),(2,12,1,6),(2,12,1,7),(2,12,1,8),(2,13,5,12),(2,13,5,13),(2,13,5,14),(2,14,4,15),(2,14,4,16),(2,14,4,17),(2,15,22,10),(2,15,22,11),(2,15,22,48),(2,16,23,51),(2,16,23,52),(2,16,23,53),(2,16,23,54),(2,16,23,55),(2,17,24,56),(2,17,24,57),(2,17,24,58),(2,18,25,59),(2,18,25,60),(2,18,25,61),(2,18,25,62),(3,1,9,34),(3,2,6,42),(3,3,13,21),(3,5,8,35),(3,5,8,40),(3,7,10,28),(3,7,10,33),(3,8,11,22),(3,8,11,27),(3,11,21,9),(3,11,21,63),(3,11,21,64),(3,16,23,51),(3,16,23,52),(3,16,23,53),(3,16,23,54),(3,16,23,55),(3,17,24,56),(3,17,24,57),(3,17,24,58),(3,18,25,59),(3,18,25,60),(3,18,25,61),(3,18,25,62),(4,1,9,34),(4,2,6,42),(4,5,8,35),(4,5,8,40),(4,7,10,28),(4,7,10,33),(4,8,11,22),(4,8,11,27),(4,11,21,9),(4,11,21,64);
 /*!40000 ALTER TABLE `users_groups_rights` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -798,7 +798,7 @@ CREATE TABLE `users_in_groups` (
 
 LOCK TABLES `users_in_groups` WRITE;
 /*!40000 ALTER TABLE `users_in_groups` DISABLE KEYS */;
-INSERT INTO `users_in_groups` VALUES (1,1),(12,3);
+INSERT INTO `users_in_groups` VALUES (1,1),(12,3),(13,3);
 /*!40000 ALTER TABLE `users_in_groups` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -824,7 +824,7 @@ CREATE TABLE `video` (
   `v_url` varchar(255) NOT NULL,
   PRIMARY KEY (`v_id`),
   KEY `vaid_uid_pos` (`va_id`,`u_id`,`v_pos`,`v_update_ts`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -833,7 +833,7 @@ CREATE TABLE `video` (
 
 LOCK TABLES `video` WRITE;
 /*!40000 ALTER TABLE `video` DISABLE KEYS */;
-INSERT INTO `video` VALUES (9,4,1,1483365182,1483370110,1,'DYTTO/ FrontRow/ World of Dance Dallas 2016','dytto-frontrow-world-of-dance-dallas-2016','Выступление DYTTO на #worldofdance  #dance #wod','https://pic.rutube.ru/video/2a/ae/2aae3a95de963fd9fa9262f789dcb1ca.jpg','<iframe src=\"https://rutube.ru/play/embed/8577873\" data-link=\"https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/\" class=\"iframeVideoEmbed\" frameborder=\"0\" webkitallowfullscreen=\"webkitallowfullscreen\" mozallowfullscreen=\"mozallowfullscreen\" allowfullscreen=\"allowfullscreen\" scrolling=\"no\"></iframe>','https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/'),(11,4,1,1483370578,1483370578,0,'Иду так не спеша, 200+, а тут жигуль 5ка такая обгоняет...','idu-tak-ne-spesha-200-a-tut-gigul-5ka-takaya-obgonyaet','Иду так не спеша, 200+, а тут жигуль 5ка такая обгоняет...','https://pp.vk.me/c543207/u175133767/video/l_fb395cf1.jpg','<iframe src=\"//vk.com/video_ext.php?oid=5844452&id=169535027&hash=e6d792083c37c43c\" data-link=\"https://vk.com/video5844452_169535027\" class=\"iframeVideoEmbed\" frameborder=\"0\" webkitallowfullscreen=\"webkitallowfullscreen\" mozallowfullscreen=\"mozallowfullscreen\" allowfullscreen=\"allowfullscreen\" scrolling=\"no\"></iframe>','https://vk.com/video5844452_169535027');
+INSERT INTO `video` VALUES (9,4,1,1483365182,1483370110,4,'DYTTO/ FrontRow/ World of Dance Dallas 2016','dytto-frontrow-world-of-dance-dallas-2016','Выступление DYTTO на #worldofdance  #dance #wod','https://pic.rutube.ru/video/2a/ae/2aae3a95de963fd9fa9262f789dcb1ca.jpg','<iframe src=\"https://rutube.ru/play/embed/8577873\" data-link=\"https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/\" class=\"iframeVideoEmbed\" frameborder=\"0\" webkitallowfullscreen=\"webkitallowfullscreen\" mozallowfullscreen=\"mozallowfullscreen\" allowfullscreen=\"allowfullscreen\" scrolling=\"no\"></iframe>','https://rutube.ru/video/aa12ee0f46f4bc1bdc88b4ec3a289c09/'),(11,4,1,1483370578,1483370578,3,'Иду так не спеша, 200+, а тут жигуль 5ка такая обгоняет...','idu-tak-ne-spesha-200-a-tut-gigul-5ka-takaya-obgonyaet','Иду так не спеша, 200+, а тут жигуль 5ка такая обгоняет...','https://pp.vk.me/c543207/u175133767/video/l_fb395cf1.jpg','<iframe src=\"//vk.com/video_ext.php?oid=5844452&id=169535027&hash=e6d792083c37c43c\" data-link=\"https://vk.com/video5844452_169535027\" class=\"iframeVideoEmbed\" frameborder=\"0\" webkitallowfullscreen=\"webkitallowfullscreen\" mozallowfullscreen=\"mozallowfullscreen\" allowfullscreen=\"allowfullscreen\" scrolling=\"no\"></iframe>','https://vk.com/video5844452_169535027'),(12,4,1,1483565572,1483565572,2,'Everybody wants to kill Bruce 2','everybody-wants-to-kill-bruce-2','When he wakes up one morning, Bruce Willis finds himself pursued by an entire city... again !  (If you want to know the name of the 53 movies, press the English&hellip;','https://i.vimeocdn.com/video/606300358_1280x720.jpg','<iframe src=\"https://player.vimeo.com/video/194076406?autoplay=1\" data-link=\"https://vimeo.com/pierrealnorris/ewtkb2\" class=\"iframeVideoEmbed\" frameborder=\"0\" webkitallowfullscreen=\"webkitallowfullscreen\" mozallowfullscreen=\"mozallowfullscreen\" allowfullscreen=\"allowfullscreen\" scrolling=\"no\"></iframe>','https://vimeo.com/194076406'),(13,4,1,1483573867,1483890395,1,'Вектор Движения №129 Оштрафовать суд? Бесценно.','vektor-dvigeniya-129-oshtrafovat-sud-bestsenno','Каждый раз, когда вы сомневаетесь в законности происходящего, вы имеете право вызвать полицию. ТЕМ БОЛЕЕ, если нарушают так называемые \"неприкасаемые\", судьи...','https://i.ytimg.com/vi/1Q24euKiqCM/maxresdefault.jpg','<iframe src=\"https://www.youtube.com/embed/1Q24euKiqCM\" data-link=\"www.youtube.com/embed/1Q24euKiqCM\" class=\"iframeVideoEmbed\" frameborder=\"0\" webkitallowfullscreen=\"webkitallowfullscreen\" mozallowfullscreen=\"mozallowfullscreen\" allowfullscreen=\"allowfullscreen\" scrolling=\"no\"></iframe>','https://www.youtube.com/watch?v=1Q24euKiqCM'),(14,4,1,1483722241,1483722241,0,'Д0M CTPAHHЫX ДETEЙ MИCC ПEPEГPИH (2О16) HDRip 720p','d0m-ctpahhix-detey-micc-pepegpih-2o16-hdrip-720p','','https://pp.vk.me/c836233/v836233406/1ede5/e533DxRLgeY.jpg','<iframe src=\"//vk.com/video_ext.php?oid=-84339333&id=456241014&hash=7fe3e6ba03701c81\" data-link=\"vk.com/video_ext.php?oid=-84339333&id=456241014&hash=7fe3e6ba03701c81&hd=2\" class=\"iframeVideoEmbed\" frameborder=\"0\" webkitallowfullscreen=\"webkitallowfullscreen\" mozallowfullscreen=\"mozallowfullscreen\" allowfullscreen=\"allowfullscreen\" scrolling=\"no\"></iframe>','https://vk.com/video-84339333_456241014'),(15,6,1,1483890991,1483890991,0,'MotoGP 2016 18-й этап Королевский класс Мото Гран-при Валенсии','motogp-2016-18-y-etap-korolevskiy-klass-moto-gran-pri-valensii','MotoGP 2016 18-й этап Королевский класс Мото Гран-при Валенсии\r\nТрасса Валенсии Рикардо Тормо\r\n#MotoGP #МотоСообщество #мотогонки\r\nwww.MotoCommunity.ru','https://pp.vk.me/c836535/v836535964/13040/Vs2HSVMXbPA.jpg','<iframe src=\"//vk.com/video_ext.php?oid=-34886964&id=456239081&hash=2c43699c660f43ea\" data-link=\"vk.com/video_ext.php?oid=-34886964&id=456239081&hash=2c43699c660f43ea&hd=2\" class=\"iframeVideoEmbed\" frameborder=\"0\" webkitallowfullscreen=\"webkitallowfullscreen\" mozallowfullscreen=\"mozallowfullscreen\" allowfullscreen=\"allowfullscreen\" scrolling=\"no\"></iframe>','https://vk.com/video-34886964_456239081');
 /*!40000 ALTER TABLE `video` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -856,7 +856,7 @@ CREATE TABLE `video_albums` (
   PRIMARY KEY (`va_id`),
   UNIQUE KEY `uid` (`u_id`,`va_name`),
   KEY `uid_ts` (`u_id`,`va_update_ts`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -865,7 +865,7 @@ CREATE TABLE `video_albums` (
 
 LOCK TABLES `video_albums` WRITE;
 /*!40000 ALTER TABLE `video_albums` DISABLE KEYS */;
-INSERT INTO `video_albums` VALUES (3,1,'MotoGP 2015','motogp-2015','MotoGP 2015',0,1482595415,1482595415),(4,1,'MotoGP 2014','motogp-2014','MotoGP 2014',2,1482595472,1482595472);
+INSERT INTO `video_albums` VALUES (3,1,'MotoGP 2015','motogp-2015','MotoGP 2015',0,1482595415,1482595415),(4,1,'MotoGP 2014','motogp-2014','MotoGP 2014',5,1482595472,1482595472),(6,1,'MotoGP 2016','motogp-2016','MotoGP 2016',1,1483890685,1483890685);
 /*!40000 ALTER TABLE `video_albums` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3432,4 +3432,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-01-02 18:28:27
+-- Dump completed on 2017-01-15 22:25:36

@@ -27,6 +27,7 @@ app.engine('ejs', engine);
 app.set(config.server_closing, false);
 
 // view engine setup
+app.set('trust proxy', 1);
 app.set('root_dir', __dirname);
 app.set('document_root', path.join(__dirname, '/public'));
 app.set('views', path.join(__dirname, 'views'));
