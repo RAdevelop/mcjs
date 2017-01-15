@@ -230,7 +230,7 @@ class Registration extends CtrlMain
 				{
 					process.nextTick(()=>
 					{
-						const Mailer = new Mail('gmail');
+						const Mailer = new Mail(CtrlMain.appConfig.mail.service);
 
 						let title = 'Подтверждение регистрации на сайте www.MotoCommunity.ru';
 						let sendParams = {

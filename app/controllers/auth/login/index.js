@@ -40,7 +40,8 @@ class Login extends CtrlMain
 		if(this.getUserId())
 		{
 			return Promise.resolve()
-				.then(() => {
+				.then(() =>
+				{
 					return this.getRes().redirect('/');
 				});
 		}
@@ -105,9 +106,9 @@ class Login extends CtrlMain
 			s_key: s_key
 		};
 		
-		return new Promise(function (resolve, reject)
+		return new Promise((resolve, reject)=>
 		{
-			self.model("user").issetChangeRequest('pass_reset_confirm', s_key, function(err, isset)
+			self.model("user").issetChangeRequest('pass_reset_confirm', s_key, (err, isset)=>
 			{
 				if (err)
 					return reject(err);
@@ -151,16 +152,16 @@ class Login extends CtrlMain
 		let u_id = tplData.s_key.substr(32);
 		
 		return Promise.resolve(errors)
-		.then(function(errors)
+		.then((errors)=>
 		{
 			if (self.parseFormErrors(tplData, errors))
 				return Promise.resolve(tplData);
 		})
-		.then(function(tplData)
+		.then((tplData)=>
 		{
-			return new Promise(function(resolve, reject)
+			return new Promise((resolve, reject)=>
 			{
-				self.model("user/auth").updPassword(u_id, tplData["s_password"], function(err)
+				self.model("user/auth").updPassword(u_id, tplData["s_password"], (err)=>
 				{
 					tplData.s_password = tplData.s_password2 = tplData.s_key = '';
 					
@@ -170,7 +171,7 @@ class Login extends CtrlMain
 					tplData.formError.message = 'Пароль успешно изменен';
 					tplData.formError.text = 'Вы можете войти с новым паролем.';
 
-					self.model("user").clearUserChangeRequest(u_id, 'pass_reset_confirm', function (err)
+					self.model("user").clearUserChangeRequest(u_id, 'pass_reset_confirm', (err)=>
 					{
 						if (err)
 							return reject(err);
@@ -180,20 +181,16 @@ class Login extends CtrlMain
 				});
 			});
 		})
-		.then(function(tplData)
+		.then((tplData)=>
 		{
 			self.view.setTplData("auth/reset", tplData);
 			return Promise.resolve(null);
 		})
-		.catch(Errors.ValidationError, function(err)
+		.catch(Errors.ValidationError, (err)=>
 		{
 			tplData.formError.errorName = err.name;
 			self.view.setTplData("auth/reset", tplData);
 			return Promise.resolve(null);
-		})
-		.catch(function(err)
-		{
-			throw err;
 		});
 	}
 	
@@ -214,16 +211,16 @@ class Login extends CtrlMain
 		const self = this;
 		
 		return Promise.resolve(errors)
-		.then(function(errors)
+		.then((errors)=>
 		{
 			if (self.parseFormErrors(tplData, errors))
 				return Promise.resolve(tplData);
 		})
-		.then(function(tplData)
+		.then((tplData)=>
 		{
-			return new Promise(function(resolve, reject)
+			return new Promise((resolve, reject)=>
 			{
-				self.model("user").getByEmail(tplData.m_email, function(err, userData)
+				self.model("user").getByEmail(tplData.m_email, (err, userData)=>
 				{
 					if(err)
 						return reject(err);
@@ -234,14 +231,14 @@ class Login extends CtrlMain
 				});
 			});
 		})
-		.catch(Errors.NotFoundError, function(err)
+		.catch(Errors.NotFoundError, (err)=>
 		{
 			tplData.formError.message = 'Ошибка';
 			tplData.formError.text = 'Такого пользователя не существует.';
 
 			throw err;
 		})
-		.then(function(tplData)
+		.then((tplData)=>
 		{
 			tplData.formError.message = 'Вам отправлено письмо';
 			tplData.formError.text = 'Проверьте свою почту <a href="https://'+(tplData.m_email.substr(tplData.m_email.indexOf('@')))+'" target="_blank">'+tplData.m_email+'</a>';
@@ -250,14 +247,14 @@ class Login extends CtrlMain
 			
 			self.view.setTplData("auth/login", tplData);
 
-			return new Promise(function(resolve, reject)
+			return new Promise((resolve, reject)=>
 			{
-				self.model("user/auth").createPassResetConfirmKey(tplData.userData, function(err, user)
+				self.model("user/auth").createPassResetConfirmKey(tplData.userData, (err, user)=>
 				{
 					if (err)
 						return reject(error);
 
-					const Mailer = new Mail('gmail');
+					const Mailer = new Mail(CtrlMain.appConfig.mail.service);
 
 					let sendParams = {
 						to:         tplData.m_email,
@@ -271,7 +268,7 @@ class Login extends CtrlMain
 						}
 					};
 
-					Mailer.send(sendParams, function (err)
+					Mailer.send(sendParams, (err)=>
 					{
 						let error = null;
 						if(err)
@@ -281,14 +278,14 @@ class Login extends CtrlMain
 						}
 
 						if (error)
-						return reject(error);
+							return reject(error);
 
 						return resolve(null);
 					});
 				});
 			});
 		})
-		.catch(Errors.ValidationError, Errors.NotFoundError, function(err)
+		.catch(Errors.ValidationError, Errors.NotFoundError, (err)=>
 		{
 			tplData.s_password = '';
 			tplData.formError.error = true;
@@ -297,14 +294,9 @@ class Login extends CtrlMain
 			self.view.setTplData("auth/login", tplData);
 
 			return Promise.resolve(null);
-		})
-		.catch(function(err)
-		{
-			throw err;
 		});
 	}
-	
-	
+
 	/**
 	 * авторизация на сайте
 	 *
@@ -331,20 +323,20 @@ class Login extends CtrlMain
 		
 		const self = this;
 
-		return Promise.resolve(errors).then(function(errors)
+		return Promise.resolve(errors).then((errors)=>
 		{
 			if (self.parseFormErrors(tplData, errors))
 				return Promise.resolve(tplData);
 		})
-		.then(function(tplData)
+		.then((tplData)=>
 		{
-			return new Promise(function(resolve, reject)
+			return new Promise((resolve, reject)=>
 			{
-				self.model("user").getByEmail(tplData.m_email, function(err, userData)
+				self.model("user").getByEmail(tplData.m_email, (err, userData)=>
 				{
 					if(err) return reject(err);
 					
-					bcrypt.hash(tplData.s_password, userData["u_salt"], function(err, hash)
+					bcrypt.hash(tplData.s_password, userData["u_salt"], (err, hash)=>
 					{
 						if(err)
 							return reject(err);
@@ -368,7 +360,7 @@ class Login extends CtrlMain
 				});
 			});
 		})
-		.catch(Errors.AppRegistrationNotConfirmed, function(err)
+		.catch(Errors.AppRegistrationNotConfirmed, (err)=>
 		{
 			tplData.s_password = '';
 			tplData.formError.message = 'Вы не подтвердили регистрацию';
@@ -376,7 +368,7 @@ class Login extends CtrlMain
 			
 			throw err;
 		})
-		.catch(Errors.NotFoundError, function(err)
+		.catch(Errors.NotFoundError, (err)=>
 		{
 			tplData.s_password = '';
 			tplData.formError.message = 'Ошибка';
@@ -385,11 +377,11 @@ class Login extends CtrlMain
 			throw err;
 
 		})
-		.then(function(tplData) //если валидация успешна
+		.then((tplData)=> //если валидация успешна
 		{
-			return new Promise(function(resolve, reject)
+			return new Promise((resolve, reject)=>
 			{
-				self.getReq().session.regenerate(function(err)
+				self.getReq().session.regenerate((err)=>
 				{
 					if(err)
 					{
@@ -413,7 +405,7 @@ class Login extends CtrlMain
 				});
 			});
 		})
-		.catch(Errors.ValidationError, Errors.NotFoundError, function(err)
+		.catch(Errors.ValidationError, Errors.NotFoundError, (err)=>
 		{
 			tplData.formError.error = true;
 			tplData.formError.errorName = err.name;
@@ -422,21 +414,21 @@ class Login extends CtrlMain
 
 			return Promise.resolve(null);
 		})
-		.catch(Errors.AppRegistrationNotConfirmed, function(err)
+		.catch(Errors.AppRegistrationNotConfirmed, (err)=>
 		{
 			tplData.formError.error = true;
 			tplData.formError.errorName = err.name;
 
 			self.view.setTplData("auth/login", tplData);
 
-			return new Promise(function(resolve, reject)
+			return new Promise((resolve, reject)=>
 			{
-				self.model("user/auth").createReqConfirmKey(tplData.userData, function(err, user)
+				self.model("user/auth").createReqConfirmKey(tplData.userData, (err, user)=>
 				{
 					if (err)
 						return reject(err);
 
-					const Mailer = new Mail('gmail');
+					const Mailer = new Mail(CtrlMain.appConfig.mail.service);
 
 					let sendParams = {
 						to:         tplData.m_email,
@@ -450,7 +442,7 @@ class Login extends CtrlMain
 						}
 					};
 
-					Mailer.send(sendParams, function (err)
+					Mailer.send(sendParams, (err)=>
 					{
 						let error = null;
 						if(err)
@@ -466,10 +458,6 @@ class Login extends CtrlMain
 					});
 				});
 			});
-		})
-		.catch(function(err)
-		{
-			throw err;
 		});
 	}
 }

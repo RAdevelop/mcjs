@@ -221,7 +221,7 @@ class News extends CtrlMain
 
 							process.nextTick(()=>{
 
-								const Mailer = new Mail('gmail');
+								const Mailer = new Mail(CtrlMain.appConfig.mail.service);
 
 								let title = 'Добавлена новость на сайте www.MotoCommunity.ru';
 								let sendParams = {
@@ -392,7 +392,7 @@ class News extends CtrlMain
 
 						process.nextTick(()=>
 						{
-							const Mailer = new Mail('gmail');
+							const Mailer = new Mail(CtrlMain.appConfig.mail.service);
 
 							let title = 'Изменена новость на сайте www.MotoCommunity.ru';
 							let sendParams = {

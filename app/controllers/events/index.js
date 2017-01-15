@@ -392,7 +392,7 @@ class Events extends CtrlMain
 					{
 						process.nextTick(()=>
 						{
-							const Mailer = new Mail('gmail');
+							const Mailer = new Mail(CtrlMain.appConfig.mail.service);
 
 							let title = 'Новое МотоСобытие на сайте www.MotoCommunity.ru';
 							let sendParams = {
@@ -578,7 +578,7 @@ class Events extends CtrlMain
 			.then((tplData) => {
 
 				process.nextTick(()=>{
-					const Mailer = new Mail('gmail');
+					const Mailer = new Mail(CtrlMain.appConfig.mail.service);
 
 					let title = 'Изменено МотоСобытие на сайте www.MotoCommunity.ru';
 					let sendParams = {

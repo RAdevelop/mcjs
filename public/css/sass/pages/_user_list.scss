@@ -17,7 +17,7 @@
     text-align: center;
     overflow: hidden;
     text-decoration: none;
-    @include mix-width-calc(250px);
+    @include mix-width-calc(24%);
 
     & > .fa-user {
       color: #e8e8e8;
@@ -36,6 +36,20 @@
       text-align: left;
       color: #000;
       white-space: nowrap;
+    }
+    @media (max-width: $screen-sm)
+    {
+      & {
+        @include mix-width-calc(100%);
+      }
+    }
+
+    @media (max-width: $screen-sm) and (orientation : landscape)
+    {
+      & {
+        @include mix-max-height-calc(1%);
+        width: auto;
+      }
     }
   }
 }

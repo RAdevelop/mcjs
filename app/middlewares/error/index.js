@@ -2,6 +2,7 @@
  * Created by RA on 16.02.2016.
  */
 "use strict";
+const AppConfig = require('app/config');
 const Logger = require('app/lib/logger');
 const Errors = require('app/lib/errors');
 const Mail = require('app/lib/mail');
@@ -26,9 +27,9 @@ module.exports = function(app)
 		{
 			Logger.error(err);
 
-			const Mailer = new Mail('gmail');
+			const Mailer = new Mail(AppConfig.mail.service);
 			let sendParams = {
-				to: 'roalexey@yandex.ru',
+				to: 'roalexey@yandex.ru',//AppConfig.mail.to
 				subject: 'Ошибка ' + (err.status || 500),
 				tplName: 'errors/error',
 				tplData: {error: err}

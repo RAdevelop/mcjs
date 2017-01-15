@@ -65,6 +65,7 @@ var config = {
 	mail: {
 		from: 'info@motocommunity.ru',
 		to: 'info@motocommunity.ru',
+		service: 'gmail',
 		services: {
 			gmail: {
 				service: 'Gmail',

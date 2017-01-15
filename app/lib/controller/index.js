@@ -1,5 +1,5 @@
 "use strict";
-
+const AppConfig = require('app/config');
 const Helpers = require("app/helpers");
 const Promise = require("bluebird");
 const Errors = require('app/lib/errors');
@@ -94,6 +94,10 @@ class Base
 	static get helpers()
 	{
 		return Helpers;
+	}
+	static get appConfig()
+	{
+		return AppConfig;
 	}
 
 	get httpMethod()

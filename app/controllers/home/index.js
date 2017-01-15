@@ -74,14 +74,14 @@ class Home extends CtrlMain
 
 		tplData = CtrlMain.stripTags(tplData, ["m_email, s_feedback_subject", "t_feedback_text"]);
 
-		tplData["s_feedback_subject"] = CtrlMain.cheerio(tplData["s_feedback_subject"]).root().cleanTagEvents().html();
-		tplData["t_feedback_text"] = CtrlMain.cheerio(tplData["t_feedback_text"]).root().cleanTagEvents().html();
+		tplData["s_feedback_subject"] = CtrlMain.cheerio(tplData["s_feedback_subject"]).root().text();
+		tplData["t_feedback_text"] = CtrlMain.cheerio(tplData["t_feedback_text"]).root().text();
 		tplData["t_feedback_text"] = CtrlMain.helpers.nl2br(tplData["t_feedback_text"]);
-
+		
 		return this.getUser(tplData["ui_u_id"])
 			.then((user)=>
 			{
-				if (user['u_mail'])
+				if (user['u_id'] == this.getUserId() && user['u_mail'])
 					tplData["m_email"] = user['u_mail'];
 
 				return Promise.resolve(tplData);
@@ -124,7 +124,7 @@ class Home extends CtrlMain
 
 				return new Promise((resolve, reject)=>
 				{
-					const Mailer = new Mail('gmail');
+					const Mailer = new Mail(CtrlMain.appConfig.mail.service);
 					Mailer.send(sendParams,  (err) =>
 					{
 						if(err)

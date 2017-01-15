@@ -562,7 +562,7 @@ class Profile extends CtrlMain
 			if (tplData.sendMail == false)
 			return Promise.resolve(tplData);
 			
-			const Mailer = new Mail('gmail');
+			const Mailer = new Mail(CtrlMain.appConfig.mail.service);
 						
 			let title = 'Смена Вашего e-mail адреса на сайте www.MotoCommunity.ru';
 			let sendParams = {
