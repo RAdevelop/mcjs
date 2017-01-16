@@ -189,6 +189,11 @@ class News extends CtrlMain
 	{
 		//let formData = this.getReqBody();
 		let tplData = this.getParsedBody();
+		let tplFile = "news/edit.ejs";
+		
+		if (tplData["b_load_embed_content"])
+			return EmbedContent.content(tplData, tplFile, this);
+
 		let errors = {};
 
 		tplData = CtrlMain.stripTags(tplData, ["dt_show_ts", "s_n_title","t_n_notice"]);
@@ -207,8 +212,6 @@ class News extends CtrlMain
 
 		if (!tplData["t_n_text"])
 			errors["t_n_text"] = "Укажите описание новости";
-
-		let tplFile = "news/edit.ejs";
 
 		return Promise.resolve(errors)
 			.then((errors) =>

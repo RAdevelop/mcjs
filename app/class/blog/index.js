@@ -53,7 +53,7 @@ class Blog extends Base
 	 * @param b_show
 	 * @returns {Promise}
 	 */
-	get(b_id, b_show = null)
+	getBlogById(b_id, b_show = null)
 	{
 		return this.model('blog').getById(b_id, b_show);
 	}
@@ -121,7 +121,7 @@ class Blog extends Base
 				ufile = file;
 				b_id = file['b_id'];
 				
-				return this.get(b_id)
+				return this.getBlogById(b_id)
 					.then((blog) =>
 					{
 						if (blog["b_img_cnt"] >= 5)
@@ -336,26 +336,16 @@ class Blog extends Base
 	 */
 	delBlog(u_id, b_id)
 	{
-		return this.get(b_id)
-			.then((blog) =>
+		return Promise.resolve(b_id)
+			.then((b_id) =>
 			{
-				if (!blog)
-					return Promise.resolve(null);
-
 				let dir = Path.join(FileUpload.getDocumentRoot, FileUpload.getUploadConfig('user_blog')["pathUpload"], FileUpload.getAlbumUri(b_id));
 
 				return FileUpload.deleteDir(dir, true)
 					.then(() =>
 					{
-						return Promise.resolve(blog);
+						return this.model('blog').delBlog(b_id);
 					});
-			})
-			.then((blog) =>
-			{
-				if (!blog)
-					return Promise.resolve(b_id);
-
-				return this.model('blog').delBlog(blog['b_id']);
 			});
 	}
 }

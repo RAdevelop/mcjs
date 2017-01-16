@@ -71,17 +71,24 @@ class Blog extends CtrlMain
 	 */
 	blog(tplData, i_blog_id, s_alias)
 	{
-		//TODO тут надо проверять еще авторство, а не просто права на создание
-		let show = (this.getLocalAccess()['post_edit'] ? null : 1);
+		//let show = (this.getLocalAccess()['post_edit'] ? null : 1);
 
-		return this.getClass('blog')
-			.get(i_blog_id, show)
+		return this._getBlogData(i_blog_id)
+			.then((props)=>
+			{
+				if (
+					props.blog && props.blog["b_alias"] == s_alias
+					&&  (props.isRootAdmin || props.blog['u_id'] == this.getUserId() || props.blog['b_show'] == 1)
+				)
+				{
+					return Promise.resolve(props.blog);
+				}
+
+				throw new Errors.HttpError(404);
+			})
 			.then((blog) =>
 			{
-				if (!blog || blog["b_alias"] != s_alias)
-					throw new Errors.HttpError(404);
-
-				return this.getClass('blog').getImageList(blog.b_id)
+				return this.getClass('blog').getImageList(blog['b_id'])
 					.spread((images, allPreviews) =>
 					{
 						return Promise.resolve([blog, images, allPreviews]);
@@ -166,7 +173,6 @@ class Blog extends CtrlMain
 				b_id: '',
 				b_create_ts: '',
 				b_update_ts: '',
-				dt_show_ts: '',
 				b_title: '',
 				b_notice: '',
 				b_text: '',
@@ -180,7 +186,7 @@ class Blog extends CtrlMain
 	}
 
 	/**
-	 * добавляем новость
+	 * добавляем
 	 *
 	 * @returns {Promise}
 	 */
@@ -188,6 +194,11 @@ class Blog extends CtrlMain
 	{
 		//let formData = this.getReqBody();
 		let tplData = this.getParsedBody();
+		let tplFile = "blog/edit.ejs";
+
+		if (tplData["b_load_embed_content"])
+			return EmbedContent.content(tplData, tplFile, this);
+
 		let errors = {};
 
 		tplData = CtrlMain.stripTags(tplData, ["s_b_title","t_b_notice"]);
@@ -203,8 +214,6 @@ class Blog extends CtrlMain
 
 		if (!tplData["t_b_text"])
 			errors["t_b_text"] = "Укажите описание";
-
-		let tplFile = "blog/edit.ejs";
 
 		return Promise.resolve(errors)
 			.then((errors) =>
@@ -268,28 +277,19 @@ class Blog extends CtrlMain
 		if (!i_blog_id)
 			throw new Errors.HttpError(404);
 
-		let show = (this.getLocalAccess()['post_edit'] ? null : 1);
+		//let show = (this.getLocalAccess()['post_edit'] ? null : 1);
 
-		return this.getClass('blog').get(i_blog_id, show)
-			.then((blog) =>
+		return this._getBlogData(i_blog_id)
+			.then((props) =>
 			{
-				if (!blog)
+				if (!props.blog || !(props.isRootAdmin || blog['u_id'] == this.getUserId()))
 					throw new Errors.HttpError(404);
 
-				return this.getClass('user/groups').isRootAdmin(this.getUserId())
-					.then((isRootAdmin)=>
+				return this.getClass('blog')
+					.getImageList(props.blog['b_id'])
+					.spread((images, allPreviews) =>
 					{
-						if (isRootAdmin || blog['u_id'] == this.getUserId())
-						{
-							return this.getClass('blog')
-								.getImageList(blog['b_id'])
-								.spread((images, allPreviews) =>
-								{
-									return Promise.resolve([blog, images, allPreviews]);
-								});
-						}
-
-						throw new Errors.HttpError(404);
+						return Promise.resolve([props.blog, images, allPreviews]);
 					});
 			})
 			.spread((blog, images, allPreviews) =>
@@ -332,23 +332,33 @@ class Blog extends CtrlMain
 		if (!tplData["i_blog_id"] || !tplData["btn_save_blog"])
 			throw new Errors.HttpError(404);
 
-		switch(tplData["btn_save_blog"])
-		{
-			case 'main':
-				return this.editBlog(tplData, tplFile);
-				break;
-			case 'sort_img':
-				return this.sortImg(tplData, tplFile);
-				break;
+		return this._getBlogData(tplData["i_blog_id"])
+			.then((props) =>
+			{
+				if (!props.blog || !(props.isRootAdmin || props.blog['u_id'] == this.getUserId()))
+					throw new Errors.HttpError(404);
 
-			case 'del_img':
-				return this.delImg(tplData, tplFile);
-				break;
+				switch(tplData["btn_save_blog"])
+				{
+					default:
+						throw new Errors.HttpError(401);
+						break;
+					case 'main':
+						return this.editBlog(tplData, tplFile);
+						break;
+					case 'sort_img':
+						return this.sortImg(tplData, tplFile);
+						break;
 
-			case 'del_blog':
-				return this.delBlog(tplData, tplFile);
-				break;
-		}
+					case 'del_img':
+						return this.delImg(tplData, tplFile);
+						break;
+
+					case 'del_blog':
+						return this.delBlog(tplData, tplFile);
+						break;
+				}
+			});
 	}
 
 	/**
@@ -359,13 +369,9 @@ class Blog extends CtrlMain
 	 */
 	editBlog(tplData, tplFile)
 	{
-		return this.getClass('blog')
-			.get(tplData["i_blog_id"])
-			.then((blog) =>
+		return Promise.resolve(tplData)
+			.then((tplData) =>
 			{
-				if (!blog)
-					throw new Errors.HttpError(404);
-
 				tplData = CtrlMain.stripTags(tplData, ["s_b_title","t_b_notice"]);
 				tplData["t_b_text"] = CtrlMain.cheerio(tplData["t_b_text"]).root().cleanTagEvents().html();
 				tplData["b_show"] = tplData["b_show"] || false;
@@ -442,8 +448,7 @@ class Blog extends CtrlMain
 				if (!tplData["i_blog_id"] || !tplData.hasOwnProperty("bi_pos") || !tplData["bi_pos"].length)
 					return Promise.resolve(tplData);
 
-				return this.getClass('blog')
-					.sortImgUpd(tplData["i_blog_id"], tplData["bi_pos"])
+				return this.getClass('blog').sortImgUpd(tplData["i_blog_id"], tplData["bi_pos"])
 					.then(() =>
 					{
 						this.view.setTplData(tplFile, tplData);
@@ -538,14 +543,21 @@ class Blog extends CtrlMain
 		return Promise.resolve(tplData)
 			.then((tplData) =>
 			{
-				return this.getClass('blog')
-					.delBlog(this.getUserId(), tplData["i_blog_id"])
+				return this.getClass('blog').delBlog(this.getUserId(), tplData["i_blog_id"])
 					.then(() =>
 					{
 						this.view.setTplData(tplFile, tplData);
 						return Promise.resolve(true);
 					});
 			});
+	}
+
+	_getBlogData(b_id)
+	{
+		return Promise.props({
+			isRootAdmin: this.getClass('user/groups').isRootAdmin(this.getUserId()),
+			blog: this.getClass('blog').getBlogById(b_id)
+		})
 	}
 }
 //************************************************************************* module.exports

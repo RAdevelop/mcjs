@@ -332,8 +332,10 @@ class Events extends CtrlMain
 	{
 		//let formData = this.getReqBody();
 		let tplData = this.getParsedBody();
-
-		//console.log(tplData);
+		let tplFile = "events/edit.ejs";
+		
+		if (tplData["b_load_embed_content"])
+			return EmbedContent.content(tplData, tplFile, this);
 
 		let errors = {};
 
@@ -361,8 +363,6 @@ class Events extends CtrlMain
 
 		if (!tplData["f_e_lat"] || !tplData["f_e_lng"])
 			errors["s_e_address"] = "Укажите адрес события";
-
-		let tplFile = "events/edit.ejs";
 
 		return Promise.resolve(errors)
 			.then((errors) =>
@@ -517,8 +517,7 @@ class Events extends CtrlMain
 
 	editEvent(tplData, tplFile)
 	{
-		return this.getClass('events')
-			.get(tplData["i_event_id"])
+		return this.getClass('events').get(tplData["i_event_id"])
 			.then((event) =>
 			{
 				if (!event)
