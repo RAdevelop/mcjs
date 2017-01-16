@@ -1158,6 +1158,155 @@ iframe.iframeVideoEmbed {
 }
 
 /**********  СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ  **************/
+.blogLocationsMenu li.selected {
+  background-color: #f5f5f5;
+}
+
+.blogData p {
+  overflow: hidden;
+}
+
+.blogData ul.images {
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  width: calc(100%);
+  text-align: center;
+}
+
+.blogData .imagesWrapper {
+  display: none;
+}
+
+.blogData img.image {
+  cursor: pointer;
+}
+
+.blogData .blogMap {
+  height: 350px;
+}
+
+.blogData .blogMap #eventMap {
+  height: 100%;
+}
+
+.blogLocationsBtnGroup select {
+  max-width: 150px;
+}
+
+.blogListContainer .blogListItem {
+  float: left;
+  margin: 0px  10px  10px  0px;
+  width: auto;
+}
+
+.blogListContainer .blogListItem .blogListItemInfo {
+  display: block;
+  position: relative;
+  border: none;
+  color: #fff;
+  max-width: 384px;
+  max-height: 288px;
+  min-width: 384px;
+  min-height: 288px;
+  overflow: hidden;
+}
+
+.blogListContainer .blogListItem .blogListItemInfo img {
+  width: calc(100%);
+  width: -moz-calc(100%);
+  width: -webkit-calc(100%);
+  opacity: 0.5;
+  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+}
+
+.blogListContainer .blogListItem .blogListItemInfo div {
+  position: absolute;
+  width: 100%;
+}
+
+.blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoDate {
+  top: 0;
+  padding: 3px;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoNotice {
+  background-color: rgba(0, 0, 0, 0.7);
+  top: 245px;
+  padding: 0px 3px 3px 3px;
+  bottom: 0;
+  -webkit-transition: top 0.5s ease-out 0.1s;
+  -moz-transition: top 0.5s ease-out 0.1s;
+  -o-transition: top 0.5s ease-out 0.1s;
+  transition: top 0.5s ease-out 0.1s;
+}
+
+.blogListContainer .blogListItem .blogListItemInfo:hover .blogListItemInfoNotice {
+  top: 26px;
+}
+
+.blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoNotice p:first-child {
+  text-align: center;
+  font-weight: bold;
+}
+
+.blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoNotice p:last-child {
+  border-top: 1px dotted;
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .blogListContainer .blogListItem .blogListItemInfo {
+    max-width: 359px;
+    max-height: 269px;
+    min-width: 359px;
+    min-height: 269px;
+  }
+}
+@media (max-width: 768px) and (orientation: landscape) {
+  .blogListContainer .blogListItem .blogListItemInfo {
+    max-width: 100%;
+    max-height: 257px;
+    min-width: 100%;
+    min-height: 257px;
+  }
+
+  .blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoNotice {
+    top: 26px;
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+}
+@media (max-width: 640px) {
+  .blogListContainer .blogListItem .blogListItemInfo {
+    max-width: 100%;
+    width: 100%;
+    height: calc(75% - 10px);
+  }
+
+  .blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoNotice {
+    top: 26px;
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+}
+@media (max-width: 568px) {
+  .blogListContainer .blogListItem .blogListItemInfo {
+    max-width: calc(100%);
+    max-width: -moz-calc(100%);
+    max-width: -webkit-calc(100%);
+    min-width: calc(100%);
+    min-width: -moz-calc(100%);
+    min-width: -webkit-calc(100%);
+    /*max-height: 258px;*/
+  }
+
+  .blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoNotice {
+    top: 26px;
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+}
+/**********  СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ  **************/
 .eventLocationsMenu li.selected {
   background-color: #f5f5f5;
 }

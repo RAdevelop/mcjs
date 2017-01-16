@@ -1,0 +1,8 @@
+<div class="imagesWrapper">
+<div class="imagesContainer">
+<% blogImages.forEach(function (image)
+{
+	%><div class="imageItem"><img src="<%=image["previews"]["512_384"]%>" class="image" data-img-id="<%=image["bi_id"]%>"/></div><%
+});%>
+</div>
+</div>

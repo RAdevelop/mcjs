@@ -1,0 +1,101 @@
+<div class="row">
+	<div class="btn-toolbar btnsToolbar" role="toolbar" aria-label="Опции для статей"><%
+		if (Object.keys(_access).some(function(m){return (['post_add','post_edit'].indexOf(m)>=0);}))
+		{%><div class="btn-group btn-group-sm" role="group" aria-label="Опции для статей">
+			<button type="button" class="btn btn-default dropdown-toggle toolbarBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-fw fa-cog"></i> опции <i class="caret"></i></button>
+			<ul class="dropdown-menu js-tool-bar"><%
+				if (_access['post_add']) {%><li><a href="<%=[menuItem['m_path'],'add'].join('/')%>/" ><i class="fa fa-fw fa-plus-square-o"></i> добавить статью</a></li><% }
+				if (_access['post_edit'] && blog && blog['b_id']) {
+				%><li><a href="<%=[menuItem['m_path'],'edit',blog['b_id']].join('/')%>/"><i class="fa fa-fw fa-edit"></i> редактировать статью</a></li>
+				<li><a href="javascript:void(0);" data-action="delete" data-blog-id="<%=blog['b_id']%>"><i class="fa fa-fw fa-trash-o"></i> удалить статью</a></li><% }%>
+			</ul>
+		</div><% }%>
+		<div class="btn-group btn-group-sm" role="group" aria-label="список статей">
+			<a href="<%=menuItem['m_path']+'/'%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-list"></i> все статьи</a>
+		</div>
+		<div class="sharingSocNet" data-soc-list="vk,ok,fb,tw,gp"></div>
+	</div>
+</div>
+<script type="text/javascript">
+//<!--
+(function($)
+{
+	$('.js-tool-bar a[data-action]').click(function(event)
+	{
+		event.preventDefault();
+		event.stopPropagation();
+
+		var $this = $(this)
+		switch($this.data('action'))
+		{
+			case 'delete':
+
+				$('__del_blog_dialog__').mcDialog({
+					title: 'Удаление статьи'
+					, body: formDelBlog(MCJS["blogData"]||{}, '<%=_reqBaseUrl%>')
+					, onOpen: function ($dialog)
+					{
+						$dialog.find('#formDelBlog').postRes({
+							btnId: $dialog.find('#btn_del_blog'),
+							onSuccess: function($respDialog, resp)
+							{
+								if (resp.hasOwnProperty("formError") && resp["formError"].hasOwnProperty("error") && !resp["formError"]["error"])
+								{
+									window.location.href = '<%=menuItem['m_path']%>';
+									return false;//не показать диалог
+								}
+								else
+								{
+									return true;
+								}
+							},
+							onFail: function ($respDialog, resp)
+							{
+								$dialog.hide();
+								return true;
+							},
+							onClose: function ($respDialog)
+							{
+								$dialog.show().css('overflow', 'visible');
+							}
+						});
+					}
+					, buttons: [
+						{
+							title: 'да'
+							, name: 'btn_del_blog'
+							, cssClass: 'btn-success'
+						},
+						{
+							title: 'нет'
+							,name: 'btn_del_blog_cancel'
+							,cssClass: 'btn-danger'
+							,func:
+							{
+								"click": function($mcDialog)
+								{
+									$mcDialog.modal('hide');
+								}
+							}
+						}
+					]
+				});
+
+				break;
+		}
+	});
+
+	function formDelBlog(blog, uri)
+	{
+		var html = '<form class="form-horizontal" action="'+uri+'/" method="post" id="formDelBlog">' +
+				'<input type="hidden" name="btn_save_blog" value="del_blog"/>' +
+				'<input type="hidden" name="i_blog_id" value="'+blog['b_id']+'"/>' +
+				'<div class="form-group">' +
+				'<div class="col-sm-12 text-center">Удалить статью: ' + blog['b_title'] + '?</div>' +
+				'</div></form>';
+
+		return html;
+	}
+})(jQuery);
+//-->
+</script>

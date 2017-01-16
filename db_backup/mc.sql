@@ -111,6 +111,71 @@ INSERT INTO `album_type` VALUES (1,'Загруженные фото','uploaded')
 UNLOCK TABLES;
 
 --
+-- Table structure for table `blog_image`
+--
+
+DROP TABLE IF EXISTS `blog_image`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `blog_image` (
+  `bi_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `b_id` int(10) unsigned NOT NULL,
+  `bi_create_ts` int(10) unsigned NOT NULL DEFAULT '0',
+  `bi_update_ts` int(10) unsigned NOT NULL DEFAULT '0',
+  `bi_latitude` decimal(10,8) DEFAULT NULL,
+  `bi_longitude` decimal(11,8) DEFAULT NULL,
+  `bi_dir` varchar(255) DEFAULT NULL,
+  `bi_pos` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `bi_name` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`bi_id`),
+  KEY `bid_pos` (`b_id`,`bi_pos`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `blog_image`
+--
+
+LOCK TABLES `blog_image` WRITE;
+/*!40000 ALTER TABLE `blog_image` DISABLE KEYS */;
+INSERT INTO `blog_image` VALUES (1,1,1484596780,1484596783,NULL,NULL,'/user/blog/0/1/1/6512bd43d9caa6e02c990b0a82652dca',1,'_gp_5790_e.gallery_full_top_fullscreen.jpg'),(2,1,1484596780,1484596783,NULL,NULL,'/user/blog/0/1/2/c20ad4d76fe97759aa27a0c99bff6710',0,'_gp_2126.gallery_full_top_fullscreen.jpg');
+/*!40000 ALTER TABLE `blog_image` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `blog_list`
+--
+
+DROP TABLE IF EXISTS `blog_list`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `blog_list` (
+  `b_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `b_create_ts` int(10) unsigned NOT NULL DEFAULT '0',
+  `b_update_ts` int(10) unsigned NOT NULL DEFAULT '0',
+  `b_title` varchar(255) NOT NULL,
+  `b_alias` varchar(255) NOT NULL,
+  `b_notice` text NOT NULL,
+  `b_text` text NOT NULL,
+  `u_id` int(11) unsigned NOT NULL,
+  `b_img_cnt` tinyint(3) NOT NULL DEFAULT '0',
+  `b_show` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`b_id`),
+  KEY `showts` (`b_show`,`u_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `blog_list`
+--
+
+LOCK TABLES `blog_list` WRITE;
+/*!40000 ALTER TABLE `blog_list` DISABLE KEYS */;
+INSERT INTO `blog_list` VALUES (1,1484592548,1484596783,'блог название','blog-nazvanie','блог анонс','<p>блог&nbsp;текст</p>',1,2,1);
+/*!40000 ALTER TABLE `blog_list` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `controllers`
 --
 
@@ -157,7 +222,7 @@ CREATE TABLE `controllers_methods` (
   `c_id` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`cm_id`),
   UNIQUE KEY `c_id_method` (`c_id`,`cm_method`)
-) ENGINE=InnoDB AUTO_INCREMENT=65 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -166,7 +231,7 @@ CREATE TABLE `controllers_methods` (
 
 LOCK TABLES `controllers_methods` WRITE;
 /*!40000 ALTER TABLE `controllers_methods` DISABLE KEYS */;
-INSERT INTO `controllers_methods` VALUES (1,'get_index','','','1'),(2,'post_index','','','1'),(5,'get_add','','','1'),(6,'post_add','','','1'),(7,'get_edit','','','1'),(8,'post_edit','','','1'),(9,'get_index','','','21'),(10,'get_index','','','22'),(11,'post_edit','','','22'),(12,'get_index','','','5'),(13,'get_edit','','','5'),(14,'post_edit','','','5'),(15,'get_index','','','4'),(16,'get_edit','','','4'),(17,'post_edit','','','4'),(19,'get_index','','','20'),(20,'post_edit','','','20'),(21,'get_index','','','13'),(22,'get_index','','','11'),(23,'get_add','','','11'),(24,'post_add','','','11'),(25,'get_edit','','','11'),(26,'post_edit','','','11'),(27,'get_map','','','11'),(28,'get_index','','','10'),(29,'get_add','','','10'),(30,'post_add','','','10'),(31,'get_edit','','','10'),(32,'post_edit','','','10'),(33,'get_map','','','10'),(34,'get_index','','','9'),(35,'get_index','','','8'),(36,'get_add','','','8'),(37,'post_add','','','8'),(38,'get_edit','','','8'),(39,'post_edit','','','8'),(40,'get_map','','','8'),(41,'post_upload','','','8'),(42,'get_index','','','6'),(43,'get_add','','','6'),(44,'post_add','','','6'),(45,'get_edit','','','6'),(46,'post_edit','','','6'),(47,'post_upload','','','6'),(48,'get_edit','','','22'),(50,'get_edit','','','20'),(51,'get_index','','','23'),(52,'get_edit','','','23'),(53,'post_edit','','','23'),(54,'get_change','','','23'),(55,'post_ava','','','23'),(56,'get_index','','','24'),(57,'post_index','','','24'),(58,'post_upload','','','24'),(59,'get_index','','','25'),(60,'post_add','','','25'),(61,'post_index','','','25'),(62,'post_edit','','','25'),(63,'post_index','','','21'),(64,'post_feedback','','','21');
+INSERT INTO `controllers_methods` VALUES (1,'get_index','','','1'),(2,'post_index','','','1'),(5,'get_add','','','1'),(6,'post_add','','','1'),(7,'get_edit','','','1'),(8,'post_edit','','','1'),(9,'get_index','','','21'),(10,'get_index','','','22'),(11,'post_edit','','','22'),(12,'get_index','','','5'),(13,'get_edit','','','5'),(14,'post_edit','','','5'),(15,'get_index','','','4'),(16,'get_edit','','','4'),(17,'post_edit','','','4'),(19,'get_index','','','20'),(20,'post_edit','','','20'),(21,'get_index','','','13'),(22,'get_index','','','11'),(23,'get_add','','','11'),(24,'post_add','','','11'),(25,'get_edit','','','11'),(26,'post_edit','','','11'),(27,'get_map','','','11'),(28,'get_index','','','10'),(29,'get_add','','','10'),(30,'post_add','','','10'),(31,'get_edit','','','10'),(32,'post_edit','','','10'),(33,'get_map','','','10'),(34,'get_index','','','9'),(35,'get_index','','','8'),(36,'get_add','','','8'),(37,'post_add','','','8'),(38,'get_edit','','','8'),(39,'post_edit','','','8'),(40,'get_map','','','8'),(41,'post_upload','','','8'),(42,'get_index','','','6'),(43,'get_add','','','6'),(44,'post_add','','','6'),(45,'get_edit','','','6'),(46,'post_edit','','','6'),(47,'post_upload','','','6'),(48,'get_edit','','','22'),(50,'get_edit','','','20'),(51,'get_index','','','23'),(52,'get_edit','','','23'),(53,'post_edit','','','23'),(54,'get_change','','','23'),(55,'post_ava','','','23'),(56,'get_index','','','24'),(57,'post_index','','','24'),(58,'post_upload','','','24'),(59,'get_index','','','25'),(60,'post_add','','','25'),(61,'post_index','','','25'),(62,'post_edit','','','25'),(63,'post_index','','','21'),(64,'post_feedback','','','21'),(65,'get_index','','','7'),(66,'get_edit','','','7'),(67,'get_add','','','7'),(68,'post_add','','','7'),(69,'post_edit','','','7'),(70,'post_upload','','','7');
 /*!40000 ALTER TABLE `controllers_methods` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -681,7 +746,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1484506661,'MotoCommunity',1,'1'),(12,'roalexey@mail.ru','$2a$12$kZC3laKG9y9dU7Xh2kVJA.','$2a$12$kZC3laKG9y9dU7Xh2kVJA.2.I7Fb5Drdk6yLwdUJFII/U1uAr5MFC',1480860847,1483898678,'RoLex',1,'3'),(13,'ra@zero.ru','$2a$12$.1PK0Bzgl/m.x0A/3CfAoO','$2a$12$.1PK0Bzgl/m.x0A/3CfAoOu09nMeFXE2xshnJJJfRQ1Ac5MDrs9E2',1483898742,1484330676,'',1,'3');
+INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1484596780,'MotoCommunity',1,'1'),(12,'roalexey@mail.ru','$2a$12$kZC3laKG9y9dU7Xh2kVJA.','$2a$12$kZC3laKG9y9dU7Xh2kVJA.2.I7Fb5Drdk6yLwdUJFII/U1uAr5MFC',1480860847,1484596835,'RoLex',1,'3'),(13,'ra@zero.ru','$2a$12$.1PK0Bzgl/m.x0A/3CfAoO','$2a$12$.1PK0Bzgl/m.x0A/3CfAoOu09nMeFXE2xshnJJJfRQ1Ac5MDrs9E2',1483898742,1484330676,'',1,'3');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -774,7 +839,7 @@ CREATE TABLE `users_groups_rights` (
 
 LOCK TABLES `users_groups_rights` WRITE;
 /*!40000 ALTER TABLE `users_groups_rights` DISABLE KEYS */;
-INSERT INTO `users_groups_rights` VALUES (1,1,9,34),(1,2,6,42),(1,2,6,43),(1,2,6,44),(1,2,6,45),(1,2,6,46),(1,2,6,47),(1,3,13,21),(1,5,8,35),(1,5,8,36),(1,5,8,37),(1,5,8,38),(1,5,8,39),(1,5,8,40),(1,5,8,41),(1,7,10,28),(1,7,10,29),(1,7,10,30),(1,7,10,31),(1,7,10,32),(1,7,10,33),(1,8,11,22),(1,8,11,23),(1,8,11,24),(1,8,11,25),(1,8,11,26),(1,8,11,27),(1,10,20,19),(1,10,20,20),(1,10,20,50),(1,11,21,9),(1,11,21,63),(1,11,21,64),(1,12,1,1),(1,12,1,2),(1,12,1,5),(1,12,1,6),(1,12,1,7),(1,12,1,8),(1,13,5,12),(1,13,5,13),(1,13,5,14),(1,14,4,15),(1,14,4,16),(1,14,4,17),(1,15,22,10),(1,15,22,11),(1,15,22,48),(1,16,23,51),(1,16,23,52),(1,16,23,53),(1,16,23,54),(1,16,23,55),(1,17,24,56),(1,17,24,57),(1,17,24,58),(1,18,25,59),(1,18,25,60),(1,18,25,61),(1,18,25,62),(2,1,9,34),(2,2,6,42),(2,2,6,43),(2,2,6,44),(2,2,6,45),(2,2,6,46),(2,2,6,47),(2,3,13,21),(2,5,8,35),(2,5,8,36),(2,5,8,37),(2,5,8,38),(2,5,8,39),(2,5,8,40),(2,5,8,41),(2,7,10,28),(2,7,10,29),(2,7,10,30),(2,7,10,31),(2,7,10,32),(2,7,10,33),(2,8,11,22),(2,8,11,23),(2,8,11,24),(2,8,11,25),(2,8,11,26),(2,8,11,27),(2,10,20,19),(2,10,20,20),(2,10,20,50),(2,11,21,9),(2,11,21,63),(2,11,21,64),(2,12,1,1),(2,12,1,2),(2,12,1,5),(2,12,1,6),(2,12,1,7),(2,12,1,8),(2,13,5,12),(2,13,5,13),(2,13,5,14),(2,14,4,15),(2,14,4,16),(2,14,4,17),(2,15,22,10),(2,15,22,11),(2,15,22,48),(2,16,23,51),(2,16,23,52),(2,16,23,53),(2,16,23,54),(2,16,23,55),(2,17,24,56),(2,17,24,57),(2,17,24,58),(2,18,25,59),(2,18,25,60),(2,18,25,61),(2,18,25,62),(3,1,9,34),(3,2,6,42),(3,3,13,21),(3,5,8,35),(3,5,8,40),(3,7,10,28),(3,7,10,33),(3,8,11,22),(3,8,11,27),(3,11,21,9),(3,11,21,63),(3,11,21,64),(3,16,23,51),(3,16,23,52),(3,16,23,53),(3,16,23,54),(3,16,23,55),(3,17,24,56),(3,17,24,57),(3,17,24,58),(3,18,25,59),(3,18,25,60),(3,18,25,61),(3,18,25,62),(4,1,9,34),(4,2,6,42),(4,5,8,35),(4,5,8,40),(4,7,10,28),(4,7,10,33),(4,8,11,22),(4,8,11,27),(4,11,21,9),(4,11,21,64);
+INSERT INTO `users_groups_rights` VALUES (1,1,9,34),(1,2,6,42),(1,2,6,43),(1,2,6,44),(1,2,6,45),(1,2,6,46),(1,2,6,47),(1,3,13,21),(1,4,7,65),(1,4,7,66),(1,4,7,67),(1,4,7,68),(1,4,7,69),(1,4,7,70),(1,5,8,35),(1,5,8,36),(1,5,8,37),(1,5,8,38),(1,5,8,39),(1,5,8,40),(1,5,8,41),(1,7,10,28),(1,7,10,29),(1,7,10,30),(1,7,10,31),(1,7,10,32),(1,7,10,33),(1,8,11,22),(1,8,11,23),(1,8,11,24),(1,8,11,25),(1,8,11,26),(1,8,11,27),(1,10,20,19),(1,10,20,20),(1,10,20,50),(1,11,21,9),(1,11,21,63),(1,11,21,64),(1,12,1,1),(1,12,1,2),(1,12,1,5),(1,12,1,6),(1,12,1,7),(1,12,1,8),(1,13,5,12),(1,13,5,13),(1,13,5,14),(1,14,4,15),(1,14,4,16),(1,14,4,17),(1,15,22,10),(1,15,22,11),(1,15,22,48),(1,16,23,51),(1,16,23,52),(1,16,23,53),(1,16,23,54),(1,16,23,55),(1,17,24,56),(1,17,24,57),(1,17,24,58),(1,18,25,59),(1,18,25,60),(1,18,25,61),(1,18,25,62),(2,1,9,34),(2,2,6,42),(2,2,6,43),(2,2,6,44),(2,2,6,45),(2,2,6,46),(2,2,6,47),(2,3,13,21),(2,4,7,65),(2,4,7,66),(2,4,7,67),(2,4,7,68),(2,4,7,69),(2,4,7,70),(2,5,8,35),(2,5,8,36),(2,5,8,37),(2,5,8,38),(2,5,8,39),(2,5,8,40),(2,5,8,41),(2,7,10,28),(2,7,10,29),(2,7,10,30),(2,7,10,31),(2,7,10,32),(2,7,10,33),(2,8,11,22),(2,8,11,23),(2,8,11,24),(2,8,11,25),(2,8,11,26),(2,8,11,27),(2,10,20,19),(2,10,20,20),(2,10,20,50),(2,11,21,9),(2,11,21,63),(2,11,21,64),(2,12,1,1),(2,12,1,2),(2,12,1,5),(2,12,1,6),(2,12,1,7),(2,12,1,8),(2,13,5,12),(2,13,5,13),(2,13,5,14),(2,14,4,15),(2,14,4,16),(2,14,4,17),(2,15,22,10),(2,15,22,11),(2,15,22,48),(2,16,23,51),(2,16,23,52),(2,16,23,53),(2,16,23,54),(2,16,23,55),(2,17,24,56),(2,17,24,57),(2,17,24,58),(2,18,25,59),(2,18,25,60),(2,18,25,61),(2,18,25,62),(3,1,9,34),(3,2,6,42),(3,3,13,21),(3,4,7,65),(3,4,7,66),(3,4,7,67),(3,4,7,68),(3,4,7,69),(3,4,7,70),(3,5,8,35),(3,5,8,40),(3,7,10,28),(3,7,10,33),(3,8,11,22),(3,8,11,27),(3,11,21,9),(3,11,21,63),(3,11,21,64),(3,16,23,51),(3,16,23,52),(3,16,23,53),(3,16,23,54),(3,16,23,55),(3,17,24,56),(3,17,24,57),(3,17,24,58),(3,18,25,59),(3,18,25,60),(3,18,25,61),(3,18,25,62),(4,1,9,34),(4,2,6,42),(4,5,8,35),(4,5,8,40),(4,7,10,28),(4,7,10,33),(4,8,11,22),(4,8,11,27),(4,11,21,9),(4,11,21,64);
 /*!40000 ALTER TABLE `users_groups_rights` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1067,6 +1132,180 @@ BEGIN
             
         END IF;
         
+    COMMIT;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `blog_image_delete` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`mc`@`%` PROCEDURE `blog_image_delete`(IN inId INT, IN inImId INT, OUT res INT)
+BEGIN
+	
+    DECLARE done,im_pos, bi_cnt, ts INT DEFAULT 0;
+	DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
+    DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done=1;
+    
+    START TRANSACTION;
+    
+    SET res=0;
+    SET done=0;
+    
+    SELECT bi_pos INTO im_pos 
+    FROM `blog_image`
+    WHERE bi_id = inImId;
+    
+    #SELECT done, im_pos;
+    
+    IF done = 0 THEN
+		
+        SET ts = UNIX_TIMESTAMP();
+        
+		DELETE FROM `blog_image`
+		WHERE bi_id = inImId AND b_id = inId;
+        
+        CALL `blog_image_reorder`(inId);
+        
+        SELECT COUNT(bi_id) AS cnt INTO bi_cnt
+        FROM `blog_image`
+		WHERE b_id = inId;
+        
+		UPDATE `blog_list` SET 
+        b_img_cnt = bi_cnt,
+        b_update_ts = ts
+		WHERE b_id = inId;
+        
+		SET res=1;
+    
+		COMMIT;
+    END IF;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `blog_image_reorder` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`mc`@`%` PROCEDURE `blog_image_reorder`(IN inId INT)
+BEGIN
+	DECLARE done, res, pos, biId INT DEFAULT 0;
+    
+    /*Объявление курсора*/
+	DECLARE getImageIds CURSOR FOR 
+    SELECT bi_id
+    FROM `blog_image` 
+    WHERE b_id = inId
+    ORDER BY bi_pos, bi_update_ts DESC, bi_id DESC;
+    
+	DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
+    DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done=1;
+    
+    SET done=0;
+    SET pos=0;
+    
+    START TRANSACTION;
+		/* открытие курсора */
+		OPEN getImageIds;
+		/*извлекаем данные */
+		REPEAT
+        FETCH getImageIds INTO biId;
+			#делаем нужные нам действия 
+			IF NOT done THEN     
+			  UPDATE `blog_image` SET 
+			  bi_pos = pos
+			  WHERE bi_id = biId;
+			  
+			  SET pos = pos + 1;
+			END IF;
+		UNTIL done END REPEAT;
+		
+		/*закрытие курсора */
+		CLOSE getImageIds;
+        
+        SET done = 0;
+        
+        SELECT bi_pos INTO pos
+        FROM `blog_image`
+        WHERE b_id = inId
+		ORDER BY bi_pos, bi_update_ts DESC, bi_id DESC
+        LIMIT 1;
+        
+        IF NOT done AND pos = 1 THEN
+			UPDATE `blog_image` SET 
+			bi_pos = bi_pos-1
+			WHERE b_id = inId;
+        END IF;
+        
+    COMMIT;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `blog_image_update` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`mc`@`%` PROCEDURE `blog_image_update`(IN inId INT, IN inImId INT, IN inLatitude DECIMAL(10,8), IN inLongitude DECIMAL(11,8), IN inIdir  VARCHAR(255), IN inName VARCHAR(255), IN inPosUpd TINYINT(1))
+BEGIN
+	DECLARE done, res, bi_cnt, ts INT DEFAULT 0;
+	DECLARE EXIT HANDLER FOR SQLWARNING ROLLBACK;
+    DECLARE CONTINUE HANDLER FOR SQLSTATE '02000' SET done=1;
+    SET done=0;
+    
+    START TRANSACTION;
+    
+		SET ts = UNIX_TIMESTAMP();
+        
+		UPDATE `blog_image` SET
+			bi_pos = IF(inPosUpd = 1, 0, bi_pos),
+			bi_update_ts = ts,
+			bi_latitude = inLatitude,
+			bi_longitude = inLongitude,
+			bi_dir = IF(inIdir != "", inIdir, bi_dir),
+			bi_name = inName
+		WHERE bi_id = inImId AND b_id = inId;
+        
+        IF inPosUpd = 1 AND done = 0 THEN
+			
+            SELECT COUNT(bi_id) AS cnt INTO bi_cnt
+			FROM `blog_image`
+			WHERE b_id = inId;
+			
+			UPDATE `blog_list` SET 
+            b_img_cnt = bi_cnt,
+			b_update_ts = ts
+			WHERE b_id = inId;
+            
+            CALL `blog_image_reorder`(inId);
+            
+        END IF;
     COMMIT;
 END ;;
 DELIMITER ;
@@ -3432,4 +3671,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-01-15 22:25:36
+-- Dump completed on 2017-01-16 23:03:20

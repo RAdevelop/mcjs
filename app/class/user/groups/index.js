@@ -128,6 +128,39 @@ class UserGroups extends Base
 				return Promise.resolve(groups);
 			});
 	}
+
+	isRootAdmin(u_id)
+	{
+		return this.getClass('user/groups').getUsersGroups(u_id)
+			.then((userGroups)=>
+			{
+				//console.log('userGroups =', userGroups);
+
+				return Promise.resolve((userGroups['root'] || userGroups['admin']));
+			});
+	}
+	
+	isRoot(u_id)
+	{
+		return this.getClass('user/groups').getUsersGroups(u_id)
+			.then((userGroups)=>
+			{
+				//console.log('userGroups =', userGroups);
+
+				return Promise.resolve((userGroups['root'] || false));
+			});
+	}
+
+	isAdmin(u_id)
+	{
+		return this.getClass('user/groups').getUsersGroups(u_id)
+			.then((userGroups)=>
+			{
+				//console.log('userGroups =', userGroups);
+
+				return Promise.resolve((userGroups['admin'] || false));
+			});
+	}
 }
 //************************************************************************* module.exports
 //писать после class Name....{}

@@ -149,7 +149,23 @@ var config = {
 			sizeParams: [],
 			tokenFields: ['i_time', 'u_id']
 		},
-		events: {
+		user_blog: {
+			pathUpload: "user/blog",
+			fileTypes: ['gif', 'png', 'jpg', 'jpeg'],
+			fileMediaType: 'image',
+			multiUpload: true,
+			maxFileSize: 6,//Mb
+			tokenFields: ['i_time','b_id', 'u_id'],
+			sizeParams: [
+				{w: 1280, h: 853},
+				{w: 1024, h: 768},
+				{w: 512, h: 384},
+				{w: 256, h: 192},
+				{w: 50, h: 50}
+			],
+			cropSize: []
+		}
+		,events: {
 			pathUpload: "events",
 			fileTypes: ['gif', 'png', 'jpg', 'jpeg'],
 			fileMediaType: 'image',

@@ -1,0 +1,299 @@
+<h4><%=(blog['b_title'] ? 'редактирование' : 'добавление')%> статьи</h4>
+<ul class="nav nav-pills nav-justified" role="tablist">
+	<li class="active" role="presentation"><a href="#base" aria-controls="base" role="tab" data-toggle="tab"><span class="fa fa-cog"></span> Основное</a></li>
+</ul>
+<!-- Tab panes -->
+<form class="form-horizontal blogData" action="<%=menuItem['m_path']+'/'+_action%>/" method="post" id="formBlog">
+	<input type="hidden" id="i_blog_id" name="i_blog_id" value="<%=blog['b_id']%>" />
+	<div class="panel panel-default">
+		<div class="panel-body tab-content">
+			<div role="tabpanel" class="tab-pane active" id="base">
+				<div class="form-group">
+					<label for="s_b_title" class="col-sm-2 control-label">опубликовать?</label>
+					<div class="col-sm-10 checkbox">
+						<label><input type="checkbox"  name="b_show" <% if (blog['b_show'] == '1'){ %>checked="checked"<%}%> />да</label>
+					</div>
+				</div>
+				<div class="form-group s_b_title">
+					<label for="s_b_title" class="col-sm-2 control-label">название *</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="s_b_title" name="s_b_title" value="<%=blog['b_title']%>" placeholder="заголовок статьи" required="required" />
+					</div>
+				</div>
+				<div class="form-group t_b_notice">
+					<label for="t_b_notice" class="col-sm-2 control-label">анонс *</label>
+					<div class="col-sm-10">
+						<textarea class="form-control" style="height: 100px;" id="t_b_notice" name="t_b_notice" placeholder="анонс статьи" required="required" ><%=blog['b_notice']%></textarea>
+					</div>
+				</div>
+				<div class="form-group t_b_text">
+					<label for="t_b_text" class="col-sm-2 control-label">текст *</label>
+					<div class="col-sm-10">
+						<textarea class="form-control" style="height: 250px;" id="t_b_text" name="t_b_text" placeholder="текст статьи"><%=blog['b_text']%></textarea>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-xs-offset-5 col-sm-offset-5 ">
+			<input type="hidden" name="btn_save_blog" value="main"/>
+			<button type="submit" class="btn btn-primary" id="btn_edit_blog" value="1" data-loading-text="сохраняю..." autocomplete="off">сохранить</button>
+		</div>
+	</div>
+</form>
+<% if (_action == 'edit'){%>
+<ul>
+	<li><span class="popoverHelp " id="blogHelpImages">Как добавить изображения в текст</span></li>
+	<li><span class="popoverHelp " id="blogHelpVideo">Как добавить видео в текст</span></li>
+</ul>
+<div class="popoverContent" data-popover-for="#blogHelpImages">
+	<ol>
+		<li>загрузите изображения (максимум 5 файлов)</li>
+		<li>установите (кликните) курсор в нужном месте текст</li>
+		<li>кликните по нужному изображению, после чего оно добавится в текст</li>
+		<li>в любом случае, все изображения будут показаны под описанием на странице статьи</li>
+	</ol>
+</div>
+<div class="popoverContent" data-popover-for="#blogHelpVideo">
+	<ol>
+		<li>Скопируейте ссылку на видео</li>
+		<li>Вставьте ссылку в "опоисание"</li>
+		<li>В случае успешной обработки ссылки, видео добавится в "описание" вместо ссылки</li>
+	</ol>
+</div>
+<fieldset class="col-xs-12">
+	<legend><a href="javascript:void(0);" id="uploadimages"><i class="fa fa-cloud-upload" aria-hidden="true"></i> загрузить</a> Изображения</legend>
+	<%- include blog_images.ejs %>
+</fieldset>
+<%}%>
+<script src="/js/mcTinymce.js" type="text/javascript" ></script>
+<script src="/js/uploadify/jquery.uploadify.min.js" type="text/javascript" ></script>
+<script src="/js/uploadify/jquery.uploadifive.min.js" type="text/javascript" ></script>
+<script src="/js/uploadify/jquery.fileUpload.js" type="text/javascript"></script>
+<script type="text/javascript">
+//<!--
+(function($)
+{
+	var blogData = MCJS["blogData"] || null;
+	var images = MCJS["images"] || [];
+	var imagesPreviews = MCJS["imagesPreviews"] || [];
+
+	var $imagesWrapper = $('.imagesWrapper');
+
+	if(imagesPreviews.length)
+		preloadImages(imagesPreviews);
+
+	var blogTextTinymce = McTinymce(
+			{
+				selector: '#t_b_text'
+				,body_class:"blogData"
+				//разрешенные теги (с указанными атрибутами)
+				,valid_elements:"dl[class|data-link],dt[class],dd[class],h1,h2,h3,h4,h5,h6,p[class|data-link],em,i[class|aria-hidden],ol,img[class|src|data-img-id|alt],ul[class],li,strong/b,a[href|class|title|target],iframe[src|class|width|height|frameborder|allowfullscreen|webkitallowfullscreen|mozallowfullscreen|scrolling]"
+				//расширение для разрешенных тегов (-p - пустой абсац удалится)
+				,extended_valid_elements:"-p"
+				//запрещенные теги, удаляться потом сами
+				//,invalid_elements: "div"
+			}, "visualblocks")
+			.then(function(editor)
+			{
+				imgTools(editor);
+				return Promise.resolve(editor);
+			})
+			.fail(function (err)
+			{
+				console.log(err);
+			});
+
+	$('#formBlog').postRes({btnId: 'btn_edit_blog',
+		beforeSubmit: function ()
+		{
+			return blogTextTinymce.then(function (editor)
+			{
+				return new Promise(function(resolve, reject)
+				{
+					McTinymce.save(editor, function(editor)
+					{
+						return resolve(true);
+					});
+				});
+			});
+		},
+		onSuccess: function($dialog, respData)
+		{
+			if (respData["i_blog_id"]) window.location.href = '<%=menuItem['m_path']%>/edit/' +respData["i_blog_id"] +'/';
+
+			return false;
+		}
+	});
+
+	var blogUploadOpts = MCJS["blogUploadOpts"] || null;
+
+	if (blogUploadOpts)
+	{
+		function prependImgToEvent(filesUploaded, $imagesContainer)
+		{
+			if (!filesUploaded || !filesUploaded.length)
+				return;
+
+			var i, image, html, imgSrc;
+
+			for(i = 0; i < filesUploaded.length; i++)
+			{
+				image = filesUploaded[i];
+				imgSrc = (image["previews"] && image["previews"]["256_192"] ? image["previews"]["256_192"] : '/_0.gif');
+
+				var img = '<img src="'+imgSrc+'" alt="" class="image" data-img-id="'+image["bi_id"]+'"/>';
+
+				html = '<div class="imageItem">';
+				html += imgToolsHtml($(img));
+				html += img;
+				html += '</div>';
+
+				$imagesContainer.prepend(html);
+				images.unshift(image);
+			}
+		}
+
+		blogUploadOpts.onEnd = function()
+		{
+			var filesUploaded = ($(this).data('uploadFileData') ? $(this).data('uploadFileData') : null);
+
+			$(this).parents('.modal').find('.modal-footer').show();
+
+			prependImgToEvent(filesUploaded, $imagesWrapper.find('.imagesContainer'));
+
+		};
+
+		blogUploadOpts.onStart = function()
+		{
+			$(this).parents('.modal').find('.modal-footer').hide();
+		};
+
+		var formBlogUpload = '<form class="form-horizontal text-center" action="<%=menuItem['m_path']%>/upload" enctype="multipart/form-data" method="post" target="null_frame" id="formBlogUpload"><input type="hidden" name="btn_save_blog" value="blog_image_upload"/><input type="hidden" name="s_token" value="<%=blog['s_token']%>"/><input type="hidden" name="i_time" value="<%=blog['i_time']%>"/><input type="hidden" name="b_id" value="<%=blog['b_id']%>"/><input type="hidden" name="u_id" value="<%=blog['u_id']%>"/><div class="form-group uploadWrapper"><input type="file" name="blog_image_upload" id="blog_image_upload" style="display: none;"/></div></form>';
+
+		$(document).on('click', '#uploadimages', function(event)
+		{
+			event.preventDefault();
+			event.stopPropagation();
+
+			$('__uploadimages__').mcDialog({
+				title: 'Загрузить изображения'
+				, body: formBlogUpload
+				, onOpen: function ($dialog)
+				{
+					$dialog.find('#blog_image_upload').fileUpload(blogUploadOpts);
+				}
+				, buttons: [
+					{
+						title: 'закрыть'
+						,name: 'btn_upload_close'
+						,cssClass: 'btn-danger'
+						,func:
+					{
+						"click": function($mcDialog)
+						{
+							$mcDialog.modal('hide');
+						}
+					}
+					}
+				]
+			});
+		});
+	}
+
+	$imagesWrapper.find('.imagesContainer').sortable({
+		update: function( event, ui )
+		{
+			var imgPos = [];
+			$('.imagesContainer img.image').each(function (i, item)
+			{
+				imgPos.push($(item).attr("data-img-id"));
+			});
+
+			if (!imgPos.length)
+				return;
+
+			var postData = {
+				"btn_save_blog": "sort_img",
+				"i_blog_id": '<%=blog["b_id"]%>',
+				"bi_pos": imgPos
+			};
+
+			$.ajax({
+				url: '<%=_reqBaseUrl%>',
+				method: "POST",
+				data: postData,
+				dataType: "json"
+			})
+			.done(function(resData)
+			{
+				//console.log(resData);
+			})
+			.fail(function(resData)
+			{
+				//console.log(resData);
+			});
+		}
+	});
+
+	function imgToolsHtml($img)
+	{
+		var html = '<div class="imageTools">'
+		html += '<span><a href="javascript:void(0)" data-action="delete" data-img-id="'+$img.data('imgId')+'"><i class="fa fa-fw fa-trash-o"></i> удалить</a></span>';
+		html += '</div>';
+		return html;
+	}
+
+	function imgTools(editor)
+	{
+		$imagesWrapper.find('.imageItem img').each(function(i, img)
+		{
+			$(this).parent().prepend(imgToolsHtml($(img)));
+		});
+
+		$(document).on('click','.imagesWrapper .imagesContainer .imageTools a', function (event)
+		{
+			event.preventDefault();
+			event.stopPropagation();
+			var $this = $(this);
+
+			switch ($this.data('action'))
+			{
+				case 'delete':
+
+					var postData = {
+						"btn_save_blog": "del_img",
+						"i_blog_id": '<%=blog["b_id"]%>',
+						"i_bi_id": $this.data('imgId')
+					};
+
+					$.ajax({
+						url: '<%=_reqBaseUrl%>',
+						method: "POST",
+						data: postData,
+						dataType: "json"
+					})
+					.done(function(resData)
+					{
+						$(editor.getBody()).find('img.image[data-img-id="'+$this.data('imgId')+'"]').parent().remove();
+						McTinymce.clearEmptyTags(editor);
+
+						$this.parents('.imageItem').remove();
+					})
+					.fail(function(resData)
+					{
+						//console.log(resData);
+					});
+
+					break;
+			}
+
+			McTinymce.clearEmptyTags(editor);
+			return false;
+		});
+	}
+
+})(jQuery);
+//-->
+</script>
