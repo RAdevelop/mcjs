@@ -83,8 +83,17 @@
 {
   top: 0;
   padding: 3px;
-  text-align: center;
   background-color: rgba(0, 0, 0, 0.7);
+  text-align: center;
+
+  & .blogListItemInfoAuthor {
+    text-align: center;
+    & img {
+      width: auto;
+      display: inline-block;
+      @include mix-opacity(1);
+    }
+  }
 }
 
 .blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoNotice
@@ -111,6 +120,30 @@
   border-top: 1px dotted;
 }
 
+
+.blog-author {
+  border: 1px solid #FFF;
+  &:hover {
+    background-color: #F0F0F0;
+    border: 1px solid #F0F0F0;
+    @include mix-border-radius(5px);
+  }
+
+
+  display: table;
+  border-spacing: 3px;
+
+  &_user{
+    display: table-cell;
+    padding: 3px;
+  }
+
+  &_data{
+    display: table-cell;
+    padding: 3px;
+    vertical-align: top;
+  }
+}
 
 @media (min-width: $screen-md) and (max-width: $screen-lg)
 {

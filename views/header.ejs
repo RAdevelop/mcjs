@@ -83,7 +83,7 @@
 			<%
 			if(_user) {%><a class="userProfileTop" href="/profile/"><%
 					let ava = (_user.previews && _user.previews["50_50"]);
-					let avaSrc = (ava ? _user.previews["50_50"] : '/_0.gif');%><img class="img-circle img-responsive <%=(ava ? '':'hidden')%>" src="<%=avaSrc%>" /><span class="fa fa-user <%=(ava ? 'hidden':'')%>"></span></a><%
+					let avaSrc = (ava ? _user.previews["50_50"] : '/_0.gif');%><img class="img-circle img-responsive <%=(ava ? '':'hidden')%>" src="<%=avaSrc%>" /><i class="fa fa-user <%=(ava ? 'hidden':'')%>"></i></a><%
 			}%>
 			<a class="top-tools" data-action="feedback" href="javascript:void(0);"><i class="fa fa-fw fa-envelope-o"></i>&nbsp;</a>
 			<a class="top-tools" data-action="" href="javascript:void(0);"><i class="fa fa-fw fa-bell-o"></i>&nbsp;</a>

@@ -63,7 +63,8 @@ class User extends Base
 			userAva:        this.getClass('user/photo/profile').getUserAva(u_id)
 			//,userGroups:     this.getClass('user/groups').getUsersGroups(u_id)
 		})
-			.then((props) => {
+			.then((props) =>
+			{
 				let user = Object.assign({}, props.userAva, props.userLocation, props.userData, props.user);
 					user['u_display_name'] = User.userDisplayName(user);
 
@@ -118,7 +119,8 @@ class User extends Base
 	getUsers(Pages)
 	{
 		return this.model('user').countUsers()
-			.then((users_cnt) => {
+			.then((users_cnt) =>
+			{
 				Pages.setTotal(users_cnt);
 
 				let usersData = {"users":null, "users_cnt":users_cnt, "Pages":Pages};
@@ -133,9 +135,10 @@ class User extends Base
 					.spread((users, users_ids) => {//собираем аватарки
 
 						return this.getClass('user/photo/profile').getUsersAva(users_ids)
-							.then((usersAva) => {
-								users.forEach((user, uI, users) => {
-
+							.then((usersAva) =>
+							{
+								users.forEach((user, uI, users) =>
+								{
 									user['u_display_name'] = User.userDisplayName(user);
 									users[uI] = Object.assign({}, user, usersAva[user["u_id"]]);
 								});
@@ -146,17 +149,18 @@ class User extends Base
 					.spread((users, users_ids) => {//собираем данные о населенных пунктах юзеров
 
 						return this.getClass('user').getUsersLocation(users_ids)
-							.then((usersLocation) => {
-
-								users.forEach((user, uI, users) => {
+							.then((usersLocation) =>
+							{
+								users.forEach((user, uI, users) =>
+								{
 									users[uI] = Object.assign({}, user, usersLocation[user["u_id"]]);
 								});
 
 								return [users, users_ids];
 							});
 					})
-					.spread((users) => {
-
+					.spread((users) =>
+					{
 						/*console.log('\nusers_ids');
 						console.log(users);
 						console.log('=======\n');*/
@@ -182,6 +186,56 @@ class User extends Base
 	updLocation(u_id, f_lat, f_lng, location_id)
 	{
 		return this.model('user/profile').updLocation(u_id, f_lat, f_lng, location_id);
+	}
+
+	/**
+	 * получаем список пользователей по указанным id
+	 * @param u_ids
+	 * @param list - некий массив данных, к которому надо будет добавить данные пользователей по их u_id
+	 * @returns {Promise}
+	 */
+	getUserListById(u_ids = [], list = [])
+	{
+		if (u_ids.length == 0)
+			return Promise.resolve([]);
+
+		return Promise.props({
+			users: this.model('user').getUserListById(u_ids),
+			usersAva: this.getClass('user/photo/profile').getUsersAva(u_ids),
+			usersLocation: this.getClass('user').getUsersLocation(u_ids)
+		})
+			.then((props)=>
+			{
+				let users = props.users.map((user)=>
+				{
+					if (props.usersAva.hasOwnProperty(user['u_id']))
+						Object.assign(user, props.usersAva[user['u_id']]);
+
+					if (props.usersLocation.hasOwnProperty(user['u_id']))
+						Object.assign(user, props.usersLocation[user['u_id']]);
+
+					user['u_display_name'] = User.userDisplayName(user);
+					
+					return user;
+				});
+
+				if (list.length > 0)
+				{
+					users.forEach((user)=>
+					{
+						list.forEach((item, i)=>
+						{
+							if (item.hasOwnProperty('u_id') && item['u_id'] == user['u_id'])
+							{
+								list[i]['user'] = user;
+							}
+						});
+					});
+				}
+				props = null;
+
+				return Promise.resolve([users, list]);
+			});
 	}
 }
 

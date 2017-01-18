@@ -81,7 +81,12 @@ class Blog extends CtrlMain
 					&&  (props.isRootAdmin || props.blog['u_id'] == this.getUserId() || props.blog['b_show'] == 1)
 				)
 				{
-					return Promise.resolve(props.blog);
+					return this.getUser(props.blog['u_id'])
+						.then((user)=>
+						{
+							props.blog['user'] = user;
+							return Promise.resolve(props.blog);
+						});
 				}
 
 				throw new Errors.HttpError(404);
@@ -134,7 +139,22 @@ class Blog extends CtrlMain
 		//let show = (this.getLocalAccess()['post_edit'] ? null : 1);
 		let show = 1;
 
-		return Promise.resolve(this.getClass("blog").getBlogList(new Pages(i_page, limit_per_page), show))
+		return Promise.resolve(this.getClass("blog")
+			.getBlogList(new Pages(i_page, limit_per_page), show))
+			.spread((blogList, Pages) =>
+			{
+				let u_ids = blogList.map((blog)=>
+				{
+					return blog['u_id'];
+				});
+
+				return this.getClass('user').getUserListById(u_ids, blogList)
+					.spread((users, blogList)=>
+					{
+						users = null;
+						return Promise.resolve([blogList, Pages]);
+					});
+			})
 			.spread((blogList, Pages) =>
 			{
 				tplData["blogList"] = blogList;
