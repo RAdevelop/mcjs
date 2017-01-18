@@ -1,4 +1,4 @@
-/**********  СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ  **************/
+/**********  БЛОГ БЛОГ БЛОГ БЛОГ БЛОГ БЛОГ   **************/
 
 .blogLocationsMenu li.selected
 {
@@ -86,12 +86,21 @@
   background-color: rgba(0, 0, 0, 0.7);
   text-align: center;
 
+  display: inline-block;
+
   & .blogListItemInfoAuthor {
-    text-align: center;
+
+    display: inline-block;
     & img {
       width: auto;
       display: inline-block;
       @include mix-opacity(1);
+    }
+    & .fa {
+      width: 50px;
+      height: 50px;
+      display: inline-block;
+      font-size: 38px;
     }
   }
 }
@@ -107,7 +116,7 @@
 
 .blogListContainer .blogListItem .blogListItemInfo:hover .blogListItemInfoNotice
 {
-  top: 26px;
+  top: 0px;
 }
 .blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoNotice p:first-child
 {

@@ -2,10 +2,11 @@
 	<div class="blogListContainer col-xs-12 col-sm-12 col-md-12"><%
 blogList.forEach(function (bItem)
 {
+
 	let hasImg = (!!bItem["previews"]["512_384"]);
 	let imgSrc = (hasImg ? bItem["previews"]["512_384"] : '/_0.gif');
 
-	let ava = (bItem['user']['previews'] && bItem['user']['previews']['50_50']);
+	let ava = (!!bItem['user']['previews'] && bItem['user']['previews']['50_50']);
 	let avaSrc = (ava ? bItem['user']['previews']['50_50'] : '/_0.gif');
 
 	%><div class="blogListItem">
@@ -15,8 +16,9 @@ blogList.forEach(function (bItem)
 					<span><%=bItem["dt_create_ts"]%></span>
 					<span class="blogListItemInfoAuthor">
 						<img class="img-circle img-responsive <%=(ava ? '':'hidden')%>" src="<%=avaSrc%>" />
-						<i class="fa fa-user <%=(ava ? 'hidden':'')%>"></i><%=bItem['user']['u_display_name']%>
+						<i class="fa fa-user <%=(ava ? 'hidden':'')%>"></i>
 					</span>
+					<span><%=bItem['user']['u_display_name']%></span>
 				</div>
 				<div class="blogListItemInfoNotice"><p><%=bItem["b_title"]%></p><p><%=bItem["b_notice"]%></p></div>
 			</a>

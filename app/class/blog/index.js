@@ -68,7 +68,7 @@ class Blog extends Base
 	 */
 	getBlogList(Pages, b_show = null, i_u_id = null)
 	{
-		return this.model('blog').countBlog(i_u_id, b_show)
+		return this.model('blog').countBlog(b_show, i_u_id)
 			.then((cnt) =>
 			{
 				Pages.setTotal(cnt);

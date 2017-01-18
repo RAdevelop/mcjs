@@ -1157,7 +1157,7 @@ iframe.iframeVideoEmbed {
   color: #fff;
 }
 
-/**********  СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ  **************/
+/**********  БЛОГ БЛОГ БЛОГ БЛОГ БЛОГ БЛОГ   **************/
 .blogLocationsMenu li.selected {
   background-color: #f5f5f5;
 }
@@ -1231,9 +1231,10 @@ iframe.iframeVideoEmbed {
   padding: 3px;
   background-color: rgba(0, 0, 0, 0.7);
   text-align: center;
+  display: inline-block;
 }
 .blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoDate .blogListItemInfoAuthor {
-  text-align: center;
+  display: inline-block;
 }
 .blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoDate .blogListItemInfoAuthor img {
   width: auto;
@@ -1241,6 +1242,12 @@ iframe.iframeVideoEmbed {
   opacity: 1;
   -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+}
+.blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoDate .blogListItemInfoAuthor .fa {
+  width: 50px;
+  height: 50px;
+  display: inline-block;
+  font-size: 38px;
 }
 
 .blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoNotice {
@@ -1255,7 +1262,7 @@ iframe.iframeVideoEmbed {
 }
 
 .blogListContainer .blogListItem .blogListItemInfo:hover .blogListItemInfoNotice {
-  top: 26px;
+  top: 0px;
 }
 
 .blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoNotice p:first-child {

@@ -215,7 +215,7 @@ class User extends Base
 						Object.assign(user, props.usersLocation[user['u_id']]);
 
 					user['u_display_name'] = User.userDisplayName(user);
-					
+
 					return user;
 				});
 

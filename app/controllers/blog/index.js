@@ -302,7 +302,7 @@ class Blog extends CtrlMain
 		return this._getBlogData(i_blog_id)
 			.then((props) =>
 			{
-				if (!props.blog || !(props.isRootAdmin || blog['u_id'] == this.getUserId()))
+				if (!props.blog || !(props.isRootAdmin || props.blog['u_id'] == this.getUserId()))
 					throw new Errors.HttpError(404);
 
 				return this.getClass('blog')

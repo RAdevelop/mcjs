@@ -123,11 +123,13 @@ class UserPhotoProfile extends UserPhoto
 	getUsersAva(users_ids = [])
 	{
 		return this.model('user/photo/profile').getUsersAva(users_ids)
-			.then((ava) => {
+			.then((ava) =>
+			{
 				let sizeParams = FileUpload.getUploadConfig('user_ava').sizeParams;
 
-				Object.keys(ava).forEach((i) => {
-					ava[i] = Object.assign(ava[i], FileUpload.getPreviews(sizeParams, ava[i], "ai_dir")["obj"]);
+				Object.keys(ava).forEach((i) =>
+				{
+					Object.assign(ava[i], FileUpload.getPreviews(sizeParams, ava[i], "ai_dir")["obj"]);
 				});
 
 				return Promise.resolve(ava);

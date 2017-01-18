@@ -59,8 +59,8 @@ class UserPhotoProfile extends UserPhoto
 		sqlData.push(1);
 
 		return this.constructor.conn().ps(sql, sqlData)
-			.then((res) => {
-
+			.then((res) =>
+			{
 				let ava = {
 					a_id: null,
 					u_id: null,
@@ -70,15 +70,14 @@ class UserPhotoProfile extends UserPhoto
 
 				let avaList = {};
 
-				user_ids.forEach((u_id) => {
-
-					ava["u_id"] = u_id;
-					avaList[u_id] = ava;
+				user_ids.forEach((u_id) =>
+				{
+					avaList[u_id] = Object.assign({}, ava, {u_id:u_id});;
 					if (res)
 					{
-						res.forEach((item) => {
-
-							if (item.u_id == ava["u_id"])
+						res.forEach((item) =>
+						{
+							if (item.u_id == u_id)
 								avaList[u_id] = Object.assign({}, avaList[u_id], item);
 						});
 					}
