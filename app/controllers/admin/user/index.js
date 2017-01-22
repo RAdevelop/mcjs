@@ -59,9 +59,6 @@ class AdminUser extends CtrlMain
 				this.view.setTplData(tplFile, tplData);
 
 				return Promise.resolve(null);
-			})
-			.catch((err) => {
-				throw err;
 			});
 	}
 

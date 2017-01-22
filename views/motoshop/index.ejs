@@ -13,6 +13,21 @@ else if (motoshopList){%>
 <%- include toolbar.ejs %><h1><%=_pageH1%></h1>
 <%- include list.ejs %>
 <%- include ../pages/index.ejs %>
+<script type="text/javascript">
+	//<!--
+	//console.log(MCJS);
+
+	if (MCJS['pages'] && Pagination)
+	{
+		MCJS['pages']['ajaxDataSrc'] = ['motoshopList'];
+		MCJS['pages']['ajaxDataTarget'] = 'motoshopList';
+		MCJS['pages']['jQuerySelector'] = '.shopListContainer .shopItem';
+
+		Pagination.init();
+	}
+	//console.log(Pagination);
+	//-->
+</script>
 <%}
 else if (motoshopLocations){%>
 <%  if(!_isXHR){%><%- layout('layout/default') %><% } %>

@@ -183,9 +183,9 @@ class Pages
 			,"uri": this.getLinksUri()
 			,"query": this.getLinksQuery()
 			,"is_ajax": this.isAjaxPagesType()
-			,"ajaxDataSrc": this.getAjaxDataSrc()
-			,"ajaxDataTarget": this.getAjaxDataTarget()
-			,"jQuerySelector": this.getJquerySelectorData() //селектор jquery откуда получить данные в ответе сервере
+			//,"ajaxDataSrc": this.getAjaxDataSrc()
+			//,"ajaxDataTarget": this.getAjaxDataTarget()
+			//,"jQuerySelector": this.getJquerySelectorData() //селектор jquery откуда получить данные в ответе сервере
 		};
 	}
 }

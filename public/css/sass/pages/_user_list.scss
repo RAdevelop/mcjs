@@ -3,6 +3,7 @@
 {
   &_user
   {
+    //border: 1px solid;
     &:hover{
       background-color: #e8e8e8;
       text-decoration: none;
@@ -12,22 +13,105 @@
         color: #fff;
       }
     }
-
+    height: 112px;
     display: inline-block;
     text-align: center;
     overflow: hidden;
     text-decoration: none;
-    @include mix-width-calc(24%);
+    @include mix-width-calc(33%);
 
     & > .fa-user {
       color: #e8e8e8;
-      font-size: 94px;
-      line-height: 81px;
+      font-size: 120px;
+      line-height: 112px;
+      display: inline-block;
+      width: 91px;
+      height: 91px;
+
+      @media (min-width: $screen-lg-min)
+      {
+        & {
+          font-size: 76px;
+          line-height: 66px;
+          width: 66px;
+          height: 66px;
+        }
+      }
+
+      @media (max-width: $screen-lg-min) and (orientation : landscape)
+      {
+        & {
+          font-size: 76px;
+          line-height: 66px;
+          width: 66px;
+          height: 66px;
+        }
+      }
+      @media (min-width: $screen-md) and (orientation : landscape)
+      {
+        & {
+          font-size: 124px;
+          line-height: 112px;
+          width: 66px;
+          height: 112px;
+        }
+      }
+
+      @media (max-width: $screen-sm)
+      {
+        & {
+          font-size: 76px;
+          line-height: 66px;
+          width: 66px;
+        }
+      }
+      @media (max-width: $screen-xs)
+      {
+        & {
+          font-size: 76px;
+          line-height: 66px;
+          width: 66px;
+        }
+      }
+
     }
 
     &-ava {
-     @include mix-width-calc(33%);
+     @include mix-width-calc(29%);
       float: left;
+
+      @media (min-width: $screen-md-max)
+      {
+        & {
+          @include mix-width-calc(25%);
+        }
+      }
+
+      @media (max-width: $screen-md-max)
+      {
+        & {
+          @include mix-width-calc(13%);
+        }
+      }
+
+      @media (min-width: $screen-sm) and (max-width: $screen-md-max) and (orientation : landscape)
+      {
+        & {
+          @include mix-width-calc(24%);
+        }
+      }
+      @media (max-width: $screen-xs)
+      {
+        & {
+          @include mix-width-calc(19%);
+        }
+      }
+      @media (max-width: $screen-sm) and (orientation : landscape)
+      {
+        & {
+          @include mix-width-calc(10%);
+        }
+      }
     }
     &_name,
     &_location {
@@ -48,7 +132,21 @@
     {
       & {
         @include mix-max-height-calc(1%);
-        width: auto;
+        width: 100%;
+      }
+    }
+
+    @media (max-width: $screen-lg)
+    {
+      & {
+        height: 66px;
+      }
+    }
+
+    @media (max-width: $screen-lg) and (orientation : landscape)
+    {
+      & {
+        //height: 66px;
       }
     }
   }

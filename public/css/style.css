@@ -2065,13 +2065,14 @@ ul.shopListContainer .shopItem .motoshopAddress .motoshopAddressData {
 
 /********** список пользователей **************/
 .user-list_user {
+  height: 112px;
   display: inline-block;
   text-align: center;
   overflow: hidden;
   text-decoration: none;
-  width: calc(24%);
-  width: -moz-calc(24%);
-  width: -webkit-calc(24%);
+  width: calc(33%);
+  width: -moz-calc(33%);
+  width: -webkit-calc(33%);
 }
 .user-list_user:hover {
   background-color: #e8e8e8;
@@ -2086,14 +2087,90 @@ ul.shopListContainer .shopItem .motoshopAddress .motoshopAddressData {
 }
 .user-list_user > .fa-user {
   color: #e8e8e8;
-  font-size: 94px;
-  line-height: 81px;
+  font-size: 120px;
+  line-height: 112px;
+  display: inline-block;
+  width: 91px;
+  height: 91px;
+}
+@media (min-width: 1200px) {
+  .user-list_user > .fa-user {
+    font-size: 76px;
+    line-height: 66px;
+    width: 66px;
+    height: 66px;
+  }
+}
+@media (max-width: 1200px) and (orientation: landscape) {
+  .user-list_user > .fa-user {
+    font-size: 76px;
+    line-height: 66px;
+    width: 66px;
+    height: 66px;
+  }
+}
+@media (min-width: 992px) and (orientation: landscape) {
+  .user-list_user > .fa-user {
+    font-size: 124px;
+    line-height: 112px;
+    width: 66px;
+    height: 112px;
+  }
+}
+@media (max-width: 768px) {
+  .user-list_user > .fa-user {
+    font-size: 76px;
+    line-height: 66px;
+    width: 66px;
+  }
+}
+@media (max-width: 480px) {
+  .user-list_user > .fa-user {
+    font-size: 76px;
+    line-height: 66px;
+    width: 66px;
+  }
 }
 .user-list_user-ava {
-  width: calc(33%);
-  width: -moz-calc(33%);
-  width: -webkit-calc(33%);
+  width: calc(29%);
+  width: -moz-calc(29%);
+  width: -webkit-calc(29%);
   float: left;
+}
+@media (min-width: 1199px) {
+  .user-list_user-ava {
+    width: calc(25%);
+    width: -moz-calc(25%);
+    width: -webkit-calc(25%);
+  }
+}
+@media (max-width: 1199px) {
+  .user-list_user-ava {
+    width: calc(13%);
+    width: -moz-calc(13%);
+    width: -webkit-calc(13%);
+  }
+}
+@media (min-width: 768px) and (max-width: 1199px) and (orientation: landscape) {
+  .user-list_user-ava {
+    width: calc(24%);
+    width: -moz-calc(24%);
+    width: -webkit-calc(24%);
+  }
+}
+@media (max-width: 480px) {
+  .user-list_user-ava {
+    width: calc(19%);
+    width: -moz-calc(19%);
+    width: -webkit-calc(19%);
+  }
+}
+@media (max-width: 768px) and (orientation: landscape) {
+  .user-list_user-ava {
+    width: calc(10%);
+    width: -moz-calc(10%);
+    width: -webkit-calc(10%);
+  }
 }
 .user-list_user_name, .user-list_user_location {
   display: inline-block;
@@ -2116,6 +2193,11 @@ ul.shopListContainer .shopItem .motoshopAddress .motoshopAddressData {
     max-height: calc(1%);
     max-height: -moz-calc(1%);
     max-height: -webkit-calc(1%);
-    width: auto;
+    width: 100%;
+  }
+}
+@media (max-width: 1200px) {
+  .user-list_user {
+    height: 66px;
   }
 }

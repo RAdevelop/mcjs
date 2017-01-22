@@ -42,31 +42,41 @@ class User extends CtrlMain
 	usersList()
 	{
 		let {i_page} = this.routeArgs;
+		let isAjax = this.getReq().xhr;
 
 		return Promise.props({
-			user: this.getUser(this.getUserId()),
+			user: (isAjax ? Promise.resolve(null) : this.getUser(this.getUserId())),
 			users: this.getClass("user").getUsers(new Pages(i_page, limit_per_page)) //{users:users, users_cnt:users_cnt, Pages:Pages}
 		})
 			.then((props) => {
-				let tplFile = "user";
+
 				let tplData = {
 					"user": props.user,
-					"users": props.users.users,
+					"users": props.users['users'],
 					"users_cnt": props.users.users_cnt
 				};
 
-				const Pages = props.users.Pages.setLinksUri(this.getBaseUrl());
-				
+				const Pages = props.users.Pages;
+
+				Pages.setLinksUri(this.getBaseUrl()).setAjaxPagesType(true);
+
 				tplData["pages"] = Pages.pages();
 
-				this.view.setTplData(tplFile, tplData);
+				let tplFile = (isAjax ? 'user/list.ejs' : 'user/index.ejs');
+
+				this.view.setTplData(tplFile, tplData, isAjax);
 				this.view.addPartialData("user/left", {user: tplData.user});
 				//self.view.addPartialData("user/right", {}); //TODO
+
+
+				if (!isAjax)
+				{
+					this.getRes().expose(tplData['users'], 'users');
+					this.getRes().expose(tplData["pages"], 'pages');
+				}
+
 				props = null;
 				return Promise.resolve(null);
-			})
-			.catch((err) => {
-				throw err;
 			});
 	}
 }

@@ -182,10 +182,7 @@ class ProfileVideo extends CtrlMain
 					let linksUri = [this.getBaseUrl(),i_u_id,tplData['videoAlbum']['va_id'],tplData['videoAlbum']['va_alias']].join('/');
 
 					Pages.setLinksUri(linksUri)
-						.setAjaxPagesType(true)
-						.setAjaxDataSrc(['videoList'])
-						.setAjaxDataTarget('videoList')
-						.setJquerySelectorData('.mediaList .media');
+						.setAjaxPagesType(true);
 
 					tplData["pages"] = Pages.pages();
 				}
@@ -239,10 +236,7 @@ class ProfileVideo extends CtrlMain
 				tplData["videoAlbums"] = videoAlbums;
 
 				Pages.setLinksUri(this.getBaseUrl()+'/'+ i_u_id)
-					.setAjaxPagesType(true)
-					.setAjaxDataSrc(['videoAlbums'])
-					.setAjaxDataTarget('videoAlbums')
-					.setJquerySelectorData('.mediaList .media');
+					.setAjaxPagesType(true);
 
 				tplData["pages"] = Pages.pages();
 
@@ -300,9 +294,6 @@ class ProfileVideo extends CtrlMain
 
 				this.view.setTplData(tplFile, err.data);
 				return Promise.resolve(true);
-			})
-			.catch((err) => {
-				throw err;
 			});
 	}
 

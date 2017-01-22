@@ -1,21 +1,21 @@
 <% if(!_isXHR){%><%- layout('layout/user/index') %><% }%>
 <h1><%=_pageH1%></h1>
 <div class="row">
-<div class="col-xs-12 user-list"><%
-if (users){
-users.forEach(function (user)
-{
-//console.log(user);
-	let ava = (user.previews && user.previews["180_180"]);
-	let avaSrc = (ava ? user.previews["180_180"] : '/_0.gif');
-%>
-<a href="/profile/<%=user['u_id']%>/" class="user-list_user"><%
-	%><img class="user-list_user-ava img-circle img-responsive <%=(ava ? '':'hidden')%>" src="<%=avaSrc%>" />
-	<i class="user-list_user-ava fa fa-user <%=(ava ? 'hidden':'')%>"></i>
-	<span class="user-list_user_name"  data-toggle="tooltip" data-placement="auto" title="<%=user['u_display_name']%>"><i class="fa fa-fw fa-user"></i><%=user['u_display_name']%></span>
-	<span class="user-list_user_location"  data-toggle="tooltip" data-placement="auto" title="<%=user['l_full_name']%>"><i class="fa fa-fw fa-map-marker"></i><%=user['l_name']%></span>
-</a>
-<%});} %>
+	<%- include list.ejs %>
 </div>
-	<%- include ../pages/index.ejs %>
-</div>
+<%- include ../pages/index.ejs %>
+<script type="text/javascript">
+	//<!--
+	//console.log(MCJS);
+
+	if (MCJS['pages'] && Pagination)
+	{
+		MCJS['pages']['ajaxDataSrc'] = ['users'];
+		MCJS['pages']['ajaxDataTarget'] = 'users';
+		MCJS['pages']['jQuerySelector'] = '.js-user-list .js-user';
+
+		Pagination.init();
+	}
+	//console.log(Pagination);
+	//-->
+</script>

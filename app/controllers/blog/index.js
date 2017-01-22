@@ -11,7 +11,7 @@ const EmbedContent = require("app/lib/embed/content");
 //const Moment = require('moment'); //работа со временем
 const CtrlMain = require('app/lib/controller');
 
-let limit_per_page = 20;
+let limit_per_page = 1;
 
 class Blog extends CtrlMain
 {
@@ -161,10 +161,7 @@ class Blog extends CtrlMain
 
 				let exposeBlog = 'blogList';
 				Pages.setLinksUri(this.getBaseUrl())
-					.setAjaxPagesType(true)
-					.setAjaxDataSrc([exposeBlog])
-					.setAjaxDataTarget(exposeBlog)
-					.setJquerySelectorData('.blogListContainer .blogListItem');
+					.setAjaxPagesType(true);
 
 				tplData["pages"] = Pages.pages();
 

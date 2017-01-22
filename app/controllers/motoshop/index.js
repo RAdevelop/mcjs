@@ -139,10 +139,7 @@ class Motoshop extends CtrlMain
 
 				let exposeList = 'motoshopList';
 				Pages.setLinksUri([this.getBaseUrl(), i_loc_id].join('/'))
-					.setAjaxPagesType(true)
-					.setAjaxDataSrc([exposeList])
-					.setAjaxDataTarget(exposeList)
-					.setJquerySelectorData('.shopListContainer .shopItem');
+					.setAjaxPagesType(true);
 
 				tplData["pages"] = Pages.pages();
 
@@ -151,11 +148,7 @@ class Motoshop extends CtrlMain
 
 				this.view.setTplData(tplFile, tplData, isAjax);
 
-				return Promise.resolve(null);
-			})
-			.catch((err) =>
-			{
-				throw err;
+				return Promise.resolve(isAjax);
 			});
 	}
 

@@ -39,6 +39,23 @@
 <script type="text/javascript" src="/js/jquery/mcAlbum.js"></script>
 <script type="text/javascript">
 //<!--
+//console.log(MCJS);
+if (MCJS['pages'] && Pagination)
+{
+	<% if(albums){ %>
+	MCJS['pages']['ajaxDataSrc'] = ['albums'];
+	MCJS['pages']['ajaxDataTarget'] = 'albums';
+	MCJS['pages']['jQuerySelector'] = '.mediaList .media';
+	<% } else if (album) {%>
+	MCJS['pages']['ajaxDataSrc'] = ['album', 'images'];
+	MCJS['pages']['ajaxDataTarget'] = 'albumImages';
+	MCJS['pages']['jQuerySelector'] = '.imageList .image';
+	<% } %>
+	Pagination.init();
+}
+//console.log(Pagination);
+
+
 (function($)
 {
 	var mcAlbumProps = {

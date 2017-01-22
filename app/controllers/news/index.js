@@ -11,7 +11,7 @@ const EmbedContent = require("app/lib/embed/content");
 //const Moment = require('moment'); //работа со временем
 const CtrlMain = require('app/lib/controller');
 
-let limit_per_page = 20;
+let limit_per_page = 2;
 
 class News extends CtrlMain
 {
@@ -132,10 +132,7 @@ class News extends CtrlMain
 
 				let exposeNews = 'newsList';
 				Pages.setLinksUri(this.getBaseUrl())
-					.setAjaxPagesType(true)
-					.setAjaxDataSrc([exposeNews])
-					.setAjaxDataTarget(exposeNews)
-					.setJquerySelectorData('.newsListContainer .newsListItem');
+					.setAjaxPagesType(true);
 
 				tplData["pages"] = Pages.pages();
 
@@ -150,9 +147,6 @@ class News extends CtrlMain
 				//this.view.addPartialData("user/right", {title: 'right_col'});
 
 				return Promise.resolve(isAjax);
-			})
-			.catch((err) => {
-				throw err;
 			});
 	}
 

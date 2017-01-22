@@ -8,7 +8,7 @@ const Errors = require('app/lib/errors');
 const FileUpload = require('app/lib/file/upload');
 const CtrlMain = require('app/lib/controller');
 
-let limit_per_page = 2;
+let limit_per_page = 20;
 
 class ProfilePhoto extends CtrlMain
 {
@@ -85,10 +85,7 @@ class ProfilePhoto extends CtrlMain
 				tplData["albums"] = albums;
 
 				Pages.setLinksUri(this.getBaseUrl()+'/'+ i_u_id)
-					.setAjaxPagesType(true)
-					.setAjaxDataSrc(['albums'])
-					.setAjaxDataTarget('albums')
-					.setJquerySelectorData('.mediaList .media');
+					.setAjaxPagesType(true);
 
 				tplData["pages"] = Pages.pages();
 
@@ -141,7 +138,7 @@ class ProfilePhoto extends CtrlMain
 					.getAlbumImages(i_u_id, i_a_id, new Pages(i_page, limit_per_page, tplData["album"]["a_img_cnt"]))
 					.spread((Pages, images, allPreviews) =>
 					{
-						Pages.setLinksUri(this.getBaseUrl()+'/'+i_u_id+'/'+i_a_id);
+						Pages.setLinksUri([this.getBaseUrl(),i_u_id, i_a_id].join('/'));
 
 						tplData["album"]["images"] = images;
 						//return Promise.resolve(tplData);
@@ -152,7 +149,7 @@ class ProfilePhoto extends CtrlMain
 			{
 				if (!isAjax)
 				{
-					tplData = Object.assign(tplData, FileUpload.createToken('user_photo', {"a_id": i_a_id}) );
+					Object.assign(tplData, FileUpload.createToken('user_photo', {"a_id": i_a_id}) );
 
 					this.getRes().expose(FileUpload.exposeUploadOptions('user_photo'), 'albumUploadOpts');
 				}
@@ -160,10 +157,7 @@ class ProfilePhoto extends CtrlMain
 				let exposeAlbumImages = 'albumImages';
 				if (Pages)
 				{
-					Pages.setAjaxPagesType(true)
-						.setAjaxDataSrc(['album', 'images'])
-						.setAjaxDataTarget(exposeAlbumImages)
-						.setJquerySelectorData('.imageList .image');
+					Pages.setAjaxPagesType(true);
 
 					tplData["pages"] = Pages.pages();
 				}
@@ -216,9 +210,6 @@ class ProfilePhoto extends CtrlMain
 
 				this.view.setTplData(tplFile, err.data);
 				return Promise.resolve(true);
-			})
-			.catch((err) => {
-				throw err;
 			});
 	}
 

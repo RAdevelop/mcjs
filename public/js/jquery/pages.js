@@ -12,12 +12,19 @@
 
 	Pagination.setPages = function (props)
 	{
-		Pagination.pages = props;
+		//Object.assign(this.pages, props);
+		//Pagination.pages = props;
+		for(var p in props)
+		{
+			this.pages[p] = props[p];
+		}
+
+		console.log('проверить в ИЕ9+');
 	};
 
 	Pagination.btnNextPage = function ()
 	{
-		return $('.pagesNavigation .nextPages');
+		return $('.js-pages-navigation .js-next-pages');
 	};
 	Pagination.init = function ()
 	{
@@ -25,11 +32,10 @@
 
 		//console.log((!Pagination.pages || !MCJS[Pagination.pages.ajaxDataTarget]));
 
-		if (!Pagination.pages || !MCJS[Pagination.pages.ajaxDataTarget])
+		if (!Pagination.pages || !MCJS[Pagination.pages['ajaxDataTarget']])
 			return;
 
 		//var strPages = md5(Pagination.sPages(Pagination.pages));
-
 		var page = Pagination.pages.page;
 		var pagesUri = Pagination.pages.uri;
 		var ts = (new Date()).getTime();
@@ -71,18 +77,27 @@
 					$self.button('reset');
 					//console.log(resData);
 
-					if (!resData["pages"] || !resData["html"] || !resData["pages"]["ajaxDataSrc"])
-						return;
-
-					var data = Pagination.getDataSrc(resData["pages"]["ajaxDataSrc"], resData);
-
-					if (!data.length)
+					//if (!resData["pages"] || !resData["html"] || !resData["pages"]["ajaxDataSrc"])
+					if (!resData["pages"] || !resData["html"])
 						return;
 
 					Pagination.setPages(resData["pages"]);
 
+					var dataSrc = [];
+
+					//иначе передача по ссылке идет
+					for (var p in Pagination["pages"]["ajaxDataSrc"])
+					{
+						dataSrc[p] = Pagination["pages"]["ajaxDataSrc"][p];
+					}
+
+					var data = Pagination.getDataSrc(dataSrc, resData);
+
+					if (!data.length)
+						return;
+
 					page = resData["pages"]["page"];
-					$self.attr('href', resData["pages"]["uri"] +'/page/'+(page+1) +'/');
+					$self.attr('href', [Pagination["pages"]["uri"], 'page', (page+1)].join('/')+'/');
 
 					//console.log(data);
 
@@ -92,13 +107,14 @@
 							preloadImages(data[i]["previews"]);
 					}
 
-					MCJS[resData["pages"]["ajaxDataTarget"]] = MCJS[resData["pages"]["ajaxDataTarget"]].concat(data);
+					//MCJS[resData["pages"]["ajaxDataTarget"]] = MCJS[resData["pages"]["ajaxDataTarget"]].concat(data);
+					MCJS[Pagination["pages"]["ajaxDataTarget"]] = MCJS[Pagination["pages"]["ajaxDataTarget"]].concat(data);
 
-					var $htmlContainer = $(resData["pages"]["jQuerySelector"]).parent();
+					var $htmlContainer = $(Pagination["pages"]["jQuerySelector"]).parent();
 
-					var minHeight = $(resData["pages"]["jQuerySelector"]).height();
+					var minHeight = $(Pagination["pages"]["jQuerySelector"]).height();
 
-					var $html  = $('<div>'+resData["html"]+'</div>').find(resData["pages"]["jQuerySelector"]);
+					var $html  = $('<div>'+resData["html"]+'</div>').find(Pagination["pages"]["jQuerySelector"]);
 
 					$htmlContainer.append($html);
 
@@ -129,8 +145,10 @@
 
 		Pagination.scrollDelayMs = 500;
 
-		Pagination.getDataSrc = function (ajaxDataSrc, resData)
+		Pagination.getDataSrc = function (aDataSrc, resData)
 		{
+			var ajaxDataSrc = aDataSrc || [];
+
 			if (!ajaxDataSrc || !ajaxDataSrc.length || !resData)
 				return [];
 
@@ -148,6 +166,7 @@
 						return resData[dataSrc] || [];
 				}
 			}
+
 			return [];
 		}
 	};
