@@ -73,10 +73,11 @@ class Blog extends BaseModel
 	 * данные по его id
 	 *
 	 * @param b_id
+	 * @param i_u_id
 	 * @param b_show
 	 * @returns {Promise}
 	 */
-	getById(b_id, b_show = null)
+	getBlogById(b_id, i_u_id=null, b_show = null)
 	{
 		let sql =
 			`SELECT b_id, b_create_ts, b_update_ts, b_title, b_alias, b_notice, b_text, u_id, b_img_cnt
@@ -86,12 +87,25 @@ class Blog extends BaseModel
 
 		let sqlData = [b_id];
 
-		if (b_show !== null)
+		if (b_show === null)
+		{
+			sql += ` AND b_show IN(0,1)`;
+		}
+		else
 		{
 			b_show = (parseInt(b_show, 10)>0 ? 1 : 0);
 			sql += ` AND b_show = ?`;
 			sqlData.push(b_show);
 		}
+
+		if (i_u_id !== null)
+		{
+			sql += ` AND u_id = ?`;
+			sqlData.push(i_u_id);
+		}
+
+		/*console.log(sql);
+		console.log(sqlData);*/
 
 		return this.constructor.conn().sRow(sql, sqlData);
 	}
@@ -108,7 +122,12 @@ class Blog extends BaseModel
 	{
 		let sqlData = [];
 		let where = [];
-		if (b_show !== null)
+
+		if (b_show === null)
+		{
+			where.push('b_show IN(0,1)');
+		}
+		else
 		{
 			b_show = (parseInt(b_show, 10)>0 ? 1 : 0);
 			where.push('b_show = ?');
@@ -144,15 +163,19 @@ class Blog extends BaseModel
 		let sqlJoin = [];
 		let sqlData = [];
 
-		if (b_show !== null)
+		if (b_show === null)
+		{
+			sqlJoin.push('b.b_show IN(0,1)');
+		}
+		else
 		{
 			b_show = (parseInt(b_show, 10)>0 ? 1 : 0);
-			sqlJoin.push('b_show = ?');
+			sqlJoin.push('b.b_show = ?');
 			sqlData.push(b_show);
 		}
 		if (i_u_id !== null)
 		{
-			sqlJoin.push('u_id = ?');
+			sqlJoin.push('b.u_id = ?');
 			sqlData.push(i_u_id);
 		}
 

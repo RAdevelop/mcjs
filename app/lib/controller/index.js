@@ -23,6 +23,7 @@ class Base
 
 		this._setAction();
 		this._setBaseUrl(this.getReq());
+		//this._setOriginalUrl(this.getReq());
 
 		this._setClasses(Classes);
 		this._getClasses().setSession(this.getReq().session);
@@ -68,7 +69,19 @@ class Base
 		//if (path.length > 1)
 		//path = (path[path.length-1] == '/' ? path.substr(0, path.length-1) : path);
 		//return path;
-		return this.getArgs().join('/');
+		if (this._path === undefined)
+			this._path = this.getArgs().join('/');
+
+		return this._path;
+	}
+
+	_setOriginalUrl(req)
+	{
+		req.originalUrl = this.getBaseUrl();
+		if (this.getPath() != '')
+			req.originalUrl += '/' + this.getPath();
+		//console.log('req.baseUrl = ', req.baseUrl);
+		return this;
 	}
 
 	getReqQuery()
@@ -192,11 +205,11 @@ class Base
 			this.setArgs(args);
 		}
 
-		this.setIsAction(this._isMethod(this._action));
+		this._setIsAction(this._isMethod(this._action));
 
 		//console.log('_isAction =', this._action);
 		//console.log('this.getArgs() =', this.getArgs());
-		
+
 		return this;
 	}
 
@@ -215,7 +228,7 @@ class Base
 	{
 		return this._actionName;
 	}
-	
+
 	setArgs(args)
 	{
 		args.forEach((item, i) => {
@@ -225,12 +238,12 @@ class Base
 		this._args = args;
 		return this;
 	}
-	
+
 	getArgs()
 	{
 		return this._args;
 	}
-	
+
 	setReq(req)
 	{
 		this._req = req;
@@ -240,7 +253,7 @@ class Base
 	{
 		return this._req;
 	}
-	
+
 	setRes(res)
 	{
 		this._res = res;
@@ -286,7 +299,7 @@ class Base
 	_parseRoutePaths()
 	{
 		/*
-		
+
 		//в методах классов контроллеров надо прописывать все роуты:
 		и для загрузки файлов. в общем все, по которым идет обращение по GET
 		POST тоже, см html формы...
@@ -327,7 +340,7 @@ class Base
 				if (routePaths[actionName][routers[i]] && routePaths[actionName][routers[i]].length)
 				{
 					routePaths[actionName][routers[i]].forEach((varName, i) => {
-						
+
 						if (varName)
 						{
 							tmpArgs[varName] = args[i];
@@ -337,8 +350,8 @@ class Base
 					//this.routeArgs = Helpers.varsValidate(tmpArgs);
 					this.routeArgs = tmpArgs;
 				}
-				console.log("this.routeArgs = ", this.routeArgs);
-				console.log('\n');
+				//console.log("this.routeArgs = ", this.routeArgs);
+				//console.log('\n');
 				return true;
 			}
 		}
@@ -369,7 +382,6 @@ class Base
 	{
 		//this._setAction();
 		//this._setBaseUrl(this.getReq(), this.getRes());
-
 		if (!this.isAction() || !this._parseRoutePaths())
 			throw new Errors.HttpError(404);
 
@@ -417,7 +429,7 @@ class Base
 					.checkAccessToMenu(m_id, ug_ids);
 			});
 	}
-	
+
 	static formError()
 	{
 		return {
@@ -470,7 +482,7 @@ class Base
 
 		return tplData;
 	}
-	
+
 	/**
 	 * проверяем, является ли указанный метод "действием в контроллере"
 	 *
@@ -481,7 +493,7 @@ class Base
 		return this._isAction;
 	}
 
-	setIsAction(isAction)
+	_setIsAction(isAction)
 	{
 		this._isAction = isAction;
 		return this;

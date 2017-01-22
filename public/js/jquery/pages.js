@@ -12,14 +12,11 @@
 
 	Pagination.setPages = function (props)
 	{
-		//Object.assign(this.pages, props);
-		//Pagination.pages = props;
-		for(var p in props)
+		Object.assign(this.pages, props);
+		/*for(var p in props)
 		{
 			this.pages[p] = props[p];
-		}
-
-		console.log('проверить в ИЕ9+');
+		}*/
 	};
 
 	Pagination.btnNextPage = function ()

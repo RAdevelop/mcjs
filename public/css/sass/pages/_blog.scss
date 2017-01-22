@@ -82,6 +82,7 @@
 .blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoDate
 {
   top: 0;
+  left: 0;
   padding: 3px;
   background-color: rgba(0, 0, 0, 0.7);
   text-align: center;
@@ -145,6 +146,15 @@
   &_user{
     display: table-cell;
     padding: 3px;
+
+    & > .fa-user {
+      display: inline-block;
+      width: 50px;
+      height: 50px;
+      line-height: 50px;
+      font-size: 50px;
+      text-align: center;
+    }
   }
 
   &_data{

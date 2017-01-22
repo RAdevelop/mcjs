@@ -52,12 +52,12 @@ class Blog extends CtrlMain
 			blogList: null
 		};
 
-		let {i_blog_id=null, s_blog_alias=null} = this.routeArgs;
+		let {i_u_id=null, i_blog_id=null, s_blog_alias=null} = this.routeArgs;
 
 		if (i_blog_id)
-			return this.blog(tplData, i_blog_id, s_blog_alias);
+			return this.blog(tplData, i_blog_id, s_blog_alias, i_u_id);
 
-		return this.blogList(tplData);
+		return this.blogList(tplData, i_u_id);
 	}
 
 	/**
@@ -66,14 +66,15 @@ class Blog extends CtrlMain
 	 * @param tplData
 	 * @param i_blog_id
 	 * @param s_alias
+	 * @param i_u_id
 	 * @returns {Promise}
 	 * @throws Errors.HttpStatusError
 	 */
-	blog(tplData, i_blog_id, s_alias)
+	blog(tplData, i_blog_id, s_alias, i_u_id=null)
 	{
 		//let show = (this.getLocalAccess()['post_edit'] ? null : 1);
-
-		return this._getBlogData(i_blog_id)
+		
+		return this._getBlogData(i_blog_id, i_u_id)
 			.then((props)=>
 			{
 				if (
@@ -128,19 +129,20 @@ class Blog extends CtrlMain
 	}
 
 	/**
-	 * список событий
+	 * список статей
 	 *
 	 * @param tplData
+	 * @param i_u_id
 	 * @returns {Promise}
 	 */
-	blogList(tplData)
+	blogList(tplData, i_u_id=null)
 	{
 		let {i_page=1} = this.routeArgs;
 		//let show = (this.getLocalAccess()['post_edit'] ? null : 1);
-		let show = 1;
+		let show = (i_u_id==this.getUserId() ? null : 1);
 
 		return Promise.resolve(this.getClass("blog")
-			.getBlogList(new Pages(i_page, limit_per_page), show))
+			.getBlogList(new Pages(i_page, limit_per_page), show, i_u_id))
 			.spread((blogList, Pages) =>
 			{
 				let u_ids = blogList.map((blog)=>
@@ -569,11 +571,11 @@ class Blog extends CtrlMain
 			});
 	}
 
-	_getBlogData(b_id)
+	_getBlogData(b_id, i_u_id=null)
 	{
 		return Promise.props({
 			isRootAdmin: this.getClass('user/groups').isRootAdmin(this.getUserId()),
-			blog: this.getClass('blog').getBlogById(b_id)
+			blog: this.getClass('blog').getBlogById(b_id, i_u_id)
 		})
 	}
 }

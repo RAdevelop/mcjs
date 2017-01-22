@@ -50,12 +50,13 @@ class Blog extends Base
 	 * данные контента блога по его id
 	 *
 	 * @param b_id
+	 * @param i_u_id
 	 * @param b_show
 	 * @returns {Promise}
 	 */
-	getBlogById(b_id, b_show = null)
+	getBlogById(b_id, i_u_id=null, b_show = null)
 	{
-		return this.model('blog').getById(b_id, b_show);
+		return this.model('blog').getBlogById(b_id, i_u_id, b_show);
 	}
 
 	/**
