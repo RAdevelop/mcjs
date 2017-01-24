@@ -54,6 +54,8 @@ class Profile extends CtrlMain
 	{
 		let {i_u_id=this.getUserId()} = this.routeArgs;
 
+		let b_show = (i_u_id==this.getUserId() ? null : 1);
+
 		return this.getUser(i_u_id)
 			.then((userData) =>
 			{
@@ -62,7 +64,8 @@ class Profile extends CtrlMain
 
 				return Promise.props({
 					photoAlbums: this.getClass('user/photo').getAlbumList(this.getUserId(), i_u_id, new Pages(1, 4)),
-					videoAlbums: this.getClass('video').getVideoAlbumList(this.getUserId(), i_u_id, new Pages(1, 4))
+					videoAlbums: this.getClass('video').getVideoAlbumList(this.getUserId(), i_u_id, new Pages(1, 4)),
+					blogList: this.getClass('blog').getBlogList(new Pages(1, 4), b_show, i_u_id)
 				})
 					.then((props)=>
 					{
@@ -70,7 +73,8 @@ class Profile extends CtrlMain
 						let tplData = {
 							user: userData,
 							photoAlbums: props.photoAlbums[0]||null,
-							videoAlbums: props.videoAlbums[0]||null
+							videoAlbums: props.videoAlbums[0]||null,
+							blogList: props.blogList[0]||null
 						};
 
 						props = null;

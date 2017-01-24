@@ -162,7 +162,8 @@ class Blog extends CtrlMain
 				tplData["blogList"] = blogList;
 
 				let exposeBlog = 'blogList';
-				Pages.setLinksUri(this.getBaseUrl())
+				let baseUrl = (i_u_id ? [this.getBaseUrl(), i_u_id].join('/') : this.getBaseUrl());
+				Pages.setLinksUri(baseUrl)
 					.setAjaxPagesType(true);
 
 				tplData["pages"] = Pages.pages();

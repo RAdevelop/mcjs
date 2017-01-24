@@ -18,7 +18,7 @@ pPath = (_user && user && user.u_id && _user.u_id != user.u_id ? '/profile/'+use
         <div class="col-xs-6 col-sm-12 col-md-12"><a href="/profile/edit/"><span class="fa fa-edit fa-fw"></span> редактировать</a></div>
         <% } if (user.u_display_name) {%>
         <div class="col-xs-6 col-sm-12 col-md-12">
-            <i class="fa fa-user fa-fw" aria-hidden="true"></i> <%= user.u_display_name %>
+            <i class="fa fa-user-circle-o fa-fw" aria-hidden="true"></i> <%= user.u_display_name %>
         </div><% }
         if (user.l_name) {%>
         <div class="col-xs-6 col-sm-12 col-md-12 cursor-pointer">
@@ -28,6 +28,7 @@ pPath = (_user && user && user.u_id && _user.u_id != user.u_id ? '/profile/'+use
         <% if(user.u_id){%>
         <div class="col-xs-6 col-sm-12 col-md-12"><a href="/profile/photo/<%= user.u_id%>/"><span class="fa fa-camera fa-fw"></span> фотографии</a></div>
         <div class="col-xs-6 col-sm-12 col-md-12"><a href="/profile/video/<%= user.u_id%>/"><span class="fa fa-video-camera fa-fw"></span> видео</a></div>
+        <div class="col-xs-6 col-sm-12 col-md-12"><a href="/profile/blog/<%= user.u_id%>/"><span class="fa fa-pencil fa-fw"></span> блог</a></div>
         <%}%>
     </div>
 </div>
