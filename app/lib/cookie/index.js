@@ -21,7 +21,7 @@ Cookie.setCookie = function(res, name, value, maxAge)
 {
 	res.cookie(name, value, {httpOnly: AppConfig.session.cookie.httpOnly, maxAge: maxAge, path: '/'
 		, signed: true
-		, secure: AppConfig.session.cookie.secure //TODO типа только для https
+		, secure: AppConfig.session.cookie.secure //только для https
 	});
 };
 

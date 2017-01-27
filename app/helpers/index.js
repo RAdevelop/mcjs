@@ -12,7 +12,7 @@ class Helpers
 	{
 		maxDepth = maxDepth || 0;
 		mountPath = mountPath || '/';
-		//if (maxDepth > 3) return; //TODO ???
+		//if (maxDepth > 3) return;
 
 		var file, fileInfo;
 		try

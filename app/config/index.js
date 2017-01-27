@@ -33,8 +33,9 @@ var config = {
 		// /usr/local/opt/redis/bin/redis-server /usr/local/etc/redis.conf
 		port: 6379,
 		host: 'localhost',
-		showFriendlyErrorStack: true
-		, password: 'RoLexey2381Doberman05FireBlade'
+		showFriendlyErrorStack: true,
+		password: 'RoLexey2381Doberman05FireBlade',
+		connectionName : 'config'
 		/*,
 		reconnectOnError: function (err) {
 			var targetError = 'READONLY';

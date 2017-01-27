@@ -4,7 +4,7 @@
 "use strict";
 	
 const AppConfig = require('app/config');
-const Session = require('app/middlewares/session')();
+const Session = require('app/middlewares/session');
 const Logger = require('app/lib/logger');
 const Errors = require('app/lib/errors');
 
@@ -13,8 +13,8 @@ const msgpack = require('msgpack-js');
 
 
 const IORedis = require('app/lib/ioredis');
-let writerRedisOpts = {keyPrefix:"chat"};
-let readerRedisOts = {keyPrefix:"chat", return_buffers: true};
+let writerRedisOpts = {keyPrefix:"chat", connectionName: 'chatWriterRedisOpts'};
+let readerRedisOts = {keyPrefix:"chat", return_buffers: true, connectionName: 'chatReaderRedisOpts'};
 
 //TODO
 //let chanel = 'rooms';

@@ -80,7 +80,7 @@ class Profile extends CtrlMain
 						props = null;
 						this.view.setTplData(tplFile, tplData);
 						this.view.addPartialData("user/left", {user: userData});
-						//self.view.addPartialData("user/right", {}); //TODO?
+						//this.view.addPartialData("user/right", {});
 
 						return Promise.resolve(null);
 					});

@@ -232,10 +232,7 @@ Template.prototype.render = function(json = false)
 				{
 					if(err)
 						return reject(err);
-
-					//if (this.res.headersSent) //TODO ??? надо ли тут это???
-					//	return resolve(true);
-
+					
 					this.setController(null);
 					this.res.send(html);
 					return resolve(true);

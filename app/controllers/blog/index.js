@@ -430,7 +430,6 @@ class Blog extends CtrlMain
 									title: title,
 									links: 'https://'+this.getHostPort(),
 									link: 'http://'+this.getHostPort(),
-									//TODO возможно путь надо вести на статью в профиле юзера?
 									link_to: this.getMenuItem['m_path']+'/edit/'+tplData["i_blog_id"]
 								}
 							};

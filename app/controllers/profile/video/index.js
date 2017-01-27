@@ -422,10 +422,6 @@ class ProfileVideo extends CtrlMain
 		if (!tplData["link_v_url"] || tplData["link_v_url"] == '')
 			errors["link_v_url"] = 'Укажите cсылку на видеоролик';
 
-		//TODO перед сохранением слать ли еще раз запрос на получение данных?
-		//только надо будет тут описывать iframe, как на клиенте
-		//console.log(tplData);
-
 		return Promise.resolve(errors)
 			.then((errors) =>
 			{
@@ -488,11 +484,7 @@ class ProfileVideo extends CtrlMain
 
 		if (!tplData["link_v_url"] || tplData["link_v_url"] == '')
 			errors["link_v_url"] = 'Укажите cсылку на видеоролик';
-
-		//TODO перед сохранением слать ли еще раз запрос на получение данных?
-		//только надо будет тут описывать iframe, как на клиенте
-		//console.log(tplData);
-
+		
 		return Promise.resolve(errors)
 			.then((errors) =>
 			{

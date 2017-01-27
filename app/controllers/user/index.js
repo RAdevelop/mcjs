@@ -66,7 +66,7 @@ class User extends CtrlMain
 
 				this.view.setTplData(tplFile, tplData, isAjax);
 				this.view.addPartialData("user/left", {user: tplData.user});
-				//self.view.addPartialData("user/right", {}); //TODO
+				//this.view.addPartialData("user/right", {});
 
 
 				if (!isAjax)

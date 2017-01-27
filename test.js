@@ -1,4 +1,4 @@
-let locationArr = [
+/*let locationArr = [
 	"Россия, Алтайский край"
 	,"Россия, Амурская область"
 	,"Россия, Архангельская область"
@@ -96,4 +96,27 @@ Promise.mapSeries(locationArr, function (s_location)
 		{
 			return self.getClass('location').create(locationData);
 		});
-});
+});*/
+
+let ClientsOpts = new WeakSet();
+//let Clients = new WeakMap();
+let Clients = new WeakSet();
+
+let o1 = { connectionName: 'session',
+	port: 6379,
+	host: 'localhost',
+	showFriendlyErrorStack: true,
+	password: 'RoLexey2381Doberman05FireBlade' };
+
+
+function wm(options = {}, Clients)
+{
+	options = Object.assign({}, options);
+	console.log(Clients.has(options));
+
+	//Clients.set(options, 'ra');
+	Clients.add(options);
+}
+Clients.add(o1);
+wm(o1,Clients);
+wm(o1,Clients);

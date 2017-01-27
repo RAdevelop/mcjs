@@ -8,6 +8,7 @@ const RedisStore = require('connect-redis')(ExpressSession);
 const IORedis = require('app/lib/ioredis');
 const Logger = require('app/lib/logger');
 
+/*
 module.exports = function(){
 
     const redisClient = new IORedis();
@@ -25,4 +26,42 @@ module.exports = function(){
     });
 
     return ExpressSession(Config.session);
-};
+};*/
+
+
+const Session = (function()
+{
+    let _instance;
+
+    function init()
+    {
+        if (!_instance)
+        {
+            _instance = new Singleton();
+        }
+        return _instance;
+    }
+
+
+    // Конструктор
+    function Singleton()
+    {
+        const redisClient = new IORedis({connectionName : 'session'});
+
+        redisClient.on('error', function(err)
+        {
+            Logger.error(err);
+        });
+
+        Config.session.store = new RedisStore({
+            client: redisClient
+            , prefix: Config.session.prefix
+            , ttl: 86400 //in sec  (= 60*60*24 = 24 ч) //TODO
+        });
+
+        return ExpressSession(Config.session);
+    }
+    return init();
+})();
+
+module.exports = Session;

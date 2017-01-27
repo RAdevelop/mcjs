@@ -315,7 +315,7 @@ class Base
 				 }
 			 };
 		 }
-		 //TODO  ?? пока не удалять!!
+		 //пока не удалять!!
 		if (this.httpMethod != 'get')
 			return true;*/
 
