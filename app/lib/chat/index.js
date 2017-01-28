@@ -4,6 +4,7 @@
 "use strict";
 	
 const AppConfig = require('app/config');
+const Promise = require("bluebird");
 const Session = require('app/middlewares/session');
 const Logger = require('app/lib/logger');
 const Errors = require('app/lib/errors');
@@ -13,8 +14,6 @@ const msgpack = require('msgpack-js');
 
 
 const IORedis = require('app/lib/ioredis');
-let writerRedisOpts = {keyPrefix:"chat", connectionName: 'chatWriterRedisOpts'};
-let readerRedisOts = {keyPrefix:"chat", return_buffers: true, connectionName: 'chatReaderRedisOpts'};
 
 //TODO
 //let chanel = 'rooms';
@@ -88,56 +87,81 @@ module.exports = function(http, app)
 		"timeout" : 10000,                           //before connect_error and connect_timeout are emitted.
 		"transports" : ["websocket", 'polling']                //forces the transport to be only websocket. Server needs to be setup as well/
 	};
+	
 	let nsp = io.origins('*:*', opts).of('/'+chanel);
+	nsp._users = new WeakMap();
 	nsp
-	.use(function(socket, next)
+	.use((socket, next)=>
 	{
 		Session(socket.handshake, {}, next);
 	})
-	.use(function (socket, next)
+	.use((socket, next)=>
 	{
-		console.log('.use(function (socket, next)');
+		//console.log('.use(function (socket, next)');
 		//console.log(socket);
 
 		//return next(new Error('error:authentication'));
 
 		//console.log('socket.handshake.session:');
-		Logger.debug(socket.handshake.session);
+		//Logger.debug(socket.handshake.session);
 		//console.log('END socket.handshake.session:');
 
-		if(!socket.handshake.session.rtid)
+		if(!socket.handshake.session.rtid || !socket.handshake.session.hasOwnProperty('user') || !socket.handshake.session['user']['u_id'])
 		{
 			//let error = new Error('error:authentication');
 			let error = new Error('error:authentication');
 
 			return next(error);
-
 		}
+		socket._user = socket.handshake.session['user'];
+		//let user = socket.handshake.session['user'];
+
+		let writerRedisOpts = {keyPrefix:"chat", connectionName: 'ChatWriter'};
+		writerRedisOpts.connectionName += `[user_${socket._user['u_id']}]`;
+		writerRedisOpts = Object.assign({}, AppConfig.redis, writerRedisOpts);
+
+		let readerRedisOts = {keyPrefix:"chat", return_buffers: true, connectionName: 'ChatReader'};
+		readerRedisOts.connectionName += `[user_${socket._user['u_id']}]`;
+		readerRedisOts = Object.assign({}, AppConfig.redis, readerRedisOts);
+
+		if (!nsp._users.has(socket._user))
+		nsp._users.set(socket._user, {reader: IORedis(readerRedisOts), writer: IORedis(writerRedisOpts)});
+
 		return next();
 	});
-	nsp.on('connection', function(socket){
 
-		console.log('nsp.on connection');
+	nsp.on('connection', (socket)=>
+	{
+		function _messageBuffer(channel, message)
+		{
+			//переслали сообщение в чат (канал) через редис потом на клиента
+			let msg = {};
+			msg['text'] = msgpack.decode(message);
+
+			//TODO переделать, брать не из socket._user, а из хранилища (Редис или БД по u_id)
+			//а в вызовы .publish добавить передачу u_id. и на клиенте тоже - надо с клюента сюда передавать u_id
+			msg['from'] = {user: socket._user};
+
+			socket.emit('chat:msg:get', msg);
+		}
+
+		//console.log('nsp.on connection, socket.id = ', socket.id);
 		//console.log(socket);
 
-		let readerRedis = new IORedis(readerRedisOts);
-		readerRedis.on('error', function(err)
+		//readerRedis.on('message', function (channel, message) {
+		//readerRedis.on('messageBuffer', _messageBuffer);
+		nsp._users.get(socket._user).reader.addListener('messageBuffer', _messageBuffer);
+
+		socket.on('error', function _socketOnError(err)
 		{
-			Logger.error('readerRedis Client', err);
-		});
+			if (err) socket.emit('error', err);
 
-		let writerRedis = new IORedis(writerRedisOpts);
-		writerRedis.on('error', function(err){
-			Logger.error('writerRedis Client', err);
-		});
-
-		socket.on('error', function _socketOnError(err){
-
-			//if (err) socket.emit('error', err);
+			console.log("socket.on('error', function _socketOnError(err)");
 			Logger.error(err);
+			console.log("END socket.on('error', function _socketOnError(err)");
 		});
 		
-		socket.on('chat:error:auth', function(data, cb)
+		socket.on('chat:error:auth', (data, cb)=>
 		{
 			//ансабскрайб ?? от редиса
 			Logger.debug('chat:error:auth');
@@ -145,84 +169,81 @@ module.exports = function(http, app)
 			cb && cb();
 		});
 		
-		socket.on('disconnect', function(msg){
-
+		socket.on('disconnect', (msg)=>
+		{
 			console.log('msg =', msg);
-			return readerRedis
-				.unsubscribe(chanel)
-				.then(function ()
-				{
-					readerRedis.removeListener('readerRedis', _messageBuffer);
 
-					return readerRedis.quit()
-					.then(function ()
+			return nsp._users.get(socket._user).reader
+				.unsubscribe(chanel)
+				.then(()=>
+				{
+					return nsp._users.get(socket._user).reader.quit()
+					.then(()=>
 					{
 						Logger.info('readerRedis.unsubscribe ');
 
-						Logger.info('Socket  disconnected from "/'+chanel+'"');//это срабатывает... может быть тут надо будет вызывать событие leave()...?
+						//это срабатывает... может быть тут надо будет вызывать событие leave()...?
+						Logger.info('Socket  disconnected from "/'+chanel+'"');
 						return Promise.resolve();
 					});
 				})
-				.then(function ()
+				.then(()=>
 				{
-					return writerRedis.quit();
+					nsp._users.get(socket._user).reader.removeListener('messageBuffer', _messageBuffer);
+					nsp._users.get(socket._user).writer.quit();
+
+					socket._user = null;
+					return Promise.resolve();
 				})
-				.catch(function (err)
+				.catch((err)=>
 				{
-					if (err)
-						Logger.error(err);
+					Logger.debug('START on disconnect error');
+					Logger.error(err);
+					Logger.debug('END on disconnect error');
 				});
 		});
 
-		socket.on('chat:user:connected', function (data)
+		socket.on('chat:user:connected', (data)=>
 		{
 			console.log('someone connected to "/'+chanel+'"');
-			Logger.info('chat:user:connected');
-			console.log( '');
+			//console.log('data: ', data);
+			//console.log( '');
 
 			//TODO можно ли проверять, что уже подписаны на канал?!!!
-			readerRedis.subscribe(chanel, function(err, count)
-			{
-				if (err)
-					return socket.emit('error', err);
 
-				console.log('on readerRedis.subscribe count = ', count);
-				writerRedis.publish(chanel, msgpack.encode(data));
+			//return readerRedis.subscribe(chanel)
+			return nsp._users.get(socket._user).reader.subscribe(chanel)
+				.then((count)=>
+				{
+					//console.log('on readerRedis.subscribe count = ', count);
+					return nsp._users.get(socket._user).writer
+						.publish(chanel, msgpack.encode('connected'));
 
-				console.log({rooms: socket.rooms, socket_id: socket.id});
-			});
-			
-			//writerRedis.publish(chanel, msgpack.encode(data));
+					//console.log({rooms: socket.rooms, socket_id: socket.id});
+				})
+				.catch((err)=>
+				{
+					socket.emit('error', err);
+					console.log('error on return readerRedis.subscribe(chanel)');
+					Logger.error(err);
+				});
 		});
 
 		//отправили сообщение в чате
-		socket.on('chat:msg:send', function (data, cb)
+		socket.on('chat:msg:send', (data, cb)=>
 		{
 			/*
 			 TODO название канала/комнаты chanel/room надо будет передавать в сообщении?!
 			 перед publish сообщения проверять права пользователя, может ли он сюда писать... и так далее...
 			 */
-			writerRedis.publish(chanel, msgpack.encode(data));
+			nsp._users.get(socket._user).writer.publish(chanel, msgpack.encode(data));
 			cb(true);
 		});
-
-		function _messageBuffer(channel, message)
-		{
-			//переслали сообщение в чат (канал) через редис потом на клиента
-			let msg = msgpack.decode(message);
-			console.log('');
-			console.info('channel: %s, msg: %j', channel, msg);
-			//Logger.info(msg);
-			socket.emit('chat:msg:get', msg);
-		}
-		//readerRedis.on('message', function (channel, message) {
-		//readerRedis.on('messageBuffer', _messageBuffer);
-		readerRedis.addListener('messageBuffer', _messageBuffer);
 	})
-	.on('error', function (err)
+	.on('error', (err)=>
 	{
-		Logger.info("nsp.on('error'");
-		Logger.debug(err);
+		Logger.debug("nsp.on('error'");
+		Logger.error(err);
 	});
 	
 	/*

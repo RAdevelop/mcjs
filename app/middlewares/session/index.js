@@ -6,7 +6,7 @@ const Config = require('app/config');
 const ExpressSession = require('express-session');
 const RedisStore = require('connect-redis')(ExpressSession);
 const IORedis = require('app/lib/ioredis');
-const Logger = require('app/lib/logger');
+//const Logger = require('app/lib/logger');
 
 /*
 module.exports = function(){
@@ -46,12 +46,16 @@ const Session = (function()
     // Конструктор
     function Singleton()
     {
-        const redisClient = new IORedis({connectionName : 'session'});
+        //const redisClient = new IORedis({connectionName : 'session'});
+        let opt = {connectionName : 'session'};
+        opt = Object.assign({}, Config.redis, opt);
+        
+        const redisClient = IORedis(opt);
 
-        redisClient.on('error', function(err)
+        /*redisClient.on('error', function(err)
         {
             Logger.error(err);
-        });
+        });*/
 
         Config.session.store = new RedisStore({
             client: redisClient

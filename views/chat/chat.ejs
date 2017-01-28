@@ -47,29 +47,31 @@ $(function(){
 
 		console.log('connecting');
 
-	}).on('reconnect', function () {
-
+	})
+	.on('reconnect', function ()
+	{
 		console.log('reconnected ');
-
-	}).on('reconnecting', function () {
-
+	})
+	.on('reconnecting', function ()
+	{
 		console.log('reconnecting');
 	})
-	.on('reconnect_error', function(err){
-
+	.on('reconnect_error', function(err)
+	{
 		console.log('on reconnect_error event');
 		console.log(err);
 
-	}).on('reconnect_failed', function(err){
-
+	})
+	.on('reconnect_failed', function(err)
+	{
 		console.log('on reconnect_failed event');
 		console.log(err);
 
-	}).on('error', function(err){
-
+	})
+	.on('error', function(err)
+	{
 		console.log('on error event');
 		console.log(err);
-
 
 		if(err == 'error:authentication')
 		{
@@ -111,9 +113,21 @@ $(function(){
 		return false;
 	});
 
-	chat.on('chat:msg:get', function(msg){
-		console.log(msg);
-		$messages.append('<li>'+nl2br(msg)+'</li>');
+	chat.on('chat:msg:get', function(data)
+	{
+		console.log(data);
+
+		var ava = !!(data['from']['user']['previews']['50_50']);
+		var avaSrc = (ava ? data['from']['user']['previews']['50_50'] : '/_0.gif');
+
+		var html = '<li>';
+			html += '<div><img src="'+avaSrc+'"/></div>';
+			html += '<div>'+nl2br(data['text'])+'</div>';
+			html += '</li>';
+
+		console.log(ava);
+
+		$messages.append(html);
 		$messagesWrapper.scrollTop($messagesWrapper.height());
 	});
 

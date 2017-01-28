@@ -55,6 +55,7 @@ module.exports = function(Classes, Control)
 						calcTimeForGC();
 						//так как Controllers это WeakMap то пока закомментим
 						//Controllers.get(cn) = null;
+						//cn = null;
 
 						//console.log("response time: ", end.getTime() - startDate.getTime() + " ms");
 					});
@@ -64,6 +65,7 @@ module.exports = function(Classes, Control)
 				//Logger.error(err);
 				//так как Controllers это WeakMap то пока закомментим = null
 				//C = null;
+				//cn = null;
 				return next(err);
 			});
 	});
