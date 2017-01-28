@@ -84,7 +84,7 @@ class Base
 		return this;
 	}
 
-	getReqQuery()
+	reqQuery()
 	{
 		return this.getReq().query;
 	}

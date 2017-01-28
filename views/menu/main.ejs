@@ -1,15 +1,15 @@
 <%
-let u_id = (typeof user === 'undefined' ? null : user['u_id']);
+let u_id = (typeof user === 'undefined' ? (_user && _user['u_id']?_user['u_id']:null) : user['u_id']);
 let uri = [];
 %><ul class="nav navbar-nav"><%
 menuSite.forEach(function(item)
 {
-	if (item['m_level'] == 1)
-		return;
+	if (item['m_level'] == 1) return;
 
-	let css_class = (menuItem && menuItem['m_id'] == item['m_id'] ? 'active': '');
 	uri = [item['m_path']];
 	if (u_id && item['m_type_alias'] == 'profile') uri.push(u_id);
+
+	let css_class = (menuItem && menuItem['m_id'] == item['m_id'] ? 'active': '');
 	%><li class="<%- css_class%>"><a href="<%= uri.join('/') %>/"><%=item['m_name']%></a></li><%
 	}); %></ul>
 <!--<ul class="nav navbar-nav">

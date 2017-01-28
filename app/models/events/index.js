@@ -32,7 +32,9 @@ class Events extends BaseModel
 		let e_end_ts    = Moment(dd_end_ts, "DD-MM-YYYY").unix();
 
 		let now_ts = Moment().unix();
-		let sqlData = [i_u_id, s_e_title, t_e_notice, t_e_text, s_e_address, f_e_lat, f_e_lng, i_location_id, now_ts, now_ts, e_start_ts, e_end_ts, gps_lat, gps_lng];
+		let sqlData = [i_u_id, s_e_title, e_alias, t_e_notice, t_e_text, s_e_address, f_e_lat, f_e_lng, i_location_id, now_ts, now_ts, e_start_ts, e_end_ts, gps_lat, gps_lng];
+
+		console.log(gps_lat, gps_lng);
 
 		let i_e_id;
 
@@ -42,20 +44,23 @@ class Events extends BaseModel
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
 		return this.constructor.conn().ins(sql, sqlData)
-			.then((res) => {
+			.then((res) =>
+			{
 				i_e_id = res["insertId"];
 
 				sql = `SELECT l_lk, l_rk FROM location WHERE l_id = ?;`;
 
 				return this.constructor.conn().sRow(sql, [i_location_id]);
 			})
-			.then((res) => {
+			.then((res) => 
+			{
 				let {l_lk, l_rk} = res;
 
 				sql = `SELECT l_id FROM location WHERE l_lk <= ? AND l_rk >= ? ORDER BY l_lk;`;
 				return this.constructor.conn().s(sql, [l_lk, l_rk]);
 			})
-			.then((res) => {
+			.then((res) => 
+			{
 				let sqlIns = [], sqlData = [i_e_id], pids = [];
 				res.forEach((item) => {
 					sqlIns.push("(?, ?)");
@@ -73,7 +78,8 @@ class Events extends BaseModel
 
 				return this.constructor.conn().multis(sql, sqlData);
 			})
-			.then(() => {
+			.then(() => 
+			{
 				return Promise.resolve(i_e_id);
 			});
 	}

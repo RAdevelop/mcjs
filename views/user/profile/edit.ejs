@@ -205,6 +205,26 @@
 //<!--
 $(function()
 {
+    var userEmptyName = !!MCJS["userEmptyName"];
+    console.log(userEmptyName);
+
+    //$dialog.show().css('overflow', 'visible');
+
+    if (userEmptyName)
+    {
+        $('_userEmptyName_').mcDialog({
+            title: 'Необходимо заполнить данные'
+            , body: 'Укажиет логин или имя'
+            , postRes: false
+            , onOpen: function ($dialog)
+            {
+                $dialog.find('.modal-dialog').animate({
+                    'margin-top': '100px'
+                }, 600);
+            }
+        });
+    }
+
     var avaUploadOpts = MCJS["avaUploadOpts"];
     var $avaCropContainer = $('#ava_crop_container');
     var $formAvaCrop = $('#formAvaCrop');

@@ -131,6 +131,30 @@
   width: 31% !important;
 }
 
+.positionAbsolute {
+  position: absolute;
+}
+
+.positionFixed {
+  position: fixed;
+}
+
+.positionInherit {
+  position: inherit;
+}
+
+.positionInitial {
+  position: initial;
+}
+
+.positionRelative {
+  position: relative;
+}
+
+.positionStatic {
+  position: static;
+}
+
 body {
   font-family: 'Open Sans', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
   font-size: 14px;
@@ -151,6 +175,30 @@ body.mce-content-body,
 }
 
 /******************************** END TinyMCE редактор */
+.goto-up {
+  display: none;
+  width: 100px;
+  height: 50px;
+  border: 1px solid #fff;
+  bottom: 0px;
+  font-size: 50px;
+  text-align: center;
+  background-color: #000;
+  color: #999;
+  cursor: pointer;
+  position: fixed;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  border-radius: 5px;
+  z-index: 10;
+  opacity: 0;
+}
+.goto-up:hover {
+  opacity: 0.6 !important;
+  color: #fff;
+}
+
 /******************************** календарь  */
 .calendar {
   float: left;
@@ -1194,10 +1242,17 @@ iframe.iframeVideoEmbed {
   max-width: 150px;
 }
 
+.blogListContainer {
+  position: relative;
+  display: table;
+  width: 100%;
+}
+
 .blogListContainer .blogListItem {
   float: left;
   margin: 0px  10px  10px  0px;
   width: auto;
+  display: table-cell;
 }
 
 .blogListContainer .blogListItem .blogListItemInfo {
@@ -1351,8 +1406,13 @@ iframe.iframeVideoEmbed {
   }
 
   .blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoNotice {
-    top: 26px;
+    top: 0px;
     background-color: rgba(0, 0, 0, 0.7);
+  }
+}
+@media (min-width: 320px) and (max-width: 480px) {
+  .blogListContainer .blogListItem {
+    width: 100%;
   }
 }
 /**********  СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ  **************/
@@ -2070,6 +2130,25 @@ ul.shopListContainer .shopItem .motoshopAddress .motoshopAddressData {
 .userProfile .blocks {
   /*float: left;
   @include mix-max-width-calc(34%);*/
+}
+.userProfile .blocks .blogListItem {
+  width: 443px;
+}
+@media (max-width: 768px) {
+  .userProfile .blocks .blogListItem {
+    width: 98%;
+  }
+}
+.userProfile .blocks .blogListItem .blogListItemInfo {
+  max-width: 443px;
+}
+@media (max-width: 768px) {
+  .userProfile .blocks .blogListItem .blogListItemInfo {
+    width: 100%;
+  }
+}
+.userProfile .blocks .blogListItem .blogListItemInfo .blogListItemInfoNotice {
+  top: 0;
 }
 
 /********** список пользователей **************/

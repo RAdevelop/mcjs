@@ -129,7 +129,14 @@ module.exports = function(http, app)
 
 		return next();
 	});
-
+	nsp.getReader = function(user)
+	{
+		return nsp._users.get(user).reader;
+	};
+	nsp.getWriter = function(user)
+	{
+		return nsp._users.get(user).writer;
+	};
 	nsp.on('connection', (socket)=>
 	{
 		function _messageBuffer(channel, message)
@@ -150,7 +157,7 @@ module.exports = function(http, app)
 
 		//readerRedis.on('message', function (channel, message) {
 		//readerRedis.on('messageBuffer', _messageBuffer);
-		nsp._users.get(socket._user).reader.addListener('messageBuffer', _messageBuffer);
+		nsp.getReader(socket._user).addListener('messageBuffer', _messageBuffer);
 
 		socket.on('error', function _socketOnError(err)
 		{
@@ -173,11 +180,10 @@ module.exports = function(http, app)
 		{
 			console.log('msg =', msg);
 
-			return nsp._users.get(socket._user).reader
-				.unsubscribe(chanel)
+			return nsp.getReader(socket._user).unsubscribe(chanel)
 				.then(()=>
 				{
-					return nsp._users.get(socket._user).reader.quit()
+					return nsp.getReader(socket._user).quit()
 					.then(()=>
 					{
 						Logger.info('readerRedis.unsubscribe ');
@@ -189,8 +195,8 @@ module.exports = function(http, app)
 				})
 				.then(()=>
 				{
-					nsp._users.get(socket._user).reader.removeListener('messageBuffer', _messageBuffer);
-					nsp._users.get(socket._user).writer.quit();
+					nsp.getReader(socket._user).removeListener('messageBuffer', _messageBuffer);
+					nsp.getWriter(socket._user).quit();
 
 					socket._user = null;
 					return Promise.resolve();
@@ -212,11 +218,11 @@ module.exports = function(http, app)
 			//TODO можно ли проверять, что уже подписаны на канал?!!!
 
 			//return readerRedis.subscribe(chanel)
-			return nsp._users.get(socket._user).reader.subscribe(chanel)
+			return nsp.getReader(socket._user).subscribe(chanel)
 				.then((count)=>
 				{
 					//console.log('on readerRedis.subscribe count = ', count);
-					return nsp._users.get(socket._user).writer
+					return nsp.getWriter(socket._user)
 						.publish(chanel, msgpack.encode('connected'));
 
 					//console.log({rooms: socket.rooms, socket_id: socket.id});
@@ -236,7 +242,7 @@ module.exports = function(http, app)
 			 TODO название канала/комнаты chanel/room надо будет передавать в сообщении?!
 			 перед publish сообщения проверять права пользователя, может ли он сюда писать... и так далее...
 			 */
-			nsp._users.get(socket._user).writer.publish(chanel, msgpack.encode(data));
+			nsp.getWriter(socket._user).publish(chanel, msgpack.encode(data));
 			cb(true);
 		});
 	})

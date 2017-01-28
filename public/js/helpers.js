@@ -3,6 +3,41 @@
  */
 jQuery(document).ready(function ()
 {
+	var $gotoUp = $('.goto-up');
+	var gotoUpTimeout = null;
+	function gotoUpHideShow($self, display)
+	{
+		clearTimeout(gotoUpTimeout);
+		gotoUpTimeout = null;
+
+		//display = display||false;
+		var opacity = (display ? 0.3 : 0);
+
+		$self.css('opacity', opacity);
+		if (display)
+			$self.css('display', 'block');
+		else
+			$self.hide();
+	}
+
+	$(window).on('scroll', function ()
+	{
+		gotoUpTimeout = setTimeout(function ()
+		{
+			var wH = $(this).outerHeight()/2;
+			if (window.scrollY >= wH)
+				gotoUpHideShow($gotoUp, true);
+			else
+				gotoUpHideShow($gotoUp, false);
+		}, 800);
+	});
+	$gotoUp.click(function ()
+	{
+		$(window).scrollTo(0, 1000, {axis:'y', interrupt: true, limit: false});
+
+		gotoUpHideShow($gotoUp, false);
+	});
+
 	if (window["Helpers"])
 		return;
 

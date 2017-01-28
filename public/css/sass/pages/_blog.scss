@@ -45,13 +45,17 @@
 
 .blogListContainer
 {
-
+  //overflow: hidden;
+  position: relative;
+  display: table;
+  width: 100%;
 }
 .blogListContainer .blogListItem
 {
   float: left;
   margin:  0px  10px  10px  0px;
   width: auto;
+  display: table-cell;
 }
 
 .blogListContainer .blogListItem .blogListItemInfo
@@ -233,12 +237,15 @@
   }
   .blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoNotice
   {
-    top: 26px;
+    //top: 26px;
+    top: 0px;
     background-color: rgba(0, 0, 0, 0.7);
   }
 }
 
 @media (min-width: $screen-xxs) and (max-width: $screen-xs)
 {
-
+  .blogListContainer .blogListItem {
+    width: 100%
+  }
 }

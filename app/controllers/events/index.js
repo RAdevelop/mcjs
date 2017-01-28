@@ -425,10 +425,6 @@ class Events extends CtrlMain
 				this.view.setTplData(tplFile, err.data);
 
 				return Promise.resolve(true);
-			})
-			.catch( (err) => 
-			{
-				throw err;
 			});
 	}
 

@@ -7,14 +7,28 @@
         <p>_reqPath: <%= _reqPath %></p>
     </div>
 </footer>
+<i class="fa fa-arrow-up goto-up" aria-hidden="true"></i>
 <script src="/bootstrap/dist/js/ie10-viewport-bug-workaround.js"></script>
 <script src="/js/helpers.js"></script>
 <script src="/js/jquery/topTools.js"></script>
 <script type="text/javascript">
 //<!--
+var _reqBaseUrl = '<%=_reqBaseUrl%>';
 $('.navbar-user-top .top-tools').topTools({
     u_id: "<%= (_user && _user.u_id? _user.u_id : '')%>"
 });
+
+var userEmptyName = <%=(_user && _user['u_display_name'] == '')%>;
+if (userEmptyName)
+{
+    let url = _reqBaseUrl.split('/');
+    url.forEach(function(item, i){
+        if (item == '') url.splice(i, 1);
+    });
+
+    if (false == (url.length == 2 && url[0] == 'profile' && url[1] == 'edit'))
+    window.location = '/profile/edit/?empty_name#base';
+}
 //-->
 </script>
 </body>

@@ -172,10 +172,7 @@ module.exports = function(Classes)
 				req._user = res.locals._user = null;
 				
 				if (err) return next(err);
-				
-				/*console.log('FROM ' + __dirname);
-				console.log(userData);*/
-				
+
 				req._user = res.locals._user = userData;
 
 				//if (userData)

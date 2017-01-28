@@ -84,10 +84,6 @@ class Profile extends CtrlMain
 
 						return Promise.resolve(null);
 					});
-			})
-			.catch((err) =>
-			{
-				throw err;
 			});
 	}
 	
@@ -143,13 +139,11 @@ class Profile extends CtrlMain
 				this.view.addPartialData('user/left', {user: userData});
 
 				//экспрот данных в JS на клиента
+				this.getRes().expose(this.reqQuery().hasOwnProperty('empty_name'), 'userEmptyName');
 				this.getRes().expose(userData, 'userLocation');
 				this.getRes().expose(FileUpload.exposeUploadOptions('user_ava'), 'avaUploadOpts');
 
 				return Promise.resolve(null);
-			})
-			.catch((err) => {
-				throw err;
 			});
 	}
 	
@@ -185,10 +179,6 @@ class Profile extends CtrlMain
 
 				//this.getRes().expose();
 				return Promise.resolve(true);
-			})
-			.catch((err) =>
-			{
-				throw err;
 			});
 	}
 	
@@ -206,9 +196,6 @@ class Profile extends CtrlMain
 			{
 				this.view.setTplData('user/profile/change_mail_confirm.ejs', tplData);
 				return Promise.resolve(null);
-			})
-			.catch((err) => {
-				throw err;
 			});
 	}
 	
@@ -319,12 +306,13 @@ class Profile extends CtrlMain
 			errors["i_file_id"] = "Фотография не выбрана";
 
 		return Promise.resolve(errors)
-			.then((errors) => {
+			.then((errors) =>
+			{
 				if (this.parseFormErrors(tplData, errors, 'Ошибка при кадрировании фотографии'))
 					return Promise.resolve(tplData);
 			})
-			.then((tplData) => {
-
+			.then((tplData) =>
+			{
 				return this.getClass('user/photo/profile')
 					.getUserAva(this.getUserId())
 					.then((ava) =>
@@ -333,7 +321,8 @@ class Profile extends CtrlMain
 						ava["dir"] = ava["ai_dir"];
 
 						return FileUpload.cropImage(ava, 'user_ava', tplData["i_crop_x"], tplData["i_crop_y"], tplData["i_crop_width"], tplData["i_crop_height"])
-							.then((ava) => {
+							.then((ava) =>
+							{
 								return Promise.resolve(ava);
 							});
 					});
@@ -378,7 +367,8 @@ class Profile extends CtrlMain
 						});
 				}
 			})
-			.catch(Errors.ValidationError, (err) => {
+			.catch(Errors.ValidationError, (err) =>
+			{
 				tplData.formError.message = err.message;
 				tplData.formError.fields["s_location"] = "Уточните название, или просто кликните по карте";
 				throw err;
