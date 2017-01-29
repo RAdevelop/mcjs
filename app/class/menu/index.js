@@ -6,10 +6,12 @@ const Base = require('app/lib/class');
 
 class Menu extends Base
 {
-	getAll(m_type = null, all = true)
+	getAll(m_type = null, all = true, m_show = null)
 	{
-		return new Promise((resolve, reject) => {
-			this.model('menu').getAll(m_type, all, (err, menuList) => {
+		return new Promise((resolve, reject) =>
+		{
+			this.model('menu').getAll(m_type, all, m_show, (err, menuList) =>
+			{
 				if (err)
 					return reject(err);
 
@@ -41,10 +43,12 @@ class Menu extends Base
 	 * @param menuDesc
 	 * @param menuControllerId
 	 * @param mType
+	 * @param mShow
 	 */
-	updById(menuId, menuPid, menuAfterId, menuPath, menuName, menuTitle, menuH1, menuDesc, menuControllerId, mType)
+	updById(menuId, menuPid, menuAfterId, menuPath, menuName, menuTitle, menuH1, menuDesc, menuControllerId, mType, mShow)
 	{
-		return this.model('menu').updById(menuId, menuPid, menuAfterId, menuPath, menuName, menuTitle, menuH1, menuDesc, menuControllerId, mType);
+		return this.model('menu')
+			.updById(menuId, menuPid, menuAfterId, menuPath, menuName, menuTitle, menuH1, menuDesc, menuControllerId, mType, mShow);
 	}
 
 	/**
@@ -59,13 +63,14 @@ class Menu extends Base
 	 * @param mDesc
 	 * @param mCId
 	 * @param mType
+	 * @param mShow
 	 * @throws
 	 *  DbError
 	 *
 	 */
-	add(mPid, mAfterId, mPath, mName, mTitle, mH1, mDesc, mCId, mType)
+	add(mPid, mAfterId, mPath, mName, mTitle, mH1, mDesc, mCId, mType, mShow)
 	{
-		return this.model('menu').add(mPid, mAfterId, mPath, mName, mTitle, mH1, mDesc, mCId, mType);
+		return this.model('menu').add(mPid, mAfterId, mPath, mName, mTitle, mH1, mDesc, mCId, mType, mShow);
 	}
 
 }

@@ -69,16 +69,21 @@ function menu(Classes, req, cb)
 	});*/
 
 	let menu_type = 1;// 1- меню сайта (см model("menu").getAll(...))
+	let m_show = (path[1] ? null : 1);
 	if (path[1])
 	{
 		switch(path[1].toLowerCase())
 		{
+			default:
+				m_show = 1;
+				break;
 			case 'admin':
 				menu_type = 0;
 				break;
 
 			case 'profile':
 				menu_type = 2;
+				m_show = 1;
 				break;
 		}
 	}
@@ -98,7 +103,7 @@ function menu(Classes, req, cb)
 			{
 				//if(req.xhr) return aCb(null, menuData);
 				
-				Classes.model("menu").getAll(menu_type, false, (err, menuList)=>
+				Classes.model("menu").getAll(menu_type, false, m_show, (err, menuList)=>
 				{
 					if (err)
 						return aCb(err, menuData);
@@ -135,7 +140,7 @@ function menu(Classes, req, cb)
 				}
 
 				//если там нет, смотрим тут
-				Classes.model("menu").getByPath(req.path, menu_type, function(err, menuItem)
+				Classes.model("menu").getByPath(req.path, menu_type, m_show, function(err, menuItem)
 				{
 					if (err)
 						return aCb(err, menuData);

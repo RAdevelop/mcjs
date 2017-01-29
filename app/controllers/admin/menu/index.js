@@ -87,8 +87,8 @@ class Menu extends CtrlMain
 			throw new Errors.HttpError(404);
 
 		return this.getClass("menu").getById(i_menu_id)
-			.then((mData) => {
-
+			.then((mData) =>
+			{
 				if (!mData)
 					throw new Errors.HttpError(404);
 
@@ -101,24 +101,27 @@ class Menu extends CtrlMain
 				tplData.menuDesc = mData["m_desc"];
 				tplData.menuControllerId = mData["c_id"];
 				tplData.menuControllerPath = mData["c_path"];
-				tplData.menuType = mData["menu_type"];
+				tplData.menuType = mData["m_type"];
+				tplData.menuShow = mData["m_show"];
 
 				return Promise.resolve(tplData);
 			})
-			.then((tplData) => {
+			.then((tplData) =>
+			{
 				return Promise.props({
 					menuList: this.getClass("menu").getAll(),
 					controllerList: this.getClass("controller").getAll()
 				})
-				.then((props) => {
-
+				.then((props) =>
+				{
 					tplData.menuList = props.menuList || [];
 					tplData.controllerList = props.controllerList || [];
 
 					return Promise.resolve(tplData);
 				});
 			})
-			.then((tplData) => {
+			.then((tplData) =>
+			{
 				//экспрот данных в JS на клиента
 				self.getRes().expose(tplData.controllerList, 'controllerList');
 				self.getRes().expose(tplData.menuList, 'menuList');
@@ -126,9 +129,6 @@ class Menu extends CtrlMain
 				this.view.setTplData(tplFile, tplData);
 
 				return Promise.resolve(null);
-			})
-			.catch((err) => {
-				throw err;
 			});
 	}
 
@@ -145,8 +145,8 @@ class Menu extends CtrlMain
 					throw new Errors.HttpError(404);
 
 				return this.getClass('menu').getById(tplData["i_menu_id"])
-					.then((menu) => {
-
+					.then((menu) =>
+					{
 						if (!menu)
 							throw new Errors.HttpError(404);
 
@@ -180,14 +180,15 @@ class Menu extends CtrlMain
 		let tplFile = 'admin/controller/index.ejs';
 
 		return Promise.resolve(tplData)
-			.then((tplData) => {
-
+			.then((tplData) =>
+			{
 				tplData = CtrlMain.stripTags(tplData, ["s_menu_path", "s_menu_name", "s_menu_title", "s_menu_h1", "t_menu_desc"]);
 
 				tplData["i_menu_pid"]           = parseInt(tplData["i_menu_pid"], 10)           || 0;
 				tplData["i_menu_after_id"]      = parseInt(tplData["i_menu_after_id"], 10)      || 0;
 				tplData["i_menu_controller_id"] = parseInt(tplData["i_menu_controller_id"], 10) || 0;
-				tplData["ui_menu_type"]          = parseInt(tplData["ui_menu_type"], 10)        || 0;
+				tplData["ui_menu_type"]         = parseInt(tplData["ui_menu_type"], 10)        || 0;
+				tplData["b_show"]               = (tplData["b_show"] ? 1 : 0);
 
 				let errors = {};
 
@@ -206,22 +207,24 @@ class Menu extends CtrlMain
 				if (this.parseFormErrors(tplData, errors))
 					return Promise.resolve(tplData);
 			})
-			.then((tplData) => {
-
+			.then((tplData) =>
+			{
 				return this.getClass('menu')
-					.add(tplData["i_menu_pid"], tplData["i_menu_after_id"], tplData["s_menu_path"], tplData["s_menu_name"], tplData["s_menu_title"], tplData["s_menu_h1"], tplData["t_menu_desc"], tplData["i_menu_controller_id"], tplData["ui_menu_type"])
-					.then((menuId) => {
-
+					.add(tplData["i_menu_pid"], tplData["i_menu_after_id"], tplData["s_menu_path"], tplData["s_menu_name"], tplData["s_menu_title"], tplData["s_menu_h1"], tplData["t_menu_desc"], tplData["i_menu_controller_id"], tplData["ui_menu_type"], tplData["b_show"])
+					.then((menuId) =>
+					{
 						tplData['i_menu_id'] = menuId;
 						return Promise.resolve(tplData);
 					});
 			})
-			.then((tplData) => {
+			.then((tplData) =>
+			{
 				this.view.setTplData(tplFile, tplData);
 				return Promise.resolve(true);
 			})
-			.catch(Errors.AlreadyInUseError, Errors.ValidationError, (err) => { //такие ошибки не уводят со страницы
-
+			.catch(Errors.AlreadyInUseError, Errors.ValidationError, (err) => 
+			{ //такие ошибки не уводят со страницы
+				
 				if (err.name == 'AlreadyInUseError')
 				{
 					tplData.formError.message = 'Такой пункт меню уже существует';
@@ -252,14 +255,15 @@ class Menu extends CtrlMain
 		let tplFile = 'admin/menu/index.ejs';
 
 		return Promise.resolve(tplData)
-			.then((tplData) => {
-
+			.then((tplData) =>
+			{
 				tplData = CtrlMain.stripTags(tplData, ["s_menu_path", "s_menu_name", "s_menu_title", "s_menu_h1", "t_menu_desc"]);
 
-				tplData["i_menu_pid"] = parseInt(tplData["i_menu_pid"], 10) || 0;
-				tplData["i_menu_after_id"] = parseInt(tplData["i_menu_after_id"], 10) || 0;
+				tplData["i_menu_pid"]           = parseInt(tplData["i_menu_pid"], 10) || 0;
+				tplData["i_menu_after_id"]      = parseInt(tplData["i_menu_after_id"], 10) || 0;
 				tplData["i_menu_controller_id"] = parseInt(tplData["i_menu_controller_id"], 10) || 0;
-				tplData["ui_menu_type"] = parseInt(tplData["ui_menu_type"], 10) || 0;
+				tplData["ui_menu_type"]         = parseInt(tplData["ui_menu_type"], 10) || 0;
+				tplData["b_show"]               = (tplData["b_show"] ? 1 : 0);
 
 				let errors = {};
 
@@ -278,25 +282,25 @@ class Menu extends CtrlMain
 				if (this.parseFormErrors(tplData, errors))
 					return Promise.resolve(tplData);
 			})
-			.then((tplData) => {
-
+			.then((tplData) =>
+			{
 				return this.getClass('menu')
-					.updById(tplData["i_menu_id"], tplData["i_menu_pid"], tplData["i_menu_after_id"], tplData["s_menu_path"], tplData["s_menu_name"], tplData["s_menu_title"], tplData["s_menu_h1"], tplData["t_menu_desc"], tplData["i_menu_controller_id"], tplData["ui_menu_type"])
-					.then(() => {
+					.updById(tplData["i_menu_id"], tplData["i_menu_pid"], tplData["i_menu_after_id"], tplData["s_menu_path"], tplData["s_menu_name"], tplData["s_menu_title"], tplData["s_menu_h1"], tplData["t_menu_desc"], tplData["i_menu_controller_id"], tplData["ui_menu_type"], tplData["b_show"])
+					.then(() =>
+					{
 						return Promise.resolve(tplData);
 					});
 			})
-			.then((tplData) => {
+			.then((tplData) =>
+			{
 				this.view.setTplData(tplFile, tplData);
 				return Promise.resolve(true);
 			})
-			.catch(Errors.ValidationError, (err) => { //такие ошибки не уводят со страницы
+			.catch(Errors.ValidationError, (err) =>
+			{ //такие ошибки не уводят со страницы
 
 				this.view.setTplData(tplFile, err['data']);
 				return Promise.resolve(true);
-			})
-			.catch((err) => {
-				throw err;
 			});
 	}
 }
@@ -304,484 +308,3 @@ class Menu extends CtrlMain
 //************************************************************************* module.exports
 //писать после class Name....{}
 module.exports = Menu;
-
-/*
-"use strict";
-const _ = require('lodash');
-const Async = require('async');
-const Errors = require('app/lib/errors');
-const ValidatorJs = require('validatorjs');
-ValidatorJs.useLang('ru');
-
-//var User = require('app/models/user/index.js');
-const Template = require('app/lib/template');
-const Models = require('app/models');
-
-function defaultData()
-{
-	var tplData = {
-		menuId: "", menuPid:"0", menuAfterId:"0", menuPath:'', menuName: '', menuTitle: '', menuH1: '', menuDesc: '',
-		menuControllerId: null,
-		menuControllerPath: '',
-		menuList: [],
-		controllerList: [],
-		h1: 'Редактирование меню сайта'
-	};
-	
-	tplData.formError = {
-		message: '',
-		error: false,
-		fields: {
-			menuPid: null,
-			menuAfterId: null,
-			menuPath: null,
-			menuName: null,
-			menuTitle: null, 
-			menuH1: null,
-			menuDesc: null
-		}
-	};
-	return tplData;
-}
-
-/!*console.log(req.originalUrl); // '/admin/new'
- console.log(req.baseUrl); // '/admin'
- console.log(req.path); // '/new'*!/
-
-/!**
- * путь к файлу шаблона
- * @type {string}
- *!/
-var tplFile = 'admin/menu/index.ejs';
-
-/!**
- * показываем стартовую страницу
- *
- * @param req
- * @param res
- * @param next
- *!/
-exports.main = (req, res, next)
-{
-	Async.parallel(
-		getDataTasks(),
-	(err, results)
-	{
-		//Models.end();
-		if(err) return next(err);
-		
-		var tplData = defaultData();
-		tplData.title = res.app.settings.title + ' | Menu start page';
-		
-		tplData.menuList = results[0] || [];
-		tplData.controllerList = results[1] || [];
-		
-		//экспрот данных в JS на клиента
-		res.expose(tplData.controllerList, 'controllerList');
-		res.expose(tplData.menuList, 'menuList');
-		
-		var View = new Template(req, res, next, Models);
-		View.render(tplFile, tplData);
-	});
-};
-/!**
- * добавляем меню
- *
- * @param req
- * @param res
- * @param next
- *!/
-exports.add = (req, res, next)
-{
-	var tplData = defaultData();
-	tplData.title = res.app.settings.title + ' | Menu start page';
-	tplData = _.assign(tplData, req.body);
-	
-	Async.waterfall(
-		[
-			(asyncCb) //валидация формы
-			{
-				menuFormValidation(tplData, (err, tplData)
-				{
-					if(err)
-					{
-						getAdditionData(tplData, (err2, tplData)
-						{
-							if(err2) return asyncCb(err2, tplData);
-							
-							return asyncCb(err, tplData);
-						});
-					}
-					else
-						return asyncCb(null, tplData);
-				});
-			},
-			(tplData, asyncCb) //добавление в БД
-			{
-				Models.get("Menu").add(tplData.menuPid, tplData.menuAfterId, tplData.menuPath, tplData.menuName, tplData.menuTitle, tplData.menuH1, tplData.menuDesc, tplData.menuControllerId, (err, mId)
-				{
-					if(err) return getAdditionData(tplData, (err2, tplData){
-						
-						if(err2) return asyncCb(err2, null);
-						else return asyncCb(err, null);
-					});
-					
-					return asyncCb(null, mId);
-				});
-			}
-		], (err, mId)
-		{
-			//Models.end();
-			//tplData.formError = false;
-			/!*
-			 нужно проверять тип шибки. в зависимости от типа ошибки,
-			 принимать решение,вызывать ли next(err) или обработать ситуацию
-			 *!/
-			
-			if(err)
-			{
-				switch (err.name)
-				{
-					default:
-						return  next(err);
-						break;
-					
-					case 'ValidationError':
-						tplData.formError.error = true;
-						tplData.formError.message = err.message;
-						break;
-					
-					case 'DbErrDuplicateEntry':
-						tplData.formError.error = true;
-						tplData.formError.message = "Меню с таким url или именем уже есть!";
-						break;
-				}
-			}
-			else if (mId)
-				return res.redirect(req.baseUrl+'/'+mId+'/edit');
-			
-			//экспрот данных в JS на клиента
-			res.expose(tplData.controllerList, 'controllerList');
-			res.expose(tplData.menuList, 'menuList');
-			res.expose(tplData.formError, 'formError');
-			
-			var View = new Template(req, res, next, Models);
-			View.render(tplFile, tplData);
-		});
-};
-
-/!**
- * показываем страницу для меню по его id
- *
- * @param req
- * @param res
- * @param next
- *!/
-exports.edit = (req, res, next)
-{
-	var tplData = defaultData();
-	tplData.title = res.app.settings.title + ' | Menu start page';
-	
-	var rId = parseInt(req.params.id, 10);
-	if(!rId || rId <= 0) return next(Errors.HttpStatusError(404, "Пункт меню не найден"));
-	
-	var parallelTasks = [
-		(cb){
-			setTimeout((){
-				
-				Models.get("Menu").getById(rId, (err, mData)
-				{
-					if(err) return cb(err);
-					if(!mData) return cb(new Errors.HttpStatusError(404, "Пункт меню не найден"));
-					
-					tplData.menuId = mData["m_id"];
-					tplData.menuPid = mData["m_pid"];
-					tplData.menuPath = mData["m_path"];
-					tplData.menuName = mData["m_name"];
-					tplData.menuTitle = mData["m_title"];
-					tplData.menuH1 = mData["m_h1"];
-					tplData.menuDesc = mData["m_desc"];
-					tplData.menuControllerId = mData["c_id"];
-					tplData.menuControllerPath = mData["c_path"];
-					
-					return cb(null, tplData);
-				});
-				
-				
-			}, 1);
-		},
-		(cb){
-			setTimeout((){
-				Models.get("Menu").getAll((err, menuList)
-				{
-					if(err) return cb(err, menuList);
-					
-					return cb(null, menuList);
-				});
-			}, 1);
-		},
-		(cb){
-			setTimeout((){
-				Models.get("controller").getAll((err, controllerList)
-				{
-					if(err) return cb(err, controllerList);
-					
-					return cb(null, controllerList);
-				});
-			}, 1);
-		}
-	];
-	
-	Async.parallel(parallelTasks,
-		(err, results)
-		{
-			//console.log(results);
-			
-			//Models.end();
-			if(err) return next(err);
-			
-			tplData.menuList = results[1] || [];
-			tplData.controllerList = results[2] || [];
-			
-			//экспрот данных в JS на клиента
-			res.expose(tplData.controllerList, 'controllerList');
-			res.expose(tplData.menuList, 'menuList');
-			
-			var View = new Template(req, res, next, Models);
-			View.render(tplFile, tplData);
-		}
-	);
-};
-/!**
- * обновляем данные для Роутера по его id
- *
- * @param req
- * @param res
- * @param next
- *!/
-exports.update = (req, res, next)
-{
-	var tplData = defaultData();
-	tplData.title = res.app.settings.title + ' | Menu start page';
-	tplData = _.assign(tplData, req.body);
-	
-	tplData.menuId = parseInt(tplData.menuId, 10);
-	if(!tplData.menuId || tplData.menuId <= 0) return next(Errors.HttpStatusError(404, "Пункт меню не найден"));
-	
-	Async.waterfall(
-		[
-			(asyncCb) //валидация формы
-			{
-				menuFormValidation(tplData, (err, tplData)
-				{
-					if(err)
-					{
-						getAdditionData(tplData, (err2, tplData)
-						{
-							if(err2) return asyncCb(err2, tplData);
-							
-							return asyncCb(err, tplData);
-						});
-					}
-					else
-					return asyncCb(null, tplData);
-				});
-			},
-			(tplData, asyncCb) //
-			{
-				Models.get("Menu").getById(tplData.menuId, (err, mData)
-				{
-					if(err) return asyncCb(err, null);
-					return asyncCb(null, tplData);
-				});
-			},
-			(tplData, asyncCb)
-			{
-				Models.get("Menu").updById(tplData.menuId, tplData.menuPid, tplData.menuAfterId, tplData.menuPath, tplData.menuName, tplData.menuTitle, tplData.menuH1, tplData.menuDesc, tplData.menuControllerId, (err)
-				{
-					if(err) return getAdditionData(tplData, (err2, tplData)
-					{						
-						if(err2) return asyncCb(err2, tplData);
-						
-						return asyncCb(err, tplData);
-					})
-					
-					return asyncCb(null, tplData);
-				});
-			}
-		],
-		(err, tplData)
-		{
-			//Models.end();
-			//console.log(err);
-			//console.log(tplData);
-			/!*
-			 нужно проверять тип шибки. в зависимости от типа ошибки,
-			 принимать решение,вызывать ли next(err) или обработать ситуацию
-			 *!/
-			if(err)
-			{
-				switch (err.name)
-				{
-					default:
-						return  next(err);
-						break;
-					
-					case 'ValidationError':
-						tplData.formError.error = true;
-						tplData.formError.message = err.message;
-						
-						break;
-					
-					case 'DbErrDuplicateEntry':
-						tplData.formError.error = true;
-						tplData.formError.message = "Меню с таким путем или названием уже есть!";
-						break;
-				}
-			}
-			else if (tplData)
-				return res.redirect(req.baseUrl+'/'+tplData.menuId+'/edit');
-			
-			//экспрот данных в JS на клиента
-			res.expose(tplData.controllerList, 'controllerList');
-			res.expose(tplData.menuList, 'menuList');
-			res.expose(tplData.formError, 'formError');
-			
-			var View = new Template(req, res, next, Models);
-			View.render(tplFile, tplData);
-		}
-	);
-};
-
-//////////////////
-/!**
- * валидация формы
- *!/
-function menuFormValidation(tplData, cb)
-{
-	tplData.menuPid = tplData.menuPid.toLowerCase().trim();
-	tplData.menuControllerId = tplData.menuControllerId.toLowerCase().trim();
-	tplData.menuAfterId = tplData.menuAfterId.toLowerCase().trim();
-	
-	tplData.menuPath = tplData.menuPath.toLowerCase().trim().replace("\\", "/");
-	if (tplData.menuPath[tplData.menuPath.length-1] == '/')
-	{
-		tplData.menuPath = tplData.menuPath.substr(0, tplData.menuPath.length-1);
-		console.log('tplData.menuPath');
-		console.log(tplData.menuPath);
-	}
-	
-	tplData.menuName = tplData.menuName.trim();
-	tplData.menuDesc = tplData.menuDesc.trim();
-	
-	var formFields = {
-		menuPid: tplData.menuPid,
-		menuControllerId: tplData.menuControllerId,
-		menuPath: tplData.menuPath,
-		menuName: tplData.menuName,
-		menuTitle: tplData.menuTitle,
-		menuH1: tplData.menuH1,
-		menuDesc: tplData.menuDesc
-	};
-	
-	var validRules = {
-		menuPid: 'required|numeric',
-		
-		menuControllerId: ['required','regex:/^[1-9][0-9]*!/'],
-		
-		menuPath: ['regex:/^\/([0-9a-zA-Z_-]+\/?)+$/'],
-		menuName: 'required|min:3|max:100',
-		menuTitle: 'required|min:3|max:255',
-		menuH1: 'required|min:3|max:100',
-		menuDesc: 'max:255'
-	};
-	
-	var validator = new ValidatorJs(formFields, validRules, {
-		"required.menuPid": "Родитель не указан",
-		"numeric.menuPid": "Родитель не указан (число >= 0)",
-		
-		"required.menuControllerId": "Роутер не указан",
-		"regex.menuControllerId": "Роутер не указан (число > 0)",
-		
-		"regex.menuPath": "URL указан не верно",
-		
-		"required.menuName": "Название указано не верно",
-		"min.menuName": "Название указано не верно",
-		"max.menuName": "Название указано не верно",
-		
-		"required.menuTitle": "Заголовок страницы указан не верно",
-		"min.menuTitle": "Заголовок страницы указан не верно",
-		"max.menuTitle": "Заголовок страницы указан не верно",
-		
-		"required.menuH1": "H1 указан не верно",
-		"min.menuH1": "H1 указан не верно",
-		"max.menuH1": "H1 указан не верно",
-		
-		"max.menuDesc": "Описание слишком длинное"
-	});
-	
-	
-	if(validator.fails())
-	{
-		var inputErrors = new Errors.ValidationError('Ошибка при заполнении фомры');
-		
-		if(validator.errors.has('menuPid'))       inputErrors.addError(new Errors.ValidationError(validator.errors.first('menuPid'),'', 'menuPid'));
-		if(validator.errors.has('menuControllerId'))       inputErrors.addError(new Errors.ValidationError(validator.errors.first('menuControllerId'),'', 'menuControllerId'));
-		if(validator.errors.has('menuPath'))    inputErrors.addError(new Errors.ValidationError(validator.errors.first('menuPath'),'', 'menuPath'));
-		if(validator.errors.has('menuName'))    inputErrors.addError(new Errors.ValidationError(validator.errors.first('menuName'),'', 'menuName'));
-		if(validator.errors.has('menuTitle'))    inputErrors.addError(new Errors.ValidationError(validator.errors.first('menuTitle'),'', 'menuTitle'));
-		if(validator.errors.has('menuH1'))    inputErrors.addError(new Errors.ValidationError(validator.errors.first('menuH1'),'', 'menuH1'));
-		
-		for(var i in inputErrors.errors)
-		{
-			tplData.formError.fields[inputErrors.errors[i].field] = inputErrors.errors[i].message;
-		}
-		
-		return cb(inputErrors, tplData);
-	}
-	
-	return cb(null, tplData);
-}
-
-/!**
- * данные, которые хотим подгрузить (вызываетя в Async-методах)
- * @returns {*[]} - массив "задач" для Async-методов
- *!/
-function getDataTasks()
-{
-	return [
-		(cb)
-		{
-			Models.get("Menu").getAll((err, menuList)
-			{
-				if(err) return cb(err, menuList);
-				
-				return cb(null, menuList);
-			});
-		},
-		(cb)
-		{
-			Models.get("controller").getAll((err, controllerList)
-			{
-				if(err) return cb(err, controllerList);
-				
-				return cb(null, controllerList);
-			});
-		}
-	];
-};
-
-function getAdditionData(tplData, cb)
-{
-	Async.series(
-		getDataTasks(),
-		(err, results)
-		{
-			////Models.end();
-			tplData.menuList = results[0] || [];
-			tplData.controllerList = results[1] || [];
-			
-			return cb(err, tplData);
-		}
-	);
-}*/
