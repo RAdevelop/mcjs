@@ -63,7 +63,7 @@ class UploadFile extends File
 	/**
 	 * на клиентскую часть
 	 * @params uploadType  - название типа загрзуки файлов в конфиге
-	 * @returns {}
+	 * @returns {Object}
 	 */
 	static exposeUploadOptions(uploadType)
 	{
@@ -87,9 +87,7 @@ class UploadFile extends File
 	{
 		let docRoot = File.getDocumentRoot;
 		let uploadDir = Path.normalize(Path.join(docRoot, this.pathUpload));
-		let p = {uploadDir: uploadDir, webUploadDir: Path.join("/", this.pathUpload)};
-
-		return p;
+		return {uploadDir: uploadDir, webUploadDir: Path.join("/", this.pathUpload)};
 	}
 
 	getUploadDir()
@@ -258,7 +256,7 @@ class UploadFile extends File
 					return uploadCb(new FileErrors.FileNotUploaded());
 				}
 
-				file = self.mimeType(file);
+				file = File.mimeType(file);
 
 				if(!self.isAllowedFileType(file.ext))
 				{
@@ -352,9 +350,7 @@ class UploadFile extends File
 			return false;
 
 		let c = Crypto.createHash('md5').update(tokenStr).digest("hex");
-		let check = (fields["s_token"] && c == fields["s_token"]);
-
-		return check;
+		return (fields["s_token"] && c == fields["s_token"]);
 	}
 
 	/**
@@ -392,7 +388,7 @@ class UploadFile extends File
 			{
 				if (!File.isForbiddenDir(file.path))
 				{
-					FS.unlink(file.path, function(err){
+					FS.unlink(file.path, function(){//err
 						//console.log(err);
 					});
 				}

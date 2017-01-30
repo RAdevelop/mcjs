@@ -109,7 +109,7 @@ class File
 	 * @param file - json данные файла
 	 * @returns {file}
 	 */
-	mimeType(file)
+	static mimeType(file)
 	{
 		let type = Mime.lookup(file.path).split('/');
 		file["type"] = type[0] || null;
@@ -319,7 +319,7 @@ class File
 
 	setImageGeo(file)
 	{
-		return new Promise(function(resolve, reject)
+		return new Promise((resolve)=>//,reject
 		{
 			GM.subClass({imageMagick: true})(file.fullFilePath)
 			.identify(function (err, data)
@@ -344,7 +344,7 @@ class File
 	 */
 	static walkDir(dir, done)
 	{
-		const self = this;
+		//const self = this;
 		let results = new Map();
 
 		FS.readdir(dir, function(err, list)
@@ -559,7 +559,7 @@ class File
 					});
 				});
 		})
-		.catch(FileErrors.DirEmpty, function (err)
+		.catch(FileErrors.DirEmpty, function ()//err
 		{
 			return new Promise(function (resolve, reject)
 			{
@@ -576,7 +576,7 @@ class File
 				});
 			});
 		})
-		.catch(FileErrors.DirNotEmpty, function (err)
+		.catch(FileErrors.DirNotEmpty, function ()//err
 		{
 			return Promise.resolve(true);
 		})

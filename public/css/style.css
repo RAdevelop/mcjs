@@ -1308,17 +1308,9 @@ iframe.iframeVideoEmbed {
 
 .blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoNotice {
   background-color: rgba(0, 0, 0, 0.7);
-  top: 245px;
+  top: 56px;
   padding: 0px 3px 3px 3px;
   bottom: 0;
-  -webkit-transition: top 0.5s ease-out 0.1s;
-  -moz-transition: top 0.5s ease-out 0.1s;
-  -o-transition: top 0.5s ease-out 0.1s;
-  transition: top 0.5s ease-out 0.1s;
-}
-
-.blogListContainer .blogListItem .blogListItemInfo:hover .blogListItemInfoNotice {
-  top: 0px;
 }
 
 .blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoNotice p:first-child {
@@ -2058,10 +2050,6 @@ ul.shopListContainer .shopItem .motoshopAddress .motoshopAddressData {
   top: 26px;
   padding: 0px 3px 3px 3px;
   bottom: 0;
-}
-
-.newsListContainer .newsListItem .newsListItemInfo:hover .newsListItemInfoNotice {
-  top: 26px;
 }
 
 .newsListContainer .newsListItem .newsListItemInfo .newsListItemInfoNotice p:first-child {
