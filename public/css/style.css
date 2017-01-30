@@ -191,7 +191,7 @@ body.mce-content-body,
   -moz-border-radius: 5px;
   -ms-border-radius: 5px;
   border-radius: 5px;
-  z-index: 10;
+  z-index: 1001;
   opacity: 0;
 }
 .goto-up:hover {
@@ -2055,13 +2055,9 @@ ul.shopListContainer .shopItem .motoshopAddress .motoshopAddressData {
 
 .newsListContainer .newsListItem .newsListItemInfo .newsListItemInfoNotice {
   background-color: rgba(0, 0, 0, 0.7);
-  top: 245px;
+  top: 26px;
   padding: 0px 3px 3px 3px;
   bottom: 0;
-  -webkit-transition: top 0.5s ease-out 0.1s;
-  -moz-transition: top 0.5s ease-out 0.1s;
-  -o-transition: top 0.5s ease-out 0.1s;
-  transition: top 0.5s ease-out 0.1s;
 }
 
 .newsListContainer .newsListItem .newsListItemInfo:hover .newsListItemInfoNotice {

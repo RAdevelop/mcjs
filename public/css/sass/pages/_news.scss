@@ -90,10 +90,11 @@
 .newsListContainer .newsListItem .newsListItemInfo .newsListItemInfoNotice
 {
   background-color: rgba(0, 0, 0, 0.7);
-  top: 245px;
+  //top: 245px;
+  top: 26px;
   padding: 0px 3px 3px 3px;
   bottom: 0;
-  @include mix-transition(top, 0.5s, ease-out, 0.1s);
+  //@include mix-transition(top, 0.5s, ease-out, 0.1s);
 }
 
 .newsListContainer .newsListItem .newsListItemInfo:hover .newsListItemInfoNotice

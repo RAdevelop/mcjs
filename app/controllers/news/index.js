@@ -11,7 +11,7 @@ const EmbedContent = require("app/lib/embed/content");
 //const Moment = require('moment'); //работа со временем
 const CtrlMain = require('app/lib/controller');
 
-let limit_per_page = 2;
+let limit_per_page = 20;
 
 class News extends CtrlMain
 {
@@ -463,14 +463,16 @@ class News extends CtrlMain
 		let tplFile = 'news/news_images.ejs';
 		let tplData = this.getParsedBody();
 
-		this.getRes().on('cancelUploadedFile', (file) => {
+		this.getRes().on('cancelUploadedFile', (file) =>
+		{
 			if (file["u_id"] && file["n_id"] && file["ni_id"])
 				return this.getClass('news').delImage(file["u_id"], file["n_id"], file["ni_id"], file);
 		});
 
 		return this.getClass('news')
 			.uploadImage(this.getUserId(), this.getReq(), this.getRes())
-			.then((file) => {
+			.then((file) =>
+			{
 				//console.log(file);
 				tplData = {
 					n_id: file.n_id,
@@ -488,7 +490,8 @@ class News extends CtrlMain
 				this.view.setTplData(tplFile, tplData);
 				return Promise.resolve(true);
 			})
-			.catch((err) => {
+			.catch((err) =>
+			{
 				//Logger.error(err);
 				tplData.formError.text = err.message;
 				tplData.formError.error = true;

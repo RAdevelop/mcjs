@@ -118,33 +118,33 @@ class News extends Base
 		const UploadFile = new FileUpload(uploadConf, req, res);
 
 		return UploadFile.upload()
-			.then((file) => {
-
+			.then((file) =>
+			{
 				ufile = file;
 				n_id = file.n_id;
 				
 				return this.get(n_id)
-					.then((event) => {
-
+					.then((event) =>
+					{
 						if (event["e_img_cnt"] >= 5)
 							throw new FileErrors.LimitExceeded('Можно добавить не более 5 файлов.');
 
 						return Promise.resolve(ufile);
 					});
 			})
-			.then((file) => {
-
+			.then((file) =>
+			{
 				return this.model('news').addPhoto(u_id, file)
-					.then((file) => {
-
+					.then((file) =>
+					{
 						ni_id = file.ni_id;
 
 						file["moveToDir"] = FileUpload.getImageUri(file.n_id, file.ni_id);
 
-						return new Promise((resolve, reject) => {
-
-							UploadFile.moveUploadedFile(file, file["moveToDir"], (err, file) => {
-
+						return new Promise((resolve, reject) =>
+						{
+							UploadFile.moveUploadedFile(file, file["moveToDir"], (err, file) =>
+							{
 								if (err) return reject(err);
 
 								return resolve(file);
@@ -152,36 +152,37 @@ class News extends Base
 						});
 					});
 			})
-			.then((file) => {
-
+			.then((file) =>
+			{
 				if (file.type != 'image')
 					return Promise.resolve(file);
 
 				return UploadFile.setImageGeo(file)
-					.then((file) => {
+					.then((file) =>
+					{
 						return UploadFile.resize(file, uploadConf);
 					});
 			})
-			.then((file) => {
-
+			.then((file) =>
+			{
 				//console.log(file);
 
 				return this.model('news')
 					.updImage(file.n_id, file.ni_id, file.latitude, file.longitude, file.webDirPath, file.name, true)
-					.then(() => {
-
+					.then(() =>
+					{
 						ufile = null;
 						file["ni_name"] = file.name;
 						return Promise.resolve(file);
 					});
 			})
-			.catch((err) => {
-
+			.catch((err) =>
+			{
 				//console.log(ufile);
 				Logger.error(err);
 				return this.delImage(u_id, n_id, ni_id, ufile)
-					.catch((delErr) => {
-
+					.catch((delErr) =>
+					{
 						switch (err.name)
 						{
 							case 'FileTooBig':

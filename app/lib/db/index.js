@@ -48,14 +48,12 @@ class DB
 	static conn(driver = null, config = {})
 	{
 		if (!Drivers[driver])
-		{
 			driver = 'mariasql';
-		}
 
 		if (Object.keys(config).length == 0)
 			config = AppConfig.db[driver];
 		else
-			config = Object.assign(AppConfig.db[driver], config);
+			config = Object.assign({}, AppConfig.db[driver], config);
 
 		return new (Drivers[driver])(config);
 	}

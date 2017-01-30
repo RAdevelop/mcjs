@@ -194,7 +194,8 @@ class News extends BaseModel
 	addPhoto(u_id, fileData)
 	{
 		return this._insImage(fileData["n_id"])
-			.then((res) => {
+			.then((res) =>
+			{
 				fileData["u_id"] = u_id;
 				fileData["ni_pos"] = "0";
 				fileData["ni_id"] = res['insertId'];

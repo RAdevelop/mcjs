@@ -747,7 +747,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1485698224,'MotoCommunity',1,'1'),(12,'roalexey@mail.ru','$2a$12$kZC3laKG9y9dU7Xh2kVJA.','$2a$12$kZC3laKG9y9dU7Xh2kVJA.2.I7Fb5Drdk6yLwdUJFII/U1uAr5MFC',1480860847,1485642877,'RoLex',1,'3'),(13,'ra@zero.ru','$2a$12$.1PK0Bzgl/m.x0A/3CfAoO','$2a$12$.1PK0Bzgl/m.x0A/3CfAoOu09nMeFXE2xshnJJJfRQ1Ac5MDrs9E2',1483898742,1485614350,'',1,'3');
+INSERT INTO `users` VALUES (1,'roalexey@yandex.ru','$2a$12$NEx59eykcG03xtnYWl1uhO','$2a$12$NEx59eykcG03xtnYWl1uhOH93DYoU.bkctUsu.9lJdcqq.B2zS.pO',1447968485,1485698224,'MotoCommunity',1,'1'),(12,'roalexey@mail.ru','$2a$12$kZC3laKG9y9dU7Xh2kVJA.','$2a$12$kZC3laKG9y9dU7Xh2kVJA.2.I7Fb5Drdk6yLwdUJFII/U1uAr5MFC',1480860847,1485698487,'RoLex',1,'3'),(13,'ra@zero.ru','$2a$12$.1PK0Bzgl/m.x0A/3CfAoO','$2a$12$.1PK0Bzgl/m.x0A/3CfAoOu09nMeFXE2xshnJJJfRQ1Ac5MDrs9E2',1483898742,1485614350,'',1,'3');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3674,4 +3674,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-01-29 16:59:48
+-- Dump completed on 2017-01-29 17:41:38

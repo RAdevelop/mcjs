@@ -155,11 +155,14 @@ class File
 		//const self = this;
 		return new Promise(function(resolve, reject)
 		{
+			if (File.isForbiddenDir(file.fullPathMainDir))
+				return reject(new FileErrors.ForbiddenDirectory(file.fullPathMainDir));
+
 			let filePrefix = w + '_' + h;
 			let fileName = filePrefix + '.jpg';
 			let filePathTo = Path.join(file.fullPathMainDir, fileName);
 			let fileUrl = Path.join(Path.dirname(file.webFilePath), '../', fileName);
-
+			
 			GM(file.fullFilePath)
 			.size(function (err, size)
 			{
@@ -184,7 +187,7 @@ class File
 				.gravity('Center')
 				.background('white')
 				.extent(w, h)
-				.write(filePathTo, function (err)
+				.write(filePathTo, function(err)
 				{
 					if (err)
 					{
@@ -206,11 +209,11 @@ class File
 
 	resize(file, uploadConfType)
 	{
+		//const self = this;
 		let sizeParams = File.getUploadConfig(uploadConfType).sizeParams;
-		const self = this;
-		let images = sizeParams.map(function(size)
+		let images = sizeParams.map((size)=>
 		{
-			return self.resizeImage(file, size.w, size.h);
+			return this.resizeImage(file, size.w, size.h);
 		});
 
 		file["previews"] = {};
@@ -219,7 +222,7 @@ class File
 		{
 			return promise.reflect();
 		}))
-			.each(function(inspection)
+			.each((inspection)=>
 			{
 				if (inspection.isFulfilled())
 				{
@@ -227,11 +230,11 @@ class File
 					file["previews"][key] = inspection.value()[key];
 				}
 			})
-			.then(function ()
+			.then(()=>
 			{
 				return Promise.resolve(file);
 			})
-			.catch(function(err)
+			.catch((err)=>
 			{
 				throw err;
 			});
@@ -599,7 +602,7 @@ class File
 	 * @param obj
 	 * @param obj_dir
 	 * @param spread
-	 * @returns {Promise}
+	 * @returns {Object}
 	 */
 	static getPreviews(sizeParams, obj, obj_dir, spread = false)
 	{
@@ -631,7 +634,7 @@ class File
 
 	static getImageUri(a_id, ai_id)
 	{
-		return this.getAlbumUri(a_id) + '/' + ai_id + '/' + Crypto.createHash('md5').update(a_id+''+ai_id).digest("hex");
+		return File.getAlbumUri(a_id) + '/' + ai_id + '/' + Crypto.createHash('md5').update(a_id+''+ai_id).digest("hex");
 		//return 'part_' + Math.floor(Math.abs(a_id)/20000) + '/' + a_id;
 	}
 }

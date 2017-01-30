@@ -1,6 +1,6 @@
 "use strict";
 
-const AppConfig = require('app/config');
+//const AppConfig = require('app/config');
 const File = require('../');
 const FileErrors = require('../errors');
 //const FS = require('fs');
@@ -9,6 +9,7 @@ const Path = require('path');
 const Crypto = require('crypto');
 const Formidable = require('formidable');
 const Promise = require('bluebird');
+const EventEmitter = require('events');
 
 let secret = "do shash'owania ыва кer";
 
@@ -110,10 +111,10 @@ class UploadFile extends File
 	 */
 	upload()
 	{
-		const self = this;
-		return new Promise(function (resolve, reject)
+		//const self = this;
+		return new Promise((resolve, reject)=>
 		{
-			self.uploadFile(function(err, file)
+			this.uploadFile((err, file)=>
 			{
 				if (err) return reject(err);
 
@@ -145,14 +146,14 @@ class UploadFile extends File
 				{
 					if (!File.isForbiddenDir(file.path))
 					{
-						FS.unlink(file.path, function(err){
+						FS.unlink(file.path, (err)=>{
 							//console.log(err);
 						});
 					}
 
 					if (!File.isForbiddenDir(file.fullFilePath))
 					{
-						FS.unlink(file.fullFilePath, function(err){
+						FS.unlink(file.fullFilePath, (err)=>{
 							//console.log(err);
 						});
 					}
@@ -167,14 +168,14 @@ class UploadFile extends File
 				{
 					if (file.path && !File.isForbiddenDir(file.path))
 					{
-						FS.unlink(file.path, function(err){
+						FS.unlink(file.path, (err)=>{
 							//console.log(err);
 						});
 					}
 
 					if (file.fullFilePath && !File.isForbiddenDir(file.fullFilePath))
 					{
-						FS.unlink(file.fullFilePath, function(err){
+						FS.unlink(file.fullFilePath, (err)=>{
 							//console.log(err);
 						});
 					}
@@ -250,7 +251,7 @@ class UploadFile extends File
 				{
 					if(!File.isForbiddenDir(file.path))
 					{
-						FS.unlink(file.path, function(err){
+						FS.unlink(file.path, (err)=>{
 							//console.log(err);
 						});
 					}
@@ -263,7 +264,7 @@ class UploadFile extends File
 				{
 					if(!File.isForbiddenDir(file.path))
 					{
-						FS.unlink(file.path, function(err){
+						FS.unlink(file.path, (err)=>{
 							//console.log(err);
 						});
 					}
@@ -383,13 +384,6 @@ class UploadFile extends File
 		file["webFilePath"]     = (Path.join("/", this.webUploadDir, 'orig', file.name)).split(Path.sep).join('/');
 		file["webDirPath"]     = (Path.join("/", this.webUploadDir)).split(Path.sep).join('/');
 
-
-		/*this.res.on('close', function()
-		{
-			this.emit("cancelUploadedFile", file);
-		});*/
-
-
 		FS.stat(file["fullPathUploadDir"], function(err, Stats)
 		{
 			let errCode = (err ? err.code : null);
@@ -411,12 +405,13 @@ class UploadFile extends File
 
 			if (errCode == 'ENOENT')//если такой директории нет, создадим ее
 			{
-				FS.mkdir(file["fullPathUploadDir"], 0o755, true, function(err){
+				FS.mkdir(file["fullPathUploadDir"], 0o755, true, (err)=>
+				{
 					if (err)
 					{
 						if (!File.isForbiddenDir(file.path))
 						{
-							FS.unlink(file.path, function(err){
+							FS.unlink(file.path, (err)=>{
 								//console.log(err);
 							});
 						}
@@ -424,7 +419,7 @@ class UploadFile extends File
 						return moveCb(err);
 					}
 
-					self.moveFile(file, 0o755, function(err, file)
+					self.moveFile(file, 0o755, (err, file)=>
 					{
 						if (err)
 							return moveCb(err);
@@ -435,7 +430,7 @@ class UploadFile extends File
 			}
 			else
 			{
-				self.moveFile(file, 0o755, function(err, file)
+				self.moveFile(file, 0o755, (err, file)=>
 				{
 					if (err)
 						return moveCb(err);
@@ -457,13 +452,16 @@ class UploadFile extends File
 		};
 		let wStream = FS.createWriteStream(file["fullFilePath"], options);
 
-		this.res.on('close', function()
+		if (this.res instanceof EventEmitter)
 		{
-			rStream.destroy();
-			wStream.destroy();
+			this.res.on('close', ()=>
+			{
+				rStream.destroy();
+				wStream.destroy();
 
-			this.emit("cancelUploadedFile", file);
-		});
+				this.res.emit("cancelUploadedFile", file);
+			});
+		}
 
 		rStream.on('error', function(rStreamErr)
 		{
@@ -474,7 +472,7 @@ class UploadFile extends File
 
 			if (!File.isForbiddenDir(file["fullFilePath"]))
 			{
-				FS.unlink(file["fullFilePath"], function(err)
+				FS.unlink(file["fullFilePath"], (err)=>
 				{
 
 				});
@@ -482,7 +480,7 @@ class UploadFile extends File
 
 			if (!File.isForbiddenDir(file["path"]))
 			{
-				FS.unlink(file.path, function(err)
+				FS.unlink(file.path, (err)=>
 				{
 
 				});
@@ -535,7 +533,7 @@ class UploadFile extends File
 
 			if (!File.isForbiddenDir(file["fullFilePath"]))
 			{
-				FS.unlink(file["fullFilePath"], function(err)
+				FS.unlink(file["fullFilePath"], (err)=>
 				{
 
 				});
@@ -543,10 +541,73 @@ class UploadFile extends File
 
 			if (!File.isForbiddenDir(file["path"]))
 			{
-				FS.unlink(file.path, function(err){
+				FS.unlink(file.path, (err)=>{
 
 				});
 			}
+
+			cb(wStreamErr);
+		});
+
+		rStream.pipe(wStream);
+	}
+
+	copyFile(file, mode, cb)
+	{
+		if (File.isForbiddenDir(file["path"]))
+			return cb(new FileErrors.ForbiddenDirectory(file["path"]), file);
+
+		if (File.isForbiddenDir(file["fullFilePath"]))
+			return cb(new FileErrors.ForbiddenDirectory(file["fullFilePath"]), file);
+
+		let error = false;
+
+		let rStream = FS.createReadStream(file.path);
+		let options = {
+			"mode": mode,
+			"flags": "w"
+		};
+		let wStream = FS.createWriteStream(file["fullFilePath"], options);
+
+		rStream.on('error', function(rStreamErr)
+		{
+			//console.log('rStream.on error');
+			//console.log(rStreamErr);
+
+			wStream.destroy();
+
+			cb(rStreamErr);
+		});
+
+		rStream.on('open', function(){
+			//console.log('rStream.on open');
+		});
+
+		rStream.on('close', function(){
+			//console.log('rStream.on close');
+		});
+		rStream.on('end', function(){
+			//console.log('rStream.on end');
+		});
+
+		wStream.on('open', function(){
+			//console.log('wStream.on open');
+		});
+
+		wStream.on('finish', function()
+		{
+			//console.log('wStream.on finish');
+
+			return cb(null, file);
+
+		});
+
+		wStream.on('error', function(wStreamErr)
+		{
+			//console.log('wStream.on error');
+			//console.log(wStreamErr);
+
+			rStream.destroy();
 
 			cb(wStreamErr);
 		});
