@@ -86,7 +86,8 @@ class Events extends CtrlMain
 			startDate = new Date(i_yy, i_mm-1, i_dd);
 			endDate = startDate;
 
-			tplData["selectedDate"] = {i_yy:i_yy, i_mm:i_mm, i_dd:i_dd};
+			//tplData["selectedDate"] = {i_yy:i_yy, i_mm:i_mm, i_dd:i_dd};
+			tplData["selectedDate"] = [i_dd, i_mm, i_yy].join('-');
 			return this.eventList(tplData, startDate, endDate, l_id);
 		}
 
@@ -110,31 +111,32 @@ class Events extends CtrlMain
 	event(tplData, i_event_id, s_alias)
 	{
 		return this.getClass('events').get(i_event_id)
-			.then( (event) => {
-
+			.then( (event) =>
+			{
 				if (!event || event["e_alias"] != s_alias)
 					throw new Errors.HttpStatusError(404, "Not found");
 
 				return this.getClass('events')
 					.getImageList(event.e_id)
-					.spread( (images, allPreviews) => {
-
+					.spread( (images, allPreviews) =>
+					{
 						return Promise.resolve([event, images, allPreviews]);
 					});
 			})
-			.spread( (event, images, allPreviews) => {
-
+			.spread( (event, images, allPreviews) =>
+			{
 				event["eventImages"] = images;
 				event["eventImagesPreviews"] = allPreviews;
 
 				return this.getClass("events")
 					.getLocations()
-					.then( (eventLocations) => {
+					.then( (eventLocations) =>
+					{
 						return Promise.resolve([event, eventLocations]);
 					});
 			})
-			.spread( (event, eventLocations) => {
-
+			.spread( (event, eventLocations) =>
+			{
 				let tplFile = "events";
 
 				tplData["eventLocations"] = {};
@@ -160,9 +162,6 @@ class Events extends CtrlMain
 				//this.view.addPartialData("user/right", {title: 'right_col'});
 
 				return Promise.resolve(null);
-			})
-			.catch((err) => {
-				throw err;
 			});
 	}
 
@@ -177,19 +176,20 @@ class Events extends CtrlMain
 	eventList(tplData, startDate, endDate, l_id)
 	{
 		return Promise.resolve(this.getClass("events").getEvents(startDate.getTime()/1000, endDate.getTime()/1000, l_id))
-			.then( (eventList) => {
-
+			.then( (eventList) =>
+			{
 				if (!eventList || !eventList.length)
 					throw new Errors.HttpError(404);
 
 				return this.getClass("events")
 					.getLocations()
-					.then( (eventLocations) => {
+					.then( (eventLocations) =>
+					{
 						return Promise.resolve([eventList, eventLocations, l_id]);
 					});
 			})
-			.spread((eventList, eventLocations, l_id) => {
-
+			.spread((eventList, eventLocations, l_id) =>
+			{
 				let tplFile = "events";
 
 				tplData["eventList"] = eventList;
@@ -209,9 +209,6 @@ class Events extends CtrlMain
 				//this.view.addPartialData("user/right", {title: 'right_col'});
 
 				return Promise.resolve(null);
-			})
-			.catch((err) => {
-				throw err;
 			});
 	}
 
@@ -232,11 +229,12 @@ class Events extends CtrlMain
 			eventDates: this.getClass("events").getEventsDate(startDate.getTime()/1000, endDate.getTime()/1000, l_id),
 			eventLocations: this.getClass("events").getLocations(startDate.getTime()/1000, endDate.getTime()/1000, l_id)
 		})
-			.then((proprs) => {
+			.then((proprs) =>
+			{
 				let eventDates = [], eStartTs, eEndTs, eDelta, i;
 
-				proprs.eventDates.forEach( (eDate) => {
-
+				proprs.eventDates.forEach( (eDate) =>
+				{
 					eStartTs    = parseInt(eDate["e_start_ts"], 10);
 					eEndTs      = parseInt(eDate["e_end_ts"], 10);
 
@@ -261,7 +259,8 @@ class Events extends CtrlMain
 				proprs.eventDates = null;
 				return Promise.resolve([eventDates, proprs.eventLocations, l_id]);
 			})
-			.spread((eventDates, eventLocations, l_id) => {
+			.spread((eventDates, eventLocations, l_id) =>
+			{
 				let tplFile = "events";
 
 				tplData["eventLocations"] = {};
@@ -283,9 +282,6 @@ class Events extends CtrlMain
 				//this.view.addPartialData("user/right", {title: 'right_col'});
 
 				return Promise.resolve(null);
-			})
-			.catch((err) => {
-				throw err;
 			});
 	}
 
@@ -371,11 +367,12 @@ class Events extends CtrlMain
 				{
 					return this.getClass('location')
 						.geoCoder(tplData["s_e_address"])
-						.then( (locationData) => {
+						.then( (locationData) =>
+						{
 							return this.getClass('location').create(locationData);
 						})
-						.then( (location_id) => {
-
+						.then( (location_id) =>
+						{
 							tplData["i_location_id"] = location_id;
 							return Promise.resolve(tplData);
 						});
@@ -440,17 +437,19 @@ class Events extends CtrlMain
 			throw new Errors.HttpStatusError(404, "Not found");
 
 		return this.getClass('events').get(i_event_id)
-			.then((event) => {
+			.then((event) =>
+			{
 				if (!event)
 					throw new Errors.HttpStatusError(404, "Not found");
 
 				return this.getClass('events').getImageList(event.e_id)
-					.spread((images, allPreviews) => {
+					.spread((images, allPreviews) =>
+					{
 						return Promise.resolve([event, images, allPreviews]);
 					});
 			})
-			.spread((event, images, allPreviews) => {
-
+			.spread((event, images, allPreviews) =>
+			{
 				if (this.getLocalAccess()['post_upload'])
 				{
 					Object.assign(event, FileUpload.createToken('events', {"e_id": event.e_id}) );
@@ -469,9 +468,6 @@ class Events extends CtrlMain
 				this.getRes().expose(allPreviews, 'eventImagesPreviews');
 
 				return Promise.resolve(null);
-			})
-			.catch((err) => {
-				throw err;
 			});
 	}
 
@@ -550,29 +546,33 @@ class Events extends CtrlMain
 				{
 					return this.getClass('location')
 						.geoCoder(tplData["s_e_address"])
-						.then( (locationData) => {
+						.then( (locationData) =>
+						{
 							return this.getClass('location').create(locationData);
 						})
-						.then( (location_id) => {
-
+						.then( (location_id) =>
+						{
 							tplData["i_location_id"] = location_id;
 							return Promise.resolve(tplData);
 						});
 				}
 			})
-			.then((tplData) => {
+			.then((tplData) =>
+			{
 				return this.getClass('events').edit(
 					tplData["i_event_id"], this.getUserId(),
 					tplData["s_e_title"], tplData["t_e_notice"], tplData["t_e_text"], tplData["s_e_address"],
 					tplData["f_e_lat"], tplData["f_e_lng"], tplData["i_location_id"], tplData["dd_start_ts"], tplData["dd_end_ts"]
 				)
-					.then(()=>{
+					.then(()=>
+					{
 						return Promise.resolve(tplData);
 					});
 			})
-			.then((tplData) => {
-
-				process.nextTick(()=>{
+			.then((tplData) =>
+			{
+				process.nextTick(()=>
+				{
 					const Mailer = new Mail(CtrlMain.appConfig.mail.service);
 
 					let title = 'Изменено МотоСобытие на сайте www.MotoCommunity.ru';
@@ -588,8 +588,8 @@ class Events extends CtrlMain
 						}
 					};
 
-					Mailer.send(sendParams,  (err) => {
-
+					Mailer.send(sendParams,  (err) =>
+					{
 						if(err)
 							Logger.error(new Errors.AppMailError('Ошибка при отправке письма', err));
 					});
@@ -599,14 +599,12 @@ class Events extends CtrlMain
 
 				return Promise.resolve(true);
 			})
-			.catch(Errors.ValidationError, (err) => {
+			.catch(Errors.ValidationError, (err) =>
+			{
 				//такие ошибки не уводят со страницы
 				this.view.setTplData(tplFile, err.data);
 
 				return Promise.resolve(true);
-			})
-			.catch((err) => {
-				throw err;
 			});
 	}
 
@@ -626,15 +624,12 @@ class Events extends CtrlMain
 
 				return this.getClass('events')
 					.sortImgUpd(tplData["i_event_id"], tplData["ei_pos"])
-					.then(() => {
+					.then(() =>
+					{
 						this.view.setTplData(tplFile, tplData);
 
 						return Promise.resolve(true);
 					});
-			})
-			.catch((err) =>
-			{
-				throw err;
 			});
 	}
 	/**
@@ -688,8 +683,8 @@ class Events extends CtrlMain
 
 		return this.getClass('events')
 			.uploadImage(this.getUserId(), this.getReq(), this.getRes())
-			.then( (file) => {
-
+			.then( (file) =>
+			{
 				//console.log(file);
 				tplData = {
 					e_id: file.e_id,
@@ -707,8 +702,8 @@ class Events extends CtrlMain
 
 				return Promise.resolve(true);
 			})
-			.catch( (err) => {
-
+			.catch( (err) =>
+			{
 				Logger.error(err);
 				tplData.formError.text = err.message;
 				tplData.formError.error = true;
@@ -730,25 +725,22 @@ class Events extends CtrlMain
 	delImg(tplData, tplFile)
 	{
 		return Promise.resolve(tplData)
-			.then( (tplData) => {
-
+			.then( (tplData) =>
+			{
 				if (!tplData["i_ei_id"])
 					throw new Errors.HttpError(400);
 
 				return this.getClass('events')
 					.delImage(this.getUserId(), tplData["i_event_id"], tplData["i_ei_id"])
-					.then( () => {
+					.then( () =>
+					{
 						return Promise.resolve(tplData);
 					});
 			})
-			.then( (tplData) => {
-
+			.then( (tplData) =>
+			{
 				this.view.setTplData(tplFile, tplData);
 				return Promise.resolve(true);
-			})
-			.catch( (err) => {
-
-				throw err;
 			});
 	}
 
@@ -762,23 +754,20 @@ class Events extends CtrlMain
 	delEvent(tplData, tplFile)
 	{
 		return Promise.resolve(tplData)
-			.then( (tplData) => {
-
+			.then( (tplData) =>
+			{
 				return this.getClass('events')
 					.delEvent(this.getUserId(), tplData["i_event_id"])
-					.then( () => {
+					.then( () =>
+					{
 						return Promise.resolve(tplData);
 					});
 			})
-			.then( (tplData) => {
-
+			.then( (tplData) =>
+			{
 				this.view.setTplData(tplFile, tplData);
 
 				return Promise.resolve(true);
-			})
-			.catch( (err) => {
-
-				throw err;
 			});
 	}
 }

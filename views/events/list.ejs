@@ -8,7 +8,7 @@ eventList.forEach(function (eItem)
 	%><div class="eventListItem">
 			<a  class="eventListItemInfo" href="<%=[_reqBaseUrl, eItem["e_id"], eItem["e_alias"]].join('/')%>/">
 				<img src="<%=imgSrc%>" alt="<%=eItem["e_title"]%>"/>
-			<div class="eventListItemInfoDate"><%-eDate%></div>
+			<div class="eventListItemInfoDate"><i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;<%-eDate%></div>
 			<div class="eventListItemInfoNotice">
 				<p><%=eItem["e_title"]%></p>
 				<p><%=eItem["e_notice"]%></p>

@@ -118,22 +118,24 @@ class Events extends BaseModel
 			, gps_lat, gps_lng, i_u_id, i_e_id];
 
 		return this.constructor.conn().upd(sql, sqlData)
-			.then(() => {
+			.then(() =>
+			{
 				sql = `SELECT l_lk, l_rk FROM location WHERE l_id = ?;`;
-
 				return this.constructor.conn().sRow(sql, [i_location_id]);
 			})
-			.then((res) => {
+			.then((res) =>
+			{
 				let {l_lk, l_rk} = res;
 
 				sql = `SELECT l_id FROM location WHERE l_lk <= ? AND l_rk >= ? ORDER BY l_lk;`;
 				return this.constructor.conn().s(sql, [l_lk, l_rk]);
 			})
-			.then((res) => {
-
+			.then((res) =>
+			{
 				let sqlIns = [], sqlData = [i_e_id], pids = [];
 
-				res.forEach((item) => {
+				res.forEach((item) =>
+				{
 					sqlIns.push("(?, ?)");
 					sqlData.push(i_e_id, item["l_id"]);
 					pids.push(item["l_id"]);
@@ -148,7 +150,8 @@ class Events extends BaseModel
 
 				return this.constructor.conn().multis(sql, sqlData);
 			})
-			.then(() => {
+			.then(() =>
+			{
 				return Promise.resolve(i_e_id);
 			});
 	}

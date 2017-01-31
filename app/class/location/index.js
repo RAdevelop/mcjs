@@ -61,8 +61,8 @@ class Location extends Base
 		if (locationData.length == 0)
 			throw new Errors.ValidationError('Не удалось определить указанный населенный пункт');
 		
-		return Promise.reduce(locationData, (pId, location) => {
-
+		return Promise.reduce(locationData, (pId, location) =>
+		{
 			return this.addLocation(pId, location["name"], location["lat"], location["lng"], location["kind"], location["text"])
 				.then((inPid) => {
 					return inPid;
@@ -169,6 +169,13 @@ class Location extends Base
 	 */
 	coordConvert(lat, lng)
 	{
+		if (!lat || !lng)
+		{
+			return {
+				gps_lat: '',
+				gps_lng: ''
+			};
+		}
 		let latG, latMin, latSec, lngG, lngMin, lngSec;
 
 		let latArr = lat.toString().split('.');
