@@ -64,7 +64,8 @@ class Location extends Base
 		return Promise.reduce(locationData, (pId, location) =>
 		{
 			return this.addLocation(pId, location["name"], location["lat"], location["lng"], location["kind"], location["text"])
-				.then((inPid) => {
+				.then((inPid) =>
+				{
 					return inPid;
 				});
 		}, 0); //0 - pId с начала считаем равным 0

@@ -29,7 +29,7 @@ class Photo extends User
 	 * создаем профильный альбом пользователя
 	 *
 	 * @param u_id
-	 * @returns {Promise.<T>}
+	 * @returns {Promise}
 	 */
 	createAlbumProfile(u_id)
 	{
@@ -38,13 +38,14 @@ class Photo extends User
 
 		return this.constructor.conn()
 			.psRow(sql, [this.constructor.albumProfile])
-			.then((res) => {
+			.then((res) =>
+			{
 				a_type_id = res["a_type_id"];
 
 				sql = `SELECT a_id FROM album WHERE u_id = ? AND a_type_id = ?`;
 				return this.constructor.conn().psRow(sql, [u_id, a_type_id])
-					.then((res) => {
-
+					.then((res) =>
+					{
 						if (!res)
 							return Promise.reject(new Errors.NotFoundError());
 
@@ -52,7 +53,8 @@ class Photo extends User
 					});
 
 			})
-			.catch(Errors.NotFoundError, () => {
+			.catch(Errors.NotFoundError, () =>
+			{
 				let a_name = 'Фотографии профиля';
 				let a_alias = 'fotografii-profilya';
 				return this._insAlbum(u_id, a_type_id, a_name, a_alias, a_name);
@@ -136,11 +138,11 @@ class Photo extends User
 	addProfilePhoto(u_id, fileData)
 	{
 		return this.createAlbumProfile(u_id)
-			.then((a_id) => {
-
+			.then((a_id) =>
+			{
 				return this._insImage(a_id, u_id)
-					.then((res) => {
-
+					.then((res) =>
+					{
 						fileData["u_id"] = u_id;
 						fileData["ai_id"] = res['insertId'];
 						fileData["a_id"] = a_id;

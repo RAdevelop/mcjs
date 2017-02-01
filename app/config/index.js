@@ -59,8 +59,8 @@ var config = {
 			password: 'mcjs',
 			db: 'mcjs',
 			charset: 'utf8',
-			multiStatements: true
-			//, keepQueries: true
+			multiStatements: true,
+			keepQueries: true //false
 		}
 	},
 	mail: {
