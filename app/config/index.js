@@ -60,7 +60,7 @@ var config = {
 			db: 'mcjs',
 			charset: 'utf8',
 			multiStatements: true,
-			keepQueries: true //false
+			keepQueries: true //true false
 		}
 	},
 	mail: {

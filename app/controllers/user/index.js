@@ -7,7 +7,7 @@ const Promise = require("bluebird");
 
 const CtrlMain = require('app/lib/controller');
 
-let limit_per_page = 2;
+let limit_per_page = 20;
 
 class User extends CtrlMain
 {

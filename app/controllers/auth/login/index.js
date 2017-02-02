@@ -339,7 +339,10 @@ class Login extends CtrlMain
 					bcrypt.hash(tplData.s_password, userData["u_salt"], (err, hash)=>
 					{
 						if(err)
-							return reject(err);
+						{
+							//return reject(err);
+							return reject(new Errors.NotFoundError());
+						}
 						
 						if(userData["u_pass"] == hash)
 						{

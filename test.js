@@ -98,48 +98,21 @@ Promise.mapSeries(locationArr, function (s_location)
 		});
 });*/
 
-let ClientsOpts = new WeakSet();
-let Clients = new WeakMap();
-//let Clients = new WeakSet();
+const Promise = require("bluebird");
 
-let o1 = { connectionName: 'chat'};
-let o2 = { connectionName: 'redis'};
-
-let opt = { connectionName: 'session',
-	port: 6379,
-	host: 'localhost',
-	showFriendlyErrorStack: true,
-	password: 'RoLexey2381Doberman05FireBlade' };
-
-
-function wm(options = {})
+function prom()
 {
-	if (!Clients.has(options))
+	return new Promise((resolve, reject)=>
 	{
-		console.log(' -= SET ', options.connectionName);
-		Clients.set(options, options.connectionName);
-	}
-	//Clients.add(options);
+		console.log((new Date()));
+		return resolve('RA');
+	});
 }
 
-o1 = Object.assign({},opt,o1);
-console.log(Clients.has(o1));
-wm(o1);
-console.log(Clients.has(o1));
-console.log(o1.connectionName +' <> '+ Clients.get(o1));
-wm(o1);
 
-console.log('----');
-o2 = Object.assign({},opt,o2);
-wm(o2);
-//console.log(Clients.has(o2));
-wm(o2);
-console.log(o2.connectionName +' <> '+ Clients.get(o2));
-
-
-
-console.log('----');
-console.log(Clients.has(o1));
-console.log(o1.connectionName +' <> '+ Clients.get(o1));
-
-console.log(opt);
+prom().delay(3000)
+	.then((res)=>
+	{
+		console.log((new Date()));
+		console.log(res);
+	});
