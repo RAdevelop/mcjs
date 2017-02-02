@@ -221,9 +221,9 @@ class User extends Base
 
 				if (list.length > 0)
 				{
-					users.forEach((user)=>
+					list.forEach((item, i)=>
 					{
-						list.forEach((item, i)=>
+						users.forEach((user)=>
 						{
 							if (item.hasOwnProperty('u_id') && item['u_id'] == user['u_id'])
 							{

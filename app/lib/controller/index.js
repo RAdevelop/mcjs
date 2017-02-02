@@ -350,8 +350,8 @@ class Base
 					//this.routeArgs = Helpers.varsValidate(tmpArgs);
 					this.routeArgs = tmpArgs;
 				}
-				//console.log("this.routeArgs = ", this.routeArgs);
-				//console.log('\n');
+				console.log("this.routeArgs = ", this.routeArgs);
+				console.log('\n');
 				return true;
 			}
 		}

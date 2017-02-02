@@ -382,11 +382,11 @@ class User extends BaseModel
 	getUserListById(u_ids)
 	{
 		let sql = `SELECT u.u_id, u.u_mail, u.u_date_reg, u.u_date_visit, u.u_login, u.u_reg,
-			ud.u_name, ud.u_surname, ud.u_sex, ud.u_birthday, ud.u_location_id, ud.u_latitude, ud.u_longitude
-			FROM users AS u
-			JOIN users_data AS ud ON (ud.u_id = u.u_id)
-			WHERE u.u_id IN(${this.constructor.placeHoldersForIn(u_ids)})`;
-
+		ud.u_name, ud.u_surname, ud.u_sex, ud.u_birthday, ud.u_location_id, ud.u_latitude, ud.u_longitude
+		FROM users AS u
+		LEFT JOIN users_data AS ud ON (ud.u_id = u.u_id)
+		WHERE u.u_id IN(${this.constructor.placeHoldersForIn(u_ids)})`;
+		//console.log(sql, u_ids);
 		return this.constructor.conn().ps(sql, u_ids);
 	}
 }

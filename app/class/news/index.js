@@ -126,8 +126,8 @@ class News extends Base
 				return this.get(n_id)
 					.then((event) =>
 					{
-						if (event["e_img_cnt"] >= 5)
-							throw new FileErrors.LimitExceeded('Можно добавить не более 5 файлов.');
+						if (event["e_img_cnt"] >= 10)
+							throw new FileErrors.LimitExceeded('Можно добавить не более 10 файлов.');
 
 						return Promise.resolve(ufile);
 					});

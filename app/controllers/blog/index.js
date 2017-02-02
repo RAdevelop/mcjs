@@ -11,7 +11,7 @@ const EmbedContent = require("app/lib/embed/content");
 //const Moment = require('moment'); //работа со временем
 const CtrlMain = require('app/lib/controller');
 
-let limit_per_page = 1;
+let limit_per_page = 20;
 
 class Blog extends CtrlMain
 {
@@ -145,6 +145,9 @@ class Blog extends CtrlMain
 			.getBlogList(new Pages(i_page, limit_per_page), show, i_u_id))
 			.spread((blogList, Pages) =>
 			{
+				if(!blogList || blogList.length == 0)
+					return Promise.resolve([blogList, Pages]);
+
 				let u_ids = blogList.map((blog)=>
 				{
 					return blog['u_id'];
@@ -159,6 +162,11 @@ class Blog extends CtrlMain
 			})
 			.spread((blogList, Pages) =>
 			{
+				let isAjax = this.getReq().xhr;
+
+				if (i_u_id)
+				tplData["user"] = {u_id: i_u_id};
+
 				tplData["blogList"] = blogList;
 
 				let exposeBlog = 'blogList';
@@ -168,7 +176,7 @@ class Blog extends CtrlMain
 
 				tplData["pages"] = Pages.pages();
 
-				let isAjax = this.getReq().xhr;
+
 				let tplFile = (isAjax ? 'blog/list.ejs':'blog');
 
 				this.getRes().expose(blogList, exposeBlog);

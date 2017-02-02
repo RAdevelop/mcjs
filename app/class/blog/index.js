@@ -125,8 +125,8 @@ class Blog extends Base
 				return this.getBlogById(b_id)
 					.then((blog) =>
 					{
-						if (blog["b_img_cnt"] >= 5)
-							throw new FileErrors.LimitExceeded('Можно добавить не более 5 файлов.');
+						if (blog["b_img_cnt"] >= 10)
+							throw new FileErrors.LimitExceeded('Можно добавить не более 10 файлов.');
 
 						return Promise.resolve(ufile);
 					});
