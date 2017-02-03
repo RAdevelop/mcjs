@@ -11,7 +11,7 @@
 			</ul>
 		</div><% }%>
 		<div class="btn-group btn-group-sm" role="group" aria-label="список статей">
-			<a href="<%=menuItem['m_path']+'/'%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-list"></i> все статьи</a>
+			<a href="<%=menuItem['m_path']+'/'+(user['u_id'] ? user['u_id']+'/' : '')%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-list"></i> все статьи</a>
 		</div>
 		<div class="sharingSocNet" data-soc-list="vk,ok,fb,tw,gp"></div>
 	</div>

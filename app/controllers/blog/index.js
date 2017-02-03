@@ -54,10 +54,22 @@ class Blog extends CtrlMain
 
 		let {i_u_id=null, i_blog_id=null, s_blog_alias=null} = this.routeArgs;
 
-		if (i_blog_id)
+		return this.getUser(i_u_id)
+				.then((user)=>
+				{
+					tplData["user"] = user;
+
+					if (i_blog_id)
+						return this.blog(tplData, i_blog_id, s_blog_alias, i_u_id);
+
+					return this.blogList(tplData, i_u_id);
+				});
+
+
+		/*if (i_blog_id)
 			return this.blog(tplData, i_blog_id, s_blog_alias, i_u_id);
 
-		return this.blogList(tplData, i_u_id);
+		return this.blogList(tplData, i_u_id);*/
 	}
 
 	/**
@@ -163,9 +175,6 @@ class Blog extends CtrlMain
 			.spread((blogList, Pages) =>
 			{
 				let isAjax = this.getReq().xhr;
-
-				if (i_u_id)
-				tplData["user"] = {u_id: i_u_id};
 
 				tplData["blogList"] = blogList;
 
