@@ -54,22 +54,10 @@ class Blog extends CtrlMain
 
 		let {i_u_id=null, i_blog_id=null, s_blog_alias=null} = this.routeArgs;
 
-		return this.getUser(i_u_id)
-				.then((user)=>
-				{
-					tplData["user"] = user;
-
-					if (i_blog_id)
-						return this.blog(tplData, i_blog_id, s_blog_alias, i_u_id);
-
-					return this.blogList(tplData, i_u_id);
-				});
-
-
-		/*if (i_blog_id)
+		if (i_blog_id)
 			return this.blog(tplData, i_blog_id, s_blog_alias, i_u_id);
 
-		return this.blogList(tplData, i_u_id);*/
+		return this.blogList(tplData, i_u_id);
 	}
 
 	/**
@@ -87,19 +75,15 @@ class Blog extends CtrlMain
 		//let show = (this.getLocalAccess()['post_edit'] ? null : 1);
 		
 		return this._getBlogData(i_blog_id, i_u_id)
-			.then((props)=>
+			.spread((isRootAdmin, blog, user)=>
 			{
 				if (
-					props.blog && props.blog["b_alias"] == s_alias
-					&&  (props.isRootAdmin || props.blog['u_id'] == this.getUserId() || props.blog['b_show'] == 1)
+					blog && blog["b_alias"] == s_alias
+					&& (isRootAdmin || blog['u_id'] == this.getUserId() || blog['b_show'] == 1)
 				)
 				{
-					return this.getUser(props.blog['u_id'])
-						.then((user)=>
-						{
-							props.blog['user'] = user;
-							return Promise.resolve(props.blog);
-						});
+					tplData["user"] = user;
+					return Promise.resolve(blog);
 				}
 
 				throw new Errors.HttpError(404);
@@ -153,23 +137,26 @@ class Blog extends CtrlMain
 		//let show = (this.getLocalAccess()['post_edit'] ? null : 1);
 		let show = (i_u_id==this.getUserId() ? null : 1);
 
-		return Promise.resolve(this.getClass("blog")
-			.getBlogList(new Pages(i_page, limit_per_page), show, i_u_id))
-			.spread((blogList, Pages) =>
+		return Promise.all([
+			this.getClass("blog").getBlogList(new Pages(i_page, limit_per_page), show, i_u_id),
+			this.getUser(i_u_id)
+		])
+			.spread((blog, user) =>
 			{
-				if(!blogList || blogList.length == 0)
-					return Promise.resolve([blogList, Pages]);
+				tplData['user'] = user;
+				if(!blog[0] || blog[0].length == 0)
+					return Promise.resolve([[], blog[1]]);
 
-				let u_ids = blogList.map((blog)=>
+				let u_ids = blog[0].map((u)=>
 				{
-					return blog['u_id'];
+					return u['u_id'];
 				});
 
-				return this.getClass('user').getUserListById(u_ids, blogList)
+				return this.getClass('user').getUserListById(u_ids, blog[0])
 					.spread((users, blogList)=>
 					{
 						users = null;
-						return Promise.resolve([blogList, Pages]);
+						return Promise.resolve([blogList, blog[1]]);
 					});
 			})
 			.spread((blogList, Pages) =>
@@ -184,7 +171,6 @@ class Blog extends CtrlMain
 					.setAjaxPagesType(true);
 
 				tplData["pages"] = Pages.pages();
-
 
 				let tplFile = (isAjax ? 'blog/list.ejs':'blog');
 
@@ -317,19 +303,19 @@ class Blog extends CtrlMain
 		//let show = (this.getLocalAccess()['post_edit'] ? null : 1);
 
 		return this._getBlogData(i_blog_id)
-			.then((props) =>
+			.spread((isRootAdmin, blog, user)=>
 			{
-				if (!props.blog || !(props.isRootAdmin || props.blog['u_id'] == this.getUserId()))
+				if (!blog || !(isRootAdmin || blog['u_id'] == this.getUserId()))
 					throw new Errors.HttpError(404);
 
 				return this.getClass('blog')
-					.getImageList(props.blog['b_id'])
+					.getImageList(blog['b_id'])
 					.spread((images, allPreviews) =>
 					{
-						return Promise.resolve([props.blog, images, allPreviews]);
+						return Promise.resolve([user, blog, images, allPreviews]);
 					});
 			})
-			.spread((blog, images, allPreviews) =>
+			.spread((user, blog, images, allPreviews) =>
 			{
 				if (this.getLocalAccess()['post_upload'])
 				{
@@ -339,7 +325,7 @@ class Blog extends CtrlMain
 				}
 
 				let tplFile = "blog";
-				let tplData = { blog: blog, blogImages: images};
+				let tplData = { blog: blog, blogImages: images, user: user};
 				this.view.setTplData(tplFile, tplData);
 
 				this.view.setPageTitle(blog.b_title);
@@ -370,11 +356,13 @@ class Blog extends CtrlMain
 			throw new Errors.HttpError(404);
 
 		return this._getBlogData(tplData["i_blog_id"])
-			.then((props) =>
+			.spread((isRootAdmin, blog, user)=>
 			{
-				if (!props.blog || !(props.isRootAdmin || props.blog['u_id'] == this.getUserId()))
+				if (!blog || !(isRootAdmin || blog['u_id'] == this.getUserId()))
 					throw new Errors.HttpError(404);
 
+				tplData["user"] = user;
+				
 				switch(tplData["btn_save_blog"])
 				{
 					default:
@@ -590,10 +578,11 @@ class Blog extends CtrlMain
 
 	_getBlogData(b_id, i_u_id=null)
 	{
-		return Promise.props({
-			isRootAdmin: this.getClass('user/groups').isRootAdmin(this.getUserId()),
-			blog: this.getClass('blog').getBlogById(b_id, i_u_id)
-		})
+		return Promise.all([
+			this.getClass('user/groups').isRootAdmin(this.getUserId()),
+			this.getClass('blog').getBlogById(b_id, i_u_id),
+			this.getUser(i_u_id)
+	]);
 	}
 }
 //************************************************************************* module.exports
