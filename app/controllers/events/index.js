@@ -116,22 +116,14 @@ class Events extends CtrlMain
 				if (!event || event["e_alias"] != s_alias)
 					throw new Errors.HttpStatusError(404, "Not found");
 
-				return this.getClass('events')
-					.getImageList(event.e_id)
-					.spread( (images, allPreviews) =>
+				return Promise.all([
+					this.getClass('events').getImageList(event.e_id),
+					this.getClass("events").getLocations(event['e_start_ts'], parseInt(event['e_end_ts'],10)+3600, event['e_location_id'])
+				])
+					.spread((images, eventLocations)=>
 					{
-						return Promise.resolve([event, images, allPreviews]);
-					});
-			})
-			.spread( (event, images, allPreviews) =>
-			{
-				event["eventImages"] = images;
-				event["eventImagesPreviews"] = allPreviews;
-
-				return this.getClass("events")
-					.getLocations()
-					.then( (eventLocations) =>
-					{
+						event["eventImages"] = images[0];
+						event["eventImagesPreviews"] = images[1]; //=>allPreviews
 						return Promise.resolve([event, eventLocations]);
 					});
 			})
@@ -175,14 +167,16 @@ class Events extends CtrlMain
 	 */
 	eventList(tplData, startDate, endDate, l_id)
 	{
-		return Promise.resolve(this.getClass("events").getEvents(startDate.getTime()/1000, endDate.getTime()/1000, l_id))
+		let startDateTs = startDate.getTime()/1000;
+		let endDateTs = endDate.getTime()/1000;
+		return this.getClass("events").getEvents(startDateTs, endDateTs, l_id)
 			.then( (eventList) =>
 			{
 				if (!eventList || !eventList.length)
 					throw new Errors.HttpError(404);
 
 				return this.getClass("events")
-					.getLocations()
+					.getLocations(startDateTs, endDateTs, l_id)
 					.then( (eventLocations) =>
 					{
 						return Promise.resolve([eventList, eventLocations, l_id]);
@@ -225,9 +219,12 @@ class Events extends CtrlMain
 		//console.log("startDate = ", startDate.getFullYear(), startDate.getMonth());
 		//console.log("endDate = ", endDate.getFullYear(), endDate.getMonth());
 
+		let startDateTs = startDate.getTime()/1000;
+		let endDateTs = endDate.getTime()/1000;
+
 		return Promise.props({
-			eventDates: this.getClass("events").getEventsDate(startDate.getTime()/1000, endDate.getTime()/1000, l_id),
-			eventLocations: this.getClass("events").getLocations(startDate.getTime()/1000, endDate.getTime()/1000, l_id)
+			eventDates: this.getClass("events").getEventsDate(startDateTs, endDateTs, l_id),
+			eventLocations: this.getClass("events").getLocations(startDateTs, endDateTs, l_id)
 		})
 			.then((proprs) =>
 			{
@@ -365,8 +362,7 @@ class Events extends CtrlMain
 			{
 				if (this.parseFormErrors(tplData, errors))
 				{
-					return this.getClass('location')
-						.geoCoder(tplData["s_e_address"])
+					return this.getClass('location').geoCoder(tplData["s_e_address"])
 						.then( (locationData) =>
 						{
 							return this.getClass('location').create(locationData);
@@ -544,8 +540,7 @@ class Events extends CtrlMain
 
 				if (this.parseFormErrors(tplData, errors))
 				{
-					return this.getClass('location')
-						.geoCoder(tplData["s_e_address"])
+					return this.getClass('location').geoCoder(tplData["s_e_address"])
 						.then( (locationData) =>
 						{
 							return this.getClass('location').create(locationData);

@@ -72,19 +72,20 @@ class News extends CtrlMain
 	news(tplData, i_news_id, s_alias)
 	{
 		let show = (this.getLocalAccess()['post_edit'] ? null : 1);
-		return this.getClass('news')
-			.get(i_news_id, show)
+		return this.getClass('news').get(i_news_id, show)
 			.then((news) =>
 			{
 				if (!news || news["n_alias"] != s_alias)
 					throw new Errors.HttpError(404);
 
 				return this.getClass('news').getImageList(news.n_id)
-					.spread((images, allPreviews) => {
+					.spread((images, allPreviews) =>
+					{
 						return Promise.resolve([news, images, allPreviews]);
 					});
 			})
-			.spread((news, images, allPreviews) => {
+			.spread((news, images, allPreviews) =>
+			{
 				news["newsImages"] = images;
 				news["newsImagesPreviews"] = allPreviews;
 
@@ -108,9 +109,6 @@ class News extends CtrlMain
 				//this.view.addPartialData("user/right", {title: 'right_col'});
 
 				return Promise.resolve(null);
-			})
-			.catch((err) => {
-				throw err;
 			});
 	}
 
@@ -125,7 +123,7 @@ class News extends CtrlMain
 		let {i_page=1} = this.routeArgs;
 		let show = (this.getLocalAccess()['post_edit'] ? null : 1);
 
-		return Promise.resolve(this.getClass("news").getNews(new Pages(i_page, limit_per_page), show))
+		return this.getClass("news").getNews(new Pages(i_page, limit_per_page), show)
 			.spread((newsList, Pages) =>
 			{
 				tplData["newsList"] = newsList;
@@ -214,10 +212,10 @@ class News extends CtrlMain
 				{
 					return this.getClass('news')
 						.add(this.getUserId(), tplData["s_n_title"], tplData["t_n_notice"], tplData["t_n_text"], tplData["dt_show_ts"], tplData["b_show"])
-						.then((i_news_id)=>{
-
-							process.nextTick(()=>{
-
+						.then((i_news_id)=>
+						{
+							process.nextTick(()=>
+							{
 								const Mailer = new Mail(CtrlMain.appConfig.mail.service);
 
 								let title = 'Добавлена новость на сайте www.MotoCommunity.ru';
@@ -233,8 +231,8 @@ class News extends CtrlMain
 									}
 								};
 
-								Mailer.send(sendParams,  (err) => {
-
+								Mailer.send(sendParams,  (err) =>
+								{
 									if(err)
 										Logger.error(new Errors.AppMailError('Ошибка при отправке письма', err));
 								});
@@ -244,19 +242,17 @@ class News extends CtrlMain
 						});
 				}
 			})
-			.then((tplData) => {
-
+			.then((tplData) =>
+			{
 				this.view.setTplData(tplFile, tplData);
 				return Promise.resolve(true);
 			})
-			.catch(Errors.ValidationError, (err) => {
+			.catch(Errors.ValidationError, (err) =>
+			{
 				//такие ошибки не уводят со страницы.
 				this.view.setTplData(tplFile, err.data);
 
 				return Promise.resolve(true);
-			})
-			.catch((err) => {
-				throw err;
 			});
 	}
 
@@ -274,19 +270,20 @@ class News extends CtrlMain
 		let show = (this.getLocalAccess()['post_edit'] ? null : 1);
 
 		return this.getClass('news').get(i_news_id, show)
-			.then((news) => {
-
+			.then((news) =>
+			{
 				if (!news)
 					throw new Errors.HttpError(404);
 
 				return this.getClass('news')
 					.getImageList(news.n_id)
-					.spread((images, allPreviews) => {
+					.spread((images, allPreviews) =>
+					{
 						return Promise.resolve([news, images, allPreviews]);
 					});
 			})
-			.spread((news, images, allPreviews) => {
-
+			.spread((news, images, allPreviews) =>
+			{
 				if (this.getLocalAccess()['post_upload'])
 				{
 					Object.assign(news, FileUpload.createToken('news', {"n_id": news.n_id}) );
@@ -305,9 +302,6 @@ class News extends CtrlMain
 				this.getRes().expose(allPreviews, 'newsImagesPreviews');
 
 				return Promise.resolve(null);
-			})
-			.catch((err) => {
-				throw err;
 			});
 	}
 
@@ -356,7 +350,8 @@ class News extends CtrlMain
 	{
 		return this.getClass('news')
 			.get(tplData["i_news_id"])
-			.then((news) => {
+			.then((news) =>
+			{
 				if (!news)
 					throw new Errors.HttpError(404);
 
@@ -380,13 +375,13 @@ class News extends CtrlMain
 				if (this.parseFormErrors(tplData, errors))
 					return Promise.resolve(tplData);
 			})
-			.then((tplData) => {
-
+			.then((tplData) =>
+			{
 				return this.getClass('news').edit(
 					tplData["i_news_id"], this.getUserId(),
 					tplData["s_n_title"], tplData["t_n_notice"], tplData["t_n_text"], tplData["dt_show_ts"], tplData["b_show"])
-					.then(() => {
-
+					.then(() =>
+					{
 						process.nextTick(()=>
 						{
 							const Mailer = new Mail(CtrlMain.appConfig.mail.service);
@@ -404,8 +399,8 @@ class News extends CtrlMain
 								}
 							};
 
-							Mailer.send(sendParams,  (err) => {
-
+							Mailer.send(sendParams,  (err) =>
+							{
 								if(err)
 									Logger.error(new Errors.AppMailError('Ошибка при отправке письма', err));
 							});
@@ -415,13 +410,10 @@ class News extends CtrlMain
 						return Promise.resolve(true);
 					});
 			})
-			.catch(Errors.ValidationError, (err) => { //такие ошибки не уводят со страницы
-
+			.catch(Errors.ValidationError, (err) =>
+			{ //такие ошибки не уводят со страницы
 				this.view.setTplData(tplFile, err.data);
 				return Promise.resolve(true);
-			})
-			.catch((err) => {
-				throw err;
 			});
 	}
 
@@ -435,21 +427,18 @@ class News extends CtrlMain
 	sortImg(tplData, tplFile)
 	{
 		return Promise.resolve(tplData)
-			.then((tplData) => {
-
+			.then((tplData) =>
+			{
 				if (!tplData["i_news_id"] || !tplData.hasOwnProperty("ni_pos") || !tplData["ni_pos"].length)
 					return Promise.resolve(tplData);
 
 				return this.getClass('news')
 					.sortImgUpd(tplData["i_news_id"], tplData["ni_pos"])
-					.then(() => {
-
+					.then(() =>
+					{
 						this.view.setTplData(tplFile, tplData);
 						return Promise.resolve(true);
 					});
-			})
-			.catch((err) => {
-				throw err;
 			});
 	}
 
@@ -524,9 +513,6 @@ class News extends CtrlMain
 						this.view.setTplData(tplFile, tplData);
 						return Promise.resolve(true);
 					});
-			})
-			.catch((err) => {
-				throw err;
 			});
 	}
 
@@ -549,10 +535,6 @@ class News extends CtrlMain
 						this.view.setTplData(tplFile, tplData);
 						return Promise.resolve(true);
 					});
-			})
-			.catch((err) =>
-			{
-				throw err;
 			});
 	}
 }

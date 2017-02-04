@@ -35,6 +35,7 @@
 				{
 					cssLocSelected = (eventLocations["l_id"] == eLoc["l_id"] ? 'selected' : '');
 					locHref = [_reqBaseUrl, _reqPath].join('/') + '?l_id='+eLoc["l_id"];
+
 				%><li class="<%=cssLocSelected%>"><a href="<%=locHref%>"><span style="padding-left: <%=eLoc["l_e_level"]%>0px;"><%=eLoc["l_name"]%></span></a></li><%
 				if (eLoc[iLoc+1] && eLoc[iLoc+1]["l_level"] == 1){ %><li role="separator" class="divider"></li><%}
 				});%>
