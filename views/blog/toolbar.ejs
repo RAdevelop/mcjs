@@ -12,7 +12,22 @@
 		</div><% }%>
 		<div class="btn-group btn-group-sm" role="group" aria-label="список статей">
 			<a href="<%=menuItem['m_path']+'/'+(user['u_id'] ? user['u_id']+'/' : '')%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-list"></i> все статьи</a>
-		</div>
+		</div><%
+		if (blogSubjects && blogSubjects.length){%>
+		<div class="btn-group btn-group-sm" role="group" aria-label="Выбор темы">
+			<button type="button" class="btn btn-default dropdown-toggle toolbarBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Темы &nbsp;<i class="caret"></i></button>
+			<ul class="dropdown-menu dropdown-menu-right eventLocationsMenu">
+				<li><a href="<%=_reqBaseUrl%>/">на все темы</a></li><%
+					let cssLocSelected, locHref;
+				blogSubjects.forEach(function (bSubjects)
+				{
+					cssLocSelected = (bSubjects["TODO"] == bSubjects["bs_id"] ? 'selected' : '');
+					locHref = [_reqBaseUrl,'subj', bSubjects["bs_id"], bSubjects["bs_alias"]].join('/');
+
+				%><li class="<%=cssLocSelected%>"><a href="<%=locHref%>/"><span style="padding-left: <%=bSubjects["bs_level"]%>0px;"><%=bSubjects["bs_name"]%></span></a></li><%
+				});%>
+			</ul>
+		</div><% }%>
 		<div class="sharingSocNet" data-soc-list="vk,ok,fb,tw,gp"></div>
 	</div>
 </div>

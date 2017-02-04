@@ -430,7 +430,10 @@ class News extends CtrlMain
 			.then((tplData) =>
 			{
 				if (!tplData["i_news_id"] || !tplData.hasOwnProperty("ni_pos") || !tplData["ni_pos"].length)
-					return Promise.resolve(tplData);
+				{
+					this.view.setTplData(tplFile, tplData);
+					return Promise.resolve(true);
+				}
 
 				return this.getClass('news')
 					.sortImgUpd(tplData["i_news_id"], tplData["ni_pos"])

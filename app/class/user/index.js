@@ -131,43 +131,29 @@ class User extends Base
 				if (Pages.limitExceeded())
 					return Promise.reject(new Errors.HttpError(404));
 
-				return this.model('user').getUsers(Pages.getOffset(), Pages.getLimit())
-					.spread((users, users_ids) => {//собираем аватарки
-
-						return this.getClass('user/photo/profile').getUsersAva(users_ids)
-							.then((usersAva) =>
-							{
-								users.forEach((user, uI, users) =>
-								{
-									user['u_display_name'] = User.userDisplayName(user);
-									users[uI] = Object.assign({}, user, usersAva[user["u_id"]]);
-								});
-
-								return [users, users_ids];
-							});
-					})
-					.spread((users, users_ids) => {//собираем данные о населенных пунктах юзеров
-
-						return this.getClass('user').getUsersLocation(users_ids)
-							.then((usersLocation) =>
-							{
-								users.forEach((user, uI, users) =>
-								{
-									users[uI] = Object.assign({}, user, usersLocation[user["u_id"]]);
-								});
-
-								return [users, users_ids];
-							});
-					})
-					.spread((users) =>
+				return this.model('user')
+					.getUsers(Pages.getOffset(), Pages.getLimit())
+					.spread((users, users_ids) =>
 					{
-						/*console.log('\nusers_ids');
-						console.log(users);
-						console.log('=======\n');*/
+						return Promise.all([
+							this.getClass('user/photo/profile').getUsersAva(users_ids),
+							this.getClass('user').getUsersLocation(users_ids)
+						])
+							.spread((usersAva, usersLocation)=>
+							{
+								users.forEach((user, uI, users) =>
+								{
+									users[uI]['u_display_name'] = User.userDisplayName(user);
+									users[uI] = Object.assign({}, users[uI],
+										usersAva[user["u_id"]],
+										usersLocation[user["u_id"]]
+									);
+								});
 
-						usersData.users = users;
-
-						return Promise.resolve(usersData);
+								usersData.users = users;
+								users_ids = null;
+								return Promise.resolve(usersData);
+							});
 					});
 			});
 	}

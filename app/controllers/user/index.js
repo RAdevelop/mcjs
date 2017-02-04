@@ -48,8 +48,8 @@ class User extends CtrlMain
 			user: (isAjax ? Promise.resolve(null) : this.getUser(this.getUserId())),
 			users: this.getClass("user").getUsers(new Pages(i_page, limit_per_page)) //{users:users, users_cnt:users_cnt, Pages:Pages}
 		})
-			.then((props) => {
-
+			.then((props) =>
+			{
 				let tplData = {
 					"user": props.user,
 					"users": props.users['users'],

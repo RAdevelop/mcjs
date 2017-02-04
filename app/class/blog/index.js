@@ -69,6 +69,7 @@ class Blog extends Base
 	 */
 	getBlogList(Pages, b_show = null, i_u_id = null)
 	{
+		//TODO add bs_id
 		return this.model('blog').countBlog(b_show, i_u_id)
 			.then((cnt) =>
 			{
@@ -80,7 +81,8 @@ class Blog extends Base
 				if (Pages.limitExceeded())
 					return Promise.reject(new FileErrors.HttpError(404));
 
-				return this.model('blog').getBlogList(Pages.getLimit(), Pages.getOffset(), b_show, i_u_id)
+				return this.model('blog')
+					.getBlogList(Pages.getLimit(), Pages.getOffset(), b_show, i_u_id)
 					.then((blogList) =>
 					{
 						if (!blogList)
@@ -92,7 +94,7 @@ class Blog extends Base
 						{
 							blogList[indx]["previews"] = {};
 							if (blog["bi_dir"])
-								blog = FileUpload.getPreviews(sizeParams, blog, "bi_dir", true)["obj"];
+								blogList[indx] = FileUpload.getPreviews(sizeParams, blog, "bi_dir", true)["obj"];
 						});
 
 						return Promise.resolve([blogList, Pages]);
@@ -306,7 +308,6 @@ class Blog extends Base
 			{
 				console.log('class Events delImage catch');
 				Logger.error(err);
-				console.log('\n');
 
 				return this.model('blog').delImage(b_id, bi_id)
 					.then(() =>
@@ -348,6 +349,11 @@ class Blog extends Base
 						return this.model('blog').delBlog(b_id);
 					});
 			});
+	}
+
+	getBlogSubjectList()
+	{
+		return this.model('blog').getBlogSubjectList();
 	}
 }
 //************************************************************************* module.exports

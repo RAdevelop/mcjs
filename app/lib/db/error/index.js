@@ -11,7 +11,13 @@ DbError.SqlError = Errors.helpers.generateClass("SqlError", {
 	globalize: true,
 	args: ['message', 'sqlCode', 'inner_error'],
 	generateMessage: function(){
-		return "SQL Error:" + this.message;
+		return
+
+		let msg = "SQL Error:" + this.message;
+
+		if (this.inner_error)
+			msg += this.inner_error['message'];
+		return msg;
 	}
 });
 
@@ -20,7 +26,12 @@ DbError.DbErrDuplicateEntry = Errors.helpers.generateClass("DbErrDuplicateEntry"
 	globalize: true,
 	args: ['sqlCode', 'inner_error'],
 	generateMessage: function(){
-		return "SQL Error: duplicate entry (code= "+this.sqlCode+")";
+		let msg = `SQL Error: duplicate entry (code= ${this.sqlCode})`;
+
+		if (this.inner_error)
+			msg += this.inner_error['message'];
+
+		return msg;
 	}
 });
 
@@ -40,7 +51,6 @@ function sqlErrors(code, err)
 
 module.exports = function(err)
 {
-
 	let sqlError = JSON.parse(JSON.stringify(err));
 	return sqlErrors(sqlError["code"],err);
 	/*

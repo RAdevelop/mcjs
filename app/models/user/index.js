@@ -245,10 +245,10 @@ class User extends BaseModel
 
 				let usersLocation = {};
 
-				user_ids.forEach((u_id) => {
-
-					userData["u_id"] = u_id;
-					usersLocation[u_id] = userData;
+				user_ids.forEach((u_id) =>
+				{
+					//userData["u_id"] = u_id;
+					usersLocation[u_id] = Object.assign({}, userData, {u_id: u_id});
 					if (res)
 					{
 						res.forEach((item) => {

@@ -75,7 +75,7 @@ class Blog extends CtrlMain
 		//let show = (this.getLocalAccess()['post_edit'] ? null : 1);
 		
 		return this._getBlogData(i_blog_id, i_u_id)
-			.spread((isRootAdmin, blog, user)=>
+			.spread((isRootAdmin, blog, user, blogSubjects)=>
 			{
 				if (
 					blog && blog["b_alias"] == s_alias
@@ -83,6 +83,7 @@ class Blog extends CtrlMain
 				)
 				{
 					tplData["user"] = user;
+					tplData["blogSubjects"] = blogSubjects;
 					return Promise.resolve(blog);
 				}
 
@@ -139,11 +140,14 @@ class Blog extends CtrlMain
 
 		return Promise.all([
 			this.getClass("blog").getBlogList(new Pages(i_page, limit_per_page), show, i_u_id),
-			this.getUser(i_u_id)
+			this.getUser(i_u_id),
+			this.getClass('blog').getBlogSubjectList()
 		])
-			.spread((blog, user) =>
+			.spread((blog, user, blogSubjects) =>
 			{
 				tplData['user'] = user;
+				tplData["blogSubjects"] = blogSubjects;
+
 				if(!blog[0] || blog[0].length == 0)
 					return Promise.resolve([[], blog[1]]);
 
@@ -200,12 +204,18 @@ class Blog extends CtrlMain
 				b_notice: '',
 				b_text: '',
 				u_id: ''
-			}
+			},
+			user: {u_id: this.getUserId()}
 		};
-
-		let tplFile = "blog";
-		this.view.setTplData(tplFile, tplData);
-		return Promise.resolve(null);
+		
+		return this.getClass('blog').getBlogSubjectList()
+			.then((blogSubjects)=>
+			{
+				tplData['blogSubjects'] = blogSubjects;
+				let tplFile = "blog";
+				this.view.setTplData(tplFile, tplData);
+				return Promise.resolve(null);
+			});
 	}
 
 	/**
@@ -303,39 +313,40 @@ class Blog extends CtrlMain
 		//let show = (this.getLocalAccess()['post_edit'] ? null : 1);
 
 		return this._getBlogData(i_blog_id)
-			.spread((isRootAdmin, blog, user)=>
+			.spread((isRootAdmin, blog, user, blogSubjects)=>
 			{
 				if (!blog || !(isRootAdmin || blog['u_id'] == this.getUserId()))
 					throw new Errors.HttpError(404);
 
-				return this.getClass('blog')
-					.getImageList(blog['b_id'])
+				return this.getClass('blog').getImageList(blog['b_id'])
 					.spread((images, allPreviews) =>
 					{
-						return Promise.resolve([user, blog, images, allPreviews]);
+						if (this.getLocalAccess()['post_upload'])
+						{
+							let uploadTypeConf = 'user_blog';
+							Object.assign(blog, FileUpload.createToken(uploadTypeConf, {"b_id": blog.b_id, "u_id": blog.u_id}) );
+							this.getRes().expose(FileUpload.exposeUploadOptions(uploadTypeConf), 'blogUploadOpts');
+						}
+
+						let tplFile = "blog";
+						let tplData = {
+							blog: blog,
+							blogImages: images,
+							user: user,
+							blogSubjects: blogSubjects
+						};
+
+						this.view.setTplData(tplFile, tplData);
+
+						this.view.setPageTitle(blog.b_title);
+						this.view.setPageH1(blog.b_title);
+						//экспрот данных в JS на клиента
+						this.getRes().expose(tplData["blog"], 'blogData');
+						this.getRes().expose(tplData["blogImages"], 'blogImages');
+						this.getRes().expose(allPreviews, 'blogImagesPreviews');
+
+						return Promise.resolve(null);
 					});
-			})
-			.spread((user, blog, images, allPreviews) =>
-			{
-				if (this.getLocalAccess()['post_upload'])
-				{
-					let uploadTypeConf = 'user_blog';
-					Object.assign(blog, FileUpload.createToken(uploadTypeConf, {"b_id": blog.b_id, "u_id": blog.u_id}) );
-					this.getRes().expose(FileUpload.exposeUploadOptions(uploadTypeConf), 'blogUploadOpts');
-				}
-
-				let tplFile = "blog";
-				let tplData = { blog: blog, blogImages: images, user: user};
-				this.view.setTplData(tplFile, tplData);
-
-				this.view.setPageTitle(blog.b_title);
-				this.view.setPageH1(blog.b_title);
-				//экспрот данных в JS на клиента
-				this.getRes().expose(tplData["blog"], 'blogData');
-				this.getRes().expose(tplData["blogImages"], 'blogImages');
-				this.getRes().expose(allPreviews, 'blogImagesPreviews');
-
-				return Promise.resolve(null);
 			});
 	}
 
@@ -356,12 +367,10 @@ class Blog extends CtrlMain
 			throw new Errors.HttpError(404);
 
 		return this._getBlogData(tplData["i_blog_id"])
-			.spread((isRootAdmin, blog, user)=>
+			.spread((isRootAdmin, blog)=>
 			{
 				if (!blog || !(isRootAdmin || blog['u_id'] == this.getUserId()))
 					throw new Errors.HttpError(404);
-
-				tplData["user"] = user;
 				
 				switch(tplData["btn_save_blog"])
 				{
@@ -369,7 +378,7 @@ class Blog extends CtrlMain
 						throw new Errors.HttpError(401);
 						break;
 					case 'main':
-						return this.editBlog(tplData, tplFile);
+						return this.editBlog(tplData, tplFile, blog);
 						break;
 					case 'sort_img':
 						return this.sortImg(tplData, tplFile);
@@ -390,9 +399,10 @@ class Blog extends CtrlMain
 	 *
 	 * @param tplData
 	 * @param tplFile
+	 * @param blog
 	 * @returns {Promise}
 	 */
-	editBlog(tplData, tplFile)
+	editBlog(tplData, tplFile, blog)
 	{
 		return Promise.resolve(tplData)
 			.then((tplData) =>
@@ -418,7 +428,7 @@ class Blog extends CtrlMain
 			.then((tplData) =>
 			{
 				return this.getClass('blog').edit(
-					tplData["i_blog_id"], this.getUserId(),
+					tplData["i_blog_id"], blog['u_id'],
 					tplData["s_b_title"], tplData["t_b_notice"], tplData["t_b_text"], tplData["b_show"])
 					.then(() =>
 					{
@@ -581,8 +591,23 @@ class Blog extends CtrlMain
 		return Promise.all([
 			this.getClass('user/groups').isRootAdmin(this.getUserId()),
 			this.getClass('blog').getBlogById(b_id, i_u_id),
-			this.getUser(i_u_id)
-	]);
+			this.getClass('blog').getBlogSubjectList()
+		])
+			.spread((isRootAdmin, blog, blogSubjects)=>
+			{
+				if (!blog)
+					throw new Errors.HttpError(404);
+
+				if (!i_u_id && blog['u_id'])
+					i_u_id = blog['u_id'];
+
+				return this.getUser(i_u_id)
+					.then((user)=>
+					{
+						blog["user"] = user;
+						return Promise.resolve([isRootAdmin, blog, user, blogSubjects]);
+					});
+			});
 	}
 }
 //************************************************************************* module.exports

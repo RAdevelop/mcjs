@@ -80,9 +80,11 @@ class Blog extends BaseModel
 	getBlogById(b_id, i_u_id=null, b_show = null)
 	{
 		let sql =
-			`SELECT b_id, b_create_ts, b_update_ts, b_title, b_alias, b_notice, b_text, u_id, b_img_cnt
-			, b_show, FROM_UNIXTIME(b_create_ts, "%d-%m-%Y %H:%i:%s") AS dt_create_ts
-			FROM blog_list
+			`SELECT b.b_id, b.b_create_ts, b.b_update_ts, b.b_title, b.b_alias, b.b_notice, b.b_text
+			, b.u_id, b.b_img_cnt, b.b_show, FROM_UNIXTIME(b.b_create_ts, "%d-%m-%Y %H:%i:%s") AS dt_create_ts
+			, b.bs_id, bs.bs_name, bs.bs_alias
+			FROM blog_list AS b
+			JOIN blog_subject AS bs ON(bs.bs_id = b.bs_id)
 			WHERE b_id = ?`;
 
 		let sqlData = [b_id];
@@ -120,6 +122,7 @@ class Blog extends BaseModel
 	 */
 	countBlog(b_show = null, i_u_id = null)
 	{
+		//TODO add bs_id
 		let sqlData = [];
 		let where = [];
 
@@ -160,6 +163,7 @@ class Blog extends BaseModel
 	 */
 	getBlogList(i_limit = 20, i_offset = 0, b_show = null, i_u_id = null)
 	{
+		//TODO add bs_id 
 		let sqlJoin = [];
 		let sqlData = [];
 
@@ -182,9 +186,11 @@ class Blog extends BaseModel
 		let sql =
 			`SELECT b.b_id, b.b_create_ts, b.b_update_ts, b.b_title, b.b_alias, b.b_notice 
 			, FROM_UNIXTIME(b.b_create_ts, "%d-%m-%Y") AS dt_create_ts
-			, b.u_id, bi.bi_id, bi.bi_dir, bi.bi_pos, bi.bi_name
+			, b.u_id, bi.bi_id, bi.bi_dir, bi.bi_pos, bi.bi_name, b.bs_id
+			, bs.bs_name, bs.bs_alias
 			FROM (SELECT NULL) AS z
 			JOIN blog_list AS b ON(${sqlJoin.join(' AND ')})
+			JOIN blog_subject AS bs ON(bs.bs_id = b.bs_id)
 			LEFT JOIN blog_image AS bi ON(bi.b_id = b.b_id AND bi.bi_pos = 0)
 			ORDER BY b.b_create_ts DESC
 			LIMIT ${i_limit} OFFSET ${i_offset}`;
@@ -287,9 +293,9 @@ class Blog extends BaseModel
 	{
 		let sql = `SELECT bi.bi_id, bi.b_id, bi.bi_create_ts, bi.bi_update_ts, bi.bi_latitude, bi.bi_longitude, 
 		bi.bi_dir, bi.bi_pos, bi.bi_name
-			FROM blog_image AS bi
-			JOIN blog_list AS b ON (b.b_id = bi.b_id)
-			WHERE bi.bi_id = ?`;
+		FROM blog_image AS bi
+		JOIN blog_list AS b ON (b.b_id = bi.b_id)
+		WHERE bi.bi_id = ?`;
 
 		return this.constructor.conn().sRow(sql, [bi_id]);
 	}
@@ -376,6 +382,14 @@ class Blog extends BaseModel
 		DELETE FROM blog_list WHERE b_id = ?;`;
 
 		return this.constructor.conn().multis(sql, [b_id, b_id]);
+	}
+
+	getBlogSubjectList()
+	{
+		let sql = `SELECT bs_id, bs_pid, bs_name, bs_alias, bs_level, bs_lk, bs_rk
+		FROM blog_subject
+		ORDER BY bs_lk`;
+		return this.constructor.conn().ps(sql);
 	}
 }
 

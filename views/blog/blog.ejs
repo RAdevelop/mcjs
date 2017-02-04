@@ -3,6 +3,9 @@
 		let ava = (blog['user']['previews'] && blog['user']['previews']['50_50']);
 		let avaSrc = (ava ? blog['user']['previews']['50_50'] : '/_0.gif');%><img class="img-circle img-responsive <%=(ava ? '':'hidden')%>" src="<%=avaSrc%>" /><i class="fa fa-user <%=(ava ? 'hidden':'')%>"></i></a>
 	<div class="blog-author_data"><%=blog['user']['u_display_name']%></div>
+	<div class="" style="display: table-cell;
+    vertical-align: top;
+    padding: 3px;">Тема: <a href="<%=[_reqBaseUrl, blog["bs_id"], blog["bs_alias"]].join('/')%>/"><%=blog['bs_name']%></a></div>
 </div>
 <h2><span class="badge"><%=blog['dt_create_ts']%></span> <%-blog['b_title']%></h2>
 <div class="row blogData">
