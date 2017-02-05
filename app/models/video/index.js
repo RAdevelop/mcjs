@@ -19,7 +19,8 @@ class Video extends VideoAlbums
 	{
 		offset = parseInt(offset, 10) || 0;
 		limit = parseInt(limit, 10) || 10;
-		
+		va_id = parseInt(va_id, 10);
+		u_id = parseInt(u_id, 10);
 		/*console.log('limit = ', limit);
 		 console.log('offset = ', offset);*/
 
@@ -46,12 +47,15 @@ class Video extends VideoAlbums
 
 		/*console.log(sql);
 		console.log([v_id]);*/
-
+		v_id = parseInt(v_id, 10);
 		return this.constructor.conn().sRow(sql, [v_id]);
 	}
 
 	addVideo(u_id, va_id, v_name, v_alias, v_text, v_img, v_content, v_url)
 	{
+		va_id = parseInt(va_id, 10);
+		u_id = parseInt(u_id, 10);
+
 		let sqlData = [va_id, u_id];
 		let now_ts = Moment().unix();
 
@@ -60,9 +64,9 @@ class Video extends VideoAlbums
 		return this.constructor.conn().upd(sql, sqlData)
 			.then(()=>
 			{
-				sql = `INSERT INTO video (va_id, u_id, v_create_ts, v_update_ts, v_pos, v_name, v_alias, v_text, 
-		v_img, v_content, v_url) 
-		VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+				sql = `INSERT INTO video (va_id, u_id, v_create_ts, v_update_ts, v_pos, v_name, v_alias, v_text
+				, v_img, v_content, v_url) 
+				VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 				sqlData = [va_id, u_id, now_ts, now_ts, 0, v_name, v_alias, v_text, v_img, v_content, v_url];
 				return this.constructor.conn().ins(sql, sqlData);
 			})
@@ -83,11 +87,19 @@ class Video extends VideoAlbums
 		let sql = `DELETE FROM video WHERE v_id = ? AND va_id = ? AND u_id = ?;
 		UPDATE video_albums SET va_cnt = IF(va_cnt-1 <= 0, 0, va_cnt-1) WHERE va_id = ? AND u_id = ?;
 		CALL video_reorder(?,?);`;
+
+		va_id = parseInt(va_id, 10);
+		v_id = parseInt(v_id, 10);
+		u_id = parseInt(u_id, 10);
 		return this.constructor.conn().multis(sql, [v_id, va_id, u_id, va_id, u_id, u_id, va_id]);
 	}
 
 	editVideo(u_id, v_id, va_id, v_name, v_alias, v_text, v_img, v_content, v_url)
 	{
+		va_id = parseInt(va_id, 10);
+		v_id = parseInt(v_id, 10);
+		u_id = parseInt(u_id, 10);
+		
 		let sqlData = [Moment().unix(), v_name, v_alias, v_text, v_img, v_content, v_url, v_id, va_id, u_id];
 
 		let sql = `UPDATE video SET 

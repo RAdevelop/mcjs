@@ -225,7 +225,8 @@ class MariaSQL
 				return Promise.using(this.conn(), (conn) => 
 				{
 					return conn.queryAsync(sql, sqlData, { useArray: false })
-						.then((res) => {
+						.then((res) =>
+						{
 							return Promise.resolve(res["info"]);
 						});
 				});
@@ -265,7 +266,8 @@ class MariaSQL
 				return Promise.using(this.conn(), (conn) => 
 				{
 					return conn.queryAsync(sql, sqlData, { useArray: false })
-						.then((res) => {
+						.then((res) =>
+						{
 							return Promise.resolve(res["info"]);
 						});
 				});
@@ -304,12 +306,12 @@ class MariaSQL
 	ins(sql, sqlData = [], cb = null)
 	{
 		return Promise.resolve(sql)
-			.then((sql) => 
+			.then((sql) =>
 			{
 				if (sql.indexOf('INSERT') != 0)
 					throw (DbErrors(new Error("не INSERT запрос")));
 
-				return Promise.using(this.conn(), (conn) => 
+				return Promise.using(this.conn(), (conn) =>
 				{
 					return conn.queryAsync(sql, sqlData, { useArray: false })
 						.then((res) => {
@@ -323,7 +325,7 @@ class MariaSQL
 						});
 				});
 			})
-			.then((res) => 
+			.then((res) =>
 			{
 				if (cb) return cb(null, res);
 
@@ -350,17 +352,16 @@ class MariaSQL
 	call(sql, sqlData = [], cb = null)
 	{
 		return Promise.resolve(sql)
-			.then((sql) => 
+			.then((sql) =>
 			{
 				if (sql.indexOf('CALL') != 0)
 					throw (DbErrors(new Error("не CALL запрос")));
 
-				return Promise.using(this.conn(), (conn) => 
-				{
+				return Promise.using(this.conn(), (conn) => {
 					return conn.queryAsync(sql, sqlData, { useArray: false });
 				});
 			})
-			.then((res) => 
+			.then((res) =>
 			{
 				if (cb) return cb(null, res);
 
@@ -389,8 +390,7 @@ class MariaSQL
 		return Promise.resolve(sql)
 			.then((sql) =>
 			{
-				return Promise.using(this.conn(), (conn) => 
-				{
+				return Promise.using(this.conn(), (conn) => {
 					return conn.queryAsync(sql, sqlData, { useArray: false });
 				});
 			})

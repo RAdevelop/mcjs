@@ -54,19 +54,20 @@ class News extends BaseModel
 	 */
 	edit(i_n_id, i_u_id, s_n_title, n_alias, t_n_notice, t_n_text, dt_show_ts, n_show)
 	{
-		let sql =
-			`UPDATE news_list SET n_update_ts = ?, n_show_ts = ?, n_title = ?, n_alias = ?, n_notice = ?, n_text = ?
-			, u_id = ?, n_show = ? 
-			WHERE n_id = ?`;
+		let sql = `UPDATE news_list SET n_update_ts = ?, n_show_ts = ?
+		, n_title = ?, n_alias = ?, n_notice = ?, n_text = ?, u_id = ?, n_show = ? 
+		WHERE n_id = ?`;
 
 		n_show = (parseInt(n_show, 10)||n_show ? 1 : 0);
 
 		let n_show_ts  = Moment(dt_show_ts, "DD-MM-YYYY HH:mm:ss").unix();
 		let now_ts = Moment().unix();
+		i_n_id = parseInt(i_n_id, 10);
 		let sqlData = [now_ts, n_show_ts, s_n_title, n_alias, t_n_notice, t_n_text, i_u_id, n_show, i_n_id];
 
 		return this.constructor.conn().upd(sql, sqlData)
-			.then(() => {
+			.then(() =>
+			{
 				return Promise.resolve(i_n_id);
 			});
 	}
@@ -80,12 +81,12 @@ class News extends BaseModel
 	 */
 	getById(n_id, n_show = null)
 	{
-		let sql =
-			`SELECT n_id, n_create_ts, n_update_ts, n_show_ts, n_title, n_alias, n_notice, n_text, u_id, n_img_cnt
-			, n_show, FROM_UNIXTIME(n_show_ts, "%d-%m-%Y %H:%i:%s") AS dt_show_ts
-			FROM news_list
-			WHERE n_id = ?`;
+		let sql = `SELECT n_id, n_create_ts, n_update_ts, n_show_ts, n_title, n_alias, n_notice, n_text, u_id, n_img_cnt
+		, n_show, FROM_UNIXTIME(n_show_ts, "%d-%m-%Y %H:%i:%s") AS dt_show_ts
+		FROM news_list
+		WHERE n_id = ?`;
 
+		n_id = parseInt(n_id, 10);
 		let sqlData = [n_id];
 
 		if (n_show !== null)
@@ -121,7 +122,8 @@ class News extends BaseModel
 		let sql = `SELECT COUNT(n_id) AS cnt FROM news_list WHERE ${where.join(' AND ')};`;
 
 		return this.constructor.conn().sRow(sql, sqlData)
-			.then((res) => {
+			.then((res) =>
+			{
 				return Promise.resolve(res["cnt"] || 0);
 			});
 	}
@@ -149,15 +151,14 @@ class News extends BaseModel
 		sqlData.push(Moment().unix());
 		sqlJoin.push('n.n_show_ts <= ?');
 
-		let sql =
-			`SELECT n.n_id, n.n_create_ts, n.n_update_ts, n.n_show_ts, n.n_title, n.n_alias, n.n_notice 
-			, FROM_UNIXTIME(n.n_show_ts, "%d-%m-%Y") AS dt_show_ts
-			, n.u_id, ni.ni_id, ni.ni_dir, ni.ni_pos, ni.ni_name
-			FROM (SELECT NULL) AS z
-			JOIN news_list AS n ON(${sqlJoin.join(' AND ')})
-			LEFT JOIN news_image AS ni ON(ni.n_id = n.n_id AND ni.ni_pos = 0)
-			ORDER BY n.n_show_ts DESC
-			LIMIT ${i_limit} OFFSET ${i_offset}`;
+		let sql = `SELECT n.n_id, n.n_create_ts, n.n_update_ts, n.n_show_ts, n.n_title, n.n_alias, n.n_notice 
+		, FROM_UNIXTIME(n.n_show_ts, "%d-%m-%Y") AS dt_show_ts
+		, n.u_id, ni.ni_id, ni.ni_dir, ni.ni_pos, ni.ni_name
+		FROM (SELECT NULL) AS z
+		JOIN news_list AS n ON(${sqlJoin.join(' AND ')})
+		LEFT JOIN news_image AS ni ON(ni.n_id = n.n_id AND ni.ni_pos = 0)
+		ORDER BY n.n_show_ts DESC
+		LIMIT ${i_limit} OFFSET ${i_offset}`;
 
 		/*console.log(sql);
 		console.log(sqlData);
@@ -177,9 +178,8 @@ class News extends BaseModel
 	_insImage(n_id)
 	{
 		let now_ts = Moment().unix();
-		let sql =
-			`INSERT INTO news_image (n_id, ni_create_ts, ni_update_ts)
-			VALUES (?, ?, ?);`;
+		let sql = `INSERT INTO news_image (n_id, ni_create_ts, ni_update_ts)
+		VALUES (?, ?, ?);`;
 
 		return this.constructor.conn().ins(sql, [n_id, now_ts, now_ts]);
 	}
@@ -218,7 +218,7 @@ class News extends BaseModel
 	updImage(n_id, ni_id, ni_latitude, ni_longitude, ni_dir, ni_name, posUpd = true)
 	{
 		posUpd = (posUpd ? 1 : 0);
-		let sql = "CALL news_image_update(?, ?, ?, ?, ?, ?, ?)";
+		let sql = `CALL news_image_update(?, ?, ?, ?, ?, ?, ?)`;
 		let sqlData = [n_id, ni_id, ni_latitude, ni_longitude, ni_dir, ni_name, posUpd];
 
 		return this.constructor.conn().call(sql, sqlData)
@@ -236,12 +236,13 @@ class News extends BaseModel
 	 */
 	delImage(n_id, ni_id)
 	{
-		let sql = "CALL news_image_delete(?, ?, @is_del); SELECT @is_del AS is_del FROM DUAL;";
+		let sql = `CALL news_image_delete(?, ?, @is_del);
+		SELECT @is_del AS is_del FROM DUAL;`;
 
 		return this.constructor.conn().multis(sql, [n_id, ni_id])
-			.then((res) => {
+			.then((res) => 
+			{
 				let is_del = (res[1] && res[1]["is_del"] ? res[1]["is_del"] : 0);
-
 				return Promise.resolve(is_del);
 			});
 	}
@@ -254,10 +255,11 @@ class News extends BaseModel
 	getImage(ni_id)
 	{
 		let sql = `SELECT ni.ni_id, ni.n_id, ni.ni_create_ts, ni.ni_update_ts, ni.ni_latitude, ni.ni_longitude, ni.ni_dir, ni.ni_pos, ni.ni_name
-			FROM news_image AS ni
-			JOIN news_list AS n ON (n.n_id = ni.n_id)
-			WHERE ni.ni_id = ?`;
-
+		FROM news_image AS ni
+		JOIN news_list AS n ON (n.n_id = ni.n_id)
+		WHERE ni.ni_id = ?`;
+		
+		ni_id = parseInt(ni_id, 10);
 		return this.constructor.conn().sRow(sql, [ni_id]);
 	}
 
@@ -269,12 +271,13 @@ class News extends BaseModel
 	getImageList(n_id)
 	{
 		let sql = `SELECT ni.ni_id, ni.n_id, ni.ni_create_ts, ni.ni_update_ts, ni.ni_latitude, ni.ni_longitude, 
-			ni.ni_dir, ni.ni_pos, ni.ni_name
-			FROM news_image AS ni
-			WHERE ni.n_id = ?
-			GROUP BY ni.ni_pos
-			ORDER BY ni.ni_pos`;
+		ni.ni_dir, ni.ni_pos, ni.ni_name
+		FROM news_image AS ni
+		WHERE ni.n_id = ?
+		GROUP BY ni.ni_pos
+		ORDER BY ni.ni_pos`;
 
+		n_id = parseInt(n_id, 10);
 		return this.constructor.conn().s(sql, [n_id]);
 	}
 
@@ -286,10 +289,11 @@ class News extends BaseModel
 	 */
 	countAlbumImages(n_id)
 	{
-		let sql = "SELECT COUNT(ni_id) AS cnt FROM news_image WHERE n_id = ?;";
-
+		let sql = `SELECT COUNT(ni_id) AS cnt FROM news_image WHERE n_id = ?;`;
+		n_id = parseInt(n_id, 10);
 		return this.constructor.conn().sRow(sql, [n_id])
-			.then((res) => {
+			.then((res) =>
+			{
 				return Promise.resolve(res["cnt"]);
 			});
 	}
@@ -320,9 +324,8 @@ class News extends BaseModel
 					setData.push(ni_id, i);
 				});
 
-				let sql = "UPDATE news_image SET ni_pos = " + setOrdi.join(',') + ', ni_pos' +')'.repeat(setOrdi.length) +
-					" WHERE n_id = ? ";
-
+				let sql = "UPDATE news_image SET ni_pos = " + setOrdi.join(',') + ', ni_pos' +')'.repeat(setOrdi.length) + " WHERE n_id = ? ";
+				n_id = parseInt(n_id, 10);
 				setData.push(n_id);
 
 				//return Promise.resolve();
@@ -340,7 +343,7 @@ class News extends BaseModel
 	{
 		let sql = `DELETE FROM news_image WHERE n_id = ?;
 		DELETE FROM news_list WHERE n_id = ?;`;
-
+		n_id = parseInt(n_id, 10);
 		return this.constructor.conn().multis(sql, [n_id, n_id]);
 	}
 }

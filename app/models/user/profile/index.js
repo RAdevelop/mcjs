@@ -22,20 +22,23 @@ class Profile extends User
 		let sqlData = [u_login];
 		
 		return this.constructor.conn().s(sql, sqlData)
-			.then((res) => {
-
+			.then((res) =>
+			{
 				if (res["info"]["numRows"] > 0 && res[0] != u_id)
 					throw new Errors.AlreadyInUseError('Такой логин уже занят!');
 
 				return Promise.resolve(u_id);
 			})
-			.then((u_id) => {
-
+			.then((u_id) =>
+			{
 				sql = `UPDATE users SET u_login = ? WHERE u_id = ?`;
+
+				u_id = parseInt(u_id, 10);
 				sqlData = [u_login, u_id];
 
 				return this.constructor.conn().upd(sql, sqlData)
-					.then(() => {
+					.then(() =>
+					{
 						return Promise.resolve(u_id);
 					});
 			});
@@ -55,13 +58,14 @@ class Profile extends User
 	{
 		u_sex = u_sex || 2;
 		let sql = `INSERT INTO users_data (u_id, u_name, u_surname, u_sex, u_birthday)
-			VALUES(?, ?, ?, ?, ?)
-			ON DUPLICATE KEY UPDATE u_name=VALUES(u_name), u_surname=VALUES(u_surname), u_sex=VALUES(u_sex), u_birthday=VALUES(u_birthday)`;
+		VALUES(?, ?, ?, ?, ?)
+		ON DUPLICATE KEY UPDATE u_name=VALUES(u_name), u_surname=VALUES(u_surname), u_sex=VALUES(u_sex), u_birthday=VALUES(u_birthday)`;
 		
 		let sqlData = [u_id, u_name, u_surname, u_sex, u_birthday];
 		
 		return this.constructor.conn().ins(sql, sqlData)
-			.then(() =>{
+			.then(() =>
+			{
 				return Promise.resolve(u_id);
 			});
 	}
@@ -104,9 +108,9 @@ class Profile extends User
 			let u_req_end_ts = Moment().add(1, 'd').unix();
 			
 			let sql = `INSERT INTO user_change_request (u_id, u_req_type, u_req_key, u_req_end_ts, u_req_data)
-				VALUES(?,?,?,?,?)
-				ON DUPLICATE KEY UPDATE u_req_key=VALUES(u_req_key), 
-				u_req_end_ts=VALUES(u_req_end_ts), u_req_data=VALUES(u_req_data);`;
+			VALUES(?,?,?,?,?)
+			ON DUPLICATE KEY UPDATE u_req_key=VALUES(u_req_key), 
+			u_req_end_ts=VALUES(u_req_end_ts), u_req_data=VALUES(u_req_data);`;
 			
 			self.constructor.conn().ins(sql, [user.u_id, u_req_type, user.u_req_key, u_req_end_ts, new_mail], function(err)
 			{
@@ -132,14 +136,16 @@ class Profile extends User
 		let u_req_type = 'reg_mail_change';
 		
 		let sql = `SELECT u_req_data FROM user_change_request
-			WHERE u_id = ? AND u_req_type = ? AND u_req_key = ? AND u_req_end_ts >= ?`;
-		
+		WHERE u_id = ? AND u_req_type = ? AND u_req_key = ? AND u_req_end_ts >= ?`;
+
+		u_id = parseInt(u_id, 10);
 		self.constructor.conn().ps(sql, [u_id, u_req_type, key, Moment().unix()], function(err, res)
 		{
-			if (err) return cb(err);
+			if (err)
+				return cb(err);
 			
 			if (res["info"]["numRows"] != 1)
-			return cb(null, false);
+				return cb(null, false);
 			
 			sql = `UPDATE users SET u_mail = ? WHERE u_id = ?;`;
 			
@@ -148,7 +154,7 @@ class Profile extends User
 				if (err) return cb(err, false);
 				
 				sql = `DELETE FROM user_change_request
-					WHERE u_id = ? AND u_req_type = ?`;
+				WHERE u_id = ? AND u_req_type = ?`;
 				
 				self.constructor.conn().del(sql, [u_id, u_req_type], function(err)
 				{
@@ -172,9 +178,10 @@ class Profile extends User
 	 */
 	updLocation(u_id, f_lat, f_lng, location_id)
 	{
-		let sql = 'INSERT INTO `users_data` (u_id, u_location_id, u_latitude, u_longitude) ' +
-		'VALUES (?, ?, ?, ?) ' +
-		'ON DUPLICATE KEY UPDATE u_location_id=VALUES(u_location_id), u_latitude=VALUES(u_latitude), u_longitude=VALUES(u_longitude)';
+		let sql = `INSERT INTO users_data (u_id, u_location_id, u_latitude, u_longitude)
+		VALUES (?, ?, ?, ?)
+		ON DUPLICATE KEY UPDATE 
+		u_location_id=VALUES(u_location_id), u_latitude=VALUES(u_latitude), u_longitude=VALUES(u_longitude)`;
 
 		let sqlData = [u_id, location_id, f_lat, f_lng];
 

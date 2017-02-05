@@ -43,7 +43,7 @@ class Location extends BaseModel
 			FROM location AS l
 			JOIN location_names AS ln ON(ln.l_id = l.l_id)
 			WHERE l.l_id = ?`;
-		
+		loc_id = parseInt(loc_id, 10);
 		return this.constructor.conn().sRow(sql, [loc_id]);
 	}
 }

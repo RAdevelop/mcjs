@@ -50,6 +50,7 @@ class Motoshop extends BaseModel
 		FROM motoshop
 		WHERE mts_id = ?`;
 
+		mts_id = parseInt(mts_id, 10);
 		let sqlData = [mts_id];
 
 		if (mts_show == null)
@@ -85,6 +86,7 @@ class Motoshop extends BaseModel
 		//let now_ts  = Moment(dd_start_ts, "DD-MM-YYYY").unix();
 		let now_ts = Moment().unix();
 
+		mts_id = parseInt(mts_id, 10);
 		let sqlData = [u_id, mts_show, mts_name, mts_alias, mts_website, mts_email, mts_descrip, now_ts, mts_id];
 
 		return this.constructor.conn().upd(sql, sqlData)
@@ -128,23 +130,29 @@ class Motoshop extends BaseModel
 			.then((res) => {
 
 				mts_address_id = res["insertId"];
+				mts_address_id = parseInt(mts_address_id, 10);
 
 				sql = "SELECT l_lk, l_rk FROM location WHERE l_id = ?;";
+				location_id = parseInt(location_id, 10);
 
 				return this.constructor.conn().sRow(sql, [location_id]);
 			})
-			.then((res) => {
-
+			.then((res) => 
+			{
 				let {l_lk, l_rk} = res;
 
 				sql = "SELECT l_id FROM location WHERE l_lk <= ? AND l_rk >= ? ORDER BY l_lk;";
+
+				l_lk = parseInt(l_lk, 10);
+				l_rk = parseInt(l_rk, 10);
 				return this.constructor.conn().s(sql, [l_lk, l_rk]);
 			})
-			.then((res) => {
-
+			.then((res) =>
+			{
 				let sqlIns = [], sqlData = [mts_address_id], pids = [];
 
-				res.forEach((item) => {
+				res.forEach((item) =>
+				{
 					sqlIns.push("(?, ?)");
 					sqlData.push(mts_address_id, item["l_id"]);
 					pids.push(item["l_id"]);
@@ -161,7 +169,8 @@ class Motoshop extends BaseModel
 
 				return this.constructor.conn().multis(sql, sqlData);
 			})
-			.then(() => {
+			.then(() =>
+			{
 				return Promise.resolve(mts_address_id);
 			});
 	}
@@ -190,24 +199,32 @@ class Motoshop extends BaseModel
 		WHERE mts_address_id = ?`;
 
 		let now_ts = Moment().unix();
+
+		mts_address_id = parseInt(mts_address_id, 10);
+
 		let sqlData = [
 			mts_address_show, mts_address_website, mts_address_email, mts_address_phones, mts_address, mts_address_lat,
 			mts_address_lng, gps_lat, gps_lng, location_id, now_ts, mts_address_id
 		];
 
 		return this.constructor.conn().upd(sql, sqlData)
-			.then(() => {
+			.then(() =>
+			{
 				sql = "SELECT l_lk, l_rk FROM location WHERE l_id = ?;";
-
+				location_id = parseInt(location_id, 10);
 				return this.constructor.conn().sRow(sql, [location_id]);
 			})
-			.then((res) => {
+			.then((res) =>
+			{
 				let {l_lk, l_rk} = res;
+				l_lk = parseInt(l_lk, 10);
+				l_rk = parseInt(l_rk, 10);
 
 				sql = "SELECT l_id FROM location WHERE l_lk <= ? AND l_rk >= ? ORDER BY l_lk;";
 				return this.constructor.conn().s(sql, [l_lk, l_rk]);
 			})
-			.then((res) => {
+			.then((res) =>
+			{
 				let sqlIns = [], sqlData = [mts_address_id], pids = [];
 				res.forEach((item) => {
 					sqlIns.push("(?, ?)");
@@ -226,7 +243,8 @@ class Motoshop extends BaseModel
 
 				return this.constructor.conn().multis(sql, sqlData);
 			})
-			.then(() => {
+			.then(() =>
+			{
 				return Promise.resolve(mts_address_id);
 			});
 	}
@@ -272,6 +290,7 @@ class Motoshop extends BaseModel
 		}
 		if (location_id)
 		{
+			location_id = parseInt(location_id, 10);
 			sqlData.push(location_id);
 			sql += ` AND mal.l_id = ?`;
 		}
@@ -281,7 +300,7 @@ class Motoshop extends BaseModel
 		/*console.log(sql);
 		console.log(sqlData);*/
 
-		return this.constructor.conn().s(sql, sqlData);
+		return this.constructor.conn().ps(sql, sqlData);
 	}
 
 	/**
@@ -293,7 +312,8 @@ class Motoshop extends BaseModel
 	delMotoshop(mts_id)
 	{
 		return this.getMotoshopAddressList(mts_id)
-			.then((address_list) => {
+			.then((address_list) =>
+			{
 				let mtsAids = [];
 				if (address_list.length)
 				{
@@ -307,6 +327,8 @@ class Motoshop extends BaseModel
 				if (mtsAids.length)
 				{
 					sqlData = sqlData.concat(mtsAids);
+
+					mts_id = parseInt(mts_id, 10);
 					sqlData.push(mts_id);
 					sqlData = sqlData.concat(mtsAids);
 
@@ -319,7 +341,8 @@ class Motoshop extends BaseModel
 				sql += `DELETE FROM motoshop WHERE mts_id = ?;`;
 
 				return this.constructor.conn().multis(sql, sqlData)
-					.then(() => {
+					.then(() =>
+					{
 						return Promise.resolve(mts_id);
 					});
 
@@ -344,7 +367,8 @@ class Motoshop extends BaseModel
 	{
 		let sql = `DELETE FROM motoshop_address WHERE mts_address_id = ? AND mts_id = ? ;
 		DELETE FROM motoshop_address_locations WHERE mts_address_id = ?;`;
-
+		mts_id = parseInt(mts_id, 10);
+		mts_address_id = parseInt(mts_address_id, 10);
 		return this.constructor.conn().multis(sql, [mts_address_id, mts_id, mts_address_id]);
 	}
 
@@ -354,12 +378,12 @@ class Motoshop extends BaseModel
 	 * @param mts_show
 	 * @returns {Promise}
 	 */
-	getMotoshopLocations(mts_show)
+	getMotoshopLocations(mts_show = null)
 	{
 		let kinds = ['country','province','locality'];
 
 		let inIds = this.constructor.placeHoldersForIn(kinds);
-		if (mts_show == null)
+		if (mts_show === null)
 			mts_show = 0;
 		else
 			mts_show = (parseInt(mts_show, 10) ? 1 : 0);
@@ -408,7 +432,7 @@ class Motoshop extends BaseModel
 		/*console.log(sql);
 		console.log(sqlData);*/
 
-		return this.constructor.conn().s(sql, sqlData);
+		return this.constructor.conn().ps(sql, sqlData);
 	}
 
 	countMotoshopByLocId(loc_id, mts_show = null)
@@ -433,7 +457,8 @@ class Motoshop extends BaseModel
 		 console.log(sqlData);*/
 
 		return this.constructor.conn().sRow(sql, sqlData)
-			.then((res) => {
+			.then((res) =>
+			{
 				return Promise.resolve(res["cnt"] || 0);
 			});
 	}
@@ -447,7 +472,7 @@ class Motoshop extends BaseModel
 	 * @param offset
 	 * @returns {Promise}
 	 */
-	getMotoshopListByLocId(loc_id, mts_show, limit = 20, offset = 0)
+	getMotoshopListByLocId(loc_id, mts_show = null, limit = 20, offset = 0)
 	{
 		let sql = `SELECT mts.mts_u_id_add, mts.mts_u_id_edit, mts.mts_id, mts.mts_name, mts.mts_alias, mts.mts_website,
 		    mts.mts_email, mts.mts_show
@@ -462,10 +487,12 @@ class Motoshop extends BaseModel
 			ORDER BY mts.mts_name
 			LIMIT ${limit} OFFSET ${offset}`;
 
-		if (mts_show == null)
+		if (mts_show === null)
 			mts_show = 0;
 		else
 			mts_show = (parseInt(mts_show, 10) ? 1 : 0);
+
+		loc_id = parseInt(loc_id, 10);
 
 		let sqlData = [mts_show, loc_id, mts_show];
 

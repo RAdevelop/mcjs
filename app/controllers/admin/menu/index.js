@@ -36,6 +36,7 @@ class Menu extends CtrlMain
 			menuControllerId: null,
 			menuControllerPath: '',
 			menuType: '',
+			menuShow: null,
 			menuList: [],
 			controllerList: []
 		};

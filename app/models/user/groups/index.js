@@ -37,6 +37,7 @@ class UserGroups extends UserModel
 		FROM users_groups 
 		WHERE ug_id = ?`;
 
+		ug_id = parseInt(ug_id, 10);
 		return this.constructor.conn().sRow(sql, [ug_id]);
 	}
 
@@ -61,15 +62,15 @@ class UserGroups extends UserModel
 		let sqlData = [ug_id, ug_pid, ug_after_id, ug_path, ug_name, ug_desc, ug_on_register];
 
 		return this.constructor.conn().call(sql, sqlData)
-			.then((res) => {
-
+			.then((res) =>
+			{
 				if (!(res[1][0] && res[1][0]["res"]))
 					throw new Errors.HttpError(500, 'не удалось обновить группу');
 
 				return Promise.resolve(ug_id);
 			})
-			.catch((err) => {
-
+			.catch((err) =>
+			{
 				if (err.name == 'DbErrDuplicateEntry')
 					throw new Errors.AlreadyInUseError();
 
@@ -98,18 +99,18 @@ class UserGroups extends UserModel
 		let sqlData = [ug_pid, ug_after_id, ug_path, ug_name, ug_desc, ug_on_register];
 
 		return this.constructor.conn().multis(sql, sqlData)
-			.then((res) => {
-
+			.then((res) =>
+			{
 				let ug_id = (res[1][0] && res[1][0]["ug_id"] ? res[1][0]["ug_id"] : 0);
-
-				if (!ug_id)
+				ug_id = parseInt(ug_id, 10);
+				if (ug_id == 0)
 					throw new Errors.HttpError(500, 'не удалось создать группу');
 
 				return Promise.resolve(ug_id);
 			})
-			.catch((err) => {
-
-				if (err.name == 'DbErrDuplicateEntry')
+			.catch((err) =>
+			{
+					if (err.name == 'DbErrDuplicateEntry')
 				throw new Errors.AlreadyInUseError();
 
 				throw err;
@@ -136,7 +137,8 @@ class UserGroups extends UserModel
 			${leftJoin} JOIN users_groups_rights AS ugr ON(
 				ugr.ug_id = ? AND ugr.m_id = m.m_id AND ugr.c_id = cm.c_id AND ugr.cm_id = cm.cm_id
 			)`;
-
+		m_id = parseInt(m_id, 10);
+		ug_id = parseInt(ug_id, 10);
 		let sqlData = [m_id, ug_id];
 		//console.log(sql, sqlData);
 
@@ -156,10 +158,10 @@ class UserGroups extends UserModel
 	{
 		//удалить все записи по ug_id, m_id, c_id кроме групп админов и рутов
 		//cm_ids - если не пустой, то для каждого метода добавить связи ug_id, m_id, c_id, cm_id
-
+		ug_id = parseInt(ug_id, 10);
 		return this.getAll([ug_id])
-			.then((ug) => {
-
+			.then((ug) =>
+			{
 				let ug_ids_for_del = [];
 				let ug_group = {};
 
@@ -172,38 +174,47 @@ class UserGroups extends UserModel
 				let sql = `SELECT ug_id, ug_path FROM users_groups 
 				WHERE ug_lk >= ? AND ug_rk <= ?`;
 
+				ug_group['ug_lk'] = parseInt(ug_group['ug_lk'], 10);
+				ug_group['ug_rk'] = parseInt(ug_group['ug_rk'], 10);
+
 				return this.constructor.conn().s(sql, [ug_group['ug_lk'], ug_group['ug_rk']])
-					.then((list) => {
-
-						list.forEach((item) => {
-
+					.then((list) =>
+					{
+						list.forEach((item) =>
+						{
 							item['ug_path'] = item['ug_path'].toLowerCase();
 
 							if (item['ug_path'] != 'root' && item['ug_path'] != 'admin')
-								ug_ids_for_del.push(item['ug_id']);
+								ug_ids_for_del.push(parseInt(item['ug_id'], 10));
 						});
 
 						return Promise.resolve([ug_group, ug_ids_for_del]);
 					});
 			})
-			.spread((ug_group, ug_ids_for_del) => {
-
+			.spread((ug_group, ug_ids_for_del) =>
+			{
 				if (!ug_ids_for_del.length)
 					return Promise.resolve(ug_group);
 
 				let placeHolders = this.constructor.placeHoldersForIn(ug_ids_for_del);
 
-				let sql = `DELETE FROM users_groups_rights WHERE ug_id IN(${placeHolders}) AND m_id = ? AND c_id = ?`;
+				let sql = `DELETE FROM users_groups_rights 
+				WHERE ug_id IN(${placeHolders}) AND m_id = ? AND c_id = ?`;
+
 				let sqlData = ug_ids_for_del;
+
+				m_id = parseInt(m_id, 10);
+				c_id = parseInt(c_id, 10);
 				sqlData.push(m_id, c_id);
 
 				return this.constructor.conn().del(sql, sqlData)
-					.then(() => {
+					.then(() =>
+					{
 						return Promise.resolve(ug_group);
 					});
 			})
-			.then((ug_group) => {
-
+			.then((ug_group) =>
+			{
 				if (!cm_ids.length || !ug_group['ug_id'])
 					return Promise.resolve(1);
 
@@ -216,15 +227,17 @@ class UserGroups extends UserModel
 						let sql_vals = [];
 						let sqlData = [];
 
-						g_list.forEach((g_id) => {
-
-							cm_ids.forEach((cm_id) => {
+						g_list.forEach((g_id) =>
+						{
+							cm_ids.forEach((cm_id) =>
+							{
 								sql_vals.push(`(?,?,?,?)`);
 								sqlData.push(g_id['ug_id'], m_id, c_id, cm_id);
 							});
 						});
 
-						let sql = `INSERT INTO users_groups_rights (ug_id, m_id, c_id, cm_id) VALUES ${sql_vals.join(',')}
+						let sql = `INSERT INTO users_groups_rights (ug_id, m_id, c_id, cm_id) 
+						VALUES ${sql_vals.join(',')}
 						ON DUPLICATE KEY UPDATE 
 						ug_id=VALUES(ug_id), m_id=VALUES(m_id), c_id=VALUES(c_id), cm_id=VALUES(cm_id)`;
 
@@ -241,33 +254,35 @@ class UserGroups extends UserModel
 	 */
 	addUserToGroups(u_id, ug_ids = [])
 	{
+		u_id = parseInt(u_id, 10);
 		if (u_id == 1)//root
 			return Promise.resolve(u_id);
 
 		return Promise.resolve()
-			.then(() => {
-
+			.then(() =>
+			{
 				if (!ug_ids.length)
 					return Promise.resolve(ug_ids);
 
 				return this.getAll(ug_ids)
-					.then((ug_list) => {
-
+					.then((ug_list) =>
+					{
 						if (!ug_list)
 							return Promise.resolve(ug_ids);
 
 						let groups = [];
 
 						//работаем только с реальными id групп
-						ug_list.forEach((g) => {
-							groups.push(g['ug_id']);
+						ug_list.forEach((g) =>
+						{
+							groups.push(parseInt(g['ug_id'], 10));
 						});
 
 						return Promise.resolve(groups);
 					})
 			})
-			.then((ug_ids) => {
-
+			.then((ug_ids) =>
+			{
 				let where = ['u_id = ?'];
 				let sqlData = [u_id];
 				if (ug_ids.length)
@@ -287,35 +302,37 @@ class UserGroups extends UserModel
 				*/
 
 				return this.constructor.conn().del(sql, sqlData)
-					.then(() => {
-
+					.then(() =>
+					{
 						return Promise.resolve(ug_ids);
 					});
 			})
-			.then((ug_ids) => {
-
+			.then((ug_ids) =>
+			{
 				let sqlData = [];
 				let sql = ``;
 
 				if (ug_ids.length)
 				{
 					let sql_vals = [];
-					ug_ids.forEach((ug_id) => {
-
+					ug_ids.forEach((ug_id) =>
+					{
 						sql_vals.push('(?,?)');
 						sqlData.push(u_id, ug_id);
 					});
 
-					sql += `INSERT INTO users_in_groups (u_id, ug_id) VALUES ${sql_vals.join(',')}
-						ON DUPLICATE KEY UPDATE 
-						ug_id=VALUES(ug_id);`;
+					sql += `INSERT INTO users_in_groups (u_id, ug_id) 
+					VALUES ${sql_vals.join(',')}
+					ON DUPLICATE KEY UPDATE 
+					ug_id=VALUES(ug_id);`;
 				}
 
 				sql += `UPDATE users SET ug_ids = ? WHERE u_id = ?`;
 				sqlData.push(ug_ids.join(','), u_id);
 
 				return this.constructor.conn().multis(sql, sqlData)
-					.then(() => {
+					.then(() =>
+					{
 						return Promise.resolve(u_id);
 					});
 			});
@@ -327,10 +344,11 @@ class UserGroups extends UserModel
 	 */
 	getGroupsOnRegister()
 	{
-		let sql = `SELECT ug_id, ug_pid, ug_path, ug_name, ug_desc, ug_level, ug_lk, ug_rk, ug_on_register, REPEAT('&nbsp;', IF(ug_level > 1, (ug_level-1)*2, 0)) AS ug_nbsp
-			FROM users_groups
-			WHERE ug_on_register = ?`;
-		return this.constructor.conn().s(sql, [1]);
+		let sql = `SELECT ug_id, ug_pid, ug_path, ug_name, ug_desc, ug_level, ug_lk, ug_rk, ug_on_register
+		, REPEAT('&nbsp;', IF(ug_level > 1, (ug_level-1)*2, 0)) AS ug_nbsp
+		FROM users_groups
+		WHERE ug_on_register = ?`;
+		return this.constructor.conn().ps(sql, [1]);
 	}
 
 	/**
@@ -342,15 +360,15 @@ class UserGroups extends UserModel
 	 */
 	getGroupRightsByPathAndMenu(m_id, ug_path)
 	{
+		m_id = parseInt(m_id, 10);
 		let sqlData = [m_id, ug_path];
-		let sql =
-			`SELECT ug.ug_id, m.m_id, cm.cm_id, cm.cm_method
-			FROM (SELECT NULL) AS z
-			JOIN menu AS m ON(m.m_id = ?)
-			JOIN users_groups AS ug ON(ug.ug_path = ?)
-			JOIN controllers_methods AS cm ON(cm.c_id = m.c_id)
-			JOIN users_groups_rights AS ugr ON(ugr.ug_id = ug.ug_id AND ugr.m_id = m.m_id AND ugr.c_id = cm.c_id 
-			AND ugr.cm_id = cm.cm_id)`;
+		let sql = `SELECT ug.ug_id, m.m_id, cm.cm_id, cm.cm_method
+		FROM (SELECT NULL) AS z
+		JOIN menu AS m ON(m.m_id = ?)
+		JOIN users_groups AS ug ON(ug.ug_path = ?)
+		JOIN controllers_methods AS cm ON(cm.c_id = m.c_id)
+		JOIN users_groups_rights AS ugr ON(ugr.ug_id = ug.ug_id AND ugr.m_id = m.m_id AND ugr.c_id = cm.c_id 
+		AND ugr.cm_id = cm.cm_id)`;
 
 		/*let sql =
 			`SELECT EXISTS(
@@ -366,13 +384,15 @@ class UserGroups extends UserModel
 			*/
 
 		return this.constructor.conn().ps(sql, sqlData)
-			.then((res) => {
+			.then((res) =>
+			{
 				if (!res || res['info']['numRows'] == 0)
 					return Promise.resolve({});
 
 				let rights = {};
 
-				res.forEach((item) => {
+				res.forEach((item) =>
+				{
 					rights[item['cm_method']] = item['m_id'];
 				});
 
@@ -394,6 +414,7 @@ class UserGroups extends UserModel
 
 		let sqlData = [].concat(ug_ids);
 
+		m_id = parseInt(m_id, 10);
 		sqlData.unshift(m_id);
 
 		let sql = `SELECT m.m_id, cm.cm_method
@@ -409,14 +430,15 @@ class UserGroups extends UserModel
 		//console.log(sql, sqlData);
 
 		return this.constructor.conn().ps(sql, sqlData)
-			.then((res) => {
-
+			.then((res) =>
+			{
 				if (!res || res['info']['numRows'] == 0)
 					return Promise.resolve({});
 
 				let rights = {};
 
-				res.forEach((item) => {
+				res.forEach((item) =>
+				{
 					rights[item['cm_method']] =item['m_id'];
 				});
 
@@ -459,7 +481,7 @@ class UserGroups extends UserModel
 		(SELECT NULL) AS z
 		JOIN users_in_groups AS uing ON(uing.u_id = ?)
 		JOIN users_groups AS ug ON(ug.ug_id = uing.ug_id)`;
-
+		u_id = parseInt(u_id, 10);
 		return this.constructor.conn().ps(sql, [u_id]);
 	}
 }

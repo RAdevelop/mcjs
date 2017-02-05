@@ -53,7 +53,8 @@ class Menu extends BaseModel
 		 FROM (SELECT NULL) AS z
 		 JOIN menu AS m ON(m.m_id = ?)
 		 JOIN controllers AS c ON(c.c_id = m.c_id)`;
-		 
+
+		 mId = parseInt(mId, 10);
 		 return this.constructor.conn().sRow(sql, [mId]);
 	 }
 	
@@ -104,14 +105,14 @@ class Menu extends BaseModel
 		if (null === menu_type)
 			menu_type = [0,1,2];
 		else
-			menu_type = ([0,1,2].indexOf(menu_type) != -1 ? [menu_type] : [1]);
+			menu_type = ([0,1,2].indexOf(menu_type) >=0 ? [menu_type] : [1]);
 
 		where.push(`m.m_type IN(${menu_type.join(',')})`);
 
 		if (null === m_show || all)
 			m_show = [0,1];
 		else
-			m_show = ([0,1].indexOf(m_show) != -1 ? [m_show] : [1]);
+			m_show = ([0,1].indexOf(m_show) >=0 ? [m_show] : [1]);
 
 		where.push(`m.m_show IN(${m_show.join(',')})`);
 
@@ -179,14 +180,14 @@ class Menu extends BaseModel
 		if (null === menu_type)
 			menu_type = [0,1,2];
 		else
-			menu_type = ([0,1,2].indexOf(menu_type) != -1 ? [menu_type] : [1]);
+			menu_type = ([0,1,2].indexOf(menu_type) >=0 ? [menu_type] : [1]);
 
 		where.push(`m.m_type IN(${menu_type.join(',')})`);
 
 		if (null === m_show)
 			m_show = [0,1];
 		else
-			m_show = ([0,1].indexOf(m_show) != -1 ? [m_show] : [1]);
+			m_show = ([0,1].indexOf(m_show) >=0 ? [m_show] : [1]);
 
 		where.push(`m.m_show IN(${m_show.join(',')})`);
 

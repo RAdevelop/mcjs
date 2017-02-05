@@ -34,8 +34,6 @@ class Events extends BaseModel
 		let now_ts = Moment().unix();
 		let sqlData = [i_u_id, s_e_title, e_alias, t_e_notice, t_e_text, s_e_address, f_e_lat, f_e_lng, i_location_id, now_ts, now_ts, e_start_ts, e_end_ts, gps_lat, gps_lng];
 
-		console.log(gps_lat, gps_lng);
-
 		let i_e_id;
 
 		let sql =
@@ -46,15 +44,17 @@ class Events extends BaseModel
 		return this.constructor.conn().ins(sql, sqlData)
 			.then((res) =>
 			{
-				i_e_id = res["insertId"];
+				i_e_id = parseInt(res["insertId"], 10);
 
 				sql = `SELECT l_lk, l_rk FROM location WHERE l_id = ?;`;
-
+				i_location_id = parseInt(i_location_id, 10);
 				return this.constructor.conn().sRow(sql, [i_location_id]);
 			})
 			.then((res) => 
 			{
 				let {l_lk, l_rk} = res;
+				l_lk = parseInt(l_lk, 10);
+				l_rk = parseInt(l_rk, 10);
 
 				sql = `SELECT l_id FROM location WHERE l_lk <= ? AND l_rk >= ? ORDER BY l_lk;`;
 				return this.constructor.conn().s(sql, [l_lk, l_rk]);
@@ -114,13 +114,17 @@ class Events extends BaseModel
 		let e_end_ts    = Moment(dd_end_ts, "DD-MM-YYYY").unix();
 
 		let now_ts = Moment().unix();
-		let sqlData = [now_ts, e_start_ts, e_end_ts, s_e_title, e_alias, t_e_notice, t_e_text, s_e_address, i_location_id, f_e_lat, f_e_lng
-			, gps_lat, gps_lng, i_u_id, i_e_id];
+
+		i_e_id = parseInt(i_e_id, 10);
+
+		let sqlData = [now_ts, e_start_ts, e_end_ts, s_e_title, e_alias, t_e_notice, t_e_text, s_e_address
+			, i_location_id, f_e_lat, f_e_lng, gps_lat, gps_lng, i_u_id, i_e_id];
 
 		return this.constructor.conn().upd(sql, sqlData)
 			.then(() =>
 			{
 				sql = `SELECT l_lk, l_rk FROM location WHERE l_id = ?;`;
+				i_location_id = parseInt(i_location_id, 10);
 				return this.constructor.conn().sRow(sql, [i_location_id]);
 			})
 			.then((res) =>
@@ -128,6 +132,8 @@ class Events extends BaseModel
 				let {l_lk, l_rk} = res;
 
 				sql = `SELECT l_id FROM location WHERE l_lk <= ? AND l_rk >= ? ORDER BY l_lk;`;
+				l_lk = parseInt(l_lk, 10);
+				l_rk = parseInt(l_rk, 10);
 				return this.constructor.conn().s(sql, [l_lk, l_rk]);
 			})
 			.then((res) =>
@@ -171,7 +177,7 @@ class Events extends BaseModel
 		, FROM_UNIXTIME(e_end_ts, "%d-%m-%Y") AS dd_end_ts
 		FROM events_list
 		WHERE e_id = ?`;
-
+		e_id = parseInt(e_id, 10);
 		return this.constructor.conn().sRow(sql, [e_id]);
 	}
 
@@ -187,9 +193,16 @@ class Events extends BaseModel
 	{
 		let kinds = ['country','province','locality'];
 		let sqlData = [];
+		l_id = parseInt(l_id, 10);
+
+		start_ts = parseInt(start_ts, 10);
+		end_ts = parseInt(end_ts, 10);
+
 		sqlData.unshift(start_ts, end_ts);
 
 		let on_events_locations = (l_id ? ` el.l_id = ? AND ` : ``);
+
+		l_id = parseInt(l_id, 10);
 		if (l_id > 0)
 			sqlData.push(l_id);
 
@@ -222,8 +235,11 @@ class Events extends BaseModel
 	 *
 	 * @returns {Promise}
 	 */
-	getEvents(start_ts, end_ts = null, l_id = null)
+	getEvents(start_ts, end_ts, l_id = null)
 	{
+		start_ts = parseInt(start_ts, 10);
+		end_ts = parseInt(end_ts, 10);
+
 		let sqlData = [start_ts, end_ts];
 		let sql =
 			`SELECT e.e_id, e.e_create_ts, e.e_update_ts, e.e_start_ts, e.e_end_ts, e.e_title, e.e_alias, 
@@ -241,6 +257,7 @@ class Events extends BaseModel
 			sql += `
 			JOIN events_locations AS el ON(el.e_id = e.e_id AND el.l_id = ?)
 			GROUP BY e.e_id`;
+			l_id = parseInt(l_id, 10);
 			sqlData.push(l_id);
 		}
 
@@ -263,6 +280,9 @@ class Events extends BaseModel
 	 */
 	getEventsDate(start_ts, end_ts, l_id = null)
 	{
+		start_ts = parseInt(start_ts, 10);
+		end_ts = parseInt(end_ts, 10);
+
 		let sqlData = [start_ts, end_ts];
 		let sql =
 			`SELECT e.e_id, e.e_start_ts, e.e_end_ts
@@ -274,6 +294,7 @@ class Events extends BaseModel
 			sql +=
 				`JOIN events_locations AS el ON(el.e_id = e.e_id AND el.l_id = ?)
 				GROUP BY e.e_id`;
+			l_id = parseInt(l_id, 10);
 			sqlData.push(l_id);
 		}
 
@@ -371,7 +392,7 @@ class Events extends BaseModel
 			FROM events_image AS ei
 			JOIN events_list AS e ON (e.e_id = ei.e_id)
 			WHERE ei.ei_id = ?`;
-
+		ei_id = parseInt(ei_id, 10);
 		return this.constructor.conn().sRow(sql, [ei_id]);
 	}
 
@@ -389,6 +410,7 @@ class Events extends BaseModel
 			GROUP BY ei.ei_pos
 			ORDER BY ei.ei_pos`;
 
+		e_id = parseInt(e_id, 10);
 		return this.constructor.conn().s(sql, [e_id]);
 	}
 
@@ -402,6 +424,7 @@ class Events extends BaseModel
 	{
 		let sql = "SELECT COUNT(ei_id) AS cnt FROM events_image WHERE e_id = ?;";
 
+		e_id = parseInt(e_id, 10);
 		return this.constructor.conn().sRow(sql, [e_id])
 			.then((res) => {
 				return Promise.resolve(res["cnt"]);
@@ -415,7 +438,7 @@ class Events extends BaseModel
 	 * @param ei_pos - id фоток
 	 * @returns {Promise}
 	 */
-	updSortImg(e_id, ei_pos)
+	updSortImg(e_id, ei_pos = [])
 	{
 		return this.countAlbumImages(e_id)
 			.then((cnt) => {
@@ -428,7 +451,8 @@ class Events extends BaseModel
 				let setOrdi = [];
 				let setData = [];
 
-				ei_pos.forEach((ei_id, i) => {
+				ei_pos.forEach((ei_id, i) =>
+				{
 					setOrdi.push("IF(ei_id = ?, ? ");
 					setData.push(ei_id, i);
 				});
@@ -436,6 +460,7 @@ class Events extends BaseModel
 				let sql = "UPDATE events_image SET ei_pos = " + setOrdi.join(',') + ', ei_pos' +')'.repeat(setOrdi.length) +
 					" WHERE e_id = ? ";
 
+				e_id = parseInt(e_id, 10);
 				setData.push(e_id);
 
 				//return Promise.resolve();
@@ -455,7 +480,7 @@ class Events extends BaseModel
 		DELETE FROM events_locations WHERE e_id = ?;
 		DELETE FROM events_list WHERE e_id = ?;
 		`;
-
+		e_id = parseInt(e_id, 10);
 		return this.constructor.conn().multis(sql, [e_id, e_id, e_id]);
 	}
 }

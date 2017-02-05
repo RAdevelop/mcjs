@@ -16,9 +16,10 @@ class VideoAlbums extends BaseModel
 	countUserVideoAlbums(u_id)
 	{
 		let sql = `SELECT COUNT(va_id) AS cnt FROM video_albums WHERE u_id = ?;`;
-
+		u_id = parseInt(u_id, 10);
 		return this.constructor.conn().sRow(sql, [u_id])
-			.then((res) => {
+			.then((res) =>
+			{
 				return Promise.resolve(res["cnt"]);
 			});
 	}
@@ -27,7 +28,8 @@ class VideoAlbums extends BaseModel
 	{
 		offset = parseInt(offset, 10) || 0;
 		limit = parseInt(limit, 10) || 10;
-		
+		u_id = parseInt(u_id, 10);
+
 		let sql = `SELECT va.va_id, va.u_id, va.va_name, va.va_alias, va.va_text, va.va_cnt, va.va_create_ts, 
 		va.va_update_ts, v.v_id, v.v_img
 		FROM (SELECT NULL) AS z
@@ -44,7 +46,7 @@ class VideoAlbums extends BaseModel
 	addVideoAlbum(u_id, va_name, va_alias, va_text)
 	{
 		let sql = `INSERT INTO video_albums (u_id, va_name, va_alias, va_text, va_create_ts, va_update_ts)
-			VALUES (?, ?, ?, ?, ?, ?)`;
+		VALUES (?, ?, ?, ?, ?, ?)`;
 
 		let now_ts = Moment().unix();
 
@@ -76,7 +78,8 @@ class VideoAlbums extends BaseModel
 		FROM (SELECT NULL) AS z
 		JOIN video_albums AS va ON (va.va_id = ? AND va.u_id = ?)
 		LEFT JOIN video AS v ON (v.va_id = va.va_id AND v.u_id = va.u_id AND v.v_pos = ?);`;
-
+		va_id = parseInt(va_id, 10);
+		u_id = parseInt(u_id, 10);
 		return this.constructor.conn().sRow(sql, [va_id, u_id, 0]);
 	}
 	
@@ -94,7 +97,11 @@ class VideoAlbums extends BaseModel
 	{
 		let sql = `UPDATE video_albums SET va_name = ?, va_alias = ?, va_text = ?, va_update_ts = ? 
 		WHERE va_id = ? AND u_id = ?`;
+
 		let now_ts = Moment().unix();
+
+		va_id = parseInt(va_id, 10);
+		u_id = parseInt(u_id, 10);
 		return this.constructor.conn().upd(sql, [va_name, va_alias, va_text, now_ts, va_id, u_id])
 			.then(()=>
 			{

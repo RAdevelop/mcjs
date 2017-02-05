@@ -164,16 +164,16 @@ class Auth extends User
 		let hashData = {};
 		
 		//генерируем соль
-		bcrypt.genSalt(12, (err, salt) => {
-
+		bcrypt.genSalt(12, (err, salt) =>
+		{
 			if(err) return cb(err);
 			
 			//задаем пользователю соль для сохранения
 			hashData.salt = salt;
 			
 			//генерируем хеш пароля
-			bcrypt.hash(u_pass, salt, (err, hash) => {
-
+			bcrypt.hash(u_pass, salt, (err, hash) =>
+			{
 				if(err) return cb(err);
 				
 				//задаем хеш для сохранения
@@ -197,8 +197,9 @@ class Auth extends User
 		const self = this;
 		
 		let sql = `SELECT 1 AS f FROM user_change_request
-			WHERE u_id = ? AND u_req_type = ? AND u_req_key = ? AND u_req_end_ts >= ?;`;
-		
+		WHERE u_id = ? AND u_req_type = ? AND u_req_key = ? AND u_req_end_ts >= ?;`;
+
+		u_id = parseInt(u_id, 10);
 		let sqlData = [u_id,u_req_type, u_reg_key, Moment().unix()];
 		
 		self.constructor.conn().ps(sql, sqlData, function(err, res)
@@ -248,10 +249,12 @@ class Auth extends User
 				return cb(err);
 			
 			let sql = `UPDATE users SET u_salt = ?, u_pass = ? WHERE u_id = ?`;
+
+			u_id = parseInt(u_id, 10);
 			let sqlData = [hashData.salt, hashData.hash, u_id];
 			
-			self.constructor.conn().upd(sql, sqlData, (err) => {
-
+			self.constructor.conn().upd(sql, sqlData, (err) =>
+			{
 				if(err)
 					return cb(err);
 				
