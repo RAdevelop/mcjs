@@ -23,8 +23,10 @@ class Blog extends CtrlMain
 	{
 		return {
 			"index": {
-				'^\/?[0-9]+\/\\S+\/?$': ['i_blog_id','s_blog_alias']
-				,"^\/?page\/[1-9]+[0-9]*\/?$" : [ ,"i_page"] //список с постраничкой
+				'^\/?subj\/[1-9]+[0-9]*\/[a-z0-9-_]{3,}\/page\/[1-9]+[0-9]*\/?$': [,'ui_bs_id','s_bs_alias',, 'i_page']
+				,'^\/?subj\/[1-9]+[0-9]*\/[a-z0-9-_]{3,}\/?$': [,'ui_bs_id','s_bs_alias']
+				,'^\/?[1-9]+[0-9]*\/[a-z0-9-_]{3,}\/?$': ['i_blog_id','s_blog_alias']
+				,"^\/?page\/[1-9]+[0-9]*\/?$" : [ ,'i_page'] //список с постраничкой
 				,'^\/?$': null
 			},
 			"add": {
@@ -52,12 +54,12 @@ class Blog extends CtrlMain
 			blogList: null
 		};
 
-		let {i_u_id=null, i_blog_id=null, s_blog_alias=null} = this.routeArgs;
+		let {i_u_id=null, i_blog_id=null, s_blog_alias=null, ui_bs_id=null, s_bs_alias=null} = this.routeArgs;
 
 		if (i_blog_id)
 			return this.blog(tplData, i_blog_id, s_blog_alias, i_u_id);
 
-		return this.blogList(tplData, i_u_id);
+		return this.blogList(tplData, i_u_id, ui_bs_id, s_bs_alias);
 	}
 
 	/**
@@ -82,7 +84,7 @@ class Blog extends CtrlMain
 					&& (isRootAdmin || blog['u_id'] == this.getUserId() || blog['b_show'] == 1)
 				)
 				{
-					tplData["user"] = user;
+					tplData["user"] = (i_u_id ? user : {u_id: null});
 					tplData["blogSubjects"] = blogSubjects;
 					return Promise.resolve(blog);
 				}
@@ -130,18 +132,21 @@ class Blog extends CtrlMain
 	 *
 	 * @param tplData
 	 * @param i_u_id
+	 * @param ui_bs_id
+	 * @param s_bs_alias
 	 * @returns {Promise}
 	 */
-	blogList(tplData, i_u_id=null)
+	blogList(tplData, i_u_id=null, ui_bs_id=null, s_bs_alias=null)
 	{
 		let {i_page=1} = this.routeArgs;
 		//let show = (this.getLocalAccess()['post_edit'] ? null : 1);
 		let show = (i_u_id==this.getUserId() ? null : 1);
 
 		return Promise.all([
-			this.getClass("blog").getBlogList(new Pages(i_page, limit_per_page), show, i_u_id),
+			this.getClass("blog")
+				.getBlogList(new Pages(i_page, limit_per_page), show, i_u_id, ui_bs_id, s_bs_alias),
 			this.getUser(i_u_id),
-			this.getClass('blog').getBlogSubjectList()
+			this.getClass('blog').getBlogSubjectList(ui_bs_id)
 		])
 			.spread((blog, user, blogSubjects) =>
 			{
@@ -167,10 +172,32 @@ class Blog extends CtrlMain
 			{
 				let isAjax = this.getReq().xhr;
 
+				if (!isAjax)
+				{
+					let pageTitle = [];
+
+					if (tplData['user'] && tplData['user']['u_id'])
+						pageTitle.push(tplData['user']['u_display_name']+':');
+
+					if (tplData["blogSubjects"]['selected'])
+						pageTitle.push(tplData["blogSubjects"]['selected']['bs_name']);
+
+					pageTitle = pageTitle.join(' ');
+					this.view.setPageTitle(pageTitle);
+					this.view.setPageH1(pageTitle);
+				}
 				tplData["blogList"] = blogList;
 
 				let exposeBlog = 'blogList';
-				let baseUrl = (i_u_id ? [this.getBaseUrl(), i_u_id].join('/') : this.getBaseUrl());
+				//let baseUrl = (i_u_id ? [this.getBaseUrl(), i_u_id].join('/') : this.getBaseUrl());
+				let baseUrl = [this.getBaseUrl()];
+
+				if (i_u_id)
+					baseUrl.push(i_u_id);
+				if (ui_bs_id && s_bs_alias)
+					baseUrl.push('subj', ui_bs_id, s_bs_alias);
+
+				baseUrl = baseUrl.join('/');
 				Pages.setLinksUri(baseUrl)
 					.setAjaxPagesType(true);
 
@@ -207,7 +234,7 @@ class Blog extends CtrlMain
 			},
 			user: {u_id: this.getUserId()}
 		};
-		
+
 		return this.getClass('blog').getBlogSubjectList()
 			.then((blogSubjects)=>
 			{
@@ -239,6 +266,9 @@ class Blog extends CtrlMain
 		tplData["t_b_text"] = CtrlMain.cheerio(tplData["t_b_text"]).root().cleanTagEvents().html();
 		tplData["b_show"] = tplData["b_show"] || false;
 		
+		if (!tplData["ui_bs_id"] || tplData["ui_bs_id"] == 0)
+			errors["ui_bs_id"] = "Укажите тему";
+
 		if (!tplData["s_b_title"])
 			errors["s_b_title"] = "Укажите название";
 
@@ -254,7 +284,10 @@ class Blog extends CtrlMain
 				if (this.parseFormErrors(tplData, errors))
 				{
 					return this.getClass('blog')
-						.add(this.getUserId(), tplData["s_b_title"], tplData["t_b_notice"], tplData["t_b_text"], tplData["b_show"])
+						.add(this.getUserId(), tplData["s_b_title"],
+							tplData["t_b_notice"], tplData["t_b_text"],
+							tplData["ui_bs_id"], tplData["b_show"]
+						)
 						.then((i_blog_id)=>
 						{
 							process.nextTick(()=>
@@ -332,7 +365,7 @@ class Blog extends CtrlMain
 						let tplData = {
 							blog: blog,
 							blogImages: images,
-							user: user,
+							user: {u_id: blog['u_id']}, //user
 							blogSubjects: blogSubjects
 						};
 
@@ -413,6 +446,9 @@ class Blog extends CtrlMain
 
 				let errors = {};
 
+				if (!tplData["ui_bs_id"] || tplData["ui_bs_id"] == 0)
+					errors["ui_bs_id"] = "Укажите тему";
+
 				if (!tplData["s_b_title"])
 					errors["s_b_title"] = "Укажите название";
 
@@ -429,7 +465,9 @@ class Blog extends CtrlMain
 			{
 				return this.getClass('blog').edit(
 					tplData["i_blog_id"], blog['u_id'],
-					tplData["s_b_title"], tplData["t_b_notice"], tplData["t_b_text"], tplData["b_show"])
+					tplData["s_b_title"], tplData["t_b_notice"],
+					tplData["t_b_text"], tplData["ui_bs_id"],
+					tplData["b_show"])
 					.then(() =>
 					{
 						process.nextTick(()=>
@@ -590,10 +628,9 @@ class Blog extends CtrlMain
 	{
 		return Promise.all([
 			this.getClass('user/groups').isRootAdmin(this.getUserId()),
-			this.getClass('blog').getBlogById(b_id, i_u_id),
-			this.getClass('blog').getBlogSubjectList()
+			this.getClass('blog').getBlogById(b_id, i_u_id)
 		])
-			.spread((isRootAdmin, blog, blogSubjects)=>
+			.spread((isRootAdmin, blog)=>
 			{
 				if (!blog)
 					throw new Errors.HttpError(404);
@@ -601,8 +638,11 @@ class Blog extends CtrlMain
 				if (!i_u_id && blog['u_id'])
 					i_u_id = blog['u_id'];
 
-				return this.getUser(i_u_id)
-					.then((user)=>
+				return Promise.all([
+					this.getUser(i_u_id),
+					this.getClass('blog').getBlogSubjectList(blog['bs_id'])
+				])
+					.spread((user, blogSubjects)=>
 					{
 						blog["user"] = user;
 						return Promise.resolve([isRootAdmin, blog, user, blogSubjects]);

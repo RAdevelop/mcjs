@@ -10,6 +10,9 @@ body {
         padding-top: 150px;
       }
     }
+    @media (max-width: $screen-xs-max) {
+      padding-top: 150px;
+    }
   }
 }
 /******************************** TinyMCE редактор */

@@ -21,7 +21,7 @@ $('.navbar-user-top .top-tools').topTools({
 var userEmptyName = <%=(_user && _user['u_display_name'] == '')%>;
 if (userEmptyName)
 {
-    let url = _reqBaseUrl.split('/');
+    var url = _reqBaseUrl.split('/');
     url.forEach(function(item, i){
         if (item == '') url.splice(i, 1);
     });

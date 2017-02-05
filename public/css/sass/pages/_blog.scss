@@ -1,10 +1,5 @@
 /**********  БЛОГ БЛОГ БЛОГ БЛОГ БЛОГ БЛОГ   **************/
 
-.blogLocationsMenu li.selected
-{
-  background-color: #f5f5f5;
-}
-
 .blogData p
 {
   overflow: hidden;
@@ -28,19 +23,12 @@
 {
   cursor: pointer;
 }
-.blogData .blogMap
-{
-  height: 350px;
-}
 
-.blogData .blogMap #eventMap
-{
-  height: 100%;
-}
-
-.blogLocationsBtnGroup select
-{
-  max-width: 150px;
+.blogSubjects {
+  @media (max-width: $screen-md-min)
+  {
+    right: auto;
+  }
 }
 
 .blogListContainer
@@ -62,19 +50,25 @@
 {
   display: block;
   position: relative;
-  border: none;
-  color: #fff;
-  max-width: 384px;
+  color: #333;
+  max-width: 382px;
+  min-width: 382px;
+
   max-height: 288px;
-  min-width: 384px;
   min-height: 288px;
   overflow: hidden;
+  border: 1px solid #e2e2e2;
+  @include mix-border-radius(4px);
+
+  &:hover {
+   border-color: #333;
+  }
 }
 
 .blogListContainer .blogListItem .blogListItemInfo img
 {
   @include mix-width-calc(100%);
-  @include mix-opacity(0.5);
+  @include mix-opacity(0.2);
 }
 
 .blogListContainer .blogListItem .blogListItemInfo div
@@ -83,15 +77,25 @@
   width: 100%;
 }
 
-.blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoDate
-{
+.blogListContainer .blogListItem .blogListItemInfo .subject {
   top: 0;
   left: 0;
+  background-color: #e2e2e2;
   padding: 3px;
-  background-color: rgba(0, 0, 0, 0.7);
-  text-align: center;
+  overflow: hidden;
+  max-height: 26px;
+}
 
+.blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoDate
+{
+  top: 20px;
+  left: 0;
+  padding: 3px;
+  //background-color: rgba(0, 0, 0, 0.7);
+  text-align: center;
   display: inline-block;
+  max-height: 56px;
+  overflow: hidden;
 
   & .blogListItemInfoAuthor {
 
@@ -112,9 +116,8 @@
 
 .blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoNotice
 {
-  background-color: rgba(0, 0, 0, 0.7);
-  //top: 245px;
-  top: 56px;
+  //background-color: rgba(0, 0, 0, 0.7);
+  top: 76px;
   padding: 0px 3px 3px 3px;
   bottom: 0;
   //@include mix-transition(top, 0.5s, ease-out, 0.1s);
@@ -126,6 +129,7 @@
 }
 .blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoNotice p:first-child
 {
+  border-top: 1px dotted;
   text-align: center;
   font-weight: bold;
 }
@@ -143,7 +147,6 @@
     border: 1px solid #F0F0F0;
     @include mix-border-radius(5px);
   }
-
 
   display: table;
   border-spacing: 3px;
@@ -186,17 +189,17 @@
 {
   .blogListContainer .blogListItem .blogListItemInfo
   {
-    max-width: 359px;
+    max-width: 356px;
     max-height: 269px;
 
-    min-width: 359px;
+    min-width: 356px;
     min-height: 269px;
   }
 }
 
 @media (max-width: $screen-sm) and (orientation : landscape)
 {
-  .blogListContainer .blogListItem .blogListItemInfo
+  /*.blogListContainer .blogListItem .blogListItemInfo
   {
     max-width: 100%;
     max-height: 257px;
@@ -207,12 +210,13 @@
 
   .blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoNotice
   {
-    top: 26px;
-    background-color: rgba(0, 0, 0, 0.7);
-  }
+    top: 82px;
+    //background-color: rgba(0, 0, 0, 0.7);
+  }*/
 }
 
-@media (max-width: 640px)
+//@media (max-width: 640px)
+@media (max-width: $screen-xs-min)
 {
   .blogListContainer .blogListItem .blogListItemInfo
   {
@@ -222,8 +226,8 @@
   }
   .blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoNotice
   {
-    top: 26px;
-    background-color: rgba(0, 0, 0, 0.7);
+    top: 82px;
+    //background-color: rgba(0, 0, 0, 0.7);
   }
 }
 
@@ -239,8 +243,8 @@
   .blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoNotice
   {
     //top: 26px;
-    top: 0px;
-    background-color: rgba(0, 0, 0, 0.7);
+    top: 82px;
+    //background-color: rgba(0, 0, 0, 0.7);
   }
 }
 

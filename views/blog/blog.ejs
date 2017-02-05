@@ -5,7 +5,7 @@
 	<div class="blog-author_data"><%=blog['user']['u_display_name']%></div>
 	<div class="" style="display: table-cell;
     vertical-align: top;
-    padding: 3px;">Тема: <a href="<%=[_reqBaseUrl, blog["bs_id"], blog["bs_alias"]].join('/')%>/"><%=blog['bs_name']%></a></div>
+    padding: 3px;">Тема: <a href="<%=[_reqBaseUrl,'subj', blog["bs_id"], blog["bs_alias"]].join('/')%>/"><%=blog['bs_name']%></a></div>
 </div>
 <h2><span class="badge"><%=blog['dt_create_ts']%></span> <%-blog['b_title']%></h2>
 <div class="row blogData">

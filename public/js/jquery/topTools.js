@@ -52,7 +52,7 @@
 			var $self = $(this);
 
 			var action = $self.data('action');
-			console.log('action = ', action);
+			//console.log('action = ', action);
 			switch (action)
 			{
 				case 'feedback':

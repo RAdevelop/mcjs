@@ -16,15 +16,16 @@ class Blog extends Base
 	 * @param s_title
 	 * @param t_notice
 	 * @param t_text
+	 * @param ui_bs_id
 	 * @param b_show
 	 *
 	 * @returns {Promise}
 	 */
-	add(i_u_id, s_title, t_notice, t_text, b_show = 0)
+	add(i_u_id, s_title, t_notice, t_text, ui_bs_id, b_show = 0)
 	{
 		let s_alias = this.helpers.clearSymbol(this.helpers.translit(s_title), '-');
 
-		return this.model('blog').add(i_u_id, s_title, s_alias, t_notice, t_text, b_show);
+		return this.model('blog').add(i_u_id, s_title, s_alias, t_notice, t_text, ui_bs_id, b_show);
 	}
 
 	/**
@@ -35,15 +36,16 @@ class Blog extends Base
 	 * @param s_title
 	 * @param t_notice
 	 * @param t_text
+	 * @param ui_bs_id
 	 * @param b_show
 	 *
 	 * @returns {Promise}
 	 */
-	edit(b_id, i_u_id, s_title, t_notice, t_text, b_show = 0)
+	edit(b_id, i_u_id, s_title, t_notice, t_text, ui_bs_id, b_show = 0)
 	{
 		let s_alias = this.helpers.clearSymbol(this.helpers.translit(s_title), '-');
 
-		return this.model('blog').edit(b_id, i_u_id, s_title, s_alias, t_notice, t_text, b_show);
+		return this.model('blog').edit(b_id, i_u_id, s_title, s_alias, t_notice, t_text, ui_bs_id, b_show);
 	}
 
 	/**
@@ -64,13 +66,14 @@ class Blog extends Base
 	 * @param Pages
 	 * @param b_show
 	 * @param i_u_id
+	 * @param ui_bs_id
+	 * @param s_bs_alias
 	 *
 	 * @returns {Promise}
 	 */
-	getBlogList(Pages, b_show = null, i_u_id = null)
+	getBlogList(Pages, b_show = null, i_u_id = null, ui_bs_id=null, s_bs_alias=null)
 	{
-		//TODO add bs_id
-		return this.model('blog').countBlog(b_show, i_u_id)
+		return this.model('blog').countBlog(b_show, i_u_id, ui_bs_id, s_bs_alias)
 			.then((cnt) =>
 			{
 				Pages.setTotal(cnt);
@@ -82,7 +85,7 @@ class Blog extends Base
 					return Promise.reject(new FileErrors.HttpError(404));
 
 				return this.model('blog')
-					.getBlogList(Pages.getLimit(), Pages.getOffset(), b_show, i_u_id)
+					.getBlogList(Pages.getLimit(), Pages.getOffset(), b_show, i_u_id, ui_bs_id, s_bs_alias)
 					.then((blogList) =>
 					{
 						if (!blogList)
@@ -351,9 +354,31 @@ class Blog extends Base
 			});
 	}
 
-	getBlogSubjectList()
+	getBlogSubjectList(bs_id = null)
 	{
-		return this.model('blog').getBlogSubjectList();
+		return this.model('blog').getBlogSubjectList()
+			.then((list)=>
+			{
+				let blogSubjects = {
+					list: [],
+					selected: null
+				};
+				
+				if (!list || list.length == 0)
+					return Promise.resolve(blogSubjects);
+				
+				blogSubjects.list = list.map((subj)=>
+				{
+					subj['b_selected'] = (subj['bs_id'] == bs_id);
+					if (subj['b_selected'])
+					{
+						blogSubjects.selected = subj;
+					}
+					return subj;
+				});
+
+				return Promise.resolve(blogSubjects);
+			});
 	}
 }
 //************************************************************************* module.exports

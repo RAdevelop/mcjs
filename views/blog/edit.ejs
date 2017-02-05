@@ -8,10 +8,23 @@
 	<div class="panel panel-default">
 		<div class="panel-body tab-content">
 			<div role="tabpanel" class="tab-pane active" id="base">
-				<div class="form-group">
-					<label for="s_b_title" class="col-sm-2 control-label">опубликовать?</label>
-					<div class="col-sm-10 checkbox">
-						<label><input type="checkbox"  name="b_show" <% if (blog['b_show'] == '1'){ %>checked="checked"<%}%> />да</label>
+				<div class="form-group ui_bs_id">
+					<label class="col-sm-2 control-label" for="ui_bs_id">Тема *</label>
+					<div class="col-sm-6">
+						<select id="ui_bs_id" name="ui_bs_id" class="form-control">
+							<option value="0" >выберите тему</option><%
+							let selected = '';
+							blogSubjects['list'].forEach(function(bSubject)
+							{
+								selected = (bSubject['bs_id']==blog['bs_id'] ? ' selected="selected" ' : '');
+							%>
+							<option value="<%=bSubject['bs_id']%>" <%-selected%> ><%=bSubject['bs_name']%></option>
+							<%});
+							%></select>
+					</div>
+					<div class="col-sm-4 checkbox">
+						<label><input type="checkbox" name="b_show" <% if (blog['b_show'] == '1'){ %>checked="checked"<%}%>>да</label>
+						<span class="help-block">опубликовать?</span>
 					</div>
 				</div>
 				<div class="form-group s_b_title">

@@ -23,7 +23,7 @@ class Base
 
 		this._setAction();
 		this._setBaseUrl(this.getReq());
-		//this._setOriginalUrl(this.getReq());
+		this._setOriginalUrl(this.getReq());
 
 		this._setClasses(Classes);
 		this._getClasses().setSession(this.getReq().session);
@@ -77,11 +77,20 @@ class Base
 
 	_setOriginalUrl(req)
 	{
-		req.originalUrl = this.getBaseUrl();
+		/*req.originalUrl = this.getBaseUrl();
 		if (this.getPath() != '')
-			req.originalUrl += '/' + this.getPath();
+			req.originalUrl += '/' + this.getPath();*/
 		//console.log('req.baseUrl = ', req.baseUrl);
+
+		if (req.originalUrl[req.originalUrl.length-1] == '/')
+			req.originalUrl = req.originalUrl.substring(0, req.originalUrl.length-1);
+
 		return this;
+	}
+
+	getOriginalUrl()
+	{
+		return this.getReq().originalUrl;
 	}
 
 	reqQuery()

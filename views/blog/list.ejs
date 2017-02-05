@@ -8,11 +8,16 @@ blogList.forEach(function (bItem)
 	let ava = (!!bItem['user']['previews'] && bItem['user']['previews']['50_50']);
 	let avaSrc = (ava ? bItem['user']['previews']['50_50'] : '/_0.gif');
 
-	%><div class="blogListItem">
-			<a class="blogListItemInfo" href="<%=[ bItem["b_id"], bItem["b_alias"]].join('/')%>/">
+	let blogHref = [_reqBaseUrl];
+	if (user && user['u_id'])
+		blogHref.push(user['u_id']);
+
+	blogHref.push(bItem["b_id"], bItem["b_alias"]);
+
+%><div class="blogListItem">
+			<a class="blogListItemInfo" href="<%=blogHref.join('/')%>/">
 				<img src="<%=imgSrc%>" alt="<%=bItem["b_title"]%>"/>
-				<div style="top: 0;
-    left: 0; border: 1px solid red;background-color: #000;">Тема: <%=bItem["bs_name"]%></div>
+				<div class="subject">Тема: <%=bItem["bs_name"]%></div>
 				<div class="blogListItemInfoDate">
 					<span><i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;<%=bItem["dt_create_ts"]%></span>
 					<span class="blogListItemInfoAuthor">

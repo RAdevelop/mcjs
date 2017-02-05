@@ -13,18 +13,25 @@
 		<div class="btn-group btn-group-sm" role="group" aria-label="список статей">
 			<a href="<%=menuItem['m_path']+'/'+(user['u_id'] ? user['u_id']+'/' : '')%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-list"></i> все статьи</a>
 		</div><%
-		if (blogSubjects && blogSubjects.length){%>
+		if (blogSubjects && blogSubjects['list'].length){%>
 		<div class="btn-group btn-group-sm" role="group" aria-label="Выбор темы">
-			<button type="button" class="btn btn-default dropdown-toggle toolbarBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Темы &nbsp;<i class="caret"></i></button>
-			<ul class="dropdown-menu dropdown-menu-right eventLocationsMenu">
-				<li><a href="<%=_reqBaseUrl%>/">на все темы</a></li><%
-					let cssLocSelected, locHref;
-				blogSubjects.forEach(function (bSubjects)
+			<button type="button" class="btn btn-default dropdown-toggle toolbarBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Темы: <%=(blogSubjects['selected'] && blogSubjects['selected']['bs_name']||'')%>&nbsp;<i class="caret"></i></button>
+			<ul class="blogSubjects dropdown-menu dropdown-menu-right">
+				<li><a href="<%=_reqBaseUrl%>/">все темы</a></li><%
+					let cssLocSelected, locHref, bCnt=0;
+				blogSubjects['list'].forEach(function (bSubject)
 				{
-					cssLocSelected = (bSubjects["TODO"] == bSubjects["bs_id"] ? 'selected' : '');
-					locHref = [_reqBaseUrl,'subj', bSubjects["bs_id"], bSubjects["bs_alias"]].join('/');
+					bCnt = (bSubject['b_cnt'] > 99 ? '99+': bSubject['b_cnt']);
 
-				%><li class="<%=cssLocSelected%>"><a href="<%=locHref%>/"><span style="padding-left: <%=bSubjects["bs_level"]%>0px;"><%=bSubjects["bs_name"]%></span></a></li><%
+					cssLocSelected = (bSubject["b_selected"] ? ' selected ' : '');
+					locHref = [_reqBaseUrl];
+				if (user && user['u_id'])
+					locHref.push(user['u_id']);
+
+					locHref.push('subj', bSubject["bs_id"], bSubject["bs_alias"]);
+					locHref = locHref.join('/');
+
+				%><li class="<%=cssLocSelected%>"><a href="<%=locHref%>/"><span class="badge"><%=bCnt%></span>&nbsp;<span style="padding-left: <%=(bSubject["bs_level"]-1)%>0px;"><%=bSubject["bs_name"]%></span></a></li><%
 				});%>
 			</ul>
 		</div><% }%>
