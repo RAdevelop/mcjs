@@ -547,69 +547,6 @@ class UploadFile extends File
 
 		rStream.pipe(wStream);
 	}
-
-	copyFile(file, mode, cb)
-	{
-		if (File.isForbiddenDir(file["path"]))
-			return cb(new FileErrors.ForbiddenDirectory(file["path"]), file);
-
-		if (File.isForbiddenDir(file["fullFilePath"]))
-			return cb(new FileErrors.ForbiddenDirectory(file["fullFilePath"]), file);
-
-		let error = false;
-
-		let rStream = FS.createReadStream(file.path);
-		let options = {
-			"mode": mode,
-			"flags": "w"
-		};
-		let wStream = FS.createWriteStream(file["fullFilePath"], options);
-
-		rStream.on('error', function(rStreamErr)
-		{
-			//console.log('rStream.on error');
-			//console.log(rStreamErr);
-
-			wStream.destroy();
-
-			cb(rStreamErr);
-		});
-
-		rStream.on('open', function(){
-			//console.log('rStream.on open');
-		});
-
-		rStream.on('close', function(){
-			//console.log('rStream.on close');
-		});
-		rStream.on('end', function(){
-			//console.log('rStream.on end');
-		});
-
-		wStream.on('open', function(){
-			//console.log('wStream.on open');
-		});
-
-		wStream.on('finish', function()
-		{
-			//console.log('wStream.on finish');
-
-			return cb(null, file);
-
-		});
-
-		wStream.on('error', function(wStreamErr)
-		{
-			//console.log('wStream.on error');
-			//console.log(wStreamErr);
-
-			rStream.destroy();
-
-			cb(wStreamErr);
-		});
-
-		rStream.pipe(wStream);
-	}
 }
 
 

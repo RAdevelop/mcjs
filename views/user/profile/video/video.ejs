@@ -10,12 +10,12 @@
 		else
 			img = '<img src="/img/no_image.png" alt="'+video['v_name']+'" class="noImg"/>';
 	%><div class="media js-media" data-video-id="<%=video["v_id"]%>">
-		<a class="mediaImg js-video" href="<%=[_reqBaseUrl,'move',video["v_id"],video["v_alias"]].join('/')%>/" data-video-id="<%=video["v_id"]%>"><%-img%></a>
-		<div class="mediaTools videoTools js-video-tools">
+		<a class="mediaImg js-video" href="<%=[_reqBaseUrl,'move',video["v_id"],video["v_alias"]].join('/')%>/" data-video-id="<%=video["v_id"]%>"><%-img%></a><%
+		if (videoAlbum["va_is_owner"]){%><div class="mediaTools videoTools js-video-tools">
 			<a href="javascript:void(0);" title="редактировать" data-toggle="tooltip" data-action="edit_video" data-video-id="<%=video["v_id"]%>"><i class="fa fa-fw fa-edit"></i></a>
 			<a href="javascript:void(0);" title="удалить" data-toggle="tooltip" data-action="delete_video" data-video-id="<%=video["v_id"]%>"><i class="fa fa-fw fa-trash-o"></i></a>
-		</div>
-		<div class="mediaTitle js-mediaTitle">
+		</div><%
+		}%><div class="mediaTitle js-mediaTitle">
 			<div class="mediaName"><%=video["v_name"]%></div>
 			<% if(video["v_text"]){%><div class="mediaText"><%=video['v_text']%></div><%}%>
 		</div>

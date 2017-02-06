@@ -28,7 +28,7 @@
             %><div class="media">
                 <a class="mediaImg" href="<%=[_reqBaseUrl,'photo',album["u_id"],album["a_id"]].join('/')%>/"><%-img%></a>
                 <div class="mediaTools">
-                    <span class="badge"><i class="fa fa-fw fa-camera"></i> <%=album["a_img_cnt"]%></span>
+                    <span class="badge"><i class="fa fa-fw fa-camera"></i> <%=(album["a_img_cnt"] > 99 ? '99+':album["a_img_cnt"])%>&nbsp;<i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;<%=album["dt_create_ts"]%></span>
                 </div>
                 <div class="mediaTitle">
                     <div class="mediaName"><%=album["a_name"]%></div>
@@ -38,7 +38,9 @@
             })%>
         </div>
     </div><%
-    } if (videoAlbums && videoAlbums["va_cnt"]>0){
+    }
+    if (videoAlbums && videoAlbums["va_cnt"]>0)
+    {
     %><div class="mediaWrapper blocks">
         <h4><a href="<%=(_reqBaseUrl+'/video/'+user["u_id"])%>/"><span class="badge"><i class="fa fa-fw fa-video-camera"></i> <%=videoAlbums["va_cnt"]%></span> Видео</a></h4>
         <div class="mediaList"><%
@@ -52,7 +54,7 @@
             %><div class="media">
                 <a class="mediaImg" href="<%=[_reqBaseUrl,'video',album["u_id"],album["va_id"],album["va_alias"]].join('/')%>/"><%-img%></a>
                 <div class="mediaTools">
-                    <span class="badge"><i class="fa fa-fw fa-video-camera"></i> <%=album["va_cnt"]%></span>
+                    <span class="badge"><i class="fa fa-fw fa-video-camera"></i> <%=(album["va_cnt"] > 99 ? '99+':album["va_cnt"])%>&nbsp;<i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;<%=album["dt_create_ts"]%></span>
                 </div>
                 <div class="mediaTitle">
                     <div class="mediaName"><%=album["va_name"]%></div>
@@ -62,7 +64,9 @@
             })%>
         </div>
     </div><%
-    } if (blogList && blogList.length>0){
+    }
+    if (blogList && blogList.length>0)
+    {
         let blogBaseUri = [_reqBaseUrl,'blog',user["u_id"]].join('/');
     %><div class="blocks">
         <h4><a href="<%=blogBaseUri%>/"><i class="fa fa-fw fa-pencil"></i> Блог</a></h4>

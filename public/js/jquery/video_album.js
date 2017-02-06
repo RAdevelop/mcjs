@@ -35,6 +35,9 @@
 			var action = $self.data('action');
 			var move = findVideoMove(vId);
 
+			if (!move['video']['u_id'] || options.u_id != move['video']['u_id'])
+				return;
+
 			switch (action)
 			{
 				case 'edit_video':
@@ -295,10 +298,7 @@
 					video['v_name'] = (video['v_name']).htmlspecialchars(video['v_name']);
 					video['v_text'] = (video['v_text']).htmlspecialchars(video['v_text']);
 					//video['v_content'] = (video['v_content']).htmlspecialchars(video['v_content']);
-
-					return true;
 				}
-				return false;
 			});
 
 			return {video:video, inx:inx};

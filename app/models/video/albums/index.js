@@ -31,7 +31,7 @@ class VideoAlbums extends BaseModel
 		u_id = parseInt(u_id, 10);
 
 		let sql = `SELECT va.va_id, va.u_id, va.va_name, va.va_alias, va.va_text, va.va_cnt, va.va_create_ts, 
-		va.va_update_ts, v.v_id, v.v_img
+		va.va_update_ts, v.v_id, v.v_img, FROM_UNIXTIME(va.va_create_ts, "%d-%m-%Y") AS dt_create_ts
 		FROM (SELECT NULL) AS z
 		JOIN video_albums AS va ON (va.u_id = ?)
 		LEFT JOIN video AS v ON (v.va_id = va.va_id AND v.u_id = va.u_id AND v.v_pos = ?)
@@ -74,7 +74,7 @@ class VideoAlbums extends BaseModel
 	getVideoAlbum(u_id, va_id)
 	{
 		let sql = `SELECT va.va_id, va.u_id, va.va_name, va.va_alias, va.va_text, va.va_cnt, va.va_create_ts, 
-		va.va_update_ts, v.v_id, v.v_img
+		va.va_update_ts, v.v_id, v.v_img, FROM_UNIXTIME(va.va_create_ts, "%d-%m-%Y") AS dt_create_ts
 		FROM (SELECT NULL) AS z
 		JOIN video_albums AS va ON (va.va_id = ? AND va.u_id = ?)
 		LEFT JOIN video AS v ON (v.va_id = va.va_id AND v.u_id = va.u_id AND v.v_pos = ?);`;
