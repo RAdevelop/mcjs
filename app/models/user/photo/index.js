@@ -298,16 +298,17 @@ class Photo extends User
 		u_id    = parseInt(u_id, 10);
 
 		let sql = `SELECT a.a_id, a.u_id, a.a_type_id, a.a_name, a.a_alias, a.a_text, a.a_img_cnt, 
-		a.a_create_ts, a.a_update_ts, t.a_type_alias,
-		 IF(t.a_type_alias = ?, 1, 0) AS a_profile,
-		 IF(t.a_type_alias = ?, 1, 0) AS a_named,
-		 ai.ai_id, ai.ai_latitude, ai.ai_longitude, ai.ai_dir
-		 FROM (SELECT NULL) AS z
-		 JOIN album AS a ON (a.u_id = ?)
-		 JOIN album_type AS t ON (t.a_type_id = a.a_type_id)
-		 LEFT JOIN album_image AS ai ON (ai.a_id = a.a_id AND ai.u_id = a.u_id AND ai.ai_pos = ?)
-		 ORDER BY a.a_update_ts DESC
-		 LIMIT ${limit} OFFSET ${offset}`;
+		a.a_create_ts, a.a_update_ts, t.a_type_alias
+		, FROM_UNIXTIME(a.a_create_ts, "%d-%m-%Y") AS dt_create_ts
+		,IF(t.a_type_alias = ?, 1, 0) AS a_profile
+		,IF(t.a_type_alias = ?, 1, 0) AS a_named
+		,ai.ai_id, ai.ai_latitude, ai.ai_longitude, ai.ai_dir
+		FROM (SELECT NULL) AS z
+		JOIN album AS a ON (a.u_id = ?)
+		JOIN album_type AS t ON (t.a_type_id = a.a_type_id)
+		LEFT JOIN album_image AS ai ON (ai.a_id = a.a_id AND ai.u_id = a.u_id AND ai.ai_pos = ?)
+		ORDER BY a.a_update_ts DESC
+		LIMIT ${limit} OFFSET ${offset}`;
 
 		//console.log(sql, [this.constructor.albumProfile, this.constructor.albumNamed,u_id, 0]);
 
@@ -324,12 +325,11 @@ class Photo extends User
 	getAlbum(u_id, a_id)
 	{
 		let sql = `SELECT a.a_id, a.u_id, a.a_type_id, a.a_name, a.a_alias, a.a_text, a.a_img_cnt, a.a_create_ts
-		, a.a_update_ts, t.a_type_alias,
-		 IF(t.a_type_alias = ?, 1, 0) AS a_profile,
-		 IF(t.a_type_alias = ?, 1, 0) AS a_named
-		 FROM (SELECT NULL) AS z
-		 JOIN album AS a ON (a.a_id = ? AND a.u_id = ?)
-		 JOIN album_type AS t ON (t.a_type_id = a.a_type_id);`;
+		, a.a_update_ts, t.a_type_alias, FROM_UNIXTIME(a.a_create_ts, "%d-%m-%Y") AS dt_create_ts
+		, IF(t.a_type_alias = ?, 1, 0) AS a_profile, IF(t.a_type_alias = ?, 1, 0) AS a_named
+		FROM (SELECT NULL) AS z
+		JOIN album AS a ON (a.a_id = ? AND a.u_id = ?)
+		JOIN album_type AS t ON (t.a_type_id = a.a_type_id);`;
 
 		u_id = parseInt(u_id, 10);
 		a_id = parseInt(a_id, 10);

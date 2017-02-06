@@ -49,17 +49,21 @@ class Blog extends CtrlMain
 	 */
 	indexActionGet()
 	{
+		let {i_u_id=null, i_blog_id=null, s_blog_alias=null, ui_bs_id=null, s_bs_alias=null, b_draft=false} = this.routeArgs;
+		b_draft = !!b_draft;
+
 		let tplData = {
 			blog: null,
-			blogList: null
+			blogList: null,
+			blogDraft:b_draft
 		};
-
-		let {i_u_id=null, i_blog_id=null, s_blog_alias=null, ui_bs_id=null, s_bs_alias=null} = this.routeArgs;
 
 		if (i_blog_id)
 			return this.blog(tplData, i_blog_id, s_blog_alias, i_u_id);
 
-		return this.blogList(tplData, i_u_id, ui_bs_id, s_bs_alias);
+		//console.log('b_draft = ', b_draft);
+
+		return this.blogList(tplData, i_u_id, ui_bs_id, s_bs_alias, b_draft);
 	}
 
 	/**
@@ -136,17 +140,22 @@ class Blog extends CtrlMain
 	 * @param s_bs_alias
 	 * @returns {Promise}
 	 */
-	blogList(tplData, i_u_id=null, ui_bs_id=null, s_bs_alias=null)
+	blogList(tplData, i_u_id=null, ui_bs_id=null, s_bs_alias=null, b_draft=false)
 	{
 		let {i_page=1} = this.routeArgs;
 		//let show = (this.getLocalAccess()['post_edit'] ? null : 1);
 		let show = (i_u_id==this.getUserId() ? null : 1);
 
+		if (b_draft && i_u_id!=this.getUserId())
+			throw new Errors.HttpError(404);
+		else if (b_draft && i_u_id==this.getUserId())
+			show = 0;
+
 		return Promise.all([
 			this.getClass("blog")
 				.getBlogList(new Pages(i_page, limit_per_page), show, i_u_id, ui_bs_id, s_bs_alias),
 			this.getUser(i_u_id),
-			this.getClass('blog').getBlogSubjectList(ui_bs_id)
+			this.getClass('blog').getBlogSubjectList(ui_bs_id, i_u_id, show)
 		])
 			.spread((blog, user, blogSubjects) =>
 			{
@@ -232,7 +241,8 @@ class Blog extends CtrlMain
 				b_text: '',
 				u_id: ''
 			},
-			user: {u_id: this.getUserId()}
+			user: {u_id: this.getUserId()},
+			blogDraft: false
 		};
 
 		return this.getClass('blog').getBlogSubjectList()
@@ -635,12 +645,11 @@ class Blog extends CtrlMain
 				if (!blog)
 					throw new Errors.HttpError(404);
 
-				if (!i_u_id && blog['u_id'])
-					i_u_id = blog['u_id'];
+				let u_id = (!i_u_id && blog['u_id'] ? blog['u_id'] : i_u_id);
 
 				return Promise.all([
-					this.getUser(i_u_id),
-					this.getClass('blog').getBlogSubjectList(blog['bs_id'])
+					this.getUser(u_id),
+					this.getClass('blog').getBlogSubjectList(blog['bs_id'], i_u_id)
 				])
 					.spread((user, blogSubjects)=>
 					{

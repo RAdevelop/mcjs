@@ -169,3 +169,10 @@
 h1 {
   margin-top: 0px;
 }
+
+a.line {
+  text-decoration: underline;
+  &:hover {
+    text-decoration: none;
+  }
+}

@@ -159,6 +159,13 @@ h1 {
   margin-top: 0px;
 }
 
+a.line {
+  text-decoration: underline;
+}
+a.line:hover {
+  text-decoration: none;
+}
+
 body {
   font-family: 'Open Sans', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
   font-size: 14px;
@@ -208,6 +215,16 @@ body.mce-content-body,
   color: #fff;
 }
 
+/******************************** footer */
+.footer .content {
+  background-color: #7d7d7d;
+  color: #f4f4f4;
+  text-align: center;
+  font-size: 12px;
+  padding: 15px 0 15px 0;
+}
+
+/******************************** END footer */
 /******************************** календарь  */
 .calendar {
   float: left;
@@ -1235,7 +1252,7 @@ iframe.iframeVideoEmbed {
   cursor: pointer;
 }
 
-@media (max-width: 992px) {
+@media (min-width: 768px) and (max-width: 992px) {
   .blogSubjects {
     right: auto;
   }
@@ -2133,23 +2150,25 @@ ul.shopListContainer .shopItem .motoshopAddress .motoshopAddressData {
   @include mix-max-width-calc(34%);*/
 }
 .userProfile .blocks .blogListItem {
-  width: 443px;
+  width: 442px;
 }
 @media (max-width: 768px) {
   .userProfile .blocks .blogListItem {
-    width: 98%;
+    width: 100%;
+    min-width: 100%;
   }
 }
 .userProfile .blocks .blogListItem .blogListItemInfo {
-  max-width: 443px;
+  max-width: 442px;
 }
 @media (max-width: 768px) {
   .userProfile .blocks .blogListItem .blogListItemInfo {
     width: 100%;
+    min-width: 100%;
   }
 }
 .userProfile .blocks .blogListItem .blogListItemInfo .blogListItemInfoNotice {
-  top: 0;
+  top: 24px;
 }
 
 /********** список пользователей **************/

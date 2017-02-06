@@ -236,8 +236,7 @@ class Blog extends BaseModel
 
 		sql = sql.join(`\n`);
 
-		/*console.log(sql);
-		console.log(sqlData);
+		/*console.log(sql, sqlData);
 		console.log('\n');*/
 		return this.constructor.conn().s(sql, sqlData);
 	}
@@ -428,15 +427,37 @@ class Blog extends BaseModel
 		return this.constructor.conn().multis(sql, [b_id, b_id]);
 	}
 
-	getBlogSubjectList()
+	getBlogSubjectList(i_u_id = null, b_show = null)
 	{
+		let sqlData = [];
+		let joinAnd = [];
+
+		if (b_show === null)
+			b_show = 1;
+
+		sqlData.push(b_show);
+		joinAnd.push(`b.b_show = ?`);
+
+		joinAnd.push(`b.bs_id = bs.bs_id`);
+
+		i_u_id = parseInt(i_u_id, 10);
+		i_u_id = (isNaN(i_u_id) ? false : i_u_id);
+		if (i_u_id)
+		{
+			sqlData.push(i_u_id);
+			joinAnd.push(`b.u_id = ?`);
+		}
+
 		let sql = `SELECT bs.bs_id, bs.bs_pid, bs.bs_name, bs.bs_alias, bs.bs_level, bs.bs_lk, bs.bs_rk
 		, COUNT(b.b_id) AS b_cnt
 		FROM blog_subject AS bs
-		JOIN blog_list AS b ON(b.bs_id = bs.bs_id)
+		JOIN blog_list AS b ON(${joinAnd.join(' AND ')})
 		GROUP BY bs.bs_id
 		ORDER BY bs.bs_lk`;
-		return this.constructor.conn().ps(sql);
+
+		//console.log(sql, sqlData);
+
+		return this.constructor.conn().ps(sql, sqlData);
 	}
 }
 

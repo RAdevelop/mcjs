@@ -25,7 +25,7 @@
 }
 
 .blogSubjects {
-  @media (max-width: $screen-md-min)
+  @media (min-width: $screen-sm) and (max-width: $screen-md-min)
   {
     right: auto;
   }

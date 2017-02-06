@@ -354,9 +354,9 @@ class Blog extends Base
 			});
 	}
 
-	getBlogSubjectList(bs_id = null)
+	getBlogSubjectList(bs_id = null, i_u_id = null, b_show = 1)
 	{
-		return this.model('blog').getBlogSubjectList()
+		return this.model('blog').getBlogSubjectList(i_u_id, b_show)
 			.then((list)=>
 			{
 				let blogSubjects = {

@@ -1,5 +1,5 @@
-<div class="mediaList">
-<% albums.forEach(function (album)
+<div class="mediaList"><%
+albums.forEach(function (album)
 {
 	let img = '';
 	if(album["previews"]["512_384"])
@@ -9,7 +9,8 @@
 %><div class="media">
 	<a class="mediaImg" href="<%=(_reqBaseUrl+'/'+album["u_id"]+'/'+album["a_id"])%>/"><%-img%></a>
 	<div class="mediaTools">
-		<span class="badge"><i class="fa fa-fw fa-camera"></i> <%=album["a_img_cnt"]%></span>
+		<span class="badge"><i class="fa fa-fw fa-camera"></i> <%=(album["a_img_cnt"] > 99 ? '99+' : album["a_img_cnt"])%>
+		<i class="fa fa-fw fa-calendar"></i> <%=album["dt_create_ts"]%></span>
 	</div>
 	<div class="mediaTitle">
 		<div class="mediaName"><%=album["a_name"]%></div>

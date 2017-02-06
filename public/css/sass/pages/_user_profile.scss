@@ -6,27 +6,29 @@
     /*float: left;
     @include mix-max-width-calc(34%);*/
     & .blogListItem {
-      width: 443px;
+      width: 442px;
       @media (max-width: $screen-sm)
       {
         & {
-          width: 98%;
+          width: 100%;
+          min-width: 100%;
         }
       }
 
       & .blogListItemInfo {
-        max-width: 443px;
+        max-width: 442px;
 
         //@media (max-width: $screen-sm) and (orientation : landscape)
         @media (max-width: $screen-sm)
         {
           & {
             width: 100%;
+            min-width: 100%;
           }
         }
 
         & .blogListItemInfoNotice {
-          top:0;
+          top: 24px;
         }
       }
     }

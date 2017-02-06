@@ -43,7 +43,17 @@ body.mce-content-body,
     color: #fff;
   }
 }
-
+/******************************** footer */
+.footer {
+  & .content {
+    background-color: #7d7d7d;
+    color: #f4f4f4;
+    text-align: center;
+    font-size: 12px;
+    padding: 15px 0 15px 0;
+  }
+}
+/******************************** END footer */
 @media (min-width: $screen-xs-min) {
 
 }

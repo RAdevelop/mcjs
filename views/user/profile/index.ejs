@@ -76,6 +76,7 @@
             <div class="blogListItem">
                 <a class="blogListItemInfo" href="<%=[blogBaseUri, blog["b_id"], blog["b_alias"]].join('/')%>/">
                     <%-img%>
+                    <div class="subject">Тема: <%=blog["bs_name"]%></div>
                     <div class="blogListItemInfoNotice">
                         <span class="text-center displayInlineBlock width100"><i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;<%=blog["dt_create_ts"]%></span>
                         <p><%=blog["b_title"]%></p><p><%=blog["b_notice"]%></p>

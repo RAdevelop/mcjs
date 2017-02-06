@@ -1,4 +1,14 @@
-<div class="row">
+<%
+let blogBaseUrl = [menuItem['m_path']];
+
+if (user && user['u_id'])
+{
+	blogBaseUrl.push(user['u_id']);
+	if (blogDraft)
+		blogBaseUrl.push('draft');
+}
+blogBaseUrl = blogBaseUrl.join('/');
+%><div class="row">
 	<div class="btn-toolbar btnsToolbar" role="toolbar" aria-label="Опции для статей"><%
 		if (Object.keys(_access).some(function(m){return (['post_add','post_edit'].indexOf(m)>=0);}))
 		{%><div class="btn-group btn-group-sm" role="group" aria-label="Опции для статей">
@@ -7,17 +17,19 @@
 				if (_access['post_add']) {%><li><a href="<%=[menuItem['m_path'],'add'].join('/')%>/" ><i class="fa fa-fw fa-plus-square-o"></i> добавить статью</a></li><% }
 				if (_access['post_edit'] && blog && blog['b_id']) {
 				%><li><a href="<%=[menuItem['m_path'],'edit',blog['b_id']].join('/')%>/"><i class="fa fa-fw fa-edit"></i> редактировать статью</a></li>
-				<li><a href="javascript:void(0);" data-action="delete" data-blog-id="<%=blog['b_id']%>"><i class="fa fa-fw fa-trash-o"></i> удалить статью</a></li><% }%>
+				<li><a href="javascript:void(0);" data-action="delete" data-blog-id="<%=blog['b_id']%>"><i class="fa fa-fw fa-trash-o"></i> удалить статью</a></li><% }
+				if (user && user['u_id'] == _user['u_id']) {%>
+				<li><a href="<%=blogBaseUrl%>/"><i class="fa fa-fw fa-edit"></i> мои черновики</a></li><% } %>
 			</ul>
 		</div><% }%>
 		<div class="btn-group btn-group-sm" role="group" aria-label="список статей">
-			<a href="<%=menuItem['m_path']+'/'+(user['u_id'] ? user['u_id']+'/' : '')%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-list"></i> все статьи</a>
+			<a href="<%=blogBaseUrl%>/" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-list"></i> все статьи</a>
 		</div><%
 		if (blogSubjects && blogSubjects['list'].length){%>
 		<div class="btn-group btn-group-sm" role="group" aria-label="Выбор темы">
 			<button type="button" class="btn btn-default dropdown-toggle toolbarBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Темы: <%=(blogSubjects['selected'] && blogSubjects['selected']['bs_name']||'')%>&nbsp;<i class="caret"></i></button>
 			<ul class="blogSubjects dropdown-menu dropdown-menu-right">
-				<li><a href="<%=_reqBaseUrl%>/">все темы</a></li><%
+				<li><a href="<%=blogBaseUrl%>/">все темы</a></li><%
 					let cssLocSelected, locHref, bCnt=0;
 				blogSubjects['list'].forEach(function (bSubject)
 				{
@@ -25,8 +37,11 @@
 
 					cssLocSelected = (bSubject["b_selected"] ? ' selected ' : '');
 					locHref = [_reqBaseUrl];
-				if (user && user['u_id'])
-					locHref.push(user['u_id']);
+
+					if (user && user['u_id'])
+						locHref.push(user['u_id']);
+					if (blogDraft)
+						locHref.push('draft');
 
 					locHref.push('subj', bSubject["bs_id"], bSubject["bs_alias"]);
 					locHref = locHref.join('/');
