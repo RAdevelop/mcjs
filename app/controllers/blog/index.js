@@ -26,6 +26,8 @@ class Blog extends CtrlMain
 				'^\/?subj\/[1-9]+[0-9]*\/[a-z0-9-_]{3,}\/page\/[1-9]+[0-9]*\/?$': [,'ui_bs_id','s_bs_alias',, 'i_page']
 				,'^\/?subj\/[1-9]+[0-9]*\/[a-z0-9-_]{3,}\/?$': [,'ui_bs_id','s_bs_alias']
 				,'^\/?[1-9]+[0-9]*\/[a-z0-9-_]{3,}\/?$': ['i_blog_id','s_blog_alias']
+				,"^\/?tag\/\\S+\/page\/[1-9]+[0-9]*\/?$" : ['b_tag','s_tag',,'i_page'] //по тегам
+				,"^\/?tag\/\\S+\/?$" : ['b_tag','s_tag']
 				,"^\/?page\/[1-9]+[0-9]*\/?$" : [ ,'i_page'] //список с постраничкой
 				,'^\/?$': null
 			},
@@ -49,8 +51,13 @@ class Blog extends CtrlMain
 	 */
 	indexActionGet()
 	{
-		let {i_u_id=null, i_blog_id=null, s_blog_alias=null, ui_bs_id=null, s_bs_alias=null, b_draft=false} = this.routeArgs;
+		//console.log('this.name', this.constructor.name);
+		let {i_u_id=null, i_blog_id=null, s_blog_alias=null, ui_bs_id=null, s_bs_alias=null, b_draft=false
+			, b_tag=null, s_tag=null
+		} = this.routeArgs;
+
 		b_draft = !!b_draft;
+		b_tag = !!b_tag;
 
 		let tplData = {
 			blog: null,
@@ -61,9 +68,92 @@ class Blog extends CtrlMain
 		if (i_blog_id)
 			return this.blog(tplData, i_blog_id, s_blog_alias, i_u_id);
 
-		//console.log('b_draft = ', b_draft);
+		if (b_tag)
+		{
+			s_tag = decodeURIComponent(s_tag);
+			return this.tagBlogList(tplData, s_tag);
+		}
 
 		return this.blogList(tplData, i_u_id, ui_bs_id, s_bs_alias, b_draft);
+	}
+
+	tagBlogList(tplData, s_tag)
+	{
+		let {i_page=1} = this.routeArgs;
+
+		return Promise.all([
+			this.getClass("blog")
+				.getBlogListByTag(new Pages(i_page, limit_per_page), s_tag),
+			this.getUser(),
+			this.getClass('blog').getBlogSubjectList()
+		])
+			.spread((blog, user, blogSubjects) =>
+			{
+				tplData['user'] = {u_id: null};
+				tplData["blogSubjects"] = blogSubjects;
+
+				if(!blog[0] || blog[0].length == 0)
+					return Promise.resolve([[], blog[1]]);
+
+				let u_ids = blog[0].map((u)=>
+				{
+					return u['u_id'];
+				});
+
+				return this.getClass('user').getUserListById(u_ids, blog[0])
+					.spread((users, blogList)=>
+					{
+						users = null;
+						return Promise.resolve([blogList, blog[1]]);
+					});
+			})
+			.spread((blogList, Pages) =>
+			{
+				let isAjax = this.getReq().xhr;
+
+				if (!isAjax)
+				{
+					let pageTitle = [];
+
+					if (tplData['user'] && tplData['user']['u_id'])
+						pageTitle.push(tplData['user']['u_display_name']+':');
+
+					if (tplData["blogSubjects"]['selected'])
+						pageTitle.push(tplData["blogSubjects"]['selected']['bs_name']);
+
+					pageTitle = pageTitle.join(' ');
+					this.view.setPageTitle(pageTitle);
+					this.view.setPageH1(pageTitle);
+				}
+				tplData["blogList"] = blogList;
+
+				let exposeBlog = 'blogList';
+				//let baseUrl = (i_u_id ? [this.getBaseUrl(), i_u_id].join('/') : this.getBaseUrl());
+				let baseUrl = [this.getBaseUrl(), 'tag', s_tag];
+
+				/*
+				if (i_u_id)
+					baseUrl.push(i_u_id);
+				if (ui_bs_id && s_bs_alias)
+					baseUrl.push('subj', ui_bs_id, s_bs_alias);*/
+
+				baseUrl = baseUrl.join('/');
+				Pages.setLinksUri(baseUrl)
+					.setAjaxPagesType(true);
+
+				tplData["pages"] = Pages.pages();
+
+				let tplFile = (isAjax ? 'blog/list.ejs':'blog');
+
+				this.getRes().expose(blogList, exposeBlog);
+				this.getRes().expose(tplData["pages"], 'pages');
+
+				this.view.setTplData(tplFile, tplData, isAjax);
+				//this.view.addPartialData("user/left", {user: userData});
+				//this.view.addPartialData("user/right", {title: 'right_col'});
+
+				return Promise.resolve(isAjax);
+			});
 	}
 
 	/**

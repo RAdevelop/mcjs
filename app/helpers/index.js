@@ -335,5 +335,17 @@ class Helpers
 
 		return Object.keys(uniHash);
 	}
+
+	static fixedEncodeURIComponent(str)
+	{
+		return encodeURIComponent(str).replace(/[!'()*]/g, (c)=>
+		{
+			return '%' + c.charCodeAt(0).toString(16);
+		});
+	}
+	static decodeURIComponent(str)
+	{
+		return decodeURIComponent(str);
+	}
 }
 module.exports = Helpers;

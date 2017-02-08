@@ -6,8 +6,7 @@ const Promise = require("bluebird");
 
 const BaseModel = require('app/lib/db');
 
-class Blog extends BaseModel
-{
+class Blog extends BaseModel {
 	/**
 	 * добавляем
 	 *
@@ -22,13 +21,13 @@ class Blog extends BaseModel
 	 */
 	add(i_u_id, s_title, s_alias, t_notice, t_text, ui_bs_id, b_show)
 	{
-		b_show = (parseInt(b_show, 10)||b_show ? 1 : 0);
+		b_show = parseInt(b_show, 10) || 0;
+		b_show = (b_show ? 1 : 0);
 
 		let now_ts = Moment().unix();
 		let sqlData = [i_u_id, s_title, s_alias, t_notice, t_text, now_ts, now_ts, b_show, ui_bs_id];
 
-		let sql =
-		`INSERT INTO blog_list (u_id, b_title, b_alias, b_notice, b_text, b_create_ts, b_update_ts, b_show, bs_id)
+		let sql = `INSERT INTO blog_list (u_id, b_title, b_alias, b_notice, b_text, b_create_ts, b_update_ts, b_show, bs_id)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
 		return this.constructor.conn().ins(sql, sqlData)
@@ -59,8 +58,9 @@ class Blog extends BaseModel
 			, u_id = ?, b_show = ?, bs_id = ?
 			WHERE b_id = ?`;
 
-		b_show = (parseInt(b_show, 10)||b_show ? 1 : 0);
-		i_b_id = (parseInt(i_b_id, 10));
+		b_show = (parseInt(b_show, 10) || 0);
+		b_show = (b_show ? 1 : 0);
+		i_b_id = (parseInt(i_b_id, 10)||0);
 
 		let now_ts = Moment().unix();
 		let sqlData = [now_ts, s_title, s_alias, t_notice, t_text, i_u_id, b_show, ui_bs_id,
@@ -81,39 +81,38 @@ class Blog extends BaseModel
 	 * @param b_show
 	 * @returns {Promise}
 	 */
-	getBlogById(b_id, i_u_id=null, b_show = null)
+	getBlogById(b_id, i_u_id = null, b_show = null)
 	{
-		let sql =
-			`SELECT b.b_id, b.b_create_ts, b.b_update_ts, b.b_title, b.b_alias, b.b_notice, b.b_text
-			, b.u_id, b.b_img_cnt, b.b_show, FROM_UNIXTIME(b.b_create_ts, "%d-%m-%Y %H:%i:%s") AS dt_create_ts
-			, b.bs_id, bs.bs_name, bs.bs_alias
-			FROM blog_list AS b
-			JOIN blog_subject AS bs ON(bs.bs_id = b.bs_id)
-			WHERE b_id = ?`;
+		let sql = `SELECT b.b_id, b.b_create_ts, b.b_update_ts, b.b_title, b.b_alias, b.b_notice, b.b_text
+		, b.u_id, b.b_img_cnt, b.b_show, FROM_UNIXTIME(b.b_create_ts, "%d-%m-%Y %H:%i:%s") AS dt_create_ts
+		, b.bs_id, bs.bs_name, bs.bs_alias
+		FROM blog_list AS b
+		JOIN blog_subject AS bs ON(bs.bs_id = b.bs_id)
+		WHERE b.b_id = ?`;
 		
-		b_id = parseInt(b_id, 10);
+		b_id = parseInt(b_id, 10)||0;
 		let sqlData = [b_id];
 
 		if (b_show === null)
 		{
-			sql += ` AND b_show IN(0,1)`;
+			sql += ` AND b.b_show IN(0,1)`;
 		}
 		else
 		{
-			b_show = (parseInt(b_show, 10)>0 ? 1 : 0);
-			sql += ` AND b_show = ?`;
+			b_show = (parseInt(b_show, 10) > 0 ? 1 : 0);
+			sql += ` AND b.b_show = ?`;
 			sqlData.push(b_show);
 		}
 
 		if (i_u_id !== null)
 		{
-			sql += ` AND u_id = ?`;
-			i_u_id = parseInt(i_u_id, 10);
+			sql += ` AND b.u_id = ?`;
+			i_u_id = parseInt(i_u_id, 10)||0;
 			sqlData.push(i_u_id);
 		}
 
 		/*console.log(sql);
-		console.log(sqlData);*/
+		 console.log(sqlData);*/
 
 		return this.constructor.conn().sRow(sql, sqlData);
 	}
@@ -128,12 +127,12 @@ class Blog extends BaseModel
 	 *
 	 * @returns {Promise}
 	 */
-	countBlog(b_show = null, i_u_id = null, ui_bs_id=null, s_bs_alias=null)
+	countBlog(b_show = null, i_u_id = null, ui_bs_id = null, s_bs_alias = null)
 	{
 		let sqlData = [];
 		let where = [];
 
-		let sql = [`SELECT COUNT(b_id) AS cnt FROM blog_list AS b`];
+		let sql = [`SELECT COUNT(b.b_id) AS cnt FROM blog_list AS b`];
 
 		if (b_show === null)
 		{
@@ -141,12 +140,12 @@ class Blog extends BaseModel
 		}
 		else
 		{
-			b_show = (parseInt(b_show, 10)>0 ? 1 : 0);
+			b_show = (parseInt(b_show, 10) > 0 ? 1 : 0);
 			where.push('b.b_show = ?');
 			sqlData.push(b_show);
 		}
 
-		if(ui_bs_id && s_bs_alias)
+		if (ui_bs_id && s_bs_alias)
 		{
 			sql.push(`JOIN blog_subject AS bs ON(bs.bs_id = b.bs_id AND bs.bs_alias = ?)`);
 
@@ -203,16 +202,16 @@ class Blog extends BaseModel
 		}
 		else
 		{
-			b_show = (parseInt(b_show, 10)>0 ? 1 : 0);
+			b_show = (parseInt(b_show, 10) > 0 ? 1 : 0);
 			where.push('b.b_show = ?');
 			sqlData.push(b_show);
 		}
 
-		if(ui_bs_id && s_bs_alias)
+		if (ui_bs_id && s_bs_alias)
 		{
 			sql.push(`JOIN blog_subject AS bs ON(bs.bs_id = b.bs_id AND bs.bs_alias = ?)`);
 
-			ui_bs_id = parseInt(ui_bs_id, 10);
+			ui_bs_id = parseInt(ui_bs_id, 10)||0;
 			where.push('b.bs_id = ?');
 			sqlData.unshift(s_bs_alias);
 			sqlData.push(ui_bs_id);
@@ -225,7 +224,7 @@ class Blog extends BaseModel
 		if (i_u_id !== null)
 		{
 			where.push('b.u_id = ?');
-			i_u_id = parseInt(i_u_id, 10);
+			i_u_id = parseInt(i_u_id, 10)||0;
 			sqlData.push(i_u_id);
 		}
 
@@ -236,9 +235,10 @@ class Blog extends BaseModel
 
 		sql = sql.join(`\n`);
 
-		/*console.log(sql, sqlData);
-		console.log('\n');*/
-		return this.constructor.conn().s(sql, sqlData);
+		/*console.log(sql);
+		 console.log(sqlData);
+		 console.log('\n');*/
+		return this.constructor.conn().ps(sql, sqlData);
 	}
 
 	/**
@@ -396,16 +396,17 @@ class Blog extends BaseModel
 				let setOrdi = [];
 				let setData = [];
 
-				bi_pos.forEach((bi_id, i) => {
+				bi_pos.forEach((bi_id, i) =>
+				{
 					setOrdi.push("IF(bi_id = ?, ? ");
 					bi_id = parseInt(bi_id, 10);
 					setData.push(bi_id, i);
 				});
 
-				let sql = "UPDATE blog_image SET bi_pos = " + setOrdi.join(',') + ', bi_pos' +')'.repeat(setOrdi.length) +
+				let sql = "UPDATE blog_image SET bi_pos = " + setOrdi.join(',') + ', bi_pos' + ')'.repeat(setOrdi.length) +
 					" WHERE b_id = ? ";
 				
-				b_id = parseInt(b_id, 10);
+				b_id = parseInt(b_id, 10)||0;
 				setData.push(b_id);
 
 				//return Promise.resolve();
@@ -457,6 +458,41 @@ class Blog extends BaseModel
 
 		//console.log(sql, sqlData);
 
+		return this.constructor.conn().ps(sql, sqlData);
+	}
+
+	getBlogListByIds(obj_ids, b_show = null)
+	{
+		if (!!obj_ids.length === false)
+			return Promise.resolve(null);
+
+		let where = [`b.b_id IN(${this.constructor.placeHoldersForIn(obj_ids)})`];
+		let sqlData = obj_ids;
+
+		if (b_show === null)
+		{
+			where.push('b.b_show IN(0,1)');
+		}
+		else
+		{
+			b_show = parseInt(b_show, 10)||0;
+			where.push('b.b_show = ?');
+			sqlData.push(b_show);
+		}
+
+		let sql = `SELECT b.b_id, b.b_create_ts, b.b_update_ts, b.b_title, b.b_alias, b.b_notice 
+			, FROM_UNIXTIME(b.b_create_ts, "%d-%m-%Y") AS dt_create_ts
+			, b.u_id, bi.bi_id, bi.bi_dir, bi.bi_pos, bi.bi_name, b.bs_id
+			, bs.bs_name, bs.bs_alias
+			FROM (SELECT NULL) AS z
+			JOIN blog_list AS b ON(${where.join(' AND ')})
+			JOIN blog_subject AS bs ON(bs.bs_id = b.bs_id)
+			LEFT JOIN blog_image AS bi ON(bi.b_id = b.b_id AND bi.bi_pos = 0)
+		ORDER BY b.b_create_ts DESC`;
+
+		/*console.log(sql);
+		 console.log(sqlData);
+		 console.log('\n');*/
 		return this.constructor.conn().ps(sql, sqlData);
 	}
 }

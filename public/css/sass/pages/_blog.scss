@@ -25,7 +25,12 @@
 }
 
 .blogSubjects {
-  @media (min-width: $screen-sm) and (max-width: $screen-md-min)
+  //@media (min-width: $screen-sm) and (max-width: $screen-md-min)
+  @media (max-width: $screen-xs-max)
+  {
+    right: auto;
+  }
+  @media (min-width: $screen-sm)
   {
     right: auto;
   }
@@ -140,20 +145,35 @@
 }
 
 
-.blog-author {
+.blog-info {
   border: 1px solid #FFF;
+  background-color: #F0F0F0;
+  @include mix-border-radius(5px);
   &:hover {
-    background-color: #F0F0F0;
+    background-color: #fff;
     border: 1px solid #F0F0F0;
-    @include mix-border-radius(5px);
   }
-
+  width: 100%;
   display: table;
   border-spacing: 3px;
+
+  @media (max-width: $screen-xs-max)
+  {
+    & {
+      width: 100%;
+    }
+  }
 
   &_user{
     display: table-cell;
     padding: 3px;
+
+    @media (max-width: $screen-xs-max)
+    {
+      & {
+        display: block;
+      }
+    }
 
     & > .fa-user {
       display: inline-block;
@@ -163,12 +183,37 @@
       font-size: 50px;
       text-align: center;
     }
+    & img {
+      margin: 0 auto;
+    }
+    &_name {
+      display: block;
+      padding: 3px;
+      vertical-align: top;
+      text-align: center;
+    }
   }
 
-  &_data{
+  &_about {
     display: table-cell;
-    padding: 3px;
-    vertical-align: top;
+    vertical-align: middle;
+
+    @media (max-width: $screen-xs-max)
+    {
+      & {
+        display: block;
+      }
+    }
+
+    &_subj {
+      display: block;
+      padding: 3px;
+    }
+    &_tags {
+      display: block;
+      vertical-align: top;
+      padding: 3px;
+    }
   }
 }
 

@@ -9,6 +9,11 @@ const Base = require('app/lib/class');
 
 class Blog extends Base
 {
+	static get keyWordsObjName()
+	{
+		return 'blog_list';
+	}
+
 	/**
 	 * добавляем контент в блог
 	 *
@@ -58,7 +63,27 @@ class Blog extends Base
 	 */
 	getBlogById(b_id, i_u_id=null, b_show = null)
 	{
-		return this.model('blog').getBlogById(b_id, i_u_id, b_show);
+		return this.model('blog').getBlogById(b_id, i_u_id, b_show)
+			.then((blog)=>
+			{
+				if (!blog)
+					return Promise.resolve(blog);
+
+				blog['kw_names'] = [];
+
+				return this.getClass('keywords').getObjKeyWords(blog['b_id'], Blog.keyWordsObjName)
+					.then((kw_list)=>
+					{
+						if (kw_list && kw_list.length > 0)
+						{
+							blog['kw_names'] = kw_list.map((kw)=>
+							{
+								return kw['kw_name'];
+							});
+						}
+						return Promise.resolve(blog);
+					});
+			});
 	}
 
 	/**
@@ -91,18 +116,71 @@ class Blog extends Base
 						if (!blogList)
 							return Promise.resolve([null, Pages]);
 
-						let sizeParams = FileUpload.getUploadConfig('user_blog').sizeParams;
-
-						blogList.forEach((blog, indx) =>
-						{
-							blogList[indx]["previews"] = {};
-							if (blog["bi_dir"])
-								blogList[indx] = FileUpload.getPreviews(sizeParams, blog, "bi_dir", true)["obj"];
-						});
+						Blog._blogPreviews(blogList);
 
 						return Promise.resolve([blogList, Pages]);
 					});
 			});
+	}
+
+	getBlogListByTag(Pages, s_tag)
+	{
+		return this.getClass('keywords').getKeyWordByName(s_tag)
+			.then((kw)=>
+			{
+				if (!kw)
+					return Promise.resolve([0, null]);
+
+				return this.getClass('keywords').countObjByKwId(kw['kw_id'], Blog.keyWordsObjName)
+					.then((cnt)=>
+					{
+						return Promise.resolve([cnt, kw['kw_id']]);
+					});
+			})
+			.spread((cnt, kw_id)=>
+			{
+				Pages.setTotal(cnt);
+				if (!cnt)
+					return [null, Pages];
+
+				if (Pages.limitExceeded())
+					return Promise.reject(new FileErrors.HttpError(404));
+
+				return this.getClass('keywords')
+					.getObjListByKwId(kw_id, Blog.keyWordsObjName, Pages.getLimit(), Pages.getOffset())
+					.then((obj_ids)=>
+					{
+						if (!obj_ids)
+							return Promise.resolve([null, Pages]);
+
+						return this.model('blog').getBlogListByIds(obj_ids, 1)
+							.then((blogList) =>
+							{
+								//console.log('blogList = ', blogList);
+
+								if (!blogList)
+									return Promise.resolve([null, Pages]);
+
+								Blog._blogPreviews(blogList);
+
+								return Promise.resolve([blogList, Pages]);
+							});
+					});
+			});
+	}
+
+	static _blogPreviews(list)
+	{
+		let sizeParams = FileUpload.getUploadConfig('user_blog').sizeParams;
+
+		list.forEach((item, indx) =>
+		{
+			list[indx]["previews"] = {};
+			if (item["bi_dir"])
+				list[indx] = FileUpload.getPreviews(sizeParams, item, "bi_dir", true)["obj"];
+		});
+
+		//return blogList; можно не возвращать. объекты в JS "передаются" по ссылке
 	}
 
 	/**

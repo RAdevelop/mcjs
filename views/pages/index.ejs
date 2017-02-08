@@ -3,7 +3,7 @@
 	<ul class="pagination">
 <% if (pages["is_ajax"]) {
 	let link = pages["uri"] + '/page/'+(pages["page"]+1) + '/';
-%><li><a href="<%=link%>" class="nextPages js-next-pages btn btn-default" data-loading-text="загружаю...">еще <span aria-hidden="true">&rarr;</span></a></li><%
+%><li><a href="<%=link%>" rel="next" class="nextPages js-next-pages btn btn-default" data-loading-text="загружаю...">еще <span aria-hidden="true">&rarr;</span></a></li><%
 }  else {
 		if (!pages["first_page"]){%><li><a href="<%=pages["uri"]%>/<%=(pages["query"] ? '?'+pages["query"] : '')%>" aria-label="первая"><span aria-hidden="true">&leftarrow;&nbsp;первая</span></a></li><%}%><%
 		for (let link = 1; link <= pages["total_pages"]; link++)
