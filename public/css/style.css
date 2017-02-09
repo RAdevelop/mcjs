@@ -2212,7 +2212,7 @@ ul.shopListContainer .shopItem .motoshopAddress .motoshopAddressData {
 
 /********** список пользователей **************/
 .user-list_user {
-  height: 112px;
+  height: 84px;
   display: inline-block;
   text-align: center;
   overflow: hidden;
@@ -2258,8 +2258,8 @@ ul.shopListContainer .shopItem .motoshopAddress .motoshopAddressData {
 }
 @media (min-width: 992px) and (orientation: landscape) {
   .user-list_user > .fa-user {
-    font-size: 124px;
-    line-height: 112px;
+    font-size: 84px;
+    line-height: 84px;
     width: 66px;
     height: 112px;
   }

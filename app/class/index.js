@@ -102,7 +102,15 @@ const Class = (function()
 		//console.log("_require = ", _require.keys());
 		className = className.toString().toLowerCase();
 
-		let cn = {[className]:className};
+		if (!_require.has(className))
+			_require.set(className, require('app/class/'+className));
+
+		if (!_classes.has(_require.get(className)))
+			_classes.set(_require.get(className), new (_require.get(className))(this) );
+
+		return _classes.get(_require.get(className));
+
+		/*let cn = {[className]:className};
 		if (!_classes.has(cn))
 		{
 			if (!_require.has(className))
@@ -110,11 +118,10 @@ const Class = (function()
 				_require.set(className, require('app/class/'+className));
 			}
 
-			//_classes.set(cn, new (_require.get(className))(Models) );
 			_classes.set(cn, new (_require.get(className))(this) );
 		}
 		
-		return _classes.get(cn);
+		return _classes.get(cn);*/
 	};
 	
 	Singleton.prototype.model = function(modelName)

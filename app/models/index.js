@@ -98,7 +98,15 @@ const Models = (function()
 	{
 		model = model.toString().toLowerCase();
 
-		let cn = {[model]:model};
+		if (!_require.has(model))
+			_require.set(model, require('app/models/'+model) );
+
+		if (!_models.has(_require.get(model)))
+			_models.set(_require.get(model), new (_require.get(model))() );
+
+		return _models.get(_require.get(model));
+
+		/*let cn = {[model]:model};
 		if (!_models.has(cn))
 		{
 			if (!_require.has(model))
@@ -110,7 +118,7 @@ const Models = (function()
 			_models.set(cn, new (_require.get(model))() );
 		}
 		
-		return _models.get(cn);
+		return _models.get(cn);*/
 	};
 
 	return init();

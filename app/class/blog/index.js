@@ -71,7 +71,7 @@ class Blog extends Base
 
 				blog['kw_names'] = [];
 
-				return this.getClass('keywords').getObjKeyWords(blog['b_id'], Blog.keyWordsObjName)
+				return this.getClass('keywords').setObjName(this).getObjKeyWords(blog['b_id'])
 					.then((kw_list)=>
 					{
 						if (kw_list && kw_list.length > 0)
@@ -125,13 +125,13 @@ class Blog extends Base
 
 	getBlogListByTag(Pages, s_tag)
 	{
-		return this.getClass('keywords').getKeyWordByName(s_tag)
+		return this.getClass('keywords').setObjName(this).getKeyWordByName(s_tag)
 			.then((kw)=>
 			{
 				if (!kw)
 					return Promise.resolve([0, null]);
 
-				return this.getClass('keywords').countObjByKwId(kw['kw_id'], Blog.keyWordsObjName)
+				return this.getClass('keywords').countObjByKwId(kw['kw_id'])
 					.then((cnt)=>
 					{
 						return Promise.resolve([cnt, kw['kw_id']]);
@@ -147,7 +147,7 @@ class Blog extends Base
 					return Promise.reject(new FileErrors.HttpError(404));
 
 				return this.getClass('keywords')
-					.getObjListByKwId(kw_id, Blog.keyWordsObjName, Pages.getLimit(), Pages.getOffset())
+					.getObjListByKwId(kw_id, Pages.getLimit(), Pages.getOffset())
 					.then((obj_ids)=>
 					{
 						if (!obj_ids)
