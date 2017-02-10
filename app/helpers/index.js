@@ -311,7 +311,7 @@ class Helpers
 
 		safe = safe.split('');
 
-		str = str.split('');
+		str = (str||'').split('');
 		str.forEach(function (s, i, str)
 		{
 			if (safe.indexOf(s) == -1 && arr.hasOwnProperty(s))

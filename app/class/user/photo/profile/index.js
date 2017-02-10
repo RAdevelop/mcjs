@@ -69,7 +69,8 @@ class UserPhotoProfile extends UserPhoto
 
 				return this.model('user/photo')
 					.updImage(u_id, file.a_id, file.ai_id, file.latitude, file.longitude, '', file.webDirPath, file.name, true, 1)
-					.then(() => {
+					.then(() =>
+					{
 						ufile = null;
 						return Promise.resolve(file);
 					});
@@ -104,8 +105,8 @@ class UserPhotoProfile extends UserPhoto
 	getUserAva(u_id)
 	{
 		return this.model('user/photo/profile').getUserAva(u_id)
-			.then((ava) => {
-
+			.then((ava) =>
+			{
 				ava["previews"] = {};
 
 				if (!ava || !ava["ai_id"])

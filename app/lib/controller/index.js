@@ -137,8 +137,8 @@ class Base
 	{
 		let cheerio = Base.cheerio;
 
-		Object.keys(formData).forEach((key) => {
-
+		Object.keys(formData).forEach((key) =>
+		{
 			if (fields.indexOf(key) == -1)
 				return;
 

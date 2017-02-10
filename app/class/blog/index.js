@@ -50,7 +50,8 @@ class Blog extends Base
 	{
 		let s_alias = this.helpers.clearSymbol(this.helpers.translit(s_title), '-');
 
-		return this.model('blog').edit(b_id, i_u_id, s_title, s_alias, t_notice, t_text, ui_bs_id, b_show);
+		return this.model('blog')
+			.edit(b_id, i_u_id, s_title, s_alias, t_notice, t_text, ui_bs_id, b_show);
 	}
 
 	/**
@@ -71,7 +72,7 @@ class Blog extends Base
 
 				blog['kw_names'] = [];
 
-				return this.getClass('keywords').setObjName(this).getObjKeyWords(blog['b_id'])
+				return this.getClass('keywords').getObjKeyWords(Blog.keyWordsObjName, blog['b_id'])
 					.then((kw_list)=>
 					{
 						if (kw_list && kw_list.length > 0)
@@ -125,13 +126,13 @@ class Blog extends Base
 
 	getBlogListByTag(Pages, s_tag)
 	{
-		return this.getClass('keywords').setObjName(this).getKeyWordByName(s_tag)
+		return this.getClass('keywords').getKeyWordByName(s_tag)
 			.then((kw)=>
 			{
 				if (!kw)
 					return Promise.resolve([0, null]);
 
-				return this.getClass('keywords').countObjByKwId(kw['kw_id'])
+				return this.getClass('keywords').countObjByKwId(Blog.keyWordsObjName, kw['kw_id'])
 					.then((cnt)=>
 					{
 						return Promise.resolve([cnt, kw['kw_id']]);
@@ -147,7 +148,7 @@ class Blog extends Base
 					return Promise.reject(new FileErrors.HttpError(404));
 
 				return this.getClass('keywords')
-					.getObjListByKwId(kw_id, Pages.getLimit(), Pages.getOffset())
+					.getObjListByKwId(Blog.keyWordsObjName, kw_id, Pages.getLimit(), Pages.getOffset())
 					.then((obj_ids)=>
 					{
 						if (!obj_ids)

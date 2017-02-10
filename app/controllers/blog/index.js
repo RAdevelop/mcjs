@@ -329,6 +329,7 @@ class Blog extends CtrlMain
 				b_title: '',
 				b_notice: '',
 				b_text: '',
+				kw_names: [],
 				u_id: ''
 			},
 			user: {u_id: this.getUserId()},
@@ -361,7 +362,7 @@ class Blog extends CtrlMain
 
 		let errors = {};
 
-		tplData = CtrlMain.stripTags(tplData, ["s_b_title","t_b_notice"]);
+		tplData = CtrlMain.stripTags(tplData, ["s_b_title","t_b_notice",'s_tags']);
 
 		tplData["t_b_text"] = CtrlMain.cheerio(tplData["t_b_text"]).root().cleanTagEvents().html();
 		tplData["b_show"] = tplData["b_show"] || false;
@@ -390,6 +391,7 @@ class Blog extends CtrlMain
 						)
 						.then((i_blog_id)=>
 						{
+							//TODO save s_tags for blog
 							process.nextTick(()=>
 							{
 								const Mailer = new Mail(CtrlMain.appConfig.mail.service);
@@ -463,6 +465,7 @@ class Blog extends CtrlMain
 
 						let tplFile = "blog";
 						let tplData = {
+							blogDraft: '',
 							blog: blog,
 							blogImages: images,
 							user: {u_id: blog['u_id']}, //user
@@ -540,7 +543,7 @@ class Blog extends CtrlMain
 		return Promise.resolve(tplData)
 			.then((tplData) =>
 			{
-				tplData = CtrlMain.stripTags(tplData, ["s_b_title","t_b_notice"]);
+				tplData = CtrlMain.stripTags(tplData, ["s_b_title","t_b_notice",'s_tags']);
 				tplData["t_b_text"] = CtrlMain.cheerio(tplData["t_b_text"]).root().cleanTagEvents().html();
 				tplData["b_show"] = tplData["b_show"] || false;
 
@@ -563,11 +566,18 @@ class Blog extends CtrlMain
 			})
 			.then((tplData) =>
 			{
-				return this.getClass('blog').edit(
-					tplData["i_blog_id"], blog['u_id'],
-					tplData["s_b_title"], tplData["t_b_notice"],
-					tplData["t_b_text"], tplData["ui_bs_id"],
-					tplData["b_show"])
+				return Promise.all([
+					this.getClass('blog').edit(
+						blog['b_id'], blog['u_id'], tplData["s_b_title"], tplData["t_b_notice"],
+						tplData["t_b_text"], tplData["ui_bs_id"],
+						tplData["b_show"], tplData['s_tags']
+					),
+					this.getClass('keywords')
+						.saveKeyWords(
+							this.getClass('blog').constructor.keyWordsObjName, tplData['s_tags'],
+							blog['b_id'], tplData['b_show'], blog['b_create_ts']
+						)
+				])
 					.then(() =>
 					{
 						process.nextTick(()=>
@@ -583,7 +593,7 @@ class Blog extends CtrlMain
 									title: title,
 									links: 'https://'+this.getHostPort(),
 									link: 'http://'+this.getHostPort(),
-									link_to: this.getMenuItem['m_path']+'/edit/'+tplData["i_blog_id"]
+									link_to: this.getMenuItem['m_path']+'/edit/'+blog['b_id']
 								}
 							};
 

@@ -21,8 +21,7 @@ class Blog extends BaseModel {
 	 */
 	add(i_u_id, s_title, s_alias, t_notice, t_text, ui_bs_id, b_show)
 	{
-		b_show = parseInt(b_show, 10) || 0;
-		b_show = (b_show ? 1 : 0);
+		b_show = (!!b_show && b_show == 1 ? 1 : 0);
 
 		let now_ts = Moment().unix();
 		let sqlData = [i_u_id, s_title, s_alias, t_notice, t_text, now_ts, now_ts, b_show, ui_bs_id];
@@ -58,8 +57,7 @@ class Blog extends BaseModel {
 			, u_id = ?, b_show = ?, bs_id = ?
 			WHERE b_id = ?`;
 
-		b_show = (parseInt(b_show, 10) || 0);
-		b_show = (b_show ? 1 : 0);
+		b_show = (!!b_show && b_show == 1 ? 1 : 0);
 		i_b_id = (parseInt(i_b_id, 10)||0);
 
 		let now_ts = Moment().unix();
@@ -99,7 +97,7 @@ class Blog extends BaseModel {
 		}
 		else
 		{
-			b_show = (parseInt(b_show, 10) > 0 ? 1 : 0);
+			b_show = (!!b_show && b_show == 1 ? 1 : 0);
 			sql += ` AND b.b_show = ?`;
 			sqlData.push(b_show);
 		}
@@ -140,7 +138,7 @@ class Blog extends BaseModel {
 		}
 		else
 		{
-			b_show = (parseInt(b_show, 10) > 0 ? 1 : 0);
+			b_show = (!!b_show && b_show == 1 ? 1 : 0);
 			where.push('b.b_show = ?');
 			sqlData.push(b_show);
 		}
@@ -202,7 +200,7 @@ class Blog extends BaseModel {
 		}
 		else
 		{
-			b_show = (parseInt(b_show, 10) > 0 ? 1 : 0);
+			b_show = (!!b_show && b_show == 1 ? 1 : 0);
 			where.push('b.b_show = ?');
 			sqlData.push(b_show);
 		}
@@ -475,7 +473,7 @@ class Blog extends BaseModel {
 		}
 		else
 		{
-			b_show = parseInt(b_show, 10)||0;
+			b_show = (!!b_show && b_show == 1 ? 1 : 0);
 			where.push('b.b_show = ?');
 			sqlData.push(b_show);
 		}

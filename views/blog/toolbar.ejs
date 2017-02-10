@@ -14,12 +14,11 @@ blogBaseUrl = blogBaseUrl.join('/');
 		{%><div class="btn-group btn-group-sm" role="group" aria-label="Опции для статей">
 			<button type="button" class="btn btn-default dropdown-toggle toolbarBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-fw fa-cog"></i> опции <i class="caret"></i></button>
 			<ul class="dropdown-menu js-tool-bar"><%
-				if (_access['post_add']) {%><li><a href="<%=[menuItem['m_path'],'add'].join('/')%>/" ><i class="fa fa-fw fa-plus-square-o"></i> добавить статью</a></li><% }
-				if (_access['post_edit'] && blog && blog['b_id']) {
+				if (_access['post_add']) {%><li><a href="/<%=['profile/blog','add'].join('/')%>/" ><i class="fa fa-fw fa-plus-square-o"></i> добавить статью</a></li><% }
+				if (blog && blog['u_id'] == _user['u_id'] && _access['post_edit'] && blog['b_id']) {
 				%><li><a href="<%=[menuItem['m_path'],'edit',blog['b_id']].join('/')%>/"><i class="fa fa-fw fa-edit"></i> редактировать статью</a></li>
-				<li><a href="javascript:void(0);" data-action="delete" data-blog-id="<%=blog['b_id']%>"><i class="fa fa-fw fa-trash-o"></i> удалить статью</a></li><% }
-				if (user && user['u_id'] == _user['u_id']) {%>
-				<li><a href="<%=blogBaseUrl%>/"><i class="fa fa-fw fa-edit"></i> мои черновики</a></li><% } %>
+				<li><a href="javascript:void(0);" data-action="delete" data-blog-id="<%=blog['b_id']%>"><i class="fa fa-fw fa-trash-o"></i> удалить статью</a></li><% } %>
+				<li><a href="/<%=['profile/blog',_user['u_id'],'draft'].join('/')%>/"><i class="fa fa-fw fa-edit"></i> мои черновики</a></li>
 			</ul>
 		</div><% }%>
 		<div class="btn-group btn-group-sm" role="group" aria-label="список статей">

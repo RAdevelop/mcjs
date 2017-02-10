@@ -6,60 +6,31 @@ const Base = require('app/lib/class');
 
 class KeyWords extends Base
 {
-	objName(obj)
-	{
-		if (obj instanceof this.getClass('blog').constructor)
-			return 'blog_list';
-
-		if (obj instanceof this.getClass('user/photo').constructor)
-			return 'user_photo';
-
-		if (obj instanceof this.getClass('news').constructor)
-			return 'news';
-
-		if (obj instanceof this.getClass('events').constructor)
-			return 'events';
-
-		//let list = ['blog_list', 'user_photo', 'news', 'events'];
-	}
-
-	setObjName(obj)
-	{
-		if (!!this._objName === false)
-		this._objName = this.objName(obj);
-		obj = null;
-		return this;
-	}
-
-	getObjName()
-	{
-		return this._objName;
-	}
-
 	/**
 	 * получаем список слов-меток для указанного объекта
 	 *
+	 * @param obj_name - например, для таблицы blog_list = blog_list
 	 * @param obj_id - например, для таблицы blog_list = b_id
 	 *
 	 * @returns {Promise}
 	 */
-	getObjKeyWords(obj_id)
+	getObjKeyWords(obj_name, obj_id)
 	{
-		return this.model("keywords").getObjKeyWords(obj_id, this.getObjName());
+		return this.model("keywords").getObjKeyWords(obj_name, obj_id);
 	}
 
 	getKeyWordByName(kw_name)
 	{
 		return this.model("keywords").getKeyWordByName(kw_name);
 	}
-	countObjByKwId(kw_id)
+	countObjByKwId(obj_name, kw_id)
 	{
-		return this.model("keywords").countObjByKwId(kw_id, this.getObjName());
+		return this.model("keywords").countObjByKwId(obj_name, kw_id);
 	}
 
-	getObjListByKwId(kw_id, limit = 20, offset = 0)
+	getObjListByKwId(obj_name, kw_id, limit = 20, offset = 0)
 	{
-		return this.model("keywords").getObjListByKwId(kw_id, this.getObjName(), limit, offset)
+		return this.model("keywords").getObjListByKwId(obj_name, kw_id, limit, offset)
 			.then((list)=>
 			{
 				if(!!list.length === false)
@@ -71,6 +42,47 @@ class KeyWords extends Base
 				});
 				list = null;
 				return Promise.resolve(ids);
+			});
+	}
+
+	saveKeyWords(obj_name, s_tags, obj_id, obj_show, obj_create_ts, delimeter = ',')
+	{
+		obj_id = parseInt(obj_id, 10);
+		if (!obj_id || !!obj_name === false)
+			return Promise.resolve(1);
+
+		s_tags = this.helpers.clearSymbol(s_tags||'', `-_${delimeter}`);
+		let tags = [];
+		s_tags.split(delimeter).forEach((tag)=>
+		{
+			tag = tag.trim();
+			if (tag != '')
+				tags.push(tag);
+		});
+
+		return this.model("keywords").unlinkKeyWordObj(obj_id, obj_name)
+			.then(()=>
+			{
+				if (tags.length == 0)
+					return Promise.resolve(1);
+
+				obj_show = (!!obj_show && obj_show == 1 ? 1 : 0);
+
+				let promiseKwIds = tags.map((tag)=>
+				{
+					return this.model("keywords").addKeyWord(tag);
+				});
+
+				return Promise.all(promiseKwIds)
+					.spread((...spread)=>
+					{
+						let promiseKwIds = spread.map((kw_id)=>
+						{
+							return this.model("keywords").linkKeyWordObj(kw_id, obj_name, obj_id, obj_show, obj_create_ts)
+						});
+
+						return Promise.all(promiseKwIds);
+					});
 			});
 	}
 }
