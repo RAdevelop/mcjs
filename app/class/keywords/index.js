@@ -56,7 +56,7 @@ class KeyWords extends Base
 		s_tags.split(delimeter).forEach((tag)=>
 		{
 			tag = tag.trim();
-			if (tag != '')
+			if (tag != '' && tag.length > 3)
 				tags.push(tag);
 		});
 
@@ -78,12 +78,17 @@ class KeyWords extends Base
 					{
 						let promiseKwIds = spread.map((kw_id)=>
 						{
-							return this.model("keywords").linkKeyWordObj(kw_id, obj_name, obj_id, obj_show, obj_create_ts)
+							return this.model("keywords")
+								.linkKeyWordObj(kw_id, obj_name, obj_id, obj_show, obj_create_ts)
 						});
 
 						return Promise.all(promiseKwIds);
 					});
 			});
+	}
+	getKeyWordList()
+	{
+		return this.model("keywords").getKeyWordList();
 	}
 }
 //************************************************************************* module.exports

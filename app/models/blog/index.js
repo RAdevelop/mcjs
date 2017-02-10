@@ -32,7 +32,11 @@ class Blog extends BaseModel {
 		return this.constructor.conn().ins(sql, sqlData)
 			.then((res) =>
 			{
-				return Promise.resolve(res["insertId"]);
+				return Promise.resolve({
+					b_id: res["insertId"], u_id: i_u_id, b_title: b_title, b_alias: b_alias,
+					b_notice: t_notice, b_text: t_text, b_create_ts: now_ts, b_update_ts: now_ts,
+					b_show: b_show, bs_id: ui_bs_id
+				});
 			});
 	}
 

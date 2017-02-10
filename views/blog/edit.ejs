@@ -90,6 +90,7 @@
 <script src="/js/uploadify/jquery.uploadify.min.js" type="text/javascript" ></script>
 <script src="/js/uploadify/jquery.uploadifive.min.js" type="text/javascript" ></script>
 <script src="/js/uploadify/jquery.fileUpload.js" type="text/javascript"></script>
+<script src="/js/jquery/mcAutoComplete.js" type="text/javascript"></script>
 <script type="text/javascript">
 //<!--
 (function($)
@@ -312,6 +313,8 @@
 			return false;
 		});
 	}
+
+	$('#s_tags').mcAutoComplete({tags: MCJS['keyWords']||[], key_name:'kw_name'});
 
 })(jQuery);
 //-->

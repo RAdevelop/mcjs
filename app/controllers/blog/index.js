@@ -209,8 +209,10 @@ class Blog extends CtrlMain
 				if (blog["blogImages"] && blog["blogImages"][0] && blog["blogImages"][0]["previews"]["512_384"])
 					this.view.setPageOgImage(blog["blogImages"][0]["previews"]["512_384"]);
 
-				//this.view.setPageH1(blog.b_title);
-
+				if (!!tplData["blogSubjects"]['selected']['bs_id'])
+				{
+					this.view.setPageH1(tplData["blogSubjects"]['selected']['bs_name']);
+				}
 				//экспрот данных в JS на клиента
 				this.getRes().expose(tplData["blog"], 'blogData');
 				this.view.setTplData(tplFile, tplData);
@@ -335,11 +337,17 @@ class Blog extends CtrlMain
 			user: {u_id: this.getUserId()},
 			blogDraft: false
 		};
-
-		return this.getClass('blog').getBlogSubjectList()
-			.then((blogSubjects)=>
+		return Promise.all([
+			this.getClass('keywords').getKeyWordList(),
+			this.getClass('blog').getBlogSubjectList()
+		])
+			.spread((keywords, blogSubjects)=>
 			{
 				tplData['blogSubjects'] = blogSubjects;
+
+				//экспрот данных в JS на клиента
+				this.getRes().expose(keywords, 'keyWords');
+
 				let tplFile = "blog";
 				this.view.setTplData(tplFile, tplData);
 				return Promise.resolve(null);
@@ -389,9 +397,18 @@ class Blog extends CtrlMain
 							tplData["t_b_notice"], tplData["t_b_text"],
 							tplData["ui_bs_id"], tplData["b_show"]
 						)
+						.then((blog)=>
+						{
+							return this.getClass('keywords').saveKeyWords(
+									this.getClass('blog').constructor.keyWordsObjName, tplData['s_tags'],
+									blog['b_id'], blog['b_show'], blog['b_create_ts']
+								).then(()=>
+								{
+									return Promise.resolve(blog['b_id']);
+								});
+						})
 						.then((i_blog_id)=>
 						{
-							//TODO save s_tags for blog
 							process.nextTick(()=>
 							{
 								const Mailer = new Mail(CtrlMain.appConfig.mail.service);
@@ -453,8 +470,11 @@ class Blog extends CtrlMain
 				if (!blog || !(isRootAdmin || blog['u_id'] == this.getUserId()))
 					throw new Errors.HttpError(404);
 
-				return this.getClass('blog').getImageList(blog['b_id'])
-					.spread((images, allPreviews) =>
+				return Promise.all([
+					this.getClass('keywords').getKeyWordList(),
+					this.getClass('blog').getImageList(blog['b_id'])
+				])
+					.spread((keywords, imagesData) =>
 					{
 						if (this.getLocalAccess()['post_upload'])
 						{
@@ -467,7 +487,7 @@ class Blog extends CtrlMain
 						let tplData = {
 							blogDraft: '',
 							blog: blog,
-							blogImages: images,
+							blogImages: imagesData[0],
 							user: {u_id: blog['u_id']}, //user
 							blogSubjects: blogSubjects
 						};
@@ -479,7 +499,8 @@ class Blog extends CtrlMain
 						//экспрот данных в JS на клиента
 						this.getRes().expose(tplData["blog"], 'blogData');
 						this.getRes().expose(tplData["blogImages"], 'blogImages');
-						this.getRes().expose(allPreviews, 'blogImagesPreviews');
+						this.getRes().expose(imagesData[1], 'blogImagesPreviews');
+						this.getRes().expose(keywords, 'keyWords');
 
 						return Promise.resolve(null);
 					});

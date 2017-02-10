@@ -1,0 +1,8 @@
+.ui-autocomplete {
+
+  max-height: 200px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 1px solid;
+  @include  mix_border-radius(4px);
+}

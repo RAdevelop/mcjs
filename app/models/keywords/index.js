@@ -139,6 +139,12 @@ class KeyWords extends BaseModel
 				return Promise.resolve(parseInt(res[1][0]['kw_id'], 10));
 			});
 	}
+
+	getKeyWordList()
+	{
+		let sql = `SELECT kw_id, kw_name FROM key_words ORDER BY kw_name`;
+		return this.constructor.conn().ps(sql)
+	}
 }
 
 //************************************************************************* module.exports
