@@ -9,9 +9,9 @@ const Base = require('app/lib/class');
 
 class Blog extends Base
 {
-	static get keyWordsObjName()
+	static get uploadConfigName()
 	{
-		return 'blog_list';
+		return `user_blog`;
 	}
 
 	/**
@@ -68,20 +68,11 @@ class Blog extends Base
 			.then((blog)=>
 			{
 				if (!blog)
-					return Promise.resolve(blog);
+					return Promise.resolve(null);
 
-				blog['kw_names'] = [];
-
-				return this.getClass('keywords').getObjKeyWords(Blog.keyWordsObjName, blog['b_id'])
-					.then((kw_list)=>
+				return this.getClass('keywords').getObjKeyWords(this, blog, 'b_id')
+					.then((blog)=>
 					{
-						if (kw_list && kw_list.length > 0)
-						{
-							blog['kw_names'] = kw_list.map((kw)=>
-							{
-								return kw['kw_name'];
-							});
-						}
 						return Promise.resolve(blog);
 					});
 			});
@@ -117,7 +108,8 @@ class Blog extends Base
 						if (!blogList)
 							return Promise.resolve([null, Pages]);
 
-						Blog._blogPreviews(blogList);
+						let sizeParams = FileUpload.getUploadConfig(Blog.uploadConfigName).sizeParams;
+						blogList = FileUpload.getPreviews(sizeParams, blogList, "bi_dir")["obj"];
 
 						return Promise.resolve([blogList, Pages]);
 					});
@@ -132,7 +124,7 @@ class Blog extends Base
 				if (!kw)
 					return Promise.resolve([0, null]);
 
-				return this.getClass('keywords').countObjByKwId(Blog.keyWordsObjName, kw['kw_id'])
+				return this.getClass('keywords').countObjByKwId(this, kw['kw_id'])
 					.then((cnt)=>
 					{
 						return Promise.resolve([cnt, kw['kw_id']]);
@@ -145,10 +137,10 @@ class Blog extends Base
 					return [null, Pages];
 
 				if (Pages.limitExceeded())
-					return Promise.reject(new FileErrors.HttpError(404));
+					throw new FileErrors.HttpError(404);
 
 				return this.getClass('keywords')
-					.getObjListByKwId(Blog.keyWordsObjName, kw_id, Pages.getLimit(), Pages.getOffset())
+					.getObjListByKwId(this, kw_id, Pages.getLimit(), Pages.getOffset())
 					.then((obj_ids)=>
 					{
 						if (!obj_ids)
@@ -157,31 +149,16 @@ class Blog extends Base
 						return this.model('blog').getBlogListByIds(obj_ids, 1)
 							.then((blogList) =>
 							{
-								//console.log('blogList = ', blogList);
-
 								if (!blogList)
 									return Promise.resolve([null, Pages]);
 
-								Blog._blogPreviews(blogList);
+								let sizeParams = FileUpload.getUploadConfig(Blog.uploadConfigName).sizeParams;
+								blogList = FileUpload.getPreviews(sizeParams, blogList, "bi_dir")["obj"];
 
 								return Promise.resolve([blogList, Pages]);
 							});
 					});
 			});
-	}
-
-	static _blogPreviews(list)
-	{
-		let sizeParams = FileUpload.getUploadConfig('user_blog').sizeParams;
-
-		list.forEach((item, indx) =>
-		{
-			list[indx]["previews"] = {};
-			if (item["bi_dir"])
-				list[indx] = FileUpload.getPreviews(sizeParams, item, "bi_dir", true)["obj"];
-		});
-
-		//return blogList; можно не возвращать. объекты в JS "передаются" по ссылке
 	}
 
 	/**
@@ -194,11 +171,10 @@ class Blog extends Base
 	 */
 	uploadImage(u_id, req, res)
 	{
-		let uploadConf = 'user_blog';
 		let bi_id, b_id;
 		let ufile = {};
 
-		const UploadFile = new FileUpload(uploadConf, req, res);
+		const UploadFile = new FileUpload(Blog.uploadConfigName, req, res);
 
 		return UploadFile.upload()
 			.then((file) =>
@@ -243,7 +219,7 @@ class Blog extends Base
 				return UploadFile.setImageGeo(file)
 					.then((file) =>
 					{
-						return UploadFile.resize(file, uploadConf);
+						return UploadFile.resize(file, Blog.uploadConfigName);
 					});
 			})
 			.then((file) =>
@@ -296,12 +272,9 @@ class Blog extends Base
 			{
 				if (!image)
 					throw new FileErrors.io.FileNotFoundError("фотография не найдена: Blog.getImage(bi_id="+bi_id+")");
-				
-				let sizeParams = FileUpload.getUploadConfig('user_blog').sizeParams;
-				image["previews"] = {};
 
-				if (image["bi_dir"])
-					image = FileUpload.getPreviews(sizeParams, image, "bi_dir", false)["obj"];
+				let sizeParams = FileUpload.getUploadConfig(Blog.uploadConfigName).sizeParams;
+				image = FileUpload.getPreviews(sizeParams, image, "bi_dir", false)['obj'];
 
 				return Promise.resolve(image);
 			});
@@ -310,33 +283,22 @@ class Blog extends Base
 	/***
 	 * получаем фотографии
 	 *
-	 * @param bi_id
+	 * @param b_id
 	 * @return [images, allPreviews]
 	 */
-	getImageList(bi_id)
+	getImageList(b_id)
 	{
-		return this.model('blog').getImageList(bi_id)
+		return this.model('blog').getImageList(b_id)
 			.then((images) =>
 			{
 				if (!images)
 					return [[], []];
 
-				let sizeParams = FileUpload.getUploadConfig('user_blog').sizeParams;
+				let sizeParams = FileUpload.getUploadConfig(Blog.uploadConfigName).sizeParams;
+				let previews = FileUpload.getPreviews(sizeParams, images, "bi_dir", true);
+				let allPreviews = previews['previews'];
 
-				let allPreviews = [];
-				images.forEach((image, indx) =>
-				{
-					images[indx]["previews"] = {};
-					if (image["bi_dir"])
-					{
-						let obj = FileUpload.getPreviews(sizeParams, image, "bi_dir", true);
-						image = obj["obj"];
-
-						allPreviews = allPreviews.concat(obj["previews"]);
-
-						image["previews"]['orig'] = image["bi_dir"] + '/orig/' + image["bi_name"];
-					}
-				});
+				images  = previews['obj'];
 
 				return [images, allPreviews];
 			});
@@ -418,18 +380,22 @@ class Blog extends Base
 	 * @param b_id
 	 * @returns {Promise}
 	 */
-	delBlog(u_id, b_id)
+	delBlog(u_id, blog)
 	{
-		return Promise.resolve(b_id)
-			.then((b_id) =>
-			{
-				let dir = Path.join(FileUpload.getDocumentRoot, FileUpload.getUploadConfig('user_blog')["pathUpload"], FileUpload.getAlbumUri(b_id));
+		blog['b_id'] = parseInt(blog['b_id'], 10)||0;
+		if (!blog || !!blog['b_id'] === false)
+			return Promise.resolve(0);
 
-				return FileUpload.deleteDir(dir, true)
-					.then(() =>
-					{
-						return this.model('blog').delBlog(b_id);
-					});
+		let dir = Path.join(FileUpload.getDocumentRoot, FileUpload.getUploadConfig(Blog.uploadConfigName)["pathUpload"], FileUpload.getAlbumUri(blog['b_id']));
+
+		return FileUpload.deleteDir(dir, true)
+			.then(() =>
+			{
+				return this.model('blog').delBlog(blog['b_id']);
+			})
+			.then(() =>
+			{
+				return this.getClass('keywords').saveKeyWords(this, blog['b_id']);
 			});
 	}
 

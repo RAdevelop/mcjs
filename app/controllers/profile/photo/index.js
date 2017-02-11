@@ -57,12 +57,9 @@ class ProfilePhoto extends CtrlMain
 				};
 
 				if (i_a_id)
-					return this.album(i_u_id, tplData, xhr);
+					return this._album(i_u_id, tplData, xhr);
 
-				return this.albumList(i_u_id, tplData, xhr);
-			})
-			.catch((err) => {
-				throw err;
+				return this._albumList(i_u_id, tplData, xhr);
 			});
 	}
 
@@ -74,7 +71,7 @@ class ProfilePhoto extends CtrlMain
 	 * @param isAjax
 	 * @returns {Promise}
 	 */
-	albumList(i_u_id, tplData, isAjax = false)
+	_albumList(i_u_id, tplData, isAjax = false)
 	{
 		let {i_page=1} = this.routeArgs;
 
@@ -117,7 +114,7 @@ class ProfilePhoto extends CtrlMain
 	 * @param tplData
 	 * @param isAjax
 	 */
-	album(i_u_id, tplData, isAjax = false)
+	_album(i_u_id, tplData, isAjax = false)
 	{
 		let {i_a_id, i_page=1} = this.routeArgs;
 
@@ -147,11 +144,13 @@ class ProfilePhoto extends CtrlMain
 			})
 			.spread((tplData, allPreviews, Pages) =>
 			{
-				if (!isAjax)
+				if (!isAjax && i_u_id == this.getUserId())
 				{
-					Object.assign(tplData, FileUpload.createToken('user_photo', {"a_id": i_a_id}) );
+					let uploadPhotoConfigName = this.getClass('user/photo').constructor.uploadPhotoConfigName;
 
-					this.getRes().expose(FileUpload.exposeUploadOptions('user_photo'), 'albumUploadOpts');
+					Object.assign(tplData, FileUpload.createToken(uploadPhotoConfigName, {"a_id": i_a_id}) );
+
+					this.getRes().expose(FileUpload.exposeUploadOptions(uploadPhotoConfigName), 'albumUploadOpts');
 				}
 
 				let exposeAlbumImages = 'albumImages';
@@ -199,7 +198,7 @@ class ProfilePhoto extends CtrlMain
 
 		//console.log(tplData);
 
-		return this.albumPostActions(tplData)
+		return this._albumPostActions(tplData)
 			.then((tplData) => { //если валидация успешна
 
 				//tplData.formError.error = false;
@@ -219,7 +218,7 @@ class ProfilePhoto extends CtrlMain
 	 * @param tplData
 	 * @returns {Promise}
 	 */
-	albumPostActions(tplData)
+	_albumPostActions(tplData)
 	{
 		if (!tplData["btn_save_album"])
 			throw new Errors.HttpError(400);
@@ -234,27 +233,27 @@ class ProfilePhoto extends CtrlMain
 				break;
 
 			case 'add_album':
-				return this.addNamedAlbum(tplData);
+				return this._addNamedAlbum(tplData);
 				break;
 
 			case 'edit_album':
-				return this.editAlbum(tplData);
+				return this._editAlbum(tplData);
 				break;
 
 			case 'upd_img_text':
-				return this.updImgText(tplData);
+				return this._updImgText(tplData);
 				break;
 
 			case 'del_img':
-				return this.delImg(tplData);
+				return this._delImg(tplData);
 				break;
 
 			case 'sort_img':
-				return this.sortImg(tplData);
+				return this._sortImg(tplData);
 				break;
 
 			case 'del_album':
-				return this.delAlbum(tplData);
+				return this._delAlbum(tplData);
 				break;
 		}
 	}
@@ -264,7 +263,7 @@ class ProfilePhoto extends CtrlMain
 	 *
 	 * @param tplData
 	 */
-	sortImg(tplData)
+	_sortImg(tplData)
 	{
 		if (!tplData["i_a_id"] || !tplData.hasOwnProperty("ai_pos") || !tplData["ai_pos"].length)
 			return Promise.resolve(tplData);
@@ -282,7 +281,7 @@ class ProfilePhoto extends CtrlMain
 	 * @param tplData
 	 * @returns {Promise}
 	 */
-	addNamedAlbum(tplData)
+	_addNamedAlbum(tplData)
 	{
 		if (!tplData["i_u_id"] || tplData["i_u_id"] != this.getUserId())
 			throw new Errors.HttpError(400);
@@ -316,7 +315,7 @@ class ProfilePhoto extends CtrlMain
 	 * @param tplData
 	 * @returns {Promise}
 	 */
-	editAlbum(tplData)
+	_editAlbum(tplData)
 	{
 		tplData = CtrlMain.stripTags(tplData, ["s_album_name", "t_album_text"]);
 
@@ -328,7 +327,8 @@ class ProfilePhoto extends CtrlMain
 			errors["s_album_name"] = 'Укажите название альбома';
 
 		return Promise.resolve(errors)
-			.then((errors) => {
+			.then((errors) => 
+			{
 				if (this.parseFormErrors(tplData, errors, 'Ошибка при редактировании фотоальбома'))
 				{
 					return this.getClass('user/photo')
@@ -343,7 +343,8 @@ class ProfilePhoto extends CtrlMain
 						});
 				}
 			})
-			.then((a_id) => {
+			.then((a_id) => 
+			{
 				tplData["a_id"] = a_id;
 				return Promise.resolve(tplData);
 			});
@@ -355,7 +356,7 @@ class ProfilePhoto extends CtrlMain
 	 * @param tplData
 	 * @returns {Promise}
 	 */
-	updImgText(tplData)
+	_updImgText(tplData)
 	{
 		if (!tplData["i_a_id"] || !tplData["i_ai_id"] || !tplData.hasOwnProperty("t_ai_text"))
 			return new Errors.HttpError(400);
@@ -375,7 +376,7 @@ class ProfilePhoto extends CtrlMain
 	 * @param tplData
 	 * @returns {Promise}
 	 */
-	delImg(tplData)
+	_delImg(tplData)
 	{
 		if (!tplData["i_a_id"] || !tplData["i_ai_id"])
 			throw new Errors.HttpError(400);
@@ -385,7 +386,8 @@ class ProfilePhoto extends CtrlMain
 			.then(() => {
 				return Promise.resolve(tplData);
 			})
-			.catch(Errors.io.FileNotFoundError, (err) => {
+			.catch(Errors.io.FileNotFoundError, (err) => 
+			{
 				Logger.error(err);
 				throw new Errors.HttpError(404, 'Фотография не найдена');
 			});
@@ -445,7 +447,7 @@ class ProfilePhoto extends CtrlMain
 	 * @param tplData
 	 * @returns {Promise}
 	 */
-	delAlbum(tplData)
+	_delAlbum(tplData)
 	{
 		if (!tplData["i_a_id"])
 			throw new Errors.HttpError(400);

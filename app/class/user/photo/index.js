@@ -65,7 +65,7 @@ class UserPhoto extends User
 				return this.model('user/photo').getAlbumList(owner_u_id, Pages.getOffset(), Pages.getLimit())
 					.then((albums) => {
 
-						let sizeParams = FileUpload.getUploadConfig('user_photo').sizeParams;
+						let sizeParams = FileUpload.getUploadConfig(User.uploadPhotoConfigName).sizeParams;
 
 						albums.forEach((album) => {
 							
@@ -121,30 +121,17 @@ class UserPhoto extends User
 			return Promise.reject(new FileErrors.HttpError(404));
 		
 		return this.model('user/photo').getAlbumImages(u_id, a_id, Pages.getOffset(), Pages.getLimit())
-			.then((images) => {
-
+			.then((images) => 
+			{
 				if (!images)
 					return [Pages, [], []];
 
-				let sizeParams = FileUpload.getUploadConfig('user_photo').sizeParams;
+				let sizeParams = FileUpload.getUploadConfig(User.uploadPhotoConfigName).sizeParams;
+				let previews = FileUpload.getPreviews(sizeParams, images, "ai_dir", true, 'ai_name');
+				
+				images = previews['obj'];
 
-				let allPreviews = [];
-				images.forEach((image, indx) => {
-
-					images[indx]["previews"] = {};
-
-					if (image["ai_dir"])
-					{
-						let obj = FileUpload.getPreviews(sizeParams, image, "ai_dir", true);
-						image = obj["obj"];
-
-						allPreviews = allPreviews.concat(obj["previews"]);
-
-						image["previews"]['orig'] = image["ai_dir"] + '/orig/' + image["ai_name"];
-					}
-				});
-
-				return [Pages, images, allPreviews];
+				return [Pages, images, previews['previews']];
 			});
 	}
 
@@ -158,21 +145,20 @@ class UserPhoto extends User
 	 */
 	uploadImage(u_id, req, res)
 	{
-		let uploadConf = 'user_photo';
 		let ai_id, a_id;
 		let ufile = {};
 		
-		const UploadFile = new FileUpload(uploadConf, req, res);
+		const UploadFile = new FileUpload(UserPhoto.uploadPhotoConfigName, req, res);
 
 		return UploadFile.upload()
-			.then((file) => {
-
+			.then((file) =>
+			{
 				ufile = file;
 				a_id = file.a_id;
 				return this.model('user/photo')
 					.addPhoto(u_id, file)
-					.then((file) => {
-
+					.then((file) => 
+					{
 						ufile = file;
 						ai_id = file.ai_id;
 
@@ -197,7 +183,7 @@ class UserPhoto extends User
 				return UploadFile.setImageGeo(file)
 					.then((file) =>
 					{
-						return UploadFile.resize(file, uploadConf);
+						return UploadFile.resize(file, User.uploadPhotoConfigName);
 					});
 			})
 			.then((file) =>
@@ -252,13 +238,13 @@ class UserPhoto extends User
 				if (!image)
 					throw new FileErrors.io.FileNotFoundError("фотография не найдена: UserPhoto.getImage(u_id="+u_id+", ai_id="+ai_id+")");
 
-				let sizeParams = FileUpload.getUploadConfig('user_photo').sizeParams;
+				let sizeParams = FileUpload.getUploadConfig(User.uploadPhotoConfigName).sizeParams;
 				image["ai_is_owner"] = (image["u_id"] == u_id);
 				image["previews"] = {};
 
 				if (image["ai_dir"])
 				{
-					image = FileUpload.getPreviews(sizeParams, image, "ai_dir", false)["obj"];
+					image = FileUpload.getPreviews(sizeParams, image, "ai_dir", true, "ai_name")["obj"];
 				}
 				return Promise.resolve(image);
 			});
@@ -354,16 +340,16 @@ class UserPhoto extends User
 	delAlbum(u_id, a_id)
 	{
 		return this.getAlbum(u_id, u_id, a_id)
-			.then((album) => {
-
+			.then((album) => 
+			{
 				if (!album || !album["a_named"])
 					return Promise.resolve(album);
 
-				let dir = Path.join(FileUpload.getDocumentRoot, FileUpload.getUploadConfig('user_photo')["pathUpload"], FileUpload.getAlbumUri(a_id));
+				let dir = Path.join(FileUpload.getDocumentRoot, FileUpload.getUploadConfig(User.uploadPhotoConfigName)["pathUpload"], FileUpload.getAlbumUri(a_id));
 
 				return FileUpload.deleteDir(dir, true)
-					.then(() => {
-
+					.then(() => 
+					{
 						if (!album || !album["a_named"])
 							return Promise.resolve(a_id);
 

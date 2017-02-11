@@ -33,8 +33,12 @@ class News extends BaseModel
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
 		return this.constructor.conn().ins(sql, sqlData)
-			.then((res) => {
-				return Promise.resolve(res["insertId"]);
+			.then((res) =>
+			{
+				return Promise.resolve({
+					n_id: res["insertId"], u_id: i_u_id, n_title: s_n_title, n_alias: n_alias, n_notice: t_n_notice, n_text: t_n_text,
+					n_create_ts: now_ts, n_update_ts: now_ts, n_show_ts: n_show_ts, n_show: n_show
+				});
 			});
 	}
 
@@ -164,6 +168,39 @@ class News extends BaseModel
 		console.log(sqlData);
 		console.log('\n');*/
 		return this.constructor.conn().s(sql, sqlData);
+	}
+
+	getNewsListByIds(obj_ids, b_show = null)
+	{
+		if (!!obj_ids.length === false)
+			return Promise.resolve(null);
+
+		let where = [`n.n_id IN(${this.constructor.placeHoldersForIn(obj_ids)})`];
+		let sqlData = obj_ids;
+
+		if (b_show === null)
+		{
+			where.push('n.n_show IN(0,1)');
+		}
+		else
+		{
+			b_show = (!!b_show && b_show == 1 ? 1 : 0);
+			where.push('n.n_show = ?');
+			sqlData.push(b_show);
+		}
+
+		let sql = `SELECT n.n_id, n.n_create_ts, n.n_update_ts, n.n_show_ts, n.n_title, n.n_alias, n.n_notice 
+		, FROM_UNIXTIME(n.n_show_ts, "%d-%m-%Y") AS dt_show_ts
+		, n.u_id, ni.ni_id, ni.ni_dir, ni.ni_pos, ni.ni_name
+			FROM (SELECT NULL) AS z
+			JOIN news_list AS n ON(${where.join(' AND ')})
+			LEFT JOIN news_image AS ni ON(ni.n_id = n.n_id AND ni.ni_pos = 0)
+		ORDER BY n.n_create_ts DESC`;
+
+		/*console.log(sql);
+		 console.log(sqlData);
+		 console.log('\n');*/
+		return this.constructor.conn().ps(sql, sqlData);
 	}
 
 	/**
@@ -341,9 +378,13 @@ class News extends BaseModel
 	 */
 	delNews(n_id)
 	{
+		n_id = parseInt(n_id, 10)||0;
+		if (!!n_id === false)
+			return Promise.resolve(0);
+
 		let sql = `DELETE FROM news_image WHERE n_id = ?;
 		DELETE FROM news_list WHERE n_id = ?;`;
-		n_id = parseInt(n_id, 10);
+
 		return this.constructor.conn().multis(sql, [n_id, n_id]);
 	}
 }

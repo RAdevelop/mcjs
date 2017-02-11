@@ -33,7 +33,7 @@ class Blog extends BaseModel {
 			.then((res) =>
 			{
 				return Promise.resolve({
-					b_id: res["insertId"], u_id: i_u_id, b_title: b_title, b_alias: b_alias,
+					b_id: res["insertId"], u_id: i_u_id, b_title: s_title, b_alias: s_alias,
 					b_notice: t_notice, b_text: t_text, b_create_ts: now_ts, b_update_ts: now_ts,
 					b_show: b_show, bs_id: ui_bs_id
 				});
@@ -424,9 +424,13 @@ class Blog extends BaseModel {
 	 */
 	delBlog(b_id)
 	{
+		b_id = parseInt(b_id, 10)||0;
+		if (!!b_id === false)
+			return Promise.resolve(0);
+
 		let sql = `DELETE FROM blog_image WHERE b_id = ?;
 		DELETE FROM blog_list WHERE b_id = ?;`;
-		b_id = parseInt(b_id, 10);
+		
 		return this.constructor.conn().multis(sql, [b_id, b_id]);
 	}
 

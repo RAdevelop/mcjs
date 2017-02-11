@@ -32,7 +32,7 @@
 
 				$('__del_news_dialog__').mcDialog({
 					title: 'Удаление новости'
-					, body: formDelNews(MCJS["newsData"]||{}, '<%=_reqBaseUrl%>')
+					, body: formDelNews(MCJS["newsData"]||{}, '<%=menuItem['m_path']%>')
 					, onOpen: function ($dialog)
 					{
 						$dialog.find('#formDelNews').postRes({
@@ -87,7 +87,7 @@
 
 	function formDelNews(news, uri)
 	{
-		var html = '<form class="form-horizontal" action="'+uri+'/" method="post" id="formDelNews">' +
+		var html = '<form class="form-horizontal" action="'+uri+'/edit/'+news['n_id']+'/" method="post" id="formDelNews">' +
 				'<input type="hidden" name="btn_save_news" value="del_news"/>' +
 				'<input type="hidden" name="i_news_id" value="'+news['n_id']+'"/>' +
 				'<div class="form-group">' +

@@ -8,8 +8,10 @@ const FileUpload = require('app/lib/file/upload');
 const Calendar = require('app/lib/calendar');
 
 const EmbedContent = require("app/lib/embed/content");
-
 const Moment = require('moment'); //работа со временем
+const Pages = require("app/lib/pages");
+
+let limit_per_page = 20;
 
 class Events extends CtrlMain
 {
@@ -21,18 +23,20 @@ class Events extends CtrlMain
 	{
 		return {
 			"index": {
-				'^\/?[0-9]{4,4}\/[0-9]{1,2}\/[0-9]{1,2}\/?$': ['i_yy','i_mm','i_dd'],
-				'^\/?[0-9]{4,4}\/[0-9]{1,2}\/?$': ['i_yy','i_mm'],
-				//'^\/?[0-9]{4,4}\/?$': ['i_yy'],
-				'^\/?[0-9]+\/\\S+\/?$': ['i_event_id','s_event_alias'],
 				'^\/?$': null
+				,'^\/?[0-9]{4,4}\/[0-9]{1,2}\/[0-9]{1,2}\/?$': ['i_yy','i_mm','i_dd']
+				,'^\/?[0-9]{4,4}\/[0-9]{1,2}\/?$': ['i_yy','i_mm']
+				//,'^\/?[0-9]{4,4}\/?$': ['i_yy'],
+				,'^\/?[0-9]+\/\\S+\/?$': ['i_event_id','s_event_alias']
+				,"^\/?tag\/\\S+\/page\/[1-9]+[0-9]*\/?$" : ['b_tag','s_tag',,'i_page'] //по тегам
+				,"^\/?tag\/\\S+\/?$" : ['b_tag','s_tag']
 			},
 			"add": {
 				'^\/?$': null
 			},
 			"edit": {
-				'^\/?[0-9]+\/?$': ['i_event_id']
-				,'^\/?$': null
+				'^\/?$': null
+				,'^\/?[0-9]+\/?$': ['i_event_id']
 			},
 			/*"map": {
 				'^\/?$': null
@@ -57,10 +61,20 @@ class Events extends CtrlMain
 			eventLocations: null
 		};
 
-		let {i_event_id=null, s_event_alias=null, i_yy=null, i_mm=null, i_dd=null} = this.routeArgs;
+		let {i_event_id=null, s_event_alias=null, i_yy=null, i_mm=null, i_dd=null
+			, b_tag=null, s_tag=null
+		} = this.routeArgs;
+
+		b_tag = !!b_tag;
 
 		if (i_event_id)
-			return this.event(tplData, i_event_id, s_event_alias);
+			return this._event(tplData, i_event_id, s_event_alias);
+
+		if (b_tag)
+		{
+			s_tag = decodeURIComponent(s_tag);
+			return this._tagEventList(tplData, s_tag);
+		}
 
 		if (!i_yy && !i_mm && !i_dd)
 		{
@@ -88,7 +102,7 @@ class Events extends CtrlMain
 
 			//tplData["selectedDate"] = {i_yy:i_yy, i_mm:i_mm, i_dd:i_dd};
 			tplData["selectedDate"] = [i_dd, i_mm, i_yy].join('-');
-			return this.eventList(tplData, startDate, endDate, l_id);
+			return this._eventList(tplData, startDate, endDate, l_id);
 		}
 
 		if (!Moment([i_yy, i_mm].join('-'), "YYYY-MM").isValid())
@@ -97,7 +111,7 @@ class Events extends CtrlMain
 		startDate = new Date(i_yy, i_mm-1);
 		endDate = new Date(startDate.getFullYear(), startDate.getMonth()+3); //+3 месяца
 
-		return this.eventCalendar(tplData, startDate, endDate, l_id);
+		return this._eventCalendar(tplData, startDate, endDate, l_id);
 	}
 
 	/**
@@ -108,7 +122,7 @@ class Events extends CtrlMain
 	 * @param s_alias
 	 * @throws Errors.HttpStatusError
 	 */
-	event(tplData, i_event_id, s_alias)
+	_event(tplData, i_event_id, s_alias)
 	{
 		return this.getClass('events').get(i_event_id)
 			.then( (event) =>
@@ -165,7 +179,7 @@ class Events extends CtrlMain
 	 * @param endDate
 	 * @param l_id
 	 */
-	eventList(tplData, startDate, endDate, l_id)
+	_eventList(tplData, startDate, endDate, l_id)
 	{
 		let startDateTs = startDate.getTime()/1000;
 		let endDateTs = endDate.getTime()/1000;
@@ -175,34 +189,77 @@ class Events extends CtrlMain
 				if (!eventList || !eventList.length)
 					throw new Errors.HttpError(404);
 
-				return this.getClass("events")
-					.getLocations(startDateTs, endDateTs, l_id)
-					.then( (eventLocations) =>
+				return this.getClass("events").getLocations(startDateTs, endDateTs, l_id)
+					.then((eventLocations) =>
 					{
-						return Promise.resolve([eventList, eventLocations, l_id]);
+						return Promise.resolve([eventList, eventLocations]);
 					});
 			})
-			.spread((eventList, eventLocations, l_id) =>
+			.spread((eventList, eventLocations) =>
 			{
 				let tplFile = "events";
 
 				tplData["eventList"] = eventList;
-
-				tplData["eventLocations"] = {};
-				tplData["eventLocations"]["list"] = eventLocations;
-				tplData["eventLocations"]["l_id"] = l_id;
+				tplData["eventLocations"] = eventLocations;
 
 				//console.log(i_yy, i_mm, i_dd);
 				//console.log(eventList);
 
-				//this.getRes().expose(eventList, 'eventList');
-				//this.getRes().expose(eventLocations, 'eventLocations');
+				let title = [];
+				if (tplData["selectedDate"])
+					title.push(tplData["selectedDate"]);
+
+				if (tplData["eventLocations"]["selected"]["l_name"])
+					title.push(tplData["eventLocations"]["selected"]["l_name"]);
+
+				title = title.join(' ');
+				this.view.setPageTitle(title);
+				this.view.setPageH1(title);
 
 				this.view.setTplData(tplFile, tplData);
 				//this.view.addPartialData("user/left", {user: userData});
 				//this.view.addPartialData("user/right", {title: 'right_col'});
 
+				//this.getRes().expose(eventList, 'eventList');
+				//this.getRes().expose(eventLocations, 'eventLocations');
+
 				return Promise.resolve(null);
+			});
+	}
+
+
+	_tagEventList(tplData, s_tag)
+	{
+		let {i_page=1} = this.routeArgs;
+
+		return this.getClass('events').getEventsByTag(new Pages(i_page, limit_per_page), s_tag)
+			.spread((eventList, Pages) =>
+			{
+				if (!eventList || !eventList.length)
+					throw new Errors.HttpError(404);
+
+				tplData['eventList'] = eventList;
+
+				let isAjax = this.getReq().xhr;
+				let baseUrl = [this.getBaseUrl(), 'tag', s_tag];
+				baseUrl = baseUrl.join('/');
+				Pages.setLinksUri(baseUrl).setAjaxPagesType(true);
+
+				let tplFile = (isAjax ? 'events/list.ejs':'events');
+				if (!isAjax)
+				{
+
+				}
+
+				tplData['pages'] = Pages.pages();
+				this.view.setTplData(tplFile, tplData, isAjax);
+				this.getRes().expose(tplData['eventList'], 'eventList');
+				this.getRes().expose(tplData['pages'], 'pages');
+
+				//this.view.addPartialData("user/left", {user: userData});
+				//this.view.addPartialData("user/right", {title: 'right_col'});
+
+				return Promise.resolve(isAjax);
 			});
 	}
 
@@ -214,7 +271,7 @@ class Events extends CtrlMain
 	 * @param l_id
 	 * @returns
 	 */
-	eventCalendar(tplData, startDate, endDate, l_id = null)
+	_eventCalendar(tplData, startDate, endDate, l_id = null)
 	{
 		//console.log("startDate = ", startDate.getFullYear(), startDate.getMonth());
 		//console.log("endDate = ", endDate.getFullYear(), endDate.getMonth());
@@ -222,15 +279,16 @@ class Events extends CtrlMain
 		let startDateTs = startDate.getTime()/1000;
 		let endDateTs = endDate.getTime()/1000;
 
-		return Promise.props({
-			eventDates: this.getClass("events").getEventsDate(startDateTs, endDateTs, l_id),
-			eventLocations: this.getClass("events").getLocations(startDateTs, endDateTs, l_id)
-		})
-			.then((proprs) =>
+		return Promise.all([
+			this.getClass('events').getEventsDate(startDateTs, endDateTs, l_id),
+			 this.getClass('events').getLocations(startDateTs, endDateTs, l_id),
+			this.getClass("events").getEvents(startDateTs, endDateTs, l_id)
+	])
+			.spread((eventDates, eventLocations, eventList) =>
 			{
-				let eventDates = [], eStartTs, eEndTs, eDelta, i;
+				let eStartTs, eEndTs, eDelta, i;
 
-				proprs.eventDates.forEach( (eDate) =>
+				eventDates.forEach( (eDate) =>
 				{
 					eStartTs    = parseInt(eDate["e_start_ts"], 10);
 					eEndTs      = parseInt(eDate["e_end_ts"], 10);
@@ -251,23 +309,25 @@ class Events extends CtrlMain
 					}
 				});
 
-				eventDates = this.getClass("events").helpers.arrayUnique(eventDates);
+				eventDates = this.getClass('events').helpers.arrayUnique(eventDates);
 
-				proprs.eventDates = null;
-				return Promise.resolve([eventDates, proprs.eventLocations, l_id]);
+				return Promise.resolve([eventDates, eventLocations, l_id, eventList]);
 			})
-			.spread((eventDates, eventLocations, l_id) =>
+			.spread((eventDates, eventLocations, l_id, eventList) =>
 			{
 				let tplFile = "events";
 
-				tplData["eventLocations"] = {};
-				tplData["eventLocations"]["list"] = eventLocations;
-				tplData["eventLocations"]["l_id"] = l_id;
+				tplData["eventLocations"] = eventLocations;
+				tplData["eventList"] = eventList;
 
 				tplData["eventCalendar"] = Calendar.render(
 					this.getBaseUrl(),
 					//так как месяцы считаются с нуля
-					{[startDate.getFullYear()]: [startDate.getMonth()+1, startDate.getMonth()+2, startDate.getMonth()+3]},
+					{
+						[startDate.getFullYear()]: [
+							startDate.getMonth()+1, startDate.getMonth()+2, startDate.getMonth()+3
+						]
+					},
 					{},
 					eventDates
 				);
@@ -304,16 +364,23 @@ class Events extends CtrlMain
 				e_longitude: '',
 				e_gps_lat: '',
 				e_gps_lng: '',
-				u_id: ''
+				u_id: '',
+				kw_names: []
 			},
 			eventLocations: null
 		};
 
-		let tplFile = "events";
+		return this.getClass('keywords').getKeyWordList()
+			.then((keywords)=>
+			{
+				let tplFile = "events";
+				this.view.setTplData(tplFile, tplData);
 
-		this.view.setTplData(tplFile, tplData);
+				//экспрот данных в JS на клиента
+				this.getRes().expose(keywords, 'keyWords');
 
-		return Promise.resolve(null);
+				return Promise.resolve(null);
+			});
 	}
 
 	/**
@@ -332,7 +399,7 @@ class Events extends CtrlMain
 
 		let errors = {};
 
-		tplData = CtrlMain.stripTags(tplData, ["dd_start_ts", "dd_end_ts", "s_e_title","t_e_notice", "s_e_address"]);
+		tplData = CtrlMain.stripTags(tplData, ["dd_start_ts", "dd_end_ts", "s_e_title","t_e_notice", "s_e_address", "s_tags"]);
 
 		tplData["t_e_text"] = CtrlMain.cheerio(tplData["t_e_text"]).root().cleanTagEvents().html();
 
@@ -380,7 +447,18 @@ class Events extends CtrlMain
 					.add(this.getUserId(), tplData["s_e_title"], tplData["t_e_notice"],
 						tplData["t_e_text"], tplData["s_e_address"], tplData["f_e_lat"],
 						tplData["f_e_lng"], tplData["i_location_id"], tplData["dd_start_ts"],
-						tplData["dd_end_ts"])
+						tplData["dd_end_ts"]
+					)
+					.then((eventData)=>
+					{
+						return this.getClass('keywords').saveKeyWords(
+							this.getClass('events'), eventData['e_id'],
+							tplData['s_tags'],  1, eventData['e_start_ts']
+						).then(()=>
+						{
+							return Promise.resolve(eventData['e_id']);
+						});
+					})
 					.then( (i_event_id) => 
 					{
 						process.nextTick(()=>
@@ -396,7 +474,7 @@ class Events extends CtrlMain
 									title: title,
 									links: 'https://'+this.getHostPort(),
 									link: 'http://'+this.getHostPort(),
-									event_link: this.getMenuItem['m_path']+'/edit/'+i_event_id
+									link_to: [this.getMenuItem['m_path'],'edit',i_event_id].join('/')
 								}
 							};
 
@@ -438,30 +516,38 @@ class Events extends CtrlMain
 				if (!event)
 					throw new Errors.HttpStatusError(404, "Not found");
 
-				return this.getClass('events').getImageList(event.e_id)
-					.spread((images, allPreviews) =>
+				return Promise.all([
+					this.getClass('events').getImageList(event['e_id']),
+					this.getClass('keywords').getKeyWordList()
+				])
+					.spread((images, keywords) =>
 					{
-						return Promise.resolve([event, images, allPreviews]);
+						//images[0] - это картинки
+						//images[1] это картинки в одном массиве allPreviews
+						return Promise.resolve([event, images[0], images[1], keywords]);
 					});
 			})
-			.spread((event, images, allPreviews) =>
+			.spread((event, images, allPreviews, keywords) =>
 			{
 				if (this.getLocalAccess()['post_upload'])
 				{
-					Object.assign(event, FileUpload.createToken('events', {"e_id": event.e_id}) );
-					this.getRes().expose(FileUpload.exposeUploadOptions('events'), 'eventsUploadOpts');
+					let uploadConfigName = this.getClass('events').constructor.uploadConfigName;
+
+					Object.assign(event, FileUpload.createToken(uploadConfigName, {"e_id": event['e_id']}) );
+					this.getRes().expose(FileUpload.exposeUploadOptions(uploadConfigName), 'eventsUploadOpts');
 				}
 
 				let tplFile = "events";
 				let tplData = { event: event, eventImages: images, eventLocations: null };
 				this.view.setTplData(tplFile, tplData);
 
-				this.view.setPageTitle(event.e_title);
-				this.view.setPageH1(event.e_title);
+				this.view.setPageTitle(event['e_title']);
+				this.view.setPageH1(event['e_title']);
 				//экспрот данных в JS на клиента
 				this.getRes().expose(tplData["event"], 'eventData');
 				this.getRes().expose(tplData["eventImages"], 'eventImages');
 				this.getRes().expose(allPreviews, 'eventImagesPreviews');
+				this.getRes().expose(keywords, 'keyWords');
 
 				return Promise.resolve(null);
 			});
@@ -487,33 +573,33 @@ class Events extends CtrlMain
 		switch(tplData["btn_save_event"])
 		{
 			case 'main':
-				return this.editEvent(tplData, tplFile);
+				return this._editEvent(tplData, tplFile);
 				break;
 			case 'sort_img':
-				return this.sortImg(tplData, tplFile);
+				return this._sortImg(tplData, tplFile);
 				break;
 
 			case 'del_img':
-				return this.delImg(tplData, tplFile);
+				return this._delImg(tplData, tplFile);
 				break;
 
 			case 'del_event':
-				return this.delEvent(tplData, tplFile);
+				return this._delEvent(tplData, tplFile);
 				break;
 		}
 	}
 
-	editEvent(tplData, tplFile)
+	_editEvent(tplData, tplFile)
 	{
 		return this.getClass('events').get(tplData["i_event_id"])
-			.then((event) =>
+			.then((eventData) =>
 			{
-				if (!event)
+				if (!eventData)
 					throw new Errors.HttpStatusError(404, "Not found");
 
 				let errors = {};
 
-				tplData = CtrlMain.stripTags(tplData, ["dd_start_ts", "dd_end_ts", "s_e_title","t_e_notice", "s_e_address"]);
+				tplData = CtrlMain.stripTags(tplData, ["dd_start_ts", "dd_end_ts", "s_e_title","t_e_notice", "s_e_address", "s_tags"]);
 
 				tplData["t_e_text"] = CtrlMain.cheerio(tplData["t_e_text"]).root().cleanTagEvents().html();
 
@@ -548,17 +634,23 @@ class Events extends CtrlMain
 						.then( (location_id) =>
 						{
 							tplData["i_location_id"] = location_id;
-							return Promise.resolve(tplData);
+							return Promise.resolve([tplData, eventData]);
 						});
 				}
 			})
-			.then((tplData) =>
+			.spread((tplData, eventData) =>
 			{
-				return this.getClass('events').edit(
-					tplData["i_event_id"], this.getUserId(),
-					tplData["s_e_title"], tplData["t_e_notice"], tplData["t_e_text"], tplData["s_e_address"],
-					tplData["f_e_lat"], tplData["f_e_lng"], tplData["i_location_id"], tplData["dd_start_ts"], tplData["dd_end_ts"]
-				)
+				return Promise.all([
+					this.getClass('events').edit(
+						tplData["i_event_id"], this.getUserId(),
+						tplData["s_e_title"], tplData["t_e_notice"], tplData["t_e_text"], tplData["s_e_address"],
+						tplData["f_e_lat"], tplData["f_e_lng"], tplData["i_location_id"], tplData["dd_start_ts"], tplData["dd_end_ts"]
+					),
+					this.getClass('keywords').saveKeyWords(
+							this.getClass('events'), eventData['e_id'], tplData['s_tags'],
+							1, eventData['e_start_ts']
+						)
+				])
 					.then(()=>
 					{
 						return Promise.resolve(tplData);
@@ -609,22 +701,17 @@ class Events extends CtrlMain
 	 * @param tplData
 	 * @param tplFile
 	 */
-	sortImg(tplData, tplFile)
+	_sortImg(tplData, tplFile)
 	{
-		return Promise.resolve(tplData)
-			.then((tplData) =>
+		if (!tplData["i_event_id"] || !tplData.hasOwnProperty("ei_pos") || !tplData["ei_pos"].length)
+			return Promise.resolve(tplData);
+
+		return this.getClass('events').sortImgUpd(tplData["i_event_id"], tplData["ei_pos"])
+			.then(() =>
 			{
-				if (!tplData["i_event_id"] || !tplData.hasOwnProperty("ei_pos") || !tplData["ei_pos"].length)
-					return Promise.resolve(tplData);
+				this.view.setTplData(tplFile, tplData);
 
-				return this.getClass('events')
-					.sortImgUpd(tplData["i_event_id"], tplData["ei_pos"])
-					.then(() =>
-					{
-						this.view.setTplData(tplFile, tplData);
-
-						return Promise.resolve(true);
-					});
+				return Promise.resolve(true);
 			});
 	}
 	/**
@@ -635,8 +722,8 @@ class Events extends CtrlMain
 	/*mapActionGet()
 	{
 		return Promise.props({
-			eventList: this.getClass("events").getAll(),
-			eventLocations: this.getClass("events").getLocations()
+			eventList: this.getClass('events').getAll(),
+			eventLocations: this.getClass('events').getLocations()
 		})
 			.then((props) => {
 
@@ -717,22 +804,14 @@ class Events extends CtrlMain
 	 * @param tplFile
 	 * @returns {Promise}
 	 */
-	delImg(tplData, tplFile)
+	_delImg(tplData, tplFile)
 	{
-		return Promise.resolve(tplData)
-			.then( (tplData) =>
-			{
-				if (!tplData["i_ei_id"])
-					throw new Errors.HttpError(400);
+		if (!tplData["i_ei_id"])
+			throw new Errors.HttpError(400);
 
-				return this.getClass('events')
-					.delImage(this.getUserId(), tplData["i_event_id"], tplData["i_ei_id"])
-					.then( () =>
-					{
-						return Promise.resolve(tplData);
-					});
-			})
-			.then( (tplData) =>
+		return this.getClass('events')
+			.delImage(this.getUserId(), tplData["i_event_id"], tplData["i_ei_id"])
+			.then( () =>
 			{
 				this.view.setTplData(tplFile, tplData);
 				return Promise.resolve(true);
@@ -746,22 +825,12 @@ class Events extends CtrlMain
 	 * @param tplFile
 	 * @returns {Promise.<T>}
 	 */
-	delEvent(tplData, tplFile)
+	_delEvent(tplData, tplFile)
 	{
-		return Promise.resolve(tplData)
-			.then( (tplData) =>
-			{
-				return this.getClass('events')
-					.delEvent(this.getUserId(), tplData["i_event_id"])
-					.then( () =>
-					{
-						return Promise.resolve(tplData);
-					});
-			})
-			.then( (tplData) =>
+		return this.getClass('events').delEvent(this.getUserId(), tplData["i_event_id"])
+			.then(() =>
 			{
 				this.view.setTplData(tplFile, tplData);
-
 				return Promise.resolve(true);
 			});
 	}

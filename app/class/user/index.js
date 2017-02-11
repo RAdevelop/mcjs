@@ -7,6 +7,15 @@ const Base = require('app/lib/class');
 
 class User extends Base
 {
+	static get uploadAvaConfigName()
+	{
+		return `user_ava`;
+	}
+	static get uploadPhotoConfigName()
+	{
+		return `user_photo`;
+	}
+
 	static userDisplayName(user)
 	{
 		return (user["u_login"] ? user["u_login"] : (user["u_name"] || user["u_surname"] ? [user["u_name"]||'', user["u_surname"]||''].join(' ') : ''))

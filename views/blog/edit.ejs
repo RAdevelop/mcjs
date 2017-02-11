@@ -225,6 +225,8 @@
 	$imagesWrapper.find('.imagesContainer').sortable({
 		update: function( event, ui )
 		{
+			$( ui.item[0] ).one('click', function(e){ e.stopImmediatePropagation(); } );
+
 			var imgPos = [];
 			$('.imagesContainer img.image').each(function (i, item)
 			{

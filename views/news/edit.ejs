@@ -25,6 +25,13 @@
 						<input type="text" class="form-control" id="s_n_title" name="s_n_title" value="<%=news.n_title%>" placeholder="заголовок новости" required="required" />
 					</div>
 				</div>
+				<div class="form-group s_tags">
+					<label for="s_tags" class="col-sm-2 control-label">метки (теги)</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="s_tags" name="s_tags" value="<%=news['kw_names'].join(', ')%>" placeholder="метки (теги)" maxlength="100" />
+						<span class="help-block">разделитель запятая ","</span>
+					</div>
+				</div>
 				<div class="form-group t_n_notice">
 					<label for="t_n_notice" class="col-sm-2 control-label">анонс *</label>
 					<div class="col-sm-10">
@@ -76,6 +83,7 @@
 <script src="/js/uploadify/jquery.uploadify.min.js" type="text/javascript" ></script>
 <script src="/js/uploadify/jquery.uploadifive.min.js" type="text/javascript" ></script>
 <script src="/js/uploadify/jquery.fileUpload.js" type="text/javascript"></script>
+<script src="/js/jquery/mcAutoComplete.js" type="text/javascript"></script>
 <script type="text/javascript">
 //<!--
 (function($)
@@ -227,6 +235,8 @@
 	$imagesWrapper.find('.imagesContainer').sortable({
 		update: function( event, ui )
 		{
+			$( ui.item[0] ).one('click', function(e){ e.stopImmediatePropagation(); } );
+
 			var imgPos = [];
 			$('.imagesContainer img.image').each(function (i, item)
 			{
@@ -315,6 +325,8 @@
 			return false;
 		});
 	}
+
+	$('#s_tags').mcAutoComplete({tags: MCJS['keyWords']||[], key_name:'kw_name'});
 
 })(jQuery);
 //-->

@@ -20,11 +20,10 @@ class UserPhotoProfile extends UserPhoto
 	 */
 	uploadProfile(u_id, req, res)
 	{
-		let uploadConf = 'user_ava';
 		let ai_id, a_id;
 		let ufile = {};
 
-		const UploadFile = new FileUpload(uploadConf, req, res);
+		const UploadFile = new FileUpload(UserPhoto.uploadAvaConfigName, req, res);
 
 		return UploadFile.upload()
 			.then((file) =>
@@ -60,7 +59,7 @@ class UserPhotoProfile extends UserPhoto
 				return UploadFile.setImageGeo(file)
 					.then((file) =>
 					{
-						return UploadFile.resize(file, uploadConf);
+						return UploadFile.resize(file, UserPhoto.uploadAvaConfigName);
 					});
 			})
 			.then((file) =>
@@ -112,7 +111,7 @@ class UserPhotoProfile extends UserPhoto
 				if (!ava || !ava["ai_id"])
 					return Promise.resolve(ava);
 
-				let sizeParams = FileUpload.getUploadConfig('user_ava').sizeParams;
+				let sizeParams = FileUpload.getUploadConfig(UserPhoto.uploadAvaConfigName).sizeParams;
 
 				ava = Object.assign(ava, FileUpload.getPreviews(sizeParams, ava, "ai_dir")["obj"]);
 
@@ -131,7 +130,7 @@ class UserPhotoProfile extends UserPhoto
 		return this.model('user/photo/profile').getUsersAva(users_ids)
 			.then((ava) =>
 			{
-				let sizeParams = FileUpload.getUploadConfig('user_ava').sizeParams;
+				let sizeParams = FileUpload.getUploadConfig(UserPhoto.uploadAvaConfigName).sizeParams;
 
 				Object.keys(ava).forEach((i) =>
 				{

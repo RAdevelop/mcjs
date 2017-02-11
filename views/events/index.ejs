@@ -1,10 +1,14 @@
 <%  if(!_isXHR){%><%- layout('layout/default') %><% } %>
 <%- include toolbar.ejs %>
-<h1><%=_pageH1 + (typeof selectedDate === 'undefined'? '' :' за '+selectedDate)%></h1>
-<% if(event && ['edit', 'add'].indexOf(_action) != -1){ %><%- include edit.ejs %><% }
+<h1><%=_pageH1%></h1>
+<%
+if(event && ['edit', 'add'].indexOf(_action)>=0){ %><%- include edit.ejs %><% }
 else if (event){%><%- include event.ejs %><%}
-else if (eventList){%><%- include list.ejs %><%}
-else if (eventCalendar){%><%- include calendar.ejs %><%}
+else if (eventCalendar || eventList)
+{
+	if (eventCalendar){%><%- include calendar.ejs %><%}
+	if (eventList){%><%- include list.ejs %><%- include ../pages/index.ejs %><%}
+}
 %>
 <script type="text/javascript">
 	//<!--
@@ -15,5 +19,14 @@ else if (eventCalendar){%><%- include calendar.ejs %><%}
 			window.location.href = this.value;
 		});
 	})(jQuery);
+
+	if (MCJS['pages'] && Pagination)
+	{
+		MCJS['pages']['ajaxDataSrc'] = ['eventList'];
+		MCJS['pages']['ajaxDataTarget'] = 'eventList';
+		MCJS['pages']['jQuerySelector'] = '.eventListContainer .eventListItem';
+
+		Pagination.init();
+	}
 	//-->
 </script>

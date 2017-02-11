@@ -68,7 +68,7 @@ blogBaseUrl = blogBaseUrl.join('/');
 
 				$('__del_blog_dialog__').mcDialog({
 					title: 'Удаление статьи'
-					, body: formDelBlog(MCJS["blogData"]||{}, '<%=_reqBaseUrl%>')
+					, body: formDelBlog(MCJS["blogData"]||{}, '<%=menuItem['m_path']%>')
 					, onOpen: function ($dialog)
 					{
 						$dialog.find('#formDelBlog').postRes({
@@ -123,7 +123,7 @@ blogBaseUrl = blogBaseUrl.join('/');
 
 	function formDelBlog(blog, uri)
 	{
-		var html = '<form class="form-horizontal" action="'+uri+'/" method="post" id="formDelBlog">' +
+		var html = '<form class="form-horizontal" action="'+uri+'/edit/'+blog['b_id']+'/" method="post" id="formDelBlog">' +
 				'<input type="hidden" name="btn_save_blog" value="del_blog"/>' +
 				'<input type="hidden" name="i_blog_id" value="'+blog['b_id']+'"/>' +
 				'<div class="form-group">' +

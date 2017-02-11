@@ -6,30 +6,72 @@ const Base = require('app/lib/class');
 
 class KeyWords extends Base
 {
+	getObjName(objClass)
+	{
+		if (objClass instanceof this.getClass('events').constructor)
+			return 'events_list';
+		if (objClass instanceof this.getClass('news').constructor)
+			return 'news_list';
+		if (objClass instanceof this.getClass('blog').constructor)
+			return 'blog_list';
+		if (objClass instanceof this.getClass('user').constructor)
+			return 'user_photo';
+
+		objClass = null;
+		
+		return null;
+	}
+
 	/**
 	 * получаем список слов-меток для указанного объекта
 	 *
 	 * @param obj_name - например, для таблицы blog_list = blog_list
-	 * @param obj_id - например, для таблицы blog_list = b_id
+	 * @param obj - например, для блогов obj = blog
 	 *
 	 * @returns {Promise}
 	 */
-	getObjKeyWords(obj_name, obj_id)
+	getObjKeyWords(objClass, obj, obj_id_name)
 	{
-		return this.model("keywords").getObjKeyWords(obj_name, obj_id);
+		let obj_name = this.getObjName(objClass);
+		obj[obj_id_name] = parseInt(obj[obj_id_name], 10)||0;
+		obj['kw_names'] = [];
+
+		if (!obj || !!obj[obj_id_name] === false || !!obj_name === false)
+			return Promise.resolve(obj);
+
+		return this.model("keywords").getObjKeyWords(obj_name, obj[obj_id_name])
+			.then((kw_list)=>
+			{
+				if (kw_list && kw_list.length > 0)
+				{
+					obj['kw_names'] = kw_list.map((kw)=>
+					{
+						return kw['kw_name'];
+					});
+				}
+				return Promise.resolve(obj);
+			});
 	}
 
 	getKeyWordByName(kw_name)
 	{
 		return this.model("keywords").getKeyWordByName(kw_name);
 	}
-	countObjByKwId(obj_name, kw_id)
+	countObjByKwId(objClass, kw_id)
 	{
+		let obj_name = this.getObjName(objClass);
+		kw_id = parseInt(kw_id, 10)||0;
+
+		if (!!kw_id === false || !!obj_name === false)
+			return Promise.resolve(0);
+
 		return this.model("keywords").countObjByKwId(obj_name, kw_id);
 	}
 
-	getObjListByKwId(obj_name, kw_id, limit = 20, offset = 0)
+	getObjListByKwId(objClass, kw_id, limit = 20, offset = 0)
 	{
+		let obj_name = this.getObjName(objClass);
+
 		return this.model("keywords").getObjListByKwId(obj_name, kw_id, limit, offset)
 			.then((list)=>
 			{
@@ -45,9 +87,11 @@ class KeyWords extends Base
 			});
 	}
 
-	saveKeyWords(obj_name, s_tags, obj_id, obj_show, obj_create_ts, delimeter = ',')
+	saveKeyWords(objClass, obj_id, s_tags = '', obj_show = 0, obj_create_ts = 0, delimeter = ',')
 	{
-		obj_id = parseInt(obj_id, 10);
+		let obj_name = this.getObjName(objClass);
+		obj_id = parseInt(obj_id, 10)||0;
+
 		if (!obj_id || !!obj_name === false)
 			return Promise.resolve(1);
 
@@ -56,7 +100,7 @@ class KeyWords extends Base
 		s_tags.split(delimeter).forEach((tag)=>
 		{
 			tag = tag.trim();
-			if (tag != '' && tag.length > 3)
+			if (tag != '' && tag.length > 2)
 				tags.push(tag);
 		});
 

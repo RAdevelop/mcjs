@@ -17,7 +17,6 @@
 		var options = $.extend({}, defaults, params);
 		/**/
 
-
 		var $albumImagesMain = $(options.albumImagesMain);
 		var $albumImagesSub = $(options.albumImagesSub);
 		var $albumImagesSubWrapper = $(options.albumImagesSubWrapper).hide();

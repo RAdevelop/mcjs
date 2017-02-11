@@ -9,6 +9,11 @@ const Base = require('app/lib/class');
 
 class Events extends Base
 {
+	static get uploadConfigName()
+	{
+		return `events`;
+	}
+
 	/**
 	 * добавляем новое событие
 	 *
@@ -66,7 +71,15 @@ class Events extends Base
 	 */
 	get(e_id)
 	{
-		return this.model('events').getById(e_id);
+		return this.model('events').getById(e_id)
+			.then((eventData)=>
+			{
+				return this.getClass('keywords').getObjKeyWords(this, eventData, 'e_id')
+					.then((eventData)=>
+					{
+						return Promise.resolve(eventData);
+					});
+			});
 	}
 
 	/**
@@ -81,28 +94,62 @@ class Events extends Base
 	getEvents(date_ts, end_ts = null, l_id = null)
 	{
 		return this.model('events').getEvents(date_ts, end_ts, l_id)
-			.then((eventList) => {
-
+			.then((eventList) =>
+			{
 				if (!eventList)
 					return Promise.resolve(null);
 
-				let sizeParams = FileUpload.getUploadConfig('events').sizeParams;
-
-				//let allPreviews = [];
-				eventList.forEach((ev, indx) => {
-
-					eventList[indx]["previews"] = {};
-					if (ev["ei_dir"])
-					{
-						ev = FileUpload.getPreviews(sizeParams, ev, "ei_dir", true)["obj"];
-						//ev = obj["obj"];
-
-						//allPreviews = allPreviews.concat(obj["previews"]);
-						//ev["previews"]['orig'] = ev["ei_dir"] + '/orig/' + ev["ei_name"];
-					}
-				});
+				let sizeParams = FileUpload.getUploadConfig(Events.uploadConfigName).sizeParams;
+				let list = FileUpload.getPreviews(sizeParams, eventList, "ei_dir", true, 'ei_name');
+				eventList = list["obj"];
+				list['previews'] = null;
 
 				return Promise.resolve(eventList);
+			});
+	}
+
+	getEventsByTag(Pages, s_tag)
+	{
+		return this.getClass('keywords').getKeyWordByName(s_tag)
+			.then((kw)=>
+			{
+				if (!kw)
+					return Promise.resolve([0, null]);
+
+				return this.getClass('keywords').countObjByKwId(this, kw['kw_id'])
+					.then((cnt)=>
+					{
+						return Promise.resolve([cnt, kw['kw_id']]);
+					});
+			})
+			.spread((cnt, kw_id)=>
+			{
+				Pages.setTotal(cnt);
+				if (!cnt)
+					return [null, Pages];
+
+				if (Pages.limitExceeded())
+					throw new FileErrors.HttpError(404);
+
+				return this.getClass('keywords')
+					.getObjListByKwId(this, kw_id, Pages.getLimit(), Pages.getOffset())
+					.then((obj_ids)=>
+					{
+						if (!obj_ids)
+							return Promise.resolve([null, Pages]);
+
+						return this.model('events').getEventsByIds(obj_ids)
+							.then((eventList) =>
+							{
+								if (!eventList)
+									return Promise.resolve([null, Pages]);
+
+								let sizeParams = FileUpload.getUploadConfig(Events.uploadConfigName).sizeParams;
+								eventList = FileUpload.getPreviews(sizeParams, eventList, "ei_dir")["obj"];
+
+								return Promise.resolve([eventList, Pages]);
+							});
+					});
 			});
 	}
 
@@ -137,7 +184,28 @@ class Events extends Base
 	 */
 	getLocations(start_ts, end_ts, l_id = null)
 	{
-		return this.model('events').getLocations(start_ts, end_ts, l_id);
+		return this.model('events').getLocations(start_ts, end_ts, l_id)
+			.then((locations)=>
+			{
+				let placeList = {
+					list: [],
+					selected: {}
+				};
+				if (locations)
+				{
+					placeList['list'] = locations;
+					locations.some((loc)=>
+					{
+						if (loc['l_id'] == l_id)
+						{
+							placeList['selected'] = loc;
+							return true;
+						}
+						return false;
+					});
+				}
+				return Promise.resolve(placeList);
+			});
 	}
 
 	/**
@@ -150,11 +218,10 @@ class Events extends Base
 	 */
 	uploadImage(u_id, req, res)
 	{
-		let uploadConf = 'events';
 		let ei_id, e_id;
 		let ufile = {};
 
-		const UploadFile = new FileUpload(uploadConf, req, res);
+		const UploadFile = new FileUpload(Events.uploadConfigName, req, res);
 
 		return UploadFile.upload()
 			.then((file) => {
@@ -197,7 +264,7 @@ class Events extends Base
 
 				return UploadFile.setImageGeo(file)
 					.then((file) => {
-						return UploadFile.resize(file, uploadConf);
+						return UploadFile.resize(file, Events.uploadConfigName);
 					});
 			})
 			.then((file) => {
@@ -245,17 +312,16 @@ class Events extends Base
 	getImage(ei_id)
 	{
 		return this.model('events').getImage(ei_id)
-			.then((image) => {
-
+			.then((image) => 
+			{
 				if (!image)
 					throw new FileErrors.io.FileNotFoundError("фотография не найдена: EVents.getImage(ei_id="+ei_id+")");
-				
-				let sizeParams = FileUpload.getUploadConfig('events').sizeParams;
-				image["previews"] = {};
-				if (image["ei_dir"])
-				{
-					image = FileUpload.getPreviews(sizeParams, image, "ei_dir", false)["obj"];
-				}
+
+				let sizeParams = FileUpload.getUploadConfig(Events.uploadConfigName).sizeParams;
+				let previews = FileUpload.getPreviews(sizeParams, image, "ei_dir", true, 'ei_name');
+				previews['previews'] = null;
+				image = previews['obj'];
+
 				return Promise.resolve(image);
 			});
 	}
@@ -269,29 +335,16 @@ class Events extends Base
 	getImageList(e_id)
 	{
 		return this.model('events').getImageList(e_id)
-			.then((images) => {
-
+			.then((images) => 
+			{
 				if (!images)
 					return [[], []];
 
-				let sizeParams = FileUpload.getUploadConfig('events').sizeParams;
+				let sizeParams = FileUpload.getUploadConfig(Events.uploadConfigName).sizeParams;
+				let previews = FileUpload.getPreviews(sizeParams, images, "ei_dir", true, 'ei_name');
+				images = previews['obj'];
 
-				let allPreviews = [];
-				images.forEach((image, indx) => {
-
-					images[indx]["previews"] = {};
-					if (image["ei_dir"])
-					{
-						let obj = FileUpload.getPreviews(sizeParams, image, "ei_dir", true);
-						image = obj["obj"];
-
-						allPreviews = allPreviews.concat(obj["previews"]);
-
-						image["previews"]['orig'] = image["ei_dir"] + '/orig/' + image["ei_name"];
-					}
-				});
-
-				return [images, allPreviews];
+				return [images, previews['previews']];
 			});
 	}
 	
@@ -369,24 +422,28 @@ class Events extends Base
 	 */
 	delEvent(u_id, e_id)
 	{
-		return this.get(e_id)
-			.then((event) => {
+		e_id = parseInt(e_id, 10)||0;
 
+		if (!!e_id === false)
+			return Promise.resolve(null);
+
+		return this.get(e_id)
+			.then((event) =>
+			{
 				if (!event)
 					return Promise.resolve(null);
 
-				let dir = Path.join(FileUpload.getDocumentRoot, FileUpload.getUploadConfig('events')["pathUpload"], FileUpload.getAlbumUri(e_id));
+				let dir = Path.join(FileUpload.getDocumentRoot, FileUpload.getUploadConfig(Events.uploadConfigName)["pathUpload"], FileUpload.getAlbumUri(e_id));
 
 				return FileUpload.deleteDir(dir, true)
-					.then(() => {
-						return Promise.resolve(event);
+					.then(() =>
+					{
+						return this.model('events').delEvent(event['e_id'])
+							.then(() =>
+							{
+								return this.getClass('keywords').saveKeyWords(this, event['e_id']);
+							});
 					});
-			})
-			.then((event) => {
-				if (!event)
-					return Promise.resolve(e_id);
-
-				return this.model('events').delEvent(event.e_id);
 			});
 	}
 }

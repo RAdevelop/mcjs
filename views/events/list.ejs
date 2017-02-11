@@ -4,7 +4,7 @@ eventList.forEach(function (eItem)
 {
 	let hasImg = (!!eItem["previews"]["512_384"]);
 	let imgSrc = (hasImg ? eItem["previews"]["512_384"] : '/_0.gif');
-			let eDate = (eItem["e_start_dd"] == eItem["e_end_dd"] ? [eItem["e_start_dd"]] : [eItem["e_start_dd"], eItem["e_end_dd"]]).join(' &mdash; ');
+			let eDate = (eItem["dd_start_ts"] == eItem["dd_end_ts"] ? [eItem["dd_start_ts"]] : [eItem["dd_start_ts"], eItem["dd_end_ts"]]).join(' &mdash; ');
 	%><div class="eventListItem">
 			<a  class="eventListItemInfo" href="<%=[_reqBaseUrl, eItem["e_id"], eItem["e_alias"]].join('/')%>/">
 				<img src="<%=imgSrc%>" alt="<%=eItem["e_title"]%>"/>
@@ -17,5 +17,5 @@ eventList.forEach(function (eItem)
 			</a>
 	</div><%
 });
- %></div>
+%></div>
 </div>

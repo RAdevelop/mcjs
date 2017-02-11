@@ -80,7 +80,7 @@ class Events extends BaseModel
 			})
 			.then(() => 
 			{
-				return Promise.resolve(i_e_id);
+				return this.getById(i_e_id);
 			});
 	}
 
@@ -170,6 +170,11 @@ class Events extends BaseModel
 	 */
 	getById(e_id)
 	{
+		e_id = parseInt(e_id, 10)||0;
+
+		if (!!e_id === false)
+			return Promise.resolve(null);
+
 		let sql = `SELECT e_id, e_create_ts, e_update_ts, e_start_ts, e_end_ts, e_title, e_alias, 
 		e_notice, e_text, e_address, e_location_id, e_latitude, e_longitude, e_gps_lat, e_gps_lng, e_location_pids, 
 		u_id, e_img_cnt
@@ -177,7 +182,7 @@ class Events extends BaseModel
 		, FROM_UNIXTIME(e_end_ts, "%d-%m-%Y") AS dd_end_ts
 		FROM events_list
 		WHERE e_id = ?`;
-		e_id = parseInt(e_id, 10);
+
 		return this.constructor.conn().sRow(sql, [e_id]);
 	}
 
@@ -191,6 +196,9 @@ class Events extends BaseModel
 	 */
 	getLocations(start_ts, end_ts, l_id = null)
 	{
+		l_id = null; //нужен ли тут l_id?
+		
+		//let kinds = ['country','province','locality'];
 		let kinds = ['country','province','locality'];
 		let sqlData = [];
 		l_id = parseInt(l_id, 10);
@@ -216,8 +224,8 @@ class Events extends BaseModel
 			 FROM (SELECT NULL) AS z
 			 JOIN events_list AS e ON(e.e_end_ts >= ? AND e.e_start_ts < ?)
 			 JOIN events_locations AS el ON(${on_events_locations} el.e_id = e.e_id )
-			 JOIN location_names AS ln ON(el.l_id = ln.l_id AND ln.l_kind IN(${(new Array(kinds.length)).fill('?').join(',')}))
-			 JOIN location AS l ON(l.l_id = ln.l_id)
+			 JOIN location_names AS ln ON(el.l_id = ln.l_id AND ln.l_kind IN(${this.constructor.placeHoldersForIn(kinds)}))
+			 JOIN location AS l ON(l.l_id = ln.l_id AND l.l_level IN(1,2))
 			 GROUP BY el.l_id
 			 ORDER BY l.l_lk`;//, ln.l_name
 
@@ -244,8 +252,8 @@ class Events extends BaseModel
 		let sql =
 			`SELECT e.e_id, e.e_create_ts, e.e_update_ts, e.e_start_ts, e.e_end_ts, e.e_title, e.e_alias, 
 			e.e_notice, e.e_address
-			, FROM_UNIXTIME(e.e_start_ts, "%d-%m-%Y") AS e_start_dd
-			, FROM_UNIXTIME(e.e_end_ts, "%d-%m-%Y") AS e_end_dd
+			, FROM_UNIXTIME(e.e_start_ts, "%d-%m-%Y") AS dd_start_ts
+			, FROM_UNIXTIME(e.e_end_ts, "%d-%m-%Y") AS dd_end_ts
 			, e.e_location_id, e.e_latitude, e.e_longitude, e.e_gps_lat, e.e_gps_lng, e.e_location_pids
 			, e.u_id, ei.ei_id, ei.ei_latitude, ei.ei_longitude, ei.ei_dir, ei.ei_pos, ei.ei_name
 			FROM (SELECT NULL) AS z
@@ -267,8 +275,33 @@ class Events extends BaseModel
 		//console.log(sql);
 		//console.log(sqlData);
 		//console.log('\n');
-		return this.constructor.conn().s(sql, sqlData);
+		return this.constructor.conn().ps(sql, sqlData);
 	}
+
+	getEventsByIds(e_ids)
+	{
+		if (!!e_ids.length === false)
+			return Promise.resolve(null);
+
+		let sql =
+			`SELECT e.e_id, e.e_create_ts, e.e_update_ts, e.e_start_ts, e.e_end_ts, e.e_title, e.e_alias, 
+			e.e_notice, e.e_address
+			, FROM_UNIXTIME(e.e_start_ts, "%d-%m-%Y") AS dd_start_ts
+			, FROM_UNIXTIME(e.e_end_ts, "%d-%m-%Y") AS dd_end_ts
+			, e.e_location_id, e.e_latitude, e.e_longitude, e.e_gps_lat, e.e_gps_lng, e.e_location_pids
+			, e.u_id, ei.ei_id, ei.ei_latitude, ei.ei_longitude, ei.ei_dir, ei.ei_pos, ei.ei_name
+			FROM (SELECT NULL) AS z
+			JOIN events_list AS e ON(e.e_id IN(${this.constructor.placeHoldersForIn(e_ids)}))
+			LEFT JOIN events_image AS ei ON(ei.e_id = e.e_id AND ei.ei_pos = 0)
+			ORDER BY e.e_start_ts DESC`;
+
+		/*console.log(sql);
+		console.log(e_ids);
+		console.log('\n');*/
+
+		return this.constructor.conn().ps(sql, e_ids);
+	}
+
 	/**
 	 * список дат событий за указанный интервал дат (в формете timestamp)
 	 *

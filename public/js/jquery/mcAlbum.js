@@ -57,7 +57,7 @@
 				'</div>' +
 				'<div class="form-group t_album_text">' +
 				'<div class="col-sm-12">' +
-				'<textarea class="form-control" id="t_album_text" name="t_album_text" placeholder="укажите описание альбома" maxlength="255">'+options.aText+'</textarea>' +
+				'<textarea class="form-control" style="height: 300px; max-height: 500px;" id="t_album_text" name="t_album_text" placeholder="укажите описание альбома" >'+options.aText+'</textarea>' +
 				'</div></div></form>';
 		}
 		
@@ -573,8 +573,10 @@
 		if (options.sortable)
 		{
 			$albumWrapper.sortable({
-				update: function()//event, ui
+				update: function(event, ui)//event, ui
 				{
+					$( ui.item[0] ).one('click', function(e){ e.stopImmediatePropagation(); } );
+
 					var imgPos = [];
 					$(options.albumImages +' img').each(function (i, item)
 					{

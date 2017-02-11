@@ -604,24 +604,40 @@ class File
 	 * @param spread
 	 * @returns {Object}
 	 */
-	static getPreviews(sizeParams, obj, obj_dir, spread = false)
+	static getPreviews(sizeParams, obj, obj_dir, spread = false, obj_key_name = null)
 	{
 		let previews = [];
 		//if (!obj["previews"]) obj["previews"] = {};
 
-		if (!obj["previews"])
-			obj["previews"] = {};
-
-		if (obj[obj_dir])
+		let single = false;
+		if (!!obj.map === false)
 		{
-			sizeParams.forEach(function (size)
-			{
-				obj["previews"][size.w+'_'+size.h] = obj[obj_dir] + '/' + size.w+'_'+size.h +'.jpg';
-
-				if (spread)
-					previews.push(obj["previews"][size.w+'_'+size.h]);
-			});
+			obj = [obj];
+			single = true;
 		}
+
+		obj.forEach((item)=>
+		{
+			if (!item["previews"])
+				item["previews"] = {};
+
+			if (item[obj_dir])
+			{
+				sizeParams.forEach(function (size)
+				{
+					item["previews"][size.w+'_'+size.h] = `${item[obj_dir]}/${size.w}_${size.h}.jpg`;
+
+					if (spread)
+					{
+						item["previews"]['orig'] = item[obj_dir] + '/orig/' + item[obj_key_name];
+						previews.push(item["previews"][size.w+'_'+size.h]);
+					}
+				});
+			}
+		});
+
+		if (single)
+			obj = obj.shift();
 
 		return {obj: obj, previews: previews};
 	}

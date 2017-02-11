@@ -130,9 +130,9 @@ class Profile extends CtrlMain
 		return this.getUser(this.getUserId())
 			.then((userData) =>
 			{
-
+				let uploadConfigName = this.getClass('user/photo').constructor.uploadAvaConfigName;
 				let tplData = {};
-				Object.assign(tplData, userData, FileUpload.createToken('user_ava', {"u_id": userData["u_id"]}) );
+				Object.assign(tplData, userData, FileUpload.createToken(uploadConfigName, {"u_id": userData["u_id"]}) );
 
 				let tplFile = 'user/profile/edit.ejs';
 				this.view.setTplData(tplFile, tplData);
@@ -141,7 +141,7 @@ class Profile extends CtrlMain
 				//экспрот данных в JS на клиента
 				this.getRes().expose(this.reqQuery().hasOwnProperty('empty_name'), 'userEmptyName');
 				this.getRes().expose(userData, 'userLocation');
-				this.getRes().expose(FileUpload.exposeUploadOptions('user_ava'), 'avaUploadOpts');
+				this.getRes().expose(FileUpload.exposeUploadOptions(uploadConfigName), 'avaUploadOpts');
 
 				return Promise.resolve(null);
 			});
@@ -320,7 +320,9 @@ class Profile extends CtrlMain
 						ava["cropSrc"] = ava["previews"]["1024_768"];
 						ava["dir"] = ava["ai_dir"];
 
-						return FileUpload.cropImage(ava, 'user_ava', tplData["i_crop_x"], tplData["i_crop_y"], tplData["i_crop_width"], tplData["i_crop_height"])
+						let uploadConfigName = this.getClass('user/photo').constructor.uploadAvaConfigName;
+
+						return FileUpload.cropImage(ava, uploadConfigName, tplData["i_crop_x"], tplData["i_crop_y"], tplData["i_crop_width"], tplData["i_crop_height"])
 							.then((ava) =>
 							{
 								return Promise.resolve(ava);

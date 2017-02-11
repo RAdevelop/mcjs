@@ -91,7 +91,13 @@ function _htmlDialog(data)
 			.modal('hide')
 			.on('shown.bs.modal', function (event)
 			{
-				options.onOpen($(this));
+				var $dialog = $(this);
+				options.onOpen($dialog);
+
+				$dialog.find('.modal-dialog').animate({
+					'margin-top': parseInt($dialog.css('margin-top'), 10) + window.scrollY
+				}, 600);
+
 				console.log("$mcDialog.on('shown.bs.modal', function (event)");
 			})
 			.on('hidden.bs.modal', function (event)

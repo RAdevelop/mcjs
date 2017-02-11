@@ -8,8 +8,6 @@ else if (newsList){%>
 <%- include ../pages/index.ejs %>
 <script type="text/javascript">
 	//<!--
-	//console.log(MCJS);
-
 	if (MCJS['pages'] && Pagination)
 	{
 		MCJS['pages']['ajaxDataSrc'] = ['newsList'];
@@ -18,7 +16,6 @@ else if (newsList){%>
 
 		Pagination.init();
 	}
-	//console.log(Pagination);
 	//-->
 </script>
 <%} %>

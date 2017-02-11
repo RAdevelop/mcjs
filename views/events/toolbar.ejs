@@ -20,20 +20,13 @@
 		</div --><%
 		if (eventLocations && eventLocations['list'] && eventLocations['list'].length){%>
 		<div class="btn-group btn-group-sm" role="group" aria-label="Выбор региона">
-			<button type="button" class="btn btn-default dropdown-toggle toolbarBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-fw fa-map-marker"></i><%
-				let selectedReg = 'регионы';
-				eventLocations['list'].forEach(function (eLoc)
-				{
-					if (eventLocations["l_id"] == eLoc["l_id"])
-						selectedReg = eLoc["l_name"];
-
-				});%><%=selectedReg%>&nbsp;<i class="caret"></i></button>
+			<button type="button" class="btn btn-default dropdown-toggle toolbarBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-fw fa-map-marker"></i><%=(eventLocations["selected"]["l_name"]||'регионы')%>&nbsp;<i class="caret"></i></button>
 			<ul class="dropdown-menu eventLocationsMenu">
 				<li><a href="<%=_reqBaseUrl%>/">все события</a></li><%
 				let cssLocSelected, locHref;
 				eventLocations.list.forEach(function (eLoc, iLoc)
 				{
-					cssLocSelected = (eventLocations["l_id"] == eLoc["l_id"] ? 'selected' : '');
+					cssLocSelected = (eventLocations["selected"]["l_id"] == eLoc["l_id"] ? 'selected' : '');
 					locHref = [_reqBaseUrl, _reqPath].join('/') + '?l_id='+eLoc["l_id"];
 
 				%><li class="<%=cssLocSelected%>"><a href="<%=locHref%>"><span style="padding-left: <%=eLoc["l_e_level"]%>0px;"><%=eLoc["l_name"]%></span></a></li><%

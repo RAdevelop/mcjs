@@ -9,6 +9,10 @@ const Base = require('app/lib/class');
 
 class News extends Base
 {
+	static get uploadConfigName()
+	{
+		return `news`;
+	}
 	/**
 	 * добавляем новое событие
 	 *
@@ -57,7 +61,18 @@ class News extends Base
 	 */
 	get(n_id, n_show = null)
 	{
-		return this.model('news').getById(n_id, n_show);
+		return this.model('news').getById(n_id, n_show)
+			.then((news)=>
+			{
+				if (!news)
+					return Promise.resolve(null);
+
+				return this.getClass('keywords').getObjKeyWords(this, news, 'n_id')
+					.then((news)=>
+					{
+						return Promise.resolve(news);
+					});
+			});
 	}
 
 	/**
@@ -87,16 +102,57 @@ class News extends Base
 						if (!newsList)
 							return Promise.resolve([null, Pages]);
 
-						let sizeParams = FileUpload.getUploadConfig('news').sizeParams;
-
-						newsList.forEach((news, indx) => {
-
-							newsList[indx]["previews"] = {};
-							if (news["ni_dir"])
-								news = FileUpload.getPreviews(sizeParams, news, "ni_dir", true)["obj"];
-						});
+						let sizeParams = FileUpload.getUploadConfig(News.uploadConfigName).sizeParams;
+						newsList = FileUpload.getPreviews(sizeParams, newsList, "ni_dir")['obj'];
 
 						return Promise.resolve([newsList, Pages]);
+					});
+			});
+	}
+
+	getNewsListByTag(Pages, s_tag)
+	{
+		return this.getClass('keywords').getKeyWordByName(s_tag)
+			.then((kw)=>
+			{
+				if (!kw)
+					return Promise.resolve([0, null]);
+
+				return this.getClass('keywords').countObjByKwId(this, kw['kw_id'])
+					.then((cnt)=>
+					{
+						return Promise.resolve([cnt, kw['kw_id']]);
+					});
+			})
+			.spread((cnt, kw_id)=>
+			{
+				Pages.setTotal(cnt);
+				if (!cnt)
+					return [null, Pages];
+
+				if (Pages.limitExceeded())
+					return Promise.reject(new FileErrors.HttpError(404));
+
+				return this.getClass('keywords')
+					.getObjListByKwId(this, kw_id, Pages.getLimit(), Pages.getOffset())
+					.then((obj_ids)=>
+					{
+						if (!obj_ids)
+							return Promise.resolve([null, Pages]);
+
+						return this.model('news').getNewsListByIds(obj_ids, 1)
+							.then((newsList) =>
+							{
+								//console.log('newsList = ', newsList);
+
+								if (!newsList)
+									return Promise.resolve([null, Pages]);
+
+								let sizeParams = FileUpload.getUploadConfig(News.uploadConfigName).sizeParams;
+								newsList = FileUpload.getPreviews(sizeParams, newsList, "ni_dir")['obj'];
+
+								return Promise.resolve([newsList, Pages]);
+							});
 					});
 			});
 	}
@@ -111,11 +167,10 @@ class News extends Base
 	 */
 	uploadImage(u_id, req, res)
 	{
-		let uploadConf = 'news';
 		let ni_id, n_id;
 		let ufile = {};
 
-		const UploadFile = new FileUpload(uploadConf, req, res);
+		const UploadFile = new FileUpload(News.uploadConfigName, req, res);
 
 		return UploadFile.upload()
 			.then((file) =>
@@ -160,7 +215,7 @@ class News extends Base
 				return UploadFile.setImageGeo(file)
 					.then((file) =>
 					{
-						return UploadFile.resize(file, uploadConf);
+						return UploadFile.resize(file, News.uploadConfigName);
 					});
 			})
 			.then((file) =>
@@ -209,16 +264,16 @@ class News extends Base
 	getImage(ni_id)
 	{
 		return this.model('news').getImage(ni_id)
-			.then((image) => {
-
+			.then((image) =>
+			{
 				if (!image)
 					throw new FileErrors.io.FileNotFoundError("фотография не найдена: EVents.getImage(ni_id="+ni_id+")");
-				
-				let sizeParams = FileUpload.getUploadConfig('news').sizeParams;
-				image["previews"] = {};
 
-				if (image["ni_dir"])
-					image = FileUpload.getPreviews(sizeParams, image, "ni_dir", false)["obj"];
+				let sizeParams = FileUpload.getUploadConfig(News.uploadConfigName).sizeParams;
+				let previews = FileUpload.getPreviews(sizeParams, image, "ni_dir", true, 'ni_name');
+				previews['previews'] = null;
+
+				image = previews['obj'];
 
 				return Promise.resolve(image);
 			});
@@ -238,24 +293,12 @@ class News extends Base
 				if (!images)
 					return [[], []];
 
-				let sizeParams = FileUpload.getUploadConfig('news').sizeParams;
+				let sizeParams = FileUpload.getUploadConfig(News.uploadConfigName).sizeParams;
+				let previews = FileUpload.getPreviews(sizeParams, images, "ni_dir", true, 'ni_name');
 
-				let allPreviews = [];
-				images.forEach((image, indx) => {
+				images = previews['obj'];
 
-					images[indx]["previews"] = {};
-					if (image["ni_dir"])
-					{
-						let obj = FileUpload.getPreviews(sizeParams, image, "ni_dir", true);
-						image = obj["obj"];
-
-						allPreviews = allPreviews.concat(obj["previews"]);
-
-						image["previews"]['orig'] = image["ni_dir"] + '/orig/' + image["ni_name"];
-					}
-				});
-
-				return [images, allPreviews];
+				return [images, previews['previews']];
 			});
 	}
 	
@@ -326,32 +369,27 @@ class News extends Base
 	}
 
 	/**
-	 * удаляем указанное событие
+	 * удаляем
 	 *
-	 * @param u_id
-	 * @param n_id
+	 * @param news
 	 * @returns {Promise}
 	 */
-	delEvent(u_id, n_id)
+	delNews(news)
 	{
-		return this.get(n_id)
-			.then((news) => {
+		news['n_id'] = parseInt(news['n_id'], 10)||0;
+		if (!news || !!news['n_id'] === false)
+			return Promise.resolve(0);
 
-				if (!news)
-					return Promise.resolve(null);
+		let dir = Path.join(FileUpload.getDocumentRoot, FileUpload.getUploadConfig(News.uploadConfigName)["pathUpload"], FileUpload.getAlbumUri(news['n_id']));
 
-				let dir = Path.join(FileUpload.getDocumentRoot, FileUpload.getUploadConfig('news')["pathUpload"], FileUpload.getAlbumUri(n_id));
-
-				return FileUpload.deleteDir(dir, true)
-					.then(() => {
-						return Promise.resolve(news);
-					});
+		return FileUpload.deleteDir(dir, true)
+			.then(() =>
+			{
+				return this.model('news').delNews(news['n_id']);
 			})
-			.then((news) => {
-				if (!news)
-					return Promise.resolve(n_id);
-
-				return this.model('news').delEvent(news.n_id);
+			.then(() =>
+			{
+				return this.getClass('keywords').saveKeyWords(this, news['n_id']);
 			});
 	}
 }

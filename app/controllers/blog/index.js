@@ -23,20 +23,20 @@ class Blog extends CtrlMain
 	{
 		return {
 			"index": {
-				'^\/?subj\/[1-9]+[0-9]*\/[a-z0-9-_]{3,}\/page\/[1-9]+[0-9]*\/?$': [,'ui_bs_id','s_bs_alias',, 'i_page']
+				'^\/?$': null
+				,'^\/?subj\/[1-9]+[0-9]*\/[a-z0-9-_]{3,}\/page\/[1-9]+[0-9]*\/?$': [,'ui_bs_id','s_bs_alias',, 'i_page']
 				,'^\/?subj\/[1-9]+[0-9]*\/[a-z0-9-_]{3,}\/?$': [,'ui_bs_id','s_bs_alias']
 				,'^\/?[1-9]+[0-9]*\/[a-z0-9-_]{3,}\/?$': ['i_blog_id','s_blog_alias']
 				,"^\/?tag\/\\S+\/page\/[1-9]+[0-9]*\/?$" : ['b_tag','s_tag',,'i_page'] //по тегам
 				,"^\/?tag\/\\S+\/?$" : ['b_tag','s_tag']
 				,"^\/?page\/[1-9]+[0-9]*\/?$" : [ ,'i_page'] //список с постраничкой
-				,'^\/?$': null
 			},
 			"add": {
 				'^\/?$': null
 			},
 			"edit": {
-				'^\/?[0-9]+\/?$': ['i_blog_id']
-				,'^\/?$': null
+				'^\/?$': null
+				,'^\/?[0-9]+\/?$': ['i_blog_id']
 			},
 			"upload": {
 				'^\/?$': null
@@ -65,25 +65,25 @@ class Blog extends CtrlMain
 			blogDraft:b_draft
 		};
 
-		if (i_blog_id)
-			return this.blog(tplData, i_blog_id, s_blog_alias, i_u_id);
-
-		if (b_tag)
+		if (i_blog_id && !!s_blog_alias)
+		{
+			return this._blog(tplData, i_blog_id, s_blog_alias, i_u_id);
+		}
+		else if (b_tag)
 		{
 			s_tag = decodeURIComponent(s_tag);
-			return this.tagBlogList(tplData, s_tag);
+			return this._tagBlogList(tplData, s_tag);
 		}
 
-		return this.blogList(tplData, i_u_id, ui_bs_id, s_bs_alias, b_draft);
+		return this._blogList(tplData, i_u_id, ui_bs_id, s_bs_alias, b_draft);
 	}
 
-	tagBlogList(tplData, s_tag)
+	_tagBlogList(tplData, s_tag)
 	{
 		let {i_page=1} = this.routeArgs;
 
 		return Promise.all([
-			this.getClass("blog")
-				.getBlogListByTag(new Pages(i_page, limit_per_page), s_tag),
+			this.getClass("blog").getBlogListByTag(new Pages(i_page, limit_per_page), s_tag),
 			this.getUser(),
 			this.getClass('blog').getBlogSubjectList()
 		])
@@ -166,7 +166,7 @@ class Blog extends CtrlMain
 	 * @returns {Promise}
 	 * @throws Errors.HttpStatusError
 	 */
-	blog(tplData, i_blog_id, s_alias, i_u_id=null)
+	_blog(tplData, i_blog_id, s_alias, i_u_id=null)
 	{
 		//let show = (this.getLocalAccess()['post_edit'] ? null : 1);
 		
@@ -232,7 +232,7 @@ class Blog extends CtrlMain
 	 * @param s_bs_alias
 	 * @returns {Promise}
 	 */
-	blogList(tplData, i_u_id=null, ui_bs_id=null, s_bs_alias=null, b_draft=false)
+	_blogList(tplData, i_u_id=null, ui_bs_id=null, s_bs_alias=null, b_draft=false)
 	{
 		let {i_page=1} = this.routeArgs;
 		//let show = (this.getLocalAccess()['post_edit'] ? null : 1);
@@ -400,8 +400,8 @@ class Blog extends CtrlMain
 						.then((blog)=>
 						{
 							return this.getClass('keywords').saveKeyWords(
-									this.getClass('blog').constructor.keyWordsObjName, tplData['s_tags'],
-									blog['b_id'], blog['b_show'], blog['b_create_ts']
+									this.getClass('blog'), blog['b_id'],
+									tplData['s_tags'],  blog['b_show'], blog['b_create_ts']
 								).then(()=>
 								{
 									return Promise.resolve(blog['b_id']);
@@ -478,7 +478,7 @@ class Blog extends CtrlMain
 					{
 						if (this.getLocalAccess()['post_upload'])
 						{
-							let uploadTypeConf = 'user_blog';
+							let uploadTypeConf = this.getClass('blog').constructor.uploadConfigName;
 							Object.assign(blog, FileUpload.createToken(uploadTypeConf, {"b_id": blog.b_id, "u_id": blog.u_id}) );
 							this.getRes().expose(FileUpload.exposeUploadOptions(uploadTypeConf), 'blogUploadOpts');
 						}
@@ -528,25 +528,25 @@ class Blog extends CtrlMain
 			{
 				if (!blog || !(isRootAdmin || blog['u_id'] == this.getUserId()))
 					throw new Errors.HttpError(404);
-				
+
 				switch(tplData["btn_save_blog"])
 				{
 					default:
 						throw new Errors.HttpError(401);
 						break;
 					case 'main':
-						return this.editBlog(tplData, tplFile, blog);
+						return this._editBlog(tplData, tplFile, blog);
 						break;
 					case 'sort_img':
-						return this.sortImg(tplData, tplFile);
+						return this._sortImg(tplData, tplFile);
 						break;
 
 					case 'del_img':
-						return this.delImg(tplData, tplFile);
+						return this._delImg(tplData, tplFile);
 						break;
 
 					case 'del_blog':
-						return this.delBlog(tplData, tplFile);
+						return this._delBlog(tplData, tplFile, blog);
 						break;
 				}
 			});
@@ -559,7 +559,7 @@ class Blog extends CtrlMain
 	 * @param blog
 	 * @returns {Promise}
 	 */
-	editBlog(tplData, tplFile, blog)
+	_editBlog(tplData, tplFile, blog)
 	{
 		return Promise.resolve(tplData)
 			.then((tplData) =>
@@ -593,10 +593,9 @@ class Blog extends CtrlMain
 						tplData["t_b_text"], tplData["ui_bs_id"],
 						tplData["b_show"], tplData['s_tags']
 					),
-					this.getClass('keywords')
-						.saveKeyWords(
-							this.getClass('blog').constructor.keyWordsObjName, tplData['s_tags'],
-							blog['b_id'], tplData['b_show'], blog['b_create_ts']
+					this.getClass('keywords').saveKeyWords(
+							'blog', blog['b_id'], tplData['s_tags'],
+							tplData['b_show'], blog['b_create_ts']
 						)
 				])
 					.then(() =>
@@ -643,20 +642,16 @@ class Blog extends CtrlMain
 	 * @param tplFile
 	 * @returns {Promise}
 	 */
-	sortImg(tplData, tplFile)
+	_sortImg(tplData, tplFile)
 	{
-		return Promise.resolve(tplData)
-			.then((tplData) =>
-			{
-				if (!tplData["i_blog_id"] || !tplData.hasOwnProperty("bi_pos") || !tplData["bi_pos"].length)
-					return Promise.resolve(tplData);
+		if (!tplData["i_blog_id"] || !tplData.hasOwnProperty("bi_pos") || !tplData["bi_pos"].length)
+			return Promise.resolve(tplData);
 
-				return this.getClass('blog').sortImgUpd(tplData["i_blog_id"], tplData["bi_pos"])
-					.then(() =>
-					{
-						this.view.setTplData(tplFile, tplData);
-						return Promise.resolve(true);
-					});
+		return this.getClass('blog').sortImgUpd(tplData["i_blog_id"], tplData["bi_pos"])
+			.then(() =>
+			{
+				this.view.setTplData(tplFile, tplData);
+				return Promise.resolve(true);
 			});
 	}
 
@@ -716,21 +711,17 @@ class Blog extends CtrlMain
 	 * @param tplFile
 	 * @returns {Promise}
 	 */
-	delImg(tplData, tplFile)
+	_delImg(tplData, tplFile)
 	{
-		return Promise.resolve(tplData)
-			.then((tplData) =>
-			{
-				if (!tplData["i_bi_id"])
-					throw new Errors.HttpError(400);
+		if (!tplData["i_bi_id"])
+			throw new Errors.HttpError(400);
 
-				return this.getClass('blog')
-					.delImage(this.getUserId(), tplData["i_blog_id"], tplData["i_bi_id"])
-					.then(() =>
-					{
-						this.view.setTplData(tplFile, tplData);
-						return Promise.resolve(true);
-					});
+		return this.getClass('blog')
+			.delImage(this.getUserId(), tplData["i_blog_id"], tplData["i_bi_id"])
+			.then(() =>
+			{
+				this.view.setTplData(tplFile, tplData);
+				return Promise.resolve(true);
 			});
 	}
 
@@ -739,19 +730,16 @@ class Blog extends CtrlMain
 	 *
 	 * @param tplData
 	 * @param tplFile
+	 * @param blog
 	 * @returns {Promise}
 	 */
-	delBlog(tplData, tplFile)
+	_delBlog(tplData, tplFile, blog)
 	{
-		return Promise.resolve(tplData)
-			.then((tplData) =>
+		return this.getClass('blog').delBlog(this.getUserId(), blog)
+			.then(() =>
 			{
-				return this.getClass('blog').delBlog(this.getUserId(), tplData["i_blog_id"])
-					.then(() =>
-					{
-						this.view.setTplData(tplFile, tplData);
-						return Promise.resolve(true);
-					});
+				this.view.setTplData(tplFile, tplData);
+				return Promise.resolve(true);
 			});
 	}
 
