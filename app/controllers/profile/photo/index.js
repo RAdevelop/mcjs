@@ -18,10 +18,11 @@ class ProfilePhoto extends CtrlMain
 			"index": {
 				"^\/?[1-9]+[0-9]*\/[1-9]+[0-9]*\/page\/[1-9]+[0-9]*\/?$" : ["i_u_id", "i_a_id", ,"i_page"] //список фоток в альбоме с постраничкой
 				,"^\/?[1-9]+[0-9]*\/[1-9]+[0-9]*\/?$" : ["i_u_id", "i_a_id"] //список фоток в альбоме юзера
-
+				,"^\/?tag\/\\S+\/page\/[1-9]+[0-9]*\/?$" : ['b_tag','s_tag',,'i_page'] //по тегам
+				,"^\/?tag\/\\S+\/?$" : ['b_tag','s_tag']
 				,"^\/?[1-9]+[0-9]*\/page\/[1-9]+[0-9]*\/?$" : ["i_u_id", ,"i_page"] //список альбомов юзера с постраничкой
-				,"^\/?[1-9]+[0-9]*\/?$" : ["i_u_id"] //профиль юзера
-				,"^\/?$" : null //список юзеров
+				,"^\/?[1-9]+[0-9]*\/?$" : ["i_u_id"] //список альбомов
+				,"^\/?$" : null //
 			},
 			"upload": {
 				"^\/?$" : null
@@ -39,7 +40,10 @@ class ProfilePhoto extends CtrlMain
 		//console.log(this.getLocalAccess());
 
 		let xhr = this.getReq().xhr;
-		let {i_u_id=this.getUserId(), i_a_id} = this.routeArgs;
+		let {i_u_id=this.getUserId(), i_a_id=null, b_tag=null, s_tag=null} = this.routeArgs;
+
+		//TODO список альбомов по тегу
+		b_tag = !!b_tag;
 
 		return this.getUser(i_u_id)
 			.then((userData) =>
@@ -199,14 +203,14 @@ class ProfilePhoto extends CtrlMain
 		//console.log(tplData);
 
 		return this._albumPostActions(tplData)
-			.then((tplData) => { //если валидация успешна
-
+			.then((tplData) =>
+			{ //если валидация успешна
 				//tplData.formError.error = false;
 				this.view.setTplData(tplFile, tplData);
 				return Promise.resolve(true);
 			})
-			.catch(Errors.FormError, (err) => {
-
+			.catch(Errors.FormError, (err) =>
+			{
 				this.view.setTplData(tplFile, err.data);
 				return Promise.resolve(true);
 			});
@@ -255,7 +259,21 @@ class ProfilePhoto extends CtrlMain
 			case 'del_album':
 				return this._delAlbum(tplData);
 				break;
+			
+			case 'get_tags':
+				return this._getTags(tplData);
+				break;
 		}
+	}
+
+	_getTags(tplData)
+	{
+		return this.getClass('keywords').getKeyWordList()
+			.then((list)=>
+			{
+				tplData['keyWords'] = list;
+				return Promise.resolve(tplData);
+			});
 	}
 
 	/**
@@ -286,7 +304,7 @@ class ProfilePhoto extends CtrlMain
 		if (!tplData["i_u_id"] || tplData["i_u_id"] != this.getUserId())
 			throw new Errors.HttpError(400);
 
-		tplData = CtrlMain.stripTags(tplData, ["s_album_name", "t_album_text"]);
+		tplData = CtrlMain.stripTags(tplData, ["s_album_name", "t_album_text", "s_tags"]);
 
 		let errors = {};
 
@@ -294,16 +312,21 @@ class ProfilePhoto extends CtrlMain
 			errors["s_album_name"] = 'Укажите название альбома';
 
 		return Promise.resolve(errors)
-			.then((errors) =>
+			.then((errors)=>
 			{
 				if (this.parseFormErrors(tplData, errors, 'Ошибка при создании фотоальбома'))
 				{
 					return this.getClass('user/photo')
 						.addNamedAlbum(this.getUserId(), tplData["s_album_name"], tplData["t_album_text"])
-						.then((a_id) =>
+						.then((album) =>
 						{
-							tplData["a_id"] = a_id;
-							return Promise.resolve(tplData);
+							return this.getClass('keywords').saveKeyWords(
+								this.getClass('user/photo'), album['b_id'], tplData['s_tags'],  1, album['a_create_ts']
+							).then(()=>
+							{
+								tplData["a_id"] = album['a_id'];
+								return Promise.resolve(tplData);
+							});
 						});
 				}
 			});
@@ -317,7 +340,7 @@ class ProfilePhoto extends CtrlMain
 	 */
 	_editAlbum(tplData)
 	{
-		tplData = CtrlMain.stripTags(tplData, ["s_album_name", "t_album_text"]);
+		tplData = CtrlMain.stripTags(tplData, ["s_album_name", "t_album_text", "s_tags"]);
 
 		if (!tplData["i_a_id"] || !tplData.hasOwnProperty("s_album_name"))
 			throw new Errors.HttpError(400);
@@ -327,26 +350,35 @@ class ProfilePhoto extends CtrlMain
 			errors["s_album_name"] = 'Укажите название альбома';
 
 		return Promise.resolve(errors)
-			.then((errors) => 
+			.then((errors)=>
 			{
 				if (this.parseFormErrors(tplData, errors, 'Ошибка при редактировании фотоальбома'))
 				{
 					return this.getClass('user/photo')
 						.getAlbum(this.getUserId(), this.getUserId(), tplData["i_a_id"])
-						.then((album) => {
-
+						.then((album) =>
+						{
 							if (!album || !album["a_is_owner"])
 								throw new Errors.HttpError(400);
 
-							return this.getClass('user/photo')
-								.editAlbumNamed(this.getUserId(), tplData["i_a_id"], tplData["s_album_name"], tplData["t_album_text"]);
+							return Promise.all([
+								this.getClass('user/photo')
+									.editAlbumNamed(
+										this.getUserId(), tplData["i_a_id"],
+										tplData["s_album_name"], tplData["t_album_text"]
+									),
+								this.getClass('keywords').saveKeyWords(
+									this.getClass('user/photo'), album['a_id'], tplData['s_tags'],
+									1, album['a_create_ts']
+								)
+							])
+								.then(() =>
+								{
+									tplData["a_id"] = album['a_id'];
+									return Promise.resolve(tplData);
+								});
 						});
 				}
-			})
-			.then((a_id) => 
-			{
-				tplData["a_id"] = a_id;
-				return Promise.resolve(tplData);
 			});
 	}
 

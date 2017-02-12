@@ -80,6 +80,13 @@ class Photo extends User
 
 	_updAlbum(u_id, a_type_id, a_id, a_name, a_alias, a_text)
 	{
+		a_id = parseInt(a_id, 10)||0;
+		u_id = parseInt(u_id, 10)||0;
+		a_type_id = parseInt(a_type_id, 10)||0;
+
+		if (a_id  === false || u_id === false || a_type_id === false)
+			return Promise.resolve(a_id);
+
 		let sql = `UPDATE album SET 
 			a_name = ? 
 			, a_alias = ? 
@@ -88,10 +95,6 @@ class Photo extends User
 			WHERE a_id = ? AND u_id = ? AND a_type_id = ?;`;
 
 		let now_ts = Moment().unix();
-
-		a_id = parseInt(a_id, 10);
-		u_id = parseInt(u_id, 10);
-		a_type_id = parseInt(a_type_id, 10);
 
 		return this.constructor.conn()
 			.upd(sql, [a_name, a_alias, a_text, now_ts, a_id, u_id, a_type_id])
@@ -324,15 +327,18 @@ class Photo extends User
 	 */
 	getAlbum(u_id, a_id)
 	{
+		u_id = parseInt(u_id, 10)||0;
+		a_id = parseInt(a_id, 10)||0;
+
+		if (!!u_id === false || !!a_id === false)
+			return Promise.resolve(null);
+
 		let sql = `SELECT a.a_id, a.u_id, a.a_type_id, a.a_name, a.a_alias, a.a_text, a.a_img_cnt, a.a_create_ts
 		, a.a_update_ts, t.a_type_alias, FROM_UNIXTIME(a.a_create_ts, "%d-%m-%Y") AS dt_create_ts
 		, IF(t.a_type_alias = ?, 1, 0) AS a_profile, IF(t.a_type_alias = ?, 1, 0) AS a_named
 		FROM (SELECT NULL) AS z
 		JOIN album AS a ON (a.a_id = ? AND a.u_id = ?)
 		JOIN album_type AS t ON (t.a_type_id = a.a_type_id);`;
-
-		u_id = parseInt(u_id, 10);
-		a_id = parseInt(a_id, 10);
 
 		return this.constructor.conn()
 			.sRow(sql, [this.constructor.albumProfile, this.constructor.albumNamed, a_id, u_id]);

@@ -21,7 +21,11 @@ class UserPhoto extends User
 	{
 		let a_alias = this.helpers.translit(a_name);
 			a_alias = this.helpers.clearSymbol(a_alias, '-');
-		return this.model('user/photo').createAlbumNamed(u_id, a_name, a_alias, a_text);
+		return this.model('user/photo').createAlbumNamed(u_id, a_name, a_alias, a_text)
+			.then((a_id)=>
+			{
+				return this.getAlbum(u_id, u_id, a_id);
+			});
 	}
 
 	/**
@@ -94,8 +98,8 @@ class UserPhoto extends User
 	getAlbum(u_id, owner_u_id, a_id)
 	{
 		return this.model('user/photo').getAlbum(owner_u_id, a_id)
-			.then((album) => {
-
+			.then((album) =>
+			{
 				if (!album)
 					return Promise.resolve(null);
 
@@ -103,7 +107,19 @@ class UserPhoto extends User
 				album["a_profile"]  = (album["a_profile"]   == 1);
 				album["a_named"]    = (album["a_named"]     == 1);
 
-				return Promise.resolve(album);
+				album['a_text_arr'] = album['a_text'].split(/\r?\n/);
+				album['a_text_arr'].forEach((text, inx, arr)=>
+				{
+					if (text == '')
+						arr.splice(inx, 1);
+				});
+				//console.log(album['a_text_arr']);
+
+				return this.getClass('keywords').getObjKeyWords(this, album, 'a_id')
+					.then((album)=>
+					{
+						return Promise.resolve(album);
+					});
 			});
 	}
 
@@ -347,10 +363,15 @@ class UserPhoto extends User
 				return FileUpload.deleteDir(dir, true)
 					.then(() => 
 					{
-						if (!album || !album["a_named"])
-							return Promise.resolve(a_id);
-
-						return this.model('user/photo').delAlbum(album.a_id, u_id);
+						return this.model('user/photo').delAlbum(album.a_id, u_id)
+							.then(() =>
+							{
+								return this.getClass('keywords').saveKeyWords(this, album['a_id']);
+							})
+							.then(() =>
+							{
+								return Promise.resolve(album);
+							});
 					});
 			});
 	}

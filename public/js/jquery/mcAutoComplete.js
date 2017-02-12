@@ -1,6 +1,8 @@
 (function($) {
 
-	//return ;
+	if (!!$.fn.mcAutoComplete === true)
+		return ;
+
 	$.fn.mcAutoComplete = function(params)
 	{
 		/* значение по умолчанию */
@@ -40,7 +42,7 @@
 		// don't navigate away from the field on tab when selecting an item
 			.on( "keydown", function( event )
 			{
-				if ( event.keyCode === $.ui.keyCode.TAB && $( this ).autocomplete( "instance" ).menu.active )
+				if (event.keyCode === $.ui.keyCode.TAB && $( this ).autocomplete( "instance" ).menu.active )
 				{
 					event.preventDefault();
 				}
@@ -50,8 +52,7 @@
 				source: function( request, response )
 				{
 					// delegate back to autocomplete, but extract the last term
-					response( $.ui.autocomplete.filter(
-						options.tags, extractLast( request.term ) ) );
+					response( $.ui.autocomplete.filter(options.tags, extractLast( request.term )));
 				},
 				focus: function()
 				{

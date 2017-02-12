@@ -38,9 +38,9 @@
 <script src="/js/uploadify/jquery.fileUpload.js" type="text/javascript"></script>
 <script src="/js/mcMap.js" type="text/javascript"></script>
 <script type="text/javascript" src="/js/jquery/mcAlbum.js"></script>
+<script src="/js/jquery/mcAutoComplete.js" type="text/javascript"></script>
 <script type="text/javascript">
 //<!--
-//console.log(MCJS);
 if (MCJS['pages'] && Pagination)
 {
 	<% if(albums){ %>
@@ -54,9 +54,6 @@ if (MCJS['pages'] && Pagination)
 	<% } %>
 	Pagination.init();
 }
-//console.log(Pagination);
-
-
 (function($)
 {
 	var mcAlbumProps = {

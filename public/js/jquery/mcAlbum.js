@@ -39,26 +39,46 @@
 		var	$btnDelAlbum = $albumToolbar.find('#btn_del_album_modal');
 		var	$btnAlbumUpload = $albumToolbar.find('#btn_album_upload');
 
-		function formAddAlbum(options)
+		function formAddAlbum(options, action)
 		{
 			options.aName = (options.aName || '').htmlspecialchars(options.aName || '');
 			options.aText = (options.aText || '').htmlspecialchars(options.aText || '');
 
 			var a_id = (options.album && options.album.a_id  && options.album.a_is_owner ? options.album.a_id : null);
-			
+			var album = {};
+
+			if (action == 'add')
+			{
+				options.aName = '';
+				options.aText = '';
+				a_id = null;
+			}
+			else if (action == 'edit')
+			{
+				album = options.album||{};
+			}
+
 			return '<form class="form-horizontal" action="'+options.uri+'" method="post" id="formAddAlbum">' +
 				'<input type="hidden" name="btn_save_album" value="'+options.btnSaveAlbumVal+'"/>' +
 				'<input type="hidden" name="i_u_id" value="'+options.u_id+'"/>' +
 				'<input type="hidden" name="i_a_id" value="'+a_id+'"/>' +
 				'<div class="form-group s_album_name">' +
-				'<div class="col-sm-12">' +
-				'<input type="text" class="form-control" id="s_album_name" name="s_album_name" value="'+options.aName+'" placeholder="название альбома *" required maxlength="100"/>' +
+					'<div class="col-sm-12">' +
+						'<input type="text" class="form-control" id="s_album_name" name="s_album_name" value="'+options.aName+'" placeholder="название альбома *" required maxlength="100"/>' +
+					'</div>' +
+				'</div>' +
+				'<div class="form-group s_tags">' +
+					'<div class="col-sm-12">' +
+					'<input type="text" class="form-control" id="s_tags" name="s_tags" value="'+(album['kw_names']||[]).join(', ')+'" placeholder="метки (теги)" maxlength="100" />' +
+					'<span class="help-block">метки (теги): разделитель запятая ","</span>' +
 				'</div>' +
 				'</div>' +
 				'<div class="form-group t_album_text">' +
-				'<div class="col-sm-12">' +
-				'<textarea class="form-control" style="height: 300px; max-height: 500px;" id="t_album_text" name="t_album_text" placeholder="укажите описание альбома" >'+options.aText+'</textarea>' +
-				'</div></div></form>';
+					'<div class="col-sm-12">' +
+					'<textarea class="form-control" style="height: 250px; max-height: 500px;" id="t_album_text" name="t_album_text" placeholder="укажите описание альбома" >'+options.aText+'</textarea>' +
+					'</div>'+
+				'</div>'+
+				'</form>';
 		}
 		
 		function formDelAlbum(options)
@@ -675,15 +695,16 @@
 			options.btnSaveAlbumVal = 'add_album';
 			$('__add_album_dialog__').mcDialog({
 				title: 'Создание нового альбома'
-				, body: formAddAlbum(options)
+				, body: formAddAlbum(options, 'add')
 				, onOpen: function ($dialog)
 				{
-					$dialog.find('#formAddAlbum').postRes({
+					var $formAddAlbum = $dialog.find('#formAddAlbum');
+					$formAddAlbum.postRes({
 						btnId: $dialog.find('#btn_add_album'),
 						onSuccess: function($respDialog, resp)
 						{
 							if(resp["a_id"])
-								window.location.href = options.uri+'/'+options.u_id+'/'+resp["a_id"]+'/';
+								window.location.href = [options.uri,options.u_id,resp["a_id"]].join('/');
 
 							//не показать диалог
 							return false;
@@ -698,6 +719,8 @@
 							$dialog.show().css('overflow', 'visible');
 						}
 					});
+
+					tagsList($formAddAlbum);
 				}
 				, buttons: [
 					{
@@ -726,22 +749,41 @@
 			event.preventDefault();
 			event.stopPropagation();
 			options.btnSaveAlbumVal = 'edit_album';
-			options.aName = $albumName.text();
+
+			/*options.aName = $albumName.text();
 			options.aText = $albumText.text();
+			*/
+			options.aName = options.album['a_name'];
+			options.aText = options.album['a_text'];
+
 			$('__add_album_dialog__').mcDialog({
 				title: 'Редактирование альбома'
-				, body: formAddAlbum(options)
+				, body: formAddAlbum(options, 'edit')
 				, onOpen: function ($dialog)
 				{
-					$dialog.find('#formAddAlbum').postRes({
+					var $formAddAlbum = $dialog.find('#formAddAlbum');
+					$formAddAlbum.postRes({
 						btnId: $dialog.find('#btn_edit_album'),
 						onSuccess: function($respDialog, resp)
 						{
 							//$albumName.text(resp["s_album_name"].htmlspecialchars(resp["s_album_name"]));
 							//$albumText.text(resp["t_album_text"].htmlspecialchars(resp["t_album_text"]));
 
+							options.album['a_name'] = resp["s_album_name"];
+							options.album['a_text'] = resp["t_album_text"];
+							options.album['kw_names'] = resp["s_tags"].split(',')||[];
+
 							$albumName.text(resp["s_album_name"]);
-							$albumText.text(resp["t_album_text"]);
+
+							options.album['a_text_arr'] = resp["t_album_text"].split(/\r?\n/);
+							options.album['a_text_arr'].forEach((text, inx, arr)=>
+							{
+								if (text == '')
+									arr.splice(inx, 1);
+							});
+
+
+							$albumText.html('<p>'+options.album['a_text_arr'].join('</p><p>')+'</p>');
 
 							//не показать диалог
 							$dialog.modal('hide');
@@ -757,6 +799,8 @@
 							$dialog.show().css('overflow', 'visible');
 						}
 					});
+
+					tagsList($formAddAlbum);
 				}
 				, buttons: [
 					{
@@ -842,6 +886,37 @@
 
 			openImageDialog($(this), options);
 		});
+
+		function tagsList($formAddAlbum)
+		{
+			if (!!MCJS['keyWords'] === false)
+				MCJS['keyWords'] = [];
+
+			if (MCJS['keyWords'].length)
+			{
+				$formAddAlbum.find('#s_tags').mcAutoComplete({tags: MCJS['keyWords'], key_name:'kw_name'});
+				return;
+			}
+
+			var postData = {
+				'btn_save_album': 'get_tags'
+			};
+			$.ajax({
+				url: options.uri,
+				method: "POST",
+				data: postData,
+				dataType: "json"
+			})
+				.done(function(resData)
+				{
+					MCJS['keyWords'] = resData['keyWords']||[];
+					$formAddAlbum.find('#s_tags').mcAutoComplete({tags: MCJS['keyWords'], key_name:'kw_name'});
+				})
+				.fail(function(resData)
+				{
+					//console.log('fail = ', resData);
+				});
+		}
 		
 		return $(this);
 	}

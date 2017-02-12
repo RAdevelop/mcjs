@@ -593,7 +593,7 @@ class Blog extends CtrlMain
 						tplData["b_show"], tplData['s_tags']
 					),
 					this.getClass('keywords').saveKeyWords(
-							'blog', blog['b_id'], tplData['s_tags'],
+							this.getClass('blog'), blog['b_id'], tplData['s_tags'],
 							tplData['b_show'], blog['b_create_ts']
 						)
 				])
