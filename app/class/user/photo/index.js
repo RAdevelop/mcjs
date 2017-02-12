@@ -262,18 +262,14 @@ class UserPhoto extends User
 	delImage(u_id, a_id, ai_id, file = {})
 	{
 		return FileUpload.deleteFile(file.path || '')
-			.then(() => {
-
+			.then(() =>
+			{
 				return this.getImage(u_id, u_id, ai_id);
 			})
-			.then((image) => {
-
+			.then((image) =>
+			{
 				if (!image || image["a_id"] != a_id || !image["ai_is_owner"])
 					throw new FileErrors.io.FileNotFoundError();
-
-				return Promise.resolve(image);
-			})
-			.then((image) => {
 
 				let dir = (image["ai_dir"] ? image["ai_dir"] : (file["webDirPath"] ? file["webDirPath"] : null));
 
@@ -283,16 +279,17 @@ class UserPhoto extends User
 				dir = Path.dirname(Path.join(FileUpload.getDocumentRoot, dir));
 
 				return FileUpload.deleteDir(dir, true)
-					.then(() => {
+					.then(() =>
+					{
 						return this.model('user/photo').delImage(u_id, a_id, ai_id);
 					})
-					.then(() => {
-
+					.then(() =>
+					{
 						return Promise.resolve(image);
 					});
 			})
-			.catch((err) => {
-
+			.catch((err) =>
+			{
 				console.log('class UserPhoto delImage catch');
 				Logger.error(err);
 				console.log('\n');

@@ -138,8 +138,7 @@ class Blog extends CtrlMain
 					baseUrl.push('subj', ui_bs_id, s_bs_alias);*/
 
 				baseUrl = baseUrl.join('/');
-				Pages.setLinksUri(baseUrl)
-					.setAjaxPagesType(true);
+				Pages.setLinksUri(baseUrl).setAjaxPagesType(true);
 
 				tplData["pages"] = Pages.pages();
 

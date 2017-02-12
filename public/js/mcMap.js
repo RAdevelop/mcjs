@@ -57,7 +57,8 @@
 
 		var defaultsState = {
 			center: [55.76, 37.64],
-			zoom: 10
+			zoom: 10,
+			locationAddress: ''
 		};
 
 		var defaultsOptions = {};
@@ -71,7 +72,9 @@
 		function init()
 		{
 			$('#'+self.mapId).attr('data-map-init', 'true').html('');
-			self.map = new ymaps.Map(self.mapId, state, options);
+
+			if (state.center[0] && state.center[1])
+				self.map = new ymaps.Map(self.mapId, state, options);
 		}
 
 		return Promise.resolve(typeof ymaps != 'undefined')
@@ -100,7 +103,24 @@
 				return ymaps.ready(init)
 					.then(function ()
 					{
-						return ymaps.vow.resolve(self.map);
+						if (!state.center[0] && !state.center[1])
+						{
+							return ymaps.geocode(state.locationAddress)
+								.then(function (res)
+								{
+									state.center = res.geoObjects.get(0).geometry.getCoordinates();
+									self.map = new ymaps.Map(self.mapId, state, options);
+
+									return ymaps.vow.resolve(self.map);
+								})
+								.fail(function (err)
+								{
+									console.log(err);
+									throw err;
+								});
+						}
+						else
+							return ymaps.vow.resolve(self.map);
 					});
 			})
 			.fail(function (err)

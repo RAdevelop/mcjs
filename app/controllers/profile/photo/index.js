@@ -383,7 +383,8 @@ class ProfilePhoto extends CtrlMain
 
 		return this.getClass('user/photo')
 			.delImage(this.getUserId(), tplData["i_a_id"], tplData["i_ai_id"])
-			.then(() => {
+			.then(() =>
+			{
 				return Promise.resolve(tplData);
 			})
 			.catch(Errors.io.FileNotFoundError, (err) => 
