@@ -13,7 +13,7 @@
 			</ul>
 		</div><% }%>
 		<div class="btn-group btn-group-sm" role="group" aria-label="список событий">
-			<a href="<%=menuItem['m_path']+'/'%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-calendar"></i> календарь</a>
+			<a href="<%=[menuItem['m_path'], selectedDate['obj']['i_yy'], selectedDate['obj']['i_mm']].join('/')%>/" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-calendar"></i> календарь</a>
 		</div>
 		<!-- div class="btn-group btn-group-sm" role="group" aria-label="список событий на карте">
 			<a href="<%=menuItem['m_path']+'/map/'%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-map-o"></i> на карте</a>

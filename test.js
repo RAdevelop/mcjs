@@ -97,22 +97,15 @@ Promise.mapSeries(locationArr, function (s_location)
 			return self.getClass('location').create(locationData);
 		});
 });*/
+"use strict";
 
-const Promise = require("bluebird");
-
-function prom()
+let data = ['', 0, '0', null, 1, '1', 'stroka', 'абв'];
+data.forEach((d)=>
 {
-	return new Promise((resolve, reject)=>
-	{
-		console.log((new Date()));
-		return resolve('RA');
-	});
-}
+	d = parseInt(d, 10);
+	//console.log(d, !!d);
+});
 
-
-prom().delay(3000)
-	.then((res)=>
-	{
-		console.log((new Date()));
-		console.log(res);
-	});
+let d = parseInt('0', 10);
+console.log(d, !!d);
+console.log((d ? 'true' : 'false'));

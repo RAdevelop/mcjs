@@ -205,6 +205,7 @@ class Events extends BaseModel
 
 		start_ts = parseInt(start_ts, 10);
 		end_ts = parseInt(end_ts, 10);
+		//end_ts = Moment(end_ts*1000).add(1,'day').unix();
 
 		sqlData.unshift(start_ts, end_ts);
 
@@ -272,9 +273,11 @@ class Events extends BaseModel
 		sql += `
 		ORDER BY e.e_start_ts DESC`;
 
-		//console.log(sql);
-		//console.log(sqlData);
-		//console.log('\n');
+		/*console.log('\n');
+		console.log(sql);
+		console.log(sqlData);
+		console.log('\n');*/
+
 		return this.constructor.conn().ps(sql, sqlData);
 	}
 

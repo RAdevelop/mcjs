@@ -25,6 +25,17 @@ class Calendar
 		};
 	}
 
+	static monthName(i_mm)
+	{
+		if(i_mm < 0)
+			i_mm = 0;
+
+		if (i_mm in Calendar.namesMonth)
+		return Calendar.namesMonth[i_mm];
+
+		return null;
+	}
+
 	/**
 	 * дни недели (воскресенье 7)
 	 * @returns {номер дня недели: сокращенное название дня недели}
@@ -179,7 +190,7 @@ class Calendar
 		/*let table = `<table class="calendar col-xs-12 col-md-3"><caption><a href="${baseUrl}/${prevYear}/${prevMoth}/" class="fa fa-2x fa-fw fa-long-arrow-left floatLeft"></a><a href="${baseUrl}/${year}/${month+1}/">${Calendar.namesMonth[month]} ${year}</a><a href="${baseUrl}/${nextYear}/${nextMoth}/" class="fa fa-2x fa-fw fa-long-arrow-right floatRight"></a></caption>
 	<thead><tr>${htmlWeekDays}</tr></thead><tbody>${htmlDays}</tbody></table>`;*/
 
-		let table = `<table class="calendar col-xs-12 col-md-3"><caption><a href="${baseUrl}/${prevYear}/${prevMoth}/" class="fa fa-2x fa-fw fa-long-arrow-left floatLeft"></a>${Calendar.namesMonth[month]} ${year}<a href="${baseUrl}/${nextYear}/${nextMoth}/" class="fa fa-2x fa-fw fa-long-arrow-right floatRight"></a></caption>
+		let table = `<table class="calendar col-xs-12 col-md-3"><caption><a href="${baseUrl}/${prevYear}/${prevMoth}/" class="fa fa-2x fa-fw fa-long-arrow-left floatLeft"></a><a href="${baseUrl}/${year}/${month+1}/">${Calendar.namesMonth[month]} ${year}</a><a href="${baseUrl}/${nextYear}/${nextMoth}/" class="fa fa-2x fa-fw fa-long-arrow-right floatRight"></a></caption>
 	<thead><tr>${htmlWeekDays}</tr></thead><tbody>${htmlDays}</tbody></table>`;
 
 		return table;
