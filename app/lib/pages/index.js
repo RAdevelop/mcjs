@@ -6,7 +6,7 @@ class Pages
 	constructor(page = 1, per_page = 20, total = 0)
 	{
 		this.setPage(page).setLimit(per_page).setTotal(total).setLinksUri()
-			.setAjaxPagesType();
+			.setAjaxPagesType(true);
 	}
 
 	setAjaxPagesType(ajax = false)

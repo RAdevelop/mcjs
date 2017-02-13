@@ -136,10 +136,8 @@ class Motoshop extends CtrlMain
 					this.view.setPageH1(tplData.location["l_name"], true);
 					this.view.setPageDescription(this.view.getPageTitle());
 				}
-
-				let exposeList = 'motoshopList';
-				Pages.setLinksUri([this.getBaseUrl(), i_loc_id].join('/'))
-					.setAjaxPagesType(true);
+				
+				Pages.setLinksUri([this.getBaseUrl(), i_loc_id].join('/'));
 
 				tplData["pages"] = Pages.pages();
 

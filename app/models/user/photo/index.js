@@ -319,6 +319,37 @@ class Photo extends User
 			.s(sql, [this.constructor.albumProfile, this.constructor.albumNamed,u_id, 0]);
 	}
 
+	getAlbumListByIds(a_ids)
+	{
+		//return Promise.resolve(null);
+
+		let sql = `SELECT a.a_id, a.u_id, a.a_type_id, a.a_name, a.a_alias, a.a_text, a.a_img_cnt, 
+		a.a_create_ts, a.a_update_ts, t.a_type_alias
+		, FROM_UNIXTIME(a.a_create_ts, "%d-%m-%Y") AS dt_create_ts
+		,IF(t.a_type_alias = ?, 1, 0) AS a_profile
+		,IF(t.a_type_alias = ?, 1, 0) AS a_named
+		,ai.ai_id, ai.ai_latitude, ai.ai_longitude, ai.ai_dir
+		FROM (SELECT NULL) AS z
+		JOIN album_type AS t ON (t.a_type_alias = ?)
+		JOIN album AS a ON (a.a_id IN(${this.constructor.placeHoldersForIn(a_ids)}) AND t.a_type_id = a.a_type_id)
+		JOIN album_image AS ai ON (ai.a_id = a.a_id AND ai.u_id = a.u_id AND ai.ai_pos = ?)
+		ORDER BY a.a_create_ts DESC`;
+
+		let sqlData = [].concat(a_ids);
+		sqlData.unshift(
+			this.constructor.albumProfile,
+			this.constructor.albumNamed,
+			this.constructor.albumNamed
+		);
+		sqlData.push(0);
+
+
+		/*console.log(sql);
+		console.log(sqlData);*/
+
+		return this.constructor.conn().ps(sql, sqlData);
+	}
+
 	/**
 	 * выбранный альбом пользователя
 	 * @param u_id

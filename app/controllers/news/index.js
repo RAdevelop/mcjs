@@ -27,7 +27,7 @@ class News extends CtrlMain
 				,"^\/?tag\/\\S+\/page\/[1-9]+[0-9]*\/?$" : ['b_tag','s_tag',,'i_page'] //по тегам
 				,"^\/?tag\/\\S+\/?$" : ['b_tag','s_tag']
 				,'^\/?[0-9]+\/\\S+\/?$': ['i_news_id','s_news_alias']
-				,"^\/?page\/[1-9]+[0-9]*\/?$" : [ ,"i_page"] //список с постраничкой
+				,"^\/?page\/[1-9]+[0-9]*\/?$" : [ ,'i_page'] //список с постраничкой
 			},
 			"add": {
 				'^\/?$': null
@@ -73,24 +73,23 @@ class News extends CtrlMain
 	{
 		let {i_page=1} = this.routeArgs;
 
-		return this.getClass("news").getNewsListByTag(new Pages(i_page, limit_per_page), s_tag)
+		return this.getClass('news').getNewsListByTag(new Pages(i_page, limit_per_page), s_tag)
 			.spread((newsList, Pages) =>
 			{
-				tplData["newsList"] = newsList;
-				let exposeNews = 'newsList';
+				tplData['newsList'] = newsList;
 
 				let baseUrl = [this.getBaseUrl(), 'tag', s_tag];
 
 				baseUrl = baseUrl.join('/');
-				Pages.setLinksUri(baseUrl).setAjaxPagesType(true);
+				Pages.setLinksUri(baseUrl);
 
-				tplData["pages"] = Pages.pages();
+				tplData['pages'] = Pages.pages();
 
 				let isAjax = this.getReq().xhr;
 				let tplFile = (isAjax ? 'news/list.ejs':'news');
 
-				this.getRes().expose(newsList, exposeNews);
-				this.getRes().expose(tplData["pages"], 'pages');
+				this.getRes().expose(newsList, 'newsList');
+				this.getRes().expose(tplData['pages'], 'pages');
 
 				this.view.setTplData(tplFile, tplData, isAjax);
 				//this.view.addPartialData("user/left", {user: userData});
@@ -115,7 +114,7 @@ class News extends CtrlMain
 		return this.getClass('news').get(i_news_id, show)
 			.then((news) =>
 			{
-				if (!news || news["n_alias"] != s_alias)
+				if (!news || news['n_alias'] != s_alias)
 					throw new Errors.HttpError(404);
 
 				return this.getClass('news').getImageList(news.n_id)
@@ -126,24 +125,24 @@ class News extends CtrlMain
 			})
 			.spread((news, images, allPreviews) =>
 			{
-				news["newsImages"] = images;
-				news["newsImagesPreviews"] = allPreviews;
+				news['newsImages'] = images;
+				news['newsImagesPreviews'] = allPreviews;
 
-				let tplFile = "news";
+				let tplFile = 'news';
 
-				tplData["news"] = news;
-				tplData["newsImages"] = news["newsImages"];
+				tplData['news'] = news;
+				tplData['newsImages'] = news['newsImages'];
 
-				this.view.setPageTitle(news["n_title"]);
-				this.view.setPageDescription(news["n_notice"]);
+				this.view.setPageTitle(news['n_title']);
+				this.view.setPageDescription(news['n_notice']);
 
-				if (news["newsImages"] && news["newsImages"][0] && news["newsImages"][0]["previews"]["512_384"])
-					this.view.setPageOgImage(news["newsImages"][0]["previews"]["512_384"]);
+				if (news['newsImages'] && news['newsImages'][0] && news['newsImages'][0]['previews']['512_384'])
+					this.view.setPageOgImage(news['newsImages'][0]['previews']['512_384']);
 
 				//this.view.setPageH1(news.n_title);
 
 				//экспрот данных в JS на клиента
-				this.getRes().expose(tplData["news"], 'newsData');
+				this.getRes().expose(tplData['news'], 'newsData');
 				this.view.setTplData(tplFile, tplData);
 				//this.view.addPartialData("user/left", {user: userData});
 				//this.view.addPartialData("user/right", {title: 'right_col'});
@@ -163,22 +162,21 @@ class News extends CtrlMain
 		let {i_page=1} = this.routeArgs;
 		let show = (this.getLocalAccess()['post_edit'] ? null : 1);
 
-		return this.getClass("news").getNews(new Pages(i_page, limit_per_page), show)
+		return this.getClass('news').getNews(new Pages(i_page, limit_per_page), show)
 			.spread((newsList, Pages) =>
 			{
-				tplData["newsList"] = newsList;
+				tplData['newsList'] = newsList;
 
 				let exposeNews = 'newsList';
-				Pages.setLinksUri(this.getBaseUrl())
-					.setAjaxPagesType(true);
+				Pages.setLinksUri(this.getBaseUrl());
 
-				tplData["pages"] = Pages.pages();
+				tplData['pages'] = Pages.pages();
 
 				let isAjax = this.getReq().xhr;
 				let tplFile = (isAjax ? 'news/list.ejs':'news');
 
 				this.getRes().expose(newsList, exposeNews);
-				this.getRes().expose(tplData["pages"], 'pages');
+				this.getRes().expose(tplData['pages'], 'pages');
 
 				this.view.setTplData(tplFile, tplData, isAjax);
 				//this.view.addPartialData("user/left", {user: userData});
@@ -211,7 +209,7 @@ class News extends CtrlMain
 		return this.getClass('keywords').getKeyWordList()
 			.then((keywords)=>
 			{
-				let tplFile = "news";
+				let tplFile = 'news';
 				this.view.setTplData(tplFile, tplData);
 
 				//экспрот данных в JS на клиента
@@ -230,29 +228,29 @@ class News extends CtrlMain
 	{
 		//let formData = this.getReqBody();
 		let tplData = this.getParsedBody();
-		let tplFile = "news/edit.ejs";
+		let tplFile = 'news/edit.ejs';
 		
-		if (tplData["b_load_embed_content"])
+		if (tplData['b_load_embed_content'])
 			return EmbedContent.content(tplData, tplFile, this);
 
 		let errors = {};
 
-		tplData = CtrlMain.stripTags(tplData, ["dt_show_ts", "s_n_title","t_n_notice",'s_tags']);
+		tplData = CtrlMain.stripTags(tplData, ['dt_show_ts', 's_n_title','t_n_notice','s_tags']);
 
-		tplData["t_n_text"] = CtrlMain.cheerio(tplData["t_n_text"]).root().cleanTagEvents().html();
-		tplData["b_show"] = tplData["b_show"] || false;
+		tplData['t_n_text'] = CtrlMain.cheerio(tplData['t_n_text']).root().cleanTagEvents().html();
+		tplData['b_show'] = tplData['b_show'] || false;
 
-		if (!tplData["dt_show_ts"])
-			errors["dt_show_ts"] = "Укажите дату новости";
+		if (!tplData['dt_show_ts'])
+			errors['dt_show_ts'] = "Укажите дату новости";
 
-		if (!tplData["s_n_title"])
-			errors["s_n_title"] = "Укажите название новости";
+		if (!tplData['s_n_title'])
+			errors['s_n_title'] = "Укажите название новости";
 
-		if (!tplData["t_n_notice"])
-			errors["t_n_notice"] = "Укажите анонс новости";
+		if (!tplData['t_n_notice'])
+			errors['t_n_notice'] = "Укажите анонс новости";
 
-		if (!tplData["t_n_text"])
-			errors["t_n_text"] = "Укажите описание новости";
+		if (!tplData['t_n_text'])
+			errors['t_n_text'] = "Укажите описание новости";
 
 		return Promise.resolve(errors)
 			.then((errors) =>
@@ -260,7 +258,7 @@ class News extends CtrlMain
 				if (this.parseFormErrors(tplData, errors))
 				{
 					return this.getClass('news')
-						.add(this.getUserId(), tplData["s_n_title"], tplData["t_n_notice"], tplData["t_n_text"], tplData["dt_show_ts"], tplData["b_show"])
+						.add(this.getUserId(), tplData['s_n_title'], tplData['t_n_notice'], tplData['t_n_text'], tplData['dt_show_ts'], tplData['b_show'])
 						.then((news)=>
 						{
 							return this.getClass('keywords').saveKeyWords(
@@ -297,7 +295,7 @@ class News extends CtrlMain
 										Logger.error(new Errors.AppMailError('Ошибка при отправке письма', err));
 								});
 							});
-							tplData["i_news_id"] = i_news_id;
+							tplData['i_news_id'] = i_news_id;
 							return Promise.resolve(tplData);
 						});
 				}
@@ -350,7 +348,7 @@ class News extends CtrlMain
 				{
 					let uploadConfigName = this.getClass('news').constructor.uploadConfigName;
 
-					Object.assign(news, FileUpload.createToken(uploadConfigName, {"n_id": news['n_id']}));
+					Object.assign(news, FileUpload.createToken(uploadConfigName, {'n_id': news['n_id']}));
 					this.getRes().expose(FileUpload.exposeUploadOptions(uploadConfigName), 'newsUploadOpts');
 				}
 
@@ -364,8 +362,8 @@ class News extends CtrlMain
 				this.view.setPageTitle(news.n_title);
 				this.view.setPageH1(news.n_title);
 				//экспрот данных в JS на клиента
-				this.getRes().expose(tplData["news"], 'newsData');
-				this.getRes().expose(tplData["newsImages"], 'newsImages');
+				this.getRes().expose(tplData['news'], 'newsData');
+				this.getRes().expose(tplData['newsImages'], 'newsImages');
 				this.getRes().expose(imageData[1], 'newsImagesPreviews'); //allPreviews
 				this.getRes().expose(keywords, 'keyWords');
 
@@ -383,19 +381,19 @@ class News extends CtrlMain
 		let tplFile = "news/edit.ejs";
 		let tplData = this.getParsedBody();
 
-		if (tplData["b_load_embed_content"])
+		if (tplData['b_load_embed_content'])
 			return EmbedContent.content(tplData, tplFile, this);
 
-		if (!tplData["i_news_id"] || !tplData["btn_save_news"])
+		if (!tplData['i_news_id'] || !tplData['btn_save_news'])
 			throw new Errors.HttpError(404);
 
-		return this.getClass('news').get(tplData["i_news_id"] )
+		return this.getClass('news').get(tplData['i_news_id'] )
 			.then((news)=>
 			{
 				if (!news)
 					throw new Errors.HttpError(404);
 
-				switch(tplData["btn_save_news"])
+				switch(tplData['btn_save_news'])
 				{
 					default :
 						throw new Errors.HttpError(404);
@@ -429,28 +427,28 @@ class News extends CtrlMain
 	_editNews(tplData, tplFile, news)
 	{
 		return this.getClass('news')
-			.get(tplData["i_news_id"])
+			.get(tplData['i_news_id'])
 			.then((news) =>
 			{
 				if (!news)
 					throw new Errors.HttpError(404);
 
-				tplData = CtrlMain.stripTags(tplData, ["dt_show_ts", "s_n_title","t_n_notice", "s_tags"]);
-				tplData["t_n_text"] = CtrlMain.cheerio(tplData["t_n_text"]).root().cleanTagEvents().html();
-				tplData["b_show"] = tplData["b_show"] || false;
+				tplData = CtrlMain.stripTags(tplData, ['dt_show_ts', 's_n_title', 't_n_notice', 's_tags']);
+				tplData['t_n_text'] = CtrlMain.cheerio(tplData['t_n_text']).root().cleanTagEvents().html();
+				tplData['b_show'] = tplData['b_show'] || false;
 
 				let errors = {};
-				if (!tplData["dt_show_ts"])
-					errors["dt_show_ts"] = "Укажите дату новости";
+				if (!tplData['dt_show_ts'])
+					errors['dt_show_ts'] = "Укажите дату новости";
 
-				if (!tplData["s_n_title"])
-					errors["s_n_title"] = "Укажите название новости";
+				if (!tplData['s_n_title'])
+					errors['s_n_title'] = "Укажите название новости";
 
-				if (!tplData["t_n_notice"])
-					errors["t_n_notice"] = "Укажите анонс новости";
+				if (!tplData['t_n_notice'])
+					errors['t_n_notice'] = "Укажите анонс новости";
 
-				if (!tplData["t_n_text"])
-					errors["t_n_text"] = "Укажите описание новости";
+				if (!tplData['t_n_text'])
+					errors['t_n_text'] = "Укажите описание новости";
 
 				if (this.parseFormErrors(tplData, errors))
 					return Promise.resolve(tplData);
@@ -458,8 +456,8 @@ class News extends CtrlMain
 			.then((tplData) =>
 			{
 				return this.getClass('news').edit(
-					news["n_id"], this.getUserId(),
-					tplData["s_n_title"], tplData["t_n_notice"], tplData["t_n_text"], tplData["dt_show_ts"], tplData["b_show"]
+					news['n_id'], this.getUserId(),
+					tplData['s_n_title'], tplData['t_n_notice'], tplData['t_n_text'], tplData['dt_show_ts'], tplData['b_show']
 				)
 					.then(() =>
 					{
@@ -518,14 +516,14 @@ class News extends CtrlMain
 	 */
 	_sortImg(tplData, tplFile)
 	{
-		if (!tplData["i_news_id"] || !tplData.hasOwnProperty("ni_pos") || !tplData["ni_pos"].length)
+		if (!tplData['i_news_id'] || !tplData.hasOwnProperty('ni_pos') || !tplData['ni_pos'].length)
 		{
 			this.view.setTplData(tplFile, tplData);
 			return Promise.resolve(true);
 		}
 		
 		return this.getClass('news')
-			.sortImgUpd(tplData["i_news_id"], tplData["ni_pos"])
+			.sortImgUpd(tplData['i_news_id'], tplData['ni_pos'])
 			.then(() =>
 			{
 				this.view.setTplData(tplFile, tplData);
@@ -545,8 +543,8 @@ class News extends CtrlMain
 
 		this.getRes().on('cancelUploadedFile', (file) =>
 		{
-			if (file["u_id"] && file["n_id"] && file["ni_id"])
-				return this.getClass('news').delImage(file["u_id"], file["n_id"], file["ni_id"], file);
+			if (file['u_id'] && file['n_id'] && file['ni_id'])
+				return this.getClass('news').delImage(file['u_id'], file['n_id'], file['ni_id'], file);
 		});
 
 		return this.getClass('news').uploadImage(this.getUserId(), this.getReq(), this.getRes())
@@ -590,10 +588,10 @@ class News extends CtrlMain
 	 */
 	_delImg(tplData, tplFile)
 	{
-		if (!tplData["i_ni_id"])
+		if (!tplData['i_ni_id'])
 			throw new Errors.HttpError(400);
 		
-		return this.getClass('news').delImage(this.getUserId(), tplData["i_news_id"], tplData["i_ni_id"])
+		return this.getClass('news').delImage(this.getUserId(), tplData['i_news_id'], tplData['i_ni_id'])
 			.then(() =>
 			{
 				this.view.setTplData(tplFile, tplData);

@@ -58,7 +58,7 @@ class User extends CtrlMain
 
 				const Pages = props.users.Pages;
 
-				Pages.setLinksUri(this.getBaseUrl()).setAjaxPagesType(true);
+				Pages.setLinksUri(this.getBaseUrl());
 
 				tplData["pages"] = Pages.pages();
 
@@ -67,7 +67,6 @@ class User extends CtrlMain
 				this.view.setTplData(tplFile, tplData, isAjax);
 				this.view.addPartialData("user/left", {user: tplData.user});
 				//this.view.addPartialData("user/right", {});
-
 
 				if (!isAjax)
 				{

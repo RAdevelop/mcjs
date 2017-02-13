@@ -87,6 +87,56 @@ class UserPhoto extends User
 			});
 	}
 
+	getAlbumListByTag(Pages, s_tag)
+	{
+		return this.getClass('keywords').getKeyWordByName(s_tag)
+			.then((kw)=>
+			{
+				if (!kw)
+					return Promise.resolve([null, Pages]);
+
+				return this.getClass('keywords').countObjByKwId(this, kw['kw_id'])
+					.then((cnt)=>
+					{
+						return Promise.resolve([cnt, kw['kw_id']]);
+					});
+			})
+			.spread((cnt, kw_id)=>
+			{
+				Pages.setTotal(cnt||0);
+				if (!cnt)
+					return Promise.resolve([null, Pages]);
+
+				if (Pages.limitExceeded())
+				{
+					Pages = null;
+					throw new FileErrors.HttpError(404);
+				}
+
+				return this.getClass('keywords')
+					.getObjListByKwId(this, kw_id, Pages.getLimit(), Pages.getOffset())
+					.then((a_ids)=>
+					{
+						if (!a_ids)
+							return Promise.resolve([null, Pages]);
+
+						return this.model('user/photo').getAlbumListByIds(a_ids)
+							.then((albumList) =>
+							{
+								if (!albumList)
+								{
+									return Promise.resolve([null, Pages]);
+								}
+
+								let sizeParams = FileUpload.getUploadConfig(User.uploadPhotoConfigName).sizeParams;
+								albumList = FileUpload.getPreviews(sizeParams, albumList, "ai_dir")["obj"];
+
+								return Promise.resolve([albumList, Pages]);
+							});
+					});
+			});
+	}
+
 	/**
 	 * выбранный альбом пользователя
 	 *

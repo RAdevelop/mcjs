@@ -162,6 +162,19 @@
           @include mix-max-height-calc(162px);
         }
       }
+
+      &.user{
+        @include mix-max-height-calc(182px);
+        & .author {
+          position: absolute;
+          right: 0;
+          top: 0;
+          z-index: 2;
+          border: 1px solid red;
+          display: table;
+          text-align: center;
+        }
+      }
     }
   }
   /********** список фоток в альбоме **************/

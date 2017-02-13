@@ -51,7 +51,8 @@ class AdminUser extends CtrlMain
 				let tplData = {};
 				tplData['user_list'] = users.users || [];
 
-				tplData["pages"] = users.Pages.setLinksUri(this.getBaseUrl()).pages();
+				tplData["pages"] = users.Pages.setLinksUri(this.getBaseUrl())
+					.setAjaxPagesType(false).pages();
 
 				//экспрот данных в JS на клиента
 				//this.getRes().expose(tplData.user_list, 'user_list');

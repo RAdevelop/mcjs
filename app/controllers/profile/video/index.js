@@ -181,9 +181,7 @@ class ProfileVideo extends CtrlMain
 				{
 					let linksUri = [this.getBaseUrl(),i_u_id,tplData['videoAlbum']['va_id'],tplData['videoAlbum']['va_alias']].join('/');
 
-					Pages.setLinksUri(linksUri)
-						.setAjaxPagesType(true);
-
+					Pages.setLinksUri(linksUri);
 					tplData["pages"] = Pages.pages();
 				}
 
@@ -235,8 +233,7 @@ class ProfileVideo extends CtrlMain
 			{
 				tplData["videoAlbums"] = videoAlbums;
 
-				Pages.setLinksUri(this.getBaseUrl()+'/'+ i_u_id)
-					.setAjaxPagesType(true);
+				Pages.setLinksUri(this.getBaseUrl()+'/'+ i_u_id);
 
 				tplData["pages"] = Pages.pages();
 

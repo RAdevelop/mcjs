@@ -97,7 +97,7 @@ class Blog extends CtrlMain
 
 				let u_ids = blog[0].map((u)=>
 				{
-					return u['u_id'];
+					return parseInt(u['u_id'], 10)||0;
 				});
 
 				return this.getClass('user').getUserListById(u_ids, blog[0])
@@ -138,7 +138,7 @@ class Blog extends CtrlMain
 					baseUrl.push('subj', ui_bs_id, s_bs_alias);*/
 
 				baseUrl = baseUrl.join('/');
-				Pages.setLinksUri(baseUrl).setAjaxPagesType(true);
+				Pages.setLinksUri(baseUrl);
 
 				tplData["pages"] = Pages.pages();
 
@@ -229,6 +229,7 @@ class Blog extends CtrlMain
 	 * @param i_u_id
 	 * @param ui_bs_id
 	 * @param s_bs_alias
+	 * @param b_draft
 	 * @returns {Promise}
 	 */
 	_blogList(tplData, i_u_id=null, ui_bs_id=null, s_bs_alias=null, b_draft=false)
@@ -298,8 +299,7 @@ class Blog extends CtrlMain
 					baseUrl.push('subj', ui_bs_id, s_bs_alias);
 
 				baseUrl = baseUrl.join('/');
-				Pages.setLinksUri(baseUrl)
-					.setAjaxPagesType(true);
+				Pages.setLinksUri(baseUrl);
 
 				tplData["pages"] = Pages.pages();
 

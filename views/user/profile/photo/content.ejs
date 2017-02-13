@@ -1,0 +1,48 @@
+<div class="row mediaWrapper albums">
+	<div class="col-xs-12 col-sm-12 col-md-12"><%
+		if(albums){ %><%- include album_list.ejs %><% }
+		if(album){ %><%- include image_list.ejs %><% }
+		%></div>
+</div>
+<%- include ../../../pages/index.ejs %>
+<script src="/js/uploadify/jquery.uploadify.min.js" type="text/javascript" ></script>
+<script src="/js/uploadify/jquery.uploadifive.min.js" type="text/javascript" ></script>
+<script src="/js/uploadify/jquery.fileUpload.js" type="text/javascript"></script>
+<script src="/js/mcMap.js" type="text/javascript"></script>
+<script type="text/javascript" src="/js/jquery/mcAlbum.js"></script>
+<script src="/js/jquery/mcAutoComplete.js" type="text/javascript"></script>
+<script type="text/javascript">
+	//<!--
+	if (MCJS['pages'] && Pagination)
+	{
+		<% if(albums){ %>
+		MCJS['pages']['ajaxDataSrc'] = ['albums'];
+		MCJS['pages']['ajaxDataTarget'] = 'albums';
+		MCJS['pages']['jQuerySelector'] = '.mediaList .media';
+		<% } else if (album) {%>
+		MCJS['pages']['ajaxDataSrc'] = ['album', 'images'];
+		MCJS['pages']['ajaxDataTarget'] = 'albumImages';
+		MCJS['pages']['jQuerySelector'] = '.imageList .image';
+		<% } %>
+		Pagination.init();
+	}
+	(function($)
+	{
+		var mcAlbumProps = {
+			uri: '<%=_reqBaseUrl%>'
+			, albumToolbar: '.media-list-toolbar'
+			, albumWrapper: '.mediaWrapper .imageList'
+			, albumImages: '.image'
+			, albumName: '#a_name'
+			, albumText: '#a_text'
+			, u_id: '<%=(_user["u_id"])%>'
+		};
+		<% if(album && album["a_is_owner"]) { %>
+		mcAlbumProps["s_token"] = '<%=(typeof s_token == 'undefined' ? '' : s_token)%>';
+		mcAlbumProps["i_time"] = '<%=(typeof i_time == 'undefined' ? '' : i_time)%>';
+		mcAlbumProps["sortable"] = (<%=(album && album["u_id"] == _user["u_id"])%>);
+		<%}%>
+		$('mcAlbum').mcAlbum(mcAlbumProps);
+	})($);
+	//-->
+</script>

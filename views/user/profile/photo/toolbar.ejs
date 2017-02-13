@@ -1,0 +1,23 @@
+<div class="row media-list-toolbar">
+	<div class="btn-toolbar" role="toolbar" aria-label="Опции для фотоальбомов"><%
+		if(user && user["u_is_owner"]){%>
+		<div class="btn-group btn-group-sm" role="group" aria-label="Опции для фотоальбомов">
+			<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-fw fa-cog"></i> опции <i class="caret"></i></button>
+			<ul class="dropdown-menu "><%
+				if(album && album["a_is_owner"] && album["a_named"]){ %>
+				<li><a href="javascript:void(0)" id="btn_album_upload"><i class="fa fa-fw fa-cloud-upload"></i> загрузить фотографии</a></li>
+				<li><a href="javascript:void(0)" id="btn_edit_album_modal"><i class="fa fa-fw fa-edit"></i> изменить описание</a></li>
+				<li><a href="javascript:void(0)" id="btn_del_album_modal"><i class="fa fa-fw fa-trash-o"></i> удалить альбом</a></li>
+				<li role="separator" class="divider"></li><%
+				} %>
+				<li><a href="javascript:void(0)" id="btn_add_album_modal"><i class="fa fa-fw fa-plus-square-o"></i> создать новый альбом</a></li>
+			</ul>
+		</div><% }
+		if(album){ %>
+		<div class="btn-group btn-group-sm" role="group" aria-label="список альбомов">
+			<a href="<%=_reqBaseUrl+(user ? '/'+user['u_id'] : '')%>/" class="btn btn-default"><i class="fa fa-fw fa-list"></i> все альбомы</a>
+		</div><%
+		} %>
+		<div class="sharingSocNet" data-soc-list="vk,ok,fb,tw,gp"></div>
+	</div>
+</div>

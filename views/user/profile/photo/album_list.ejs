@@ -1,4 +1,5 @@
 <div class="mediaList"><%
+		let mediaCss = (addUsersAva ? ' user ' : '');
 albums.forEach(function (album)
 {
 	let img = '';
@@ -6,7 +7,19 @@ albums.forEach(function (album)
 		img = '<img src="'+album["previews"]["512_384"]+'" alt="'+album["a_name"]+'"/>';
 	else
 		img = '<img src="/img/no_image.png" alt="'+album["a_name"]+'" class="noImg"/>';
-%><div class="media">
+
+		let ava = (!!album['user']['previews'] && album['user']['previews']['100_100']);
+		let avaSrc = (ava ? album['user']['previews']['100_100'] : '/_0.gif');
+%><div class="media <%-mediaCss%>"><%
+ if (addUsersAva){%>
+		<div class="author">
+			<div class="">
+				<img class="img-circle img-responsive <%=(ava ? '':'hidden')%>" src="<%=avaSrc%>" />
+				<i class="fa fa-user <%=(ava ? 'hidden':'')%>"></i>
+			</div>
+			<div><%=album['user']['u_display_name']%></div>
+		</div>
+<% } %>
 	<a class="mediaImg" href="<%=(_reqBaseUrl+'/'+album["u_id"]+'/'+album["a_id"])%>/"><%-img%></a>
 	<div class="mediaTools">
 		<span class="badge"><i class="fa fa-fw fa-camera"></i> <%=(album["a_img_cnt"] > 99 ? '99+' : album["a_img_cnt"])%>

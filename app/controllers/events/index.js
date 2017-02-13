@@ -125,7 +125,7 @@ class Events extends CtrlMain
 
 		if (!!i_dd)
 		{
-			if (!Moment([i_yy,i_mm,i_dd].join('-'), "YYYY-MM-DD").isValid())
+			if (!Moment([i_yy,i_mm,i_dd].join('-'), 'YYYY-MM-DD').isValid())
 				throw new Errors.HttpError(400);
 
 			startDate = new Date(i_yy, i_mm-1, i_dd);
@@ -134,7 +134,7 @@ class Events extends CtrlMain
 			return this._eventList(tplData, startDate, endDate, l_id);
 		}
 
-		if (!Moment([i_yy, i_mm].join('-'), "YYYY-MM").isValid())
+		if (!Moment([i_yy, i_mm].join('-'), 'YYYY-MM').isValid())
 			throw new Errors.HttpError(400);
 
 		startDate = new Date(i_yy, i_mm-1);
@@ -161,7 +161,7 @@ class Events extends CtrlMain
 
 				return Promise.all([
 					this.getClass('events').getImageList(event.e_id),
-					this.getClass("events").getLocations(event['e_start_ts'], parseInt(event['e_end_ts'],10)+3600, event['e_location_id'])
+					this.getClass('events').getLocations(event['e_start_ts'], parseInt(event['e_end_ts'],10)+3600, event['e_location_id'])
 				])
 					.spread((images, eventLocations)=>
 					{
@@ -213,13 +213,13 @@ class Events extends CtrlMain
 	{
 		let startDateTs = startDate.getTime()/1000;
 		let endDateTs = endDate.getTime()/1000;
-		return this.getClass("events").getEvents(startDateTs, endDateTs, l_id)
+		return this.getClass('events').getEvents(startDateTs, endDateTs, l_id)
 			.then( (eventList) =>
 			{
 				if (!eventList || !eventList.length)
 					throw new Errors.HttpError(404);
 
-				return this.getClass("events").getLocations(startDateTs, endDateTs, l_id)
+				return this.getClass('events').getLocations(startDateTs, endDateTs, l_id)
 					.then((eventLocations) =>
 					{
 						return Promise.resolve([eventList, eventLocations]);
@@ -270,7 +270,7 @@ class Events extends CtrlMain
 				let isAjax = this.getReq().xhr;
 				let baseUrl = [this.getBaseUrl(), 'tag', s_tag];
 				baseUrl = baseUrl.join('/');
-				Pages.setLinksUri(baseUrl).setAjaxPagesType(true);
+				Pages.setLinksUri(baseUrl);
 
 				let tplFile = (isAjax ? 'events/list.ejs':'events');
 				tplData['pages'] = Pages.pages();
@@ -311,7 +311,7 @@ class Events extends CtrlMain
 		return Promise.all([
 			this.getClass('events').getEventsDate(startDateTs, endDateTs, l_id),
 			this.getClass('events').getLocations(startDateTs, endStartMonthTs, l_id),
-			this.getClass("events").getEvents(startDateTs, endStartMonthTs, l_id)
+			this.getClass('events').getEvents(startDateTs, endStartMonthTs, l_id)
 		])
 			.spread((eventDates, eventLocations, eventList) =>
 			{
@@ -435,7 +435,7 @@ class Events extends CtrlMain
 
 		let errors = {};
 
-		tplData = CtrlMain.stripTags(tplData, ['dd_start_ts", "dd_end_ts", "s_e_title","t_e_notice", "s_e_address", "s_tags']);
+		tplData = CtrlMain.stripTags(tplData, ['dd_start_ts', 'dd_end_ts', 's_e_title','t_e_notice', 's_e_address', 's_tags']);
 
 		tplData['t_e_text'] = CtrlMain.cheerio(tplData['t_e_text']).root().cleanTagEvents().html();
 
@@ -569,7 +569,7 @@ class Events extends CtrlMain
 				{
 					let uploadConfigName = this.getClass('events').constructor.uploadConfigName;
 
-					Object.assign(event, FileUpload.createToken(uploadConfigName, {"e_id": event['e_id']}) );
+					Object.assign(event, FileUpload.createToken(uploadConfigName, {'e_id': event['e_id']}) );
 					this.getRes().expose(FileUpload.exposeUploadOptions(uploadConfigName), 'eventsUploadOpts');
 				}
 
@@ -635,7 +635,7 @@ class Events extends CtrlMain
 
 				let errors = {};
 
-				tplData = CtrlMain.stripTags(tplData, ['dd_start_ts", "dd_end_ts", "s_e_title","t_e_notice", "s_e_address", "s_tags']);
+				tplData = CtrlMain.stripTags(tplData, ['dd_start_ts', 'dd_end_ts', 's_e_title', 't_e_notice', 's_e_address', 's_tags']);
 
 				tplData['t_e_text'] = CtrlMain.cheerio(tplData['t_e_text']).root().cleanTagEvents().html();
 
@@ -739,7 +739,7 @@ class Events extends CtrlMain
 	 */
 	_sortImg(tplData, tplFile)
 	{
-		if (!tplData['i_event_id'] || !tplData.hasOwnProperty("ei_pos") || !tplData['ei_pos'].length)
+		if (!tplData['i_event_id'] || !tplData.hasOwnProperty('ei_pos') || !tplData['ei_pos'].length)
 			return Promise.resolve(tplData);
 
 		return this.getClass('events').sortImgUpd(tplData['i_event_id'], tplData['ei_pos'])

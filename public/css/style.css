@@ -1127,6 +1127,20 @@ iframe.iframeVideoEmbed {
     max-height: -webkit-calc(162px);
   }
 }
+.mediaWrapper .mediaList .media.user {
+  max-height: calc(182px);
+  max-height: -moz-calc(182px);
+  max-height: -webkit-calc(182px);
+}
+.mediaWrapper .mediaList .media.user .author {
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 2;
+  border: 1px solid red;
+  display: table;
+  text-align: center;
+}
 .mediaWrapper .imageList {
   min-height: calc(162px);
   min-height: -moz-calc(162px);
