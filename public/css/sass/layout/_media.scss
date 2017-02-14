@@ -23,7 +23,8 @@
       overflow: hidden;
       margin: 0 10px 10px 0;
       float: left;
-      background-color: #000;
+      @include mix-border-radius(4px);
+      //background-color: #000;
 
       /*max-width: 329px;
       max-height: 248px;*/
@@ -34,10 +35,10 @@
 
       & .mediaImg
       {
+        clear: both;
         position: relative;
         display: block;
         overflow: hidden;
-        text-align: center;
         background: #F1F1F1;
 
         & .fa-camera
@@ -73,7 +74,6 @@
           background-color: rgba(255, 255, 255, 0.6);
         }
 
-
         & a, & span
         {
           color: rgba(0, 0, 0, 0.6);
@@ -97,9 +97,9 @@
         }
       }
 
-
-      & .mediaTitle
-      {
+      & .mediaTitle {
+        text-decoration: none;
+        display: block;
         position: absolute;
         padding: 0;
         left: 0;
@@ -164,15 +164,25 @@
       }
 
       &.user{
-        @include mix-max-height-calc(182px);
-        & .author {
-          position: absolute;
-          right: 0;
-          top: 0;
-          z-index: 2;
-          border: 1px solid red;
-          display: table;
-          text-align: center;
+        @include mix-max-height-calc(212px);
+
+        & .owner_ava
+        {
+          width: 50px;
+        }
+
+        & .mediaTools {
+          top: 50px;
+        }
+        & .mediaTitle {
+         top: 185px;
+         // bottom: -185px;
+
+          &:hover
+          {
+            bottom: 0;
+            top: 74px;
+          }
         }
       }
     }

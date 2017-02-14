@@ -8,26 +8,17 @@ albums.forEach(function (album)
 	else
 		img = '<img src="/img/no_image.png" alt="'+album["a_name"]+'" class="noImg"/>';
 
-		let ava = (!!album['user']['previews'] && album['user']['previews']['100_100']);
-		let avaSrc = (ava ? album['user']['previews']['100_100'] : '/_0.gif');
+		let albumHref = [_reqBaseUrl,album["u_id"],album["a_id"]].join('/')+'/';
 %><div class="media <%-mediaCss%>"><%
- if (addUsersAva){%>
-		<div class="author">
-			<div class="">
-				<img class="img-circle img-responsive <%=(ava ? '':'hidden')%>" src="<%=avaSrc%>" />
-				<i class="fa fa-user <%=(ava ? 'hidden':'')%>"></i>
-			</div>
-			<div><%=album['user']['u_display_name']%></div>
-		</div>
-<% } %>
-	<a class="mediaImg" href="<%=(_reqBaseUrl+'/'+album["u_id"]+'/'+album["a_id"])%>/"><%-img%></a>
+ if (addUsersAva){ let user_owner = album['user']; %><%- include ../../owner.ejs %><% } %>
+	<a class="mediaImg" href="<%=albumHref%>"><%-img%></a>
 	<div class="mediaTools">
 		<span class="badge"><i class="fa fa-fw fa-camera"></i> <%=(album["a_img_cnt"] > 99 ? '99+' : album["a_img_cnt"])%>
 		<i class="fa fa-fw fa-calendar"></i> <%=album["dt_create_ts"]%></span>
 	</div>
-	<div class="mediaTitle">
+	<a class="mediaTitle" href="<%=albumHref%>" title="<%=album["a_name"]%>">
 		<div class="mediaName"><%=album["a_name"]%></div>
 		<% if (album["a_text"]){%><div class="mediaText"><%=album["a_text"]%></div><%}%>
-	</div>
+	</a>
 </div><%})%>
 </div>

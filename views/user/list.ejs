@@ -2,15 +2,8 @@
 	if (users){
 	users.forEach(function (user)
 	{
-//console.log(user);
-		let ava = (user.previews && user.previews["180_180"]);
-		let avaSrc = (ava ? user.previews["180_180"] : '/_0.gif');
-	%>
-	<a href="/profile/<%=user['u_id']%>/" class="user-list_user js-user"><%
-	%><img class="user-list_user-ava img-circle img-responsive <%=(ava ? '':'hidden')%>" src="<%=avaSrc%>" />
-		<i class="user-list_user-ava fa fa-user <%=(ava ? 'hidden':'')%>"></i>
-		<span class="user-list_user_name"  data-toggle="tooltip" data-placement="auto" title="<%=user['u_display_name']%>"><i class="fa fa-fw fa-user"></i><%=user['u_display_name']%></span>
-		<span class="user-list_user_location"  data-toggle="tooltip" data-placement="auto" title="<%=user['l_full_name']%>"><i class="fa fa-fw fa-map-marker"></i><%=user['l_name']%></span>
-	</a>
-	<%});} %>
+		let  user_owner = user;
+	%><div class="js-user"><%- include owner.ejs %></div><%
+	});
+	} %>
 </div>

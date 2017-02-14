@@ -25,15 +25,16 @@
                 }else{
                     img = '<img src="/img/no_image.png" alt="'+album["a_name"]+'" class="noImg"/>';
                 }
+                let albumHref = [_reqBaseUrl,album["u_id"],album["a_id"]].join('/')+'/';
             %><div class="media">
                 <a class="mediaImg" href="<%=[_reqBaseUrl,'photo',album["u_id"],album["a_id"]].join('/')%>/"><%-img%></a>
                 <div class="mediaTools">
                     <span class="badge"><i class="fa fa-fw fa-camera"></i> <%=(album["a_img_cnt"] > 99 ? '99+':album["a_img_cnt"])%>&nbsp;<i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;<%=album["dt_create_ts"]%></span>
                 </div>
-                <div class="mediaTitle">
+                <a class="mediaTitle" href="<%=albumHref%>" title="<%=album["a_name"]%>">
                     <div class="mediaName"><%=album["a_name"]%></div>
                     <% if (album["a_text"]){%><div class="mediaText"><%=album["a_text"]%></div><%}%>
-                </div>
+                </a>
             </div><%
             })%>
         </div>

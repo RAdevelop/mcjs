@@ -49,25 +49,33 @@
   margin:  0px  10px  10px  0px;
   width: auto;
   display: table-cell;
+  border: 1px solid #e2e2e2;
+  @include mix-border-radius(4px);
+
+  & , & > a {
+    color: #333;
+  }
+
+  &:hover {
+    border-color: #333;
+  }
+
+  & .owner_ava {
+    width: 50px;
+  }
 }
 
 .blogListContainer .blogListItem .blogListItemInfo
 {
   display: block;
+  clear: both;
   position: relative;
-  color: #333;
-  max-width: 382px;
-  min-width: 382px;
-
-  max-height: 288px;
-  min-height: 288px;
+  max-width: 274px;
+  min-width: 274px;
+  max-height: 274px;
+  min-height: 274px;
   overflow: hidden;
-  border: 1px solid #e2e2e2;
-  @include mix-border-radius(4px);
 
-  &:hover {
-   border-color: #333;
-  }
 }
 
 .blogListContainer .blogListItem .blogListItemInfo img
@@ -93,36 +101,18 @@
 
 .blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoDate
 {
-  top: 20px;
+  top: 26px;
   left: 0;
   padding: 3px;
   //background-color: rgba(0, 0, 0, 0.7);
   text-align: center;
   display: inline-block;
-  max-height: 56px;
-  overflow: hidden;
-
-  & .blogListItemInfoAuthor {
-
-    display: inline-block;
-    & img {
-      width: auto;
-      display: inline-block;
-      @include mix-opacity(1);
-    }
-    & .fa {
-      width: 50px;
-      height: 50px;
-      display: inline-block;
-      font-size: 38px;
-    }
-  }
 }
 
 .blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoNotice
 {
   //background-color: rgba(0, 0, 0, 0.7);
-  top: 76px;
+  top: 54px;
   padding: 0px 3px 3px 3px;
   bottom: 0;
   //@include mix-transition(top, 0.5s, ease-out, 0.1s);
@@ -164,39 +154,6 @@
     }
   }
 
-  &_user{
-    display: table-cell;
-    padding: 3px;
-
-    @media (max-width: $screen-xs-max)
-    {
-      & {
-        display: block;
-      }
-    }
-
-    & > .fa-user {
-      display: block;
-      width: 50px;
-      height: 50px;
-      line-height: 50px;
-      font-size: 50px;
-      text-align: center;
-      margin: 0 auto;
-      text-decoration: none;
-      border: 0;
-    }
-    & img {
-      margin: 0 auto;
-    }
-    &_name {
-      display: block;
-      padding: 3px;
-      vertical-align: top;
-      text-align: center;
-    }
-  }
-
   &_about {
     display: table-cell;
     vertical-align: middle;
@@ -220,28 +177,16 @@
   }
 }
 
-@media (min-width: $screen-md) and (max-width: $screen-lg)
-{
+//@media (min-width: $screen-sm) and (max-width: 1024px) {
+@media (min-width: $screen-sm) {
 
-}
-@media (max-width: 1024px)
-{
-
-}
-@media (min-width: $screen-sm) and (max-width: $screen-md)
-{
-
-}
-
-@media (min-width: $screen-sm) and (max-width: 1024px)
-{
   .blogListContainer .blogListItem .blogListItemInfo
   {
-    max-width: 356px;
-    max-height: 269px;
-
     min-width: 356px;
-    min-height: 269px;
+    max-width: 356px;
+
+    //max-height: 269px;
+    //min-height: 269px;
   }
 }
 
@@ -264,41 +209,22 @@
 }
 
 //@media (max-width: 640px)
-@media (max-width: $screen-xs-min)
-{
-  .blogListContainer .blogListItem .blogListItemInfo
-  {
-    max-width: 100%;
-    width: 100%;
-    height: calc(75% - 10px);
-  }
-  .blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoNotice
-  {
-    top: 82px;
-    //background-color: rgba(0, 0, 0, 0.7);
-  }
-}
-
-@media (max-width: 568px)
-{
-  .blogListContainer .blogListItem .blogListItemInfo
-  {
-    @include mix-max-width-calc(100%);
-    @include mix-min-width-calc(100%);
-
-    /*max-height: 258px;*/
-  }
-  .blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoNotice
-  {
-    //top: 26px;
-    top: 82px;
-    //background-color: rgba(0, 0, 0, 0.7);
-  }
-}
-
-@media (min-width: $screen-xxs) and (max-width: $screen-xs)
+@media (max-width: $screen-xs-max)
 {
   .blogListContainer .blogListItem {
-    width: 100%
+    width: 100%;
+
+    & .blogListItemInfo
+    {
+      //min-width: 372px;
+      min-width: 100%;
+      max-width: 100%;
+      height: calc(75% - 10px);
+    }
+  }
+  .blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoNotice
+  {
+    top: 52px;
+    //background-color: rgba(0, 0, 0, 0.7);
   }
 }

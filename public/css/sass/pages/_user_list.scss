@@ -1,152 +1,72 @@
 /********** список пользователей **************/
-.user-list
-{
-  &_user
-  {
-    //border: 1px solid;
-    &:hover{
-      background-color: #e8e8e8;
-      text-decoration: none;
-      @include mix-border-radius(5px);
+
+.user-list {
+
+  & > div {
+    float: left;
+    width: 272px;
+    margin: 4px;
+
+    @media (max-width: $screen-xs-max)
+    {
+      &
+      {
+        width: 100%;
+        max-width: 100%;
+      }
+    }
+
+    & .owner_ava {
+      max-height: 100%;
+      max-width: 100%;
+
+      &:hover {
+        text-decoration: none;
+      }
 
       & > .fa-user {
-        color: #fff;
-      }
-    }
-    height: 84px;
-    display: inline-block;
-    text-align: center;
-    overflow: hidden;
-    text-decoration: none;
-    @include mix-width-calc(33%);
+        min-width: 100px;
+        min-height: 100px;
+        line-height: 100px;
+        font-size: 114px;
+        text-decoration: none;
 
-    & > .fa-user {
-      color: #e8e8e8;
-      font-size: 120px;
-      line-height: 112px;
-      display: inline-block;
-      width: 91px;
-      height: 91px;
-
-      @media (min-width: $screen-lg-min)
-      {
-        & {
-          font-size: 76px;
-          line-height: 66px;
-          width: 66px;
-          height: 66px;
-        }
-      }
-
-      @media (max-width: $screen-lg-min) and (orientation : landscape)
-      {
-        & {
-          font-size: 76px;
-          line-height: 66px;
-          width: 66px;
-          height: 66px;
-        }
-      }
-      @media (min-width: $screen-md) and (orientation : landscape)
-      {
-        & {
-          font-size: 84px;
-          line-height: 84px;
-          width: 66px;
-          height: 112px;
-        }
-      }
-
-      @media (max-width: $screen-sm)
-      {
-        & {
-          font-size: 76px;
-          line-height: 66px;
-          width: 66px;
-        }
-      }
-      @media (max-width: $screen-xs)
-      {
-        & {
-          font-size: 76px;
-          line-height: 66px;
-          width: 66px;
-        }
-      }
-
-    }
-
-    &-ava {
-     @include mix-width-calc(29%);
-      float: left;
-
-      @media (min-width: $screen-md-max)
-      {
-        & {
-          @include mix-width-calc(25%);
-        }
-      }
-
-      @media (max-width: $screen-md-max)
-      {
-        & {
-          @include mix-width-calc(13%);
-        }
-      }
-
-      @media (min-width: $screen-sm) and (max-width: $screen-md-max) and (orientation : landscape)
-      {
-        & {
-          @include mix-width-calc(24%);
-        }
-      }
-      @media (max-width: $screen-xs)
-      {
-        & {
-          @include mix-width-calc(19%);
-        }
-      }
-      @media (max-width: $screen-sm) and (orientation : landscape)
-      {
-        & {
-          @include mix-width-calc(10%);
-        }
-      }
-    }
-    &_name,
-    &_location {
-      display: inline-block;
-      @include mix-width-calc(66%);
-      text-align: left;
-      color: #000;
-      white-space: nowrap;
-    }
-    @media (max-width: $screen-sm)
-    {
-      & {
-        @include mix-width-calc(100%);
       }
     }
 
-    @media (max-width: $screen-sm) and (orientation : landscape)
-    {
-      & {
-        @include mix-max-height-calc(1%);
+    @media (max-width: $screen-xs-max) {
+
+      & .owner, & .owner_info {
         width: 100%;
+        max-width: 100%;
+      }
+      & .owner_ava > .fa-user {
+        min-height: inherit;
+        max-height: inherit;
+        min-width: inherit;
+        max-width: inherit;
+        line-height: 50px;
+        font-size: 50px;
       }
     }
 
-    @media (max-width: $screen-lg)
-    {
+    @media (min-width: $screen-sm) {
       & {
-        height: 66px;
+        width: 233px;
       }
-    }
 
-    @media (max-width: $screen-lg) and (orientation : landscape)
-    {
-      & {
-        //height: 66px;
+      & .owner, & .owner_info {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      & .owner_ava > .fa-user {
+        min-height: inherit;
+        max-height: inherit;
+        min-width: inherit;
+        max-width: inherit;
+        line-height: 50px;
+        font-size: 50px;
       }
     }
   }

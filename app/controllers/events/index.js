@@ -96,11 +96,6 @@ class Events extends CtrlMain
 		if (i_event_id)
 			return this._event(tplData, i_event_id, s_event_alias);
 
-		if (b_tag)
-		{
-			s_tag = decodeURIComponent(s_tag);
-			return this._tagEventList(tplData, s_tag);
-		}
 
 		if (!i_yy && !i_mm && !i_dd)
 		{
@@ -122,6 +117,13 @@ class Events extends CtrlMain
 		this._setSelectedDateObj({i_yy:i_yy, i_mm:i_mm, i_dd:i_dd});
 
 		tplData['selectedDate']['obj'] = this._getSelectedDateObj();
+
+
+		if (b_tag)
+		{
+			s_tag = decodeURIComponent(s_tag);
+			return this._tagEventList(tplData, s_tag);
+		}
 
 		if (!!i_dd)
 		{
