@@ -186,7 +186,40 @@ class Profile extends User
 		let sqlData = [u_id, location_id, f_lat, f_lng];
 
 		return this.constructor.conn().ins(sql, sqlData)
-			.then(() => {
+			.then(() =>
+			{
+				sql = `SELECT l_lk, l_rk FROM location WHERE l_id = ?;`;
+				location_id = parseInt(location_id, 10);
+				return this.constructor.conn().sRow(sql, [location_id]);
+			})
+			.then((res) =>
+			{
+				let {l_lk, l_rk} = res;
+				l_lk = parseInt(l_lk, 10);
+				l_rk = parseInt(l_rk, 10);
+
+				sql = `SELECT l_id FROM location WHERE l_lk <= ? AND l_rk >= ? ORDER BY l_lk;`;
+				return this.constructor.conn().s(sql, [l_lk, l_rk]);
+			})
+			.then((res) =>
+			{
+				let sqlIns = [], sqlData = [u_id], pids = [];
+				res.forEach((item) => {
+					sqlIns.push("(?, ?)");
+					sqlData.push(u_id, item["l_id"]);
+					pids.push(item["l_id"]);
+				});
+
+				sql = `DELETE FROM users_locations WHERE u_id = ?;
+					INSERT INTO users_locations (u_id, l_id) VALUES ${sqlIns.join(',')}
+					ON DUPLICATE KEY UPDATE l_id=VALUES(l_id);
+					UPDATE users_data SET u_location_pids = ? WHERE u_id = ?;`;
+				sqlData.push(pids.join(','), u_id);
+
+				return this.constructor.conn().multis(sql, sqlData);
+			})
+			.then(() =>
+			{
 				return Promise.resolve(location_id);
 			});
 	}

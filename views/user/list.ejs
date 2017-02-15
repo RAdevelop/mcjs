@@ -1,3 +1,31 @@
+<div class="col-lg-6">
+	<form class="form-horizontal" action="get" id="formUserSearch">
+		<div class="input-group">
+			<input type="text" name="s_user" class="form-control" aria-label="..." placeholder="имя"/>
+			<div class="input-group-btn">
+				<button type="button" class="btn btn-default ad-dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action <span class="caret"></span></button>
+				<ul class="dropdown-menu dropdown-menu-right">
+					<li class="input-group"><input type="text" name="s_user" class="form-control" aria-label="..." placeholder="имя"/></li>
+					<li><a href="javascript:void(0);">Another action</a></li>
+					<li><a href="javascript:void(0);">Something else here</a></li>
+					<li role="separator" class="divider"></li>
+					<li class="group-btn">
+							<button type="button" class="btn btn-default mc-dropdown-toggle" data-toggle="" aria-haspopup="true" aria-expanded="false">Action <span class="caret"></span></button>
+							<ul class="dropdown-menu dropdown-menu-right">
+								<li class="input-group"><input type="text" name="s_user" class="form-control" aria-label="..." placeholder="имя"/></li>
+								<li><a href="javascript:void(0);">Another action</a></li>
+								<li><a href="javascript:void(0);">Something else here</a></li>
+								<li role="separator" class="divider"></li>
+								<li><a href="javascript:void(0);">Separated link</a></li>
+							</ul>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</form>
+</div>
+
+
 <div class="col-xs-12 user-list js-user-list"><%
 	if (users){
 	users.forEach(function (user)
@@ -7,3 +35,39 @@
 	});
 	} %>
 </div>
+<script type="text/javascript">
+//<!--
+(function($)
+{
+	$('.ad-dropdown-toggle').dropdown()
+			.on('show.bs.dropdown', function (event)
+			{
+
+				console.log(this);
+				// do something…
+			})
+			.on('shown.bs.dropdown', function (event)
+			{
+				console.log(event);
+				// do something…
+			})
+			.on('hide.bs.dropdown', function (event)
+			{
+				console.log(event);
+				// do something…
+			})
+			.on('hidden.bs.dropdown', function (event)
+			{
+				console.log(event);
+				// do something…
+			});
+
+	$('.mc-dropdown-toggle').dropdown()
+			.on('shown.bs.dropdown', function (event)
+			{
+				console.log(event);
+				// do something…
+			});
+})(jQuery);
+//-->
+</script>

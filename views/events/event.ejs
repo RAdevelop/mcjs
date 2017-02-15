@@ -14,10 +14,8 @@ let hasImages = (!!eventImages && !!eventImages.length);
 		<%}
 	%></div>
 	<div class="col-xs-12 col-md-6 eventText"><%-event.e_text%></div><%
-	if (hasImages) {
-	%><div class="col-xs-12 col-md-6"><%- include event_images.ejs %></div><%
-	} %>
-	<div class="col-xs-12 col-md-<%=(hasImages ? 12 : 6)%>">
+	if (hasImages) { %><div class="col-xs-12 col-md-6"><%- include event_images.ejs %></div><%} %>
+	<div class="col-xs-12 col-md-6">
 		<p><strong>Где пройдет:</strong></p>
 		<ul>
 			<li><strong>адрес:</strong> <%=event.e_address%></li>

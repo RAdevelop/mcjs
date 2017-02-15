@@ -69,8 +69,7 @@ class Events extends BaseModel
 				});
 
 				sql = `DELETE FROM events_locations WHERE e_id = ?;
-					INSERT INTO events_locations (e_id, l_id)
-					VALUES ${sqlIns.join(',')}
+					INSERT INTO events_locations (e_id, l_id) VALUES ${sqlIns.join(',')}
 					ON DUPLICATE KEY UPDATE l_id=VALUES(l_id);
 					UPDATE events_list SET e_location_pids = ? WHERE e_id = ?;`;
 
