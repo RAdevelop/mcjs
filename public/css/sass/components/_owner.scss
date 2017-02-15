@@ -1,0 +1,68 @@
+.owner {
+  //border: 1px solid red;
+  display: block;
+  width: auto;
+  max-width: 272px;
+  //float: left;
+  border: 1px solid #F0F0F0;
+  @include mix-border-radius(4px);
+
+  @media (max-width: $screen-xs-max)
+  {
+    & {
+      max-width: 100%;
+    }
+  }
+  @media (min-width: $screen-sm) {
+    & {
+      max-width: 100%;
+    }
+  }
+  &_ava {
+    //border: 1px solid green;
+    display: table-cell;
+
+    min-height: 50px;
+    max-height: 50px;
+    min-width: 50px;
+    max-width: 50px;
+
+    & > .fa-user {
+      display: block;
+      min-height: inherit;
+      max-height: inherit;
+      min-width: inherit;
+      max-width: inherit;
+
+      line-height: 50px;
+      font-size: 50px;
+      text-align: center;
+      margin: 0 auto;
+      text-decoration: none;
+      border: 0;
+    }
+
+    & img {
+      margin: 0 auto;
+      width: 100%;
+    }
+  }
+  &_info {
+
+    display: table-cell;
+    vertical-align: top;
+
+    &_name {
+      //border: 1px solid blue;
+      display: block;
+      width: auto;
+      padding: 3px;
+    }
+    &_location {
+      display: block;
+      width: auto;
+      overflow: hidden;
+      max-height: 24px;
+    }
+  }
+}
