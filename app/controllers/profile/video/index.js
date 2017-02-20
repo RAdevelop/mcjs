@@ -58,7 +58,7 @@ class ProfileVideo extends CtrlMain
 		let xhr = this.getReq().xhr;
 
 		if (i_v_id)
-			return this.videoMove(tplData, xhr);
+			return this._videoMove(tplData, xhr);
 
 		return this.getUser(i_u_id)
 			.then((userData) =>
@@ -71,9 +71,9 @@ class ProfileVideo extends CtrlMain
 				tplData["user"] = userData;
 				
 				if (i_va_id)
-					return this.videoAlbum(i_u_id, tplData, xhr);
+					return this._videoAlbum(i_u_id, tplData, xhr);
 
-				return this.videoAlbumList(i_u_id, tplData, xhr);
+				return this._videoAlbumList(i_u_id, tplData, xhr);
 			});
 	}
 
@@ -83,7 +83,7 @@ class ProfileVideo extends CtrlMain
 	 * @param xhr
 	 * @returns {Promise}
 	 */
-	videoMove(tplData, xhr)
+	_videoMove(tplData, xhr)
 	{
 		let {i_v_id, s_v_alias} = this.routeArgs;
 
@@ -140,7 +140,7 @@ class ProfileVideo extends CtrlMain
 	 * @param tplData
 	 * @param isAjax
 	 */
-	videoAlbum(i_u_id, tplData, isAjax = false)
+	_videoAlbum(i_u_id, tplData, isAjax = false)
 	{
 		let {i_va_id, s_va_alias, i_page=1} = this.routeArgs;
 
@@ -206,10 +206,14 @@ class ProfileVideo extends CtrlMain
 
 				this.view.setTplData(tplFile, tplData, isAjax);
 
-				this.getRes().expose(tplData["videoAlbum"], 'videoAlbum');
-				this.getRes().expose(tplData["videoAlbum"]["videos"], 'videoList');
-				//this.getRes().expose(allPreviews, 'albumPreviews');
-				this.getRes().expose(tplData["pages"], 'pages');
+				if (!isAjax)
+				{
+					this.getRes().expose(tplData["videoAlbum"], 'videoAlbum');
+					this.getRes().expose(tplData["videoAlbum"]["videos"], 'videoList');
+					//this.getRes().expose(allPreviews, 'albumPreviews');
+					this.getRes().expose(tplData["pages"], 'pages');
+				}
+
 				Pages = null;
 				return Promise.resolve(isAjax);
 			});
@@ -223,7 +227,7 @@ class ProfileVideo extends CtrlMain
 	 * @param isAjax
 	 * @returns {Promise}
 	 */
-	videoAlbumList(i_u_id, tplData, isAjax = false)
+	_videoAlbumList(i_u_id, tplData, isAjax = false)
 	{
 		let {i_page=1} = this.routeArgs;
 
@@ -247,12 +251,13 @@ class ProfileVideo extends CtrlMain
 				{
 					tplFile = 'user/profile/video/index.ejs';
 					this.view.addPartialData('user/left', {user: tplData["user"]});
+
+					this.getRes().expose(tplData["videoAlbums"], 'videoAlbums');
+					this.getRes().expose(tplData["pages"], 'pages');
 				}
 
 				this.view.setTplData(tplFile, tplData, isAjax);
 
-				this.getRes().expose(tplData["videoAlbums"], 'videoAlbums');
-				this.getRes().expose(tplData["pages"], 'pages');
 				Pages = null;
 				return Promise.resolve(isAjax);
 			});

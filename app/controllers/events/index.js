@@ -277,11 +277,15 @@ class Events extends CtrlMain
 				let tplFile = (isAjax ? 'events/list.ejs':'events');
 				tplData['pages'] = Pages.pages();
 				this.view.setTplData(tplFile, tplData, isAjax);
-				this.getRes().expose(tplData['eventList'], 'eventList');
-				this.getRes().expose(tplData['pages'], 'pages');
 
-				//this.view.addPartialData("user/left", {user: userData});
-				//this.view.addPartialData("user/right", {title: 'right_col'});
+				if (!isAjax)
+				{
+					this.getRes().expose(tplData['eventList'], 'eventList');
+					this.getRes().expose(tplData['pages'], 'pages');
+
+					//this.view.addPartialData("user/left", {user: userData});
+					//this.view.addPartialData("user/right", {title: 'right_col'});
+				}
 
 				return Promise.resolve(isAjax);
 			});

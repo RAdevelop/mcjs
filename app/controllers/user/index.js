@@ -71,11 +71,12 @@ class User extends CtrlMain
 				let tplFile = (isAjax ? 'user/list.ejs' : 'user/index.ejs');
 
 				this.view.setTplData(tplFile, tplData, isAjax);
-				this.view.addPartialData('user/left', {user: tplData.user});
-				//this.view.addPartialData("user/right", {});
 
 				if (!isAjax)
 				{
+					this.view.addPartialData('user/left', {user: tplData['user']});
+					//this.view.addPartialData("user/right", {});
+					
 					this.getRes().expose(tplData['users'], 'users');
 					this.getRes().expose(tplData["pages"], 'pages');
 				}

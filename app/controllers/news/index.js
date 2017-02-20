@@ -88,12 +88,16 @@ class News extends CtrlMain
 				let isAjax = this.getReq().xhr;
 				let tplFile = (isAjax ? 'news/list.ejs':'news');
 
-				this.getRes().expose(newsList, 'newsList');
-				this.getRes().expose(tplData['pages'], 'pages');
-
 				this.view.setTplData(tplFile, tplData, isAjax);
-				//this.view.addPartialData("user/left", {user: userData});
-				//this.view.addPartialData("user/right", {title: 'right_col'});
+
+				if (!isAjax)
+				{
+					this.getRes().expose(newsList, 'newsList');
+					this.getRes().expose(tplData['pages'], 'pages');
+
+					//this.view.addPartialData("user/left", {user: userData});
+					//this.view.addPartialData("user/right", {title: 'right_col'});
+				}
 
 				return Promise.resolve(isAjax);
 			});
@@ -174,13 +178,17 @@ class News extends CtrlMain
 
 				let isAjax = this.getReq().xhr;
 				let tplFile = (isAjax ? 'news/list.ejs':'news');
-
-				this.getRes().expose(newsList, exposeNews);
-				this.getRes().expose(tplData['pages'], 'pages');
-
+				
 				this.view.setTplData(tplFile, tplData, isAjax);
-				//this.view.addPartialData("user/left", {user: userData});
-				//this.view.addPartialData("user/right", {title: 'right_col'});
+
+				if (!isAjax)
+				{
+					this.getRes().expose(newsList, exposeNews);
+					this.getRes().expose(tplData['pages'], 'pages');
+
+					//this.view.addPartialData("user/left", {user: userData});
+					//this.view.addPartialData("user/right", {title: 'right_col'});
+				}
 
 				return Promise.resolve(isAjax);
 			});

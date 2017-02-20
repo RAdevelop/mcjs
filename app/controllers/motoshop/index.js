@@ -141,10 +141,13 @@ class Motoshop extends CtrlMain
 
 				tplData["pages"] = Pages.pages();
 
-				this.getRes().expose(tplData["pages"], 'pages');
-				this.getRes().expose(tplData.motoshopList, 'motoshopList');
-
 				this.view.setTplData(tplFile, tplData, isAjax);
+
+				if (!isAjax)
+				{
+					this.getRes().expose(tplData["pages"], 'pages');
+					this.getRes().expose(tplData.motoshopList, 'motoshopList');
+				}
 
 				return Promise.resolve(isAjax);
 			});

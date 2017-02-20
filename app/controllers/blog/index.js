@@ -144,12 +144,16 @@ class Blog extends CtrlMain
 
 				let tplFile = (isAjax ? 'blog/list.ejs':'blog');
 
-				this.getRes().expose(blogList, exposeBlog);
-				this.getRes().expose(tplData["pages"], 'pages');
-
 				this.view.setTplData(tplFile, tplData, isAjax);
-				//this.view.addPartialData("user/left", {user: userData});
-				//this.view.addPartialData("user/right", {title: 'right_col'});
+
+				if (!isAjax)
+				{
+					this.getRes().expose(blogList, exposeBlog);
+					this.getRes().expose(tplData["pages"], 'pages');
+
+					//this.view.addPartialData("user/left", {user: userData});
+					//this.view.addPartialData("user/right", {title: 'right_col'});
+				}
 
 				return Promise.resolve(isAjax);
 			});
@@ -305,12 +309,16 @@ class Blog extends CtrlMain
 
 				let tplFile = (isAjax ? 'blog/list.ejs':'blog');
 
-				this.getRes().expose(blogList, exposeBlog);
-				this.getRes().expose(tplData["pages"], 'pages');
-
 				this.view.setTplData(tplFile, tplData, isAjax);
-				//this.view.addPartialData("user/left", {user: userData});
-				//this.view.addPartialData("user/right", {title: 'right_col'});
+
+				if (!isAjax)
+				{
+					this.getRes().expose(blogList, exposeBlog);
+					this.getRes().expose(tplData["pages"], 'pages');
+
+					//this.view.addPartialData("user/left", {user: userData});
+					//this.view.addPartialData("user/right", {title: 'right_col'});
+				}
 
 				return Promise.resolve(isAjax);
 			});

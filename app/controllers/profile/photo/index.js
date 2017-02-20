@@ -119,15 +119,17 @@ class ProfilePhoto extends CtrlMain
 				{
 					tplFile = 'user/profile/photo/by_tags.ejs';
 					this.view.addPartialData('user/left', {user: tplData['user']});
+
+					this.getRes().expose(tplData['albums'], 'albums');
+					this.getRes().expose(tplData['pages'], 'pages');
+
+					//this.view.addPartialData("user/left", {user: userData});
+					//this.view.addPartialData("user/right", {title: 'right_col'});
+
 				}
 
 				this.view.setTplData(tplFile, tplData, isAjax);
-
-				this.getRes().expose(tplData['albums'], 'albums');
-				this.getRes().expose(tplData['pages'], 'pages');
 				Pages = null;
-				//this.view.addPartialData("user/left", {user: userData});
-				//this.view.addPartialData("user/right", {title: 'right_col'});
 
 				return Promise.resolve(isAjax);
 			});
@@ -165,12 +167,13 @@ class ProfilePhoto extends CtrlMain
 				{
 					tplFile = 'user/profile/photo/albums.ejs';
 					this.view.addPartialData('user/left', {user: tplData['user']});
+
+					this.getRes().expose(tplData['albums'], 'albums');
+					this.getRes().expose(tplData['pages'], 'pages');
 				}
 
 				this.view.setTplData(tplFile, tplData, isAjax);
 
-				this.getRes().expose(tplData['albums'], 'albums');
-				this.getRes().expose(tplData['pages'], 'pages');
 				Pages = null;
 				return Promise.resolve(isAjax);
 			});
@@ -242,14 +245,16 @@ class ProfilePhoto extends CtrlMain
 
 					if (tplData['album']['images'] && tplData['album']['images'][0] && tplData['album']['images'][0]['previews']['512_384'])
 						this.view.setPageOgImage(tplData['album']['images'][0]['previews']['512_384']);
+
+
+					this.getRes().expose(tplData['album'], 'album');
+					this.getRes().expose(tplData['album']['images'], exposeAlbumImages);
+					this.getRes().expose(allPreviews, 'albumPreviews');
+					this.getRes().expose(tplData['pages'], 'pages');
 				}
 
 				this.view.setTplData(tplFile, tplData, isAjax);
 
-				this.getRes().expose(tplData['album'], 'album');
-				this.getRes().expose(tplData['album']['images'], exposeAlbumImages);
-				this.getRes().expose(allPreviews, 'albumPreviews');
-				this.getRes().expose(tplData['pages'], 'pages');
 				Pages = null;
 				return Promise.resolve(isAjax);
 			});

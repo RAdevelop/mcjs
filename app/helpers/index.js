@@ -204,11 +204,11 @@ class Helpers
 					break;
 	
 				case 's':
-					pValue = (pValue.search(/[\r\n]/) != -1) ? null : pValue;
+					pValue = (pValue.search(/[\r\n]/) != -1) ? null : decodeURIComponent(pValue);
 					break;
 	
 				case 't':
-					pValue = pValue.toString();
+					pValue = decodeURIComponent(pValue).toString();
 					break;
 	
 				case 'm': //isEmail
