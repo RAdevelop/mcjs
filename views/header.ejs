@@ -1,26 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
-    <meta name="description" content="<%= (_pageDescription ? _pageDescription : 'Мотосообщество для всех, кто связан с мотоциклами, мопедами, квадроциклами. Общайтесь, обменивайтесь новостями, опытом, мнениями. Адреса и контакты мотосервисов и магазинов мотозапчастей.') %>" />
-    <meta name="keywords" content="" />
-    <title><%= (_pageTitle ? _pageTitle : 'Мотосообщество: о проекте «MotoCommunity»') %></title>
+	<meta name="description" content="<%= (_pageDescription ? _pageDescription : 'Мотосообщество для всех, кто связан с мотоциклами, мопедами, квадроциклами. Общайтесь, обменивайтесь новостями, опытом, мнениями. Адреса и контакты мотосервисов и магазинов мотозапчастей.') %>" />
+	<meta name="keywords" content="" />
+	<title><%= (_pageTitle ? _pageTitle : 'Мотосообщество: о проекте «MotoCommunity»') %></title>
 
-    <meta property="og:site_name" content="MotoCommunity - мотосообщество для всех!" />
-    <meta property="og:type" content="website" />
+	<meta property="og:site_name" content="MotoCommunity - мотосообщество для всех!" />
+	<meta property="og:type" content="website" />
 
-    <meta property="og:url" content="<%=_reqOriginalUrl%>" />
-    <meta property="og:title" content="<%= (_pageTitle ? _pageTitle : 'Мотосообщество: о проекте «MotoCommunity»') %>" />
+	<meta property="og:url" content="<%=_reqOriginalUrl%>" />
+	<meta property="og:title" content="<%= (_pageTitle ? _pageTitle : 'Мотосообщество: о проекте «MotoCommunity»') %>" />
 
-    <!-- повтор для description" -->
-    <meta property="og:description" content="<%= (_pageDescription ? _pageDescription : 'Мотосообщество для всех, кто связан с мотоциклами, мопедами, квадроциклами. Общайтесь, обменивайтесь новостями, опытом, мнениями. Адреса и контакты мотосервисов и магазинов мотозапчастей.') %>" />
+	<!-- повтор для description" -->
+	<meta property="og:description" content="<%= (_pageDescription ? _pageDescription : 'Мотосообщество для всех, кто связан с мотоциклами, мопедами, квадроциклами. Общайтесь, обменивайтесь новостями, опытом, мнениями. Адреса и контакты мотосервисов и магазинов мотозапчастей.') %>" />
 
-    <!-- можно разместить где-то "внутри страницы". content - путь к картинке-->
-    <meta property="og:image" content="<%= (_pageOgImage ? _pageOgImage : '/img/logo.jpg') %>" itemprop="og:image" />
+	<!-- можно разместить где-то "внутри страницы". content - путь к картинке-->
+	<meta property="og:image" content="<%= (_pageOgImage ? _pageOgImage : '/img/logo.jpg') %>" itemprop="og:image" />
 	<!-- я.вебмастер -->
 	<meta name='yandex-verification' content='4d0024695ffba4a9' />
 
@@ -30,13 +30,13 @@
 	<meta http-equiv="refresh" content="0; URL=/badbrowser.html" />
 	<![endif]-->
 	<!-- Bootstrap -->
-    <link href="/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+	<link href="/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
 
 	<!-- font-awesome -->
-    <link href="/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+	<link href="/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
 
-    <!-- Custom styles for this template -->
-    <link rel='stylesheet' href='/js/jquery/ui/jquery-ui.min.css' />
+	<!-- Custom styles for this template -->
+	<link rel='stylesheet' href='/js/jquery/ui/jquery-ui.min.css' />
 	<link  href="/js/cropper/2.3.2/cropper.min.css" rel="stylesheet" />
 
 	<!--[if lte IE 9]>
@@ -49,21 +49,26 @@
 	<script src="/js/js-polyfills/typedarray.js"></script>
 	<script src="/js/js-polyfills/polyfill.min.js"></script>
 
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 	<!--[if lte IE 9]>
-	<script src="/js/jquery/jquery-1.11.3.min.js"></script>
+	<!-- script src="/js/jquery/jquery-1.11.3.min.js"></script -->
+	<script src="/js/jquery/2.2.4/jquery-2.2.4.min.js"></script>
 	<![endif]-->
+
 	<!--[if gte IE 10]>
-	<script src="/js/jquery/jquery-1.12.0.min.js"></script>
+	<!-- script src="/js/jquery/jquery-1.12.0.min.js"></script -->
+	<script src="/js/jquery/2.2.4/jquery-2.2.4.min.js"></script>
 	<![endif]-->
 	<!--[if !IE]>-->
-	<script src="/js/jquery/jquery-1.12.0.min.js"></script>
+	<!-- script src="/js/jquery/jquery-1.12.0.min.js"></script -->
+	<script src="/js/jquery/2.2.4/jquery-2.2.4.min.js"></script>
 	<!--<![endif]-->
 
-    <script src="/js/jquery/ui/jquery-ui.min.js"></script>
+	<!-- script src="/js/jquery/ui/jquery-ui.min.js"></script -->
+	<script src="/js/jquery/2.2.4/jquery-ui.min.js"></script>
 
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script src="/bootstrap/dist/js/bootstrap.min.js"></script>
 	<%- include expose/index.ejs %>
 	<link rel='stylesheet' href='/css/style.css' />
 </head>
@@ -72,12 +77,12 @@
 <nav class="navbar navbar-default navbar-fixed-top" id="navbarFixedTop">
 	<div class="container-fluid row" style="background-color: #fff;">
 		<div class="col-xs-12 col-sm-6 col-md-8 navbar-social">
-				<span class="social">Мы в социальных сетях</span>
-				<a class="social fa fa-vk fa-fw" href="https://vk.com/motocommunityru" target="_blank" rel="nofollow" title="MotoСommunity ВКонтакте"></a>
-				<a class="social fa fa-odnoklassniki fa-fw" href="http://odnoklassniki.ru/group/53882214612996" target="_blank" rel="nofollow" title="MotoСommunity в Одноклассниках"></a>
-				<a class="social fa fa-facebook fa-fw" href="https://www.facebook.com/groups/MotoCommunityRu/" target="_blank" rel="nofollow" title="MotoСommunity в FaceBook"></a>
-				<a class="social fa fa-twitter fa-fw" href="https://twitter.com/#!/MotoCommunityRu" target="_blank" rel="nofollow" title="MotoСommunity в Twitter"></a>
-				<a class="social fa fa-google-plus fa-fw" href="https://plus.google.com/+MotocommunityRu/" target="_blank" rel="nofollow" title="MotoСommunity в Google+"></a>
+			<span class="social">Мы в социальных сетях</span>
+			<a class="social fa fa-vk fa-fw" href="https://vk.com/motocommunityru" target="_blank" rel="nofollow" title="MotoСommunity ВКонтакте"></a>
+			<a class="social fa fa-odnoklassniki fa-fw" href="http://odnoklassniki.ru/group/53882214612996" target="_blank" rel="nofollow" title="MotoСommunity в Одноклассниках"></a>
+			<a class="social fa fa-facebook fa-fw" href="https://www.facebook.com/groups/MotoCommunityRu/" target="_blank" rel="nofollow" title="MotoСommunity в FaceBook"></a>
+			<a class="social fa fa-twitter fa-fw" href="https://twitter.com/#!/MotoCommunityRu" target="_blank" rel="nofollow" title="MotoСommunity в Twitter"></a>
+			<a class="social fa fa-google-plus fa-fw" href="https://plus.google.com/+MotocommunityRu/" target="_blank" rel="nofollow" title="MotoСommunity в Google+"></a>
 		</div>
 		<div class="col-xs-12 col-sm-6 col-md-4 navbar-user-top">
 			<%
@@ -100,25 +105,25 @@
 			<a class="navbar-brand" href="/">MotoCommunity</a>
 		</div>
 		<div id="navbar" class="navbar-collapse collapse">
-            <%- include menu/main %>
-            <% if(_user) {
+			<%- include menu/main %>
+			<% if(_user) {
 			%><div class="navbar-right">
 				<form class="navbar-form" action="/logout" method="post">
 					<button type="submit" class="btn btn-danger">выйти</button>
 				</form>
 			</div><%
 			} else {%>
-            <div class="navbar-form navbar-right">
-            <a class="btn btn-default" href="/login" role="button">Войти</a>
-            <a class="btn btn-default" href="/registration" role="button">Регистрация</a>
-            </div><%
+			<div class="navbar-form navbar-right">
+				<a class="btn btn-default" href="/login" role="button">Войти</a>
+				<a class="btn btn-default" href="/registration" role="button">Регистрация</a>
+			</div><%
 			}%>
 		</div><!--/.nav-collapse -->
-        <!-- ol class="breadcrumb">
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Library</a></li>
-            <li class="active">Data</li>
-        </ol -->
+		<!-- ol class="breadcrumb">
+			<li><a href="#">Home</a></li>
+			<li><a href="#">Library</a></li>
+			<li class="active">Data</li>
+		</ol -->
 	</div>
 </nav>
 <!-- Begin page content -->

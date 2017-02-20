@@ -111,7 +111,7 @@ class Events extends CtrlMain
 
 		let startDate, endDate;
 
-		let l_id = this.getReq().query['l_id'] || null;
+		let {l_id=null} = this.reqQuery();
 
 		this._setSelectedDateTs(new Date(i_yy, i_mm-1, i_dd||1));
 		this._setSelectedDateObj({i_yy:i_yy, i_mm:i_mm, i_dd:i_dd});

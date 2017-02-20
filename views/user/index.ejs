@@ -1,6 +1,41 @@
 <% if(!_isXHR){%><%- layout('layout/user/index') %><% }%>
 <h1><%=_pageH1%></h1>
 <div class="row">
+	<div class="col-xs-12">
+		<form class="form-horizontal" method="get" id="formUserSearch">
+			<div class="input-group">
+				<div class="input-group-btn">
+					<a tabindex="0" class="btn btn-primary" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">страна <i class="caret"></i></a>
+					<ul class="dropdown-menu" aria-labelledby="dLabel">
+						<li>1</li>
+						<% if (country_list.length) {
+							country_list.forEach(function (country)
+							{
+								%><li><a href="javascript:void(0); $('#ui_country').val(<%=country['l_id']%>); $('#s_country').val('<%=country['l_name']%>');" data-country-id="<%=country['l_id']%>"><%=country['l_name']%></a></li><%
+							})
+						}%>
+					</ul>
+				</div>
+				<input type="text" name="loc[0]" id="ui_country"/>
+				<input type="text" id="s_country" class="form-control" aria-label="..." placeholder="страна"/>
+				<div class="input-group-btn">
+					<a tabindex="0" class="btn btn-primary" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">город <i class="caret"></i></a>
+					<ul class="dropdown-menu" aria-labelledby="dLabel">
+						<li>1</li>
+						<li>2</li>
+					</ul>
+				</div>
+				<input type="text" name="loc[1]" id="ui_city" />
+				<input type="text" id="s_city" class="form-control" aria-label="..." placeholder="город"/>
+			</div>
+			<div class="input-group">
+				<input type="text" name="s_user" class="form-control" aria-label="..." placeholder="имя"/>
+				<div class="input-group-btn">
+					<button  type="submit" tabindex="0" class="btn btn-primary" role="button">найти</button>
+				</div>
+			</div>
+		</form>
+	</div>
 	<%- include list.ejs %>
 </div>
 <%- include ../pages/index.ejs %>

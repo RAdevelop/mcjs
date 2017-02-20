@@ -45,10 +45,10 @@ class User extends Base
 
 	getById(u_id)
 	{
-		return new Promise((resolve, reject) => {
-
-			this.model("user").getById(u_id, (err, uData) => {
-
+		return new Promise((resolve, reject) =>
+		{
+			this.model("user").getById(u_id, (err, uData) =>
+			{
 				if (err && err.name != 'NotFoundError')
 					return reject(err);
 
@@ -102,7 +102,8 @@ class User extends Base
 			return Promise.resolve();
 
 		return this.getUser(u_id)
-			.then((user) => {
+			.then((user) =>
+			{
 				if (!user)
 					return Promise.resolve();
 
@@ -231,6 +232,15 @@ class User extends Base
 
 				return Promise.resolve([users, list]);
 			});
+	}
+
+	/**
+	 * список стран, к которым привязаны юзеры
+	 * @returns {*}
+	 */
+	getUsersCountryList()
+	{
+		return this.model('user').getUsersCountryList();
 	}
 }
 

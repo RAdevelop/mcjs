@@ -54,7 +54,7 @@ class Helpers
 		}
 	}
 	
-	static isI(value)
+	static isI(value = '')
 	{
 		if (value.search(/-?0/) == 0 && value.length > 1) return false;
 
@@ -62,7 +62,7 @@ class Helpers
 	}
 
 
-	static isUi(value)
+	static isUi(value = '')
 	{
 		if (value.search(/-/) == 0) return false;
 	
@@ -70,19 +70,19 @@ class Helpers
 	}
 
 
-	static isFloat(value)
+	static isFloat(value = '')
 	{
 		let re = /^-?\d+(?:\.\d+(?:E\-\d+)?)?$/;
 		return re.test(value);
 	}
 
-	static isUfloat(value)
+	static isUfloat(value = '')
 	{
 		let re = /^\d+(?:\.\d+(?:E\-\d+)?)?$/;
 		return re.test(value);
 	}
 
-	static isEmail(value)
+	static isEmail(value = '')
 	{
 		value = value.trim();
 		if (value.length >= 255) return false;
@@ -92,7 +92,7 @@ class Helpers
 		return re.test(value);
 	}
 
-	static isLink(value)
+	static isLink(value = '')
 	{
 		value = value.trim();
 	
@@ -101,7 +101,7 @@ class Helpers
 		return re.test(value);
 	}
 
-	static isDate(date)
+	static isDate(date = '')
 	{
 		let bd = date.split('-');
 
@@ -116,7 +116,7 @@ class Helpers
 
 		return true;
 	}
-	static isDateTime(dateTime)
+	static isDateTime(dateTime = '')
 	{
 		let dt = dateTime.split(' ');
 		let d = (dt[0] ? dt[0].split('-') : []);

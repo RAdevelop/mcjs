@@ -399,6 +399,24 @@ class User extends BaseModel
 		//console.log(sql, u_ids);
 		return this.constructor.conn().ps(sql, u_ids);
 	}
+
+	/**
+	 * список стран, к которым привязаны юзеры
+	 * @returns {*}
+	 */
+	getUsersCountryList()
+	{
+		let sql = `SELECT
+		ln.l_id, ln.l_name 
+		FROM 
+		(SELECT NULL) AS z
+		JOIN location_names AS ln ON(l_kind IN('country'))
+		JOIN users_locations AS ul ON(ul.l_id = ln.l_id)
+		GROUP BY ln.l_id
+		ORDER BY ln.l_name`;
+		//console.log(sql, u_ids);
+		return this.constructor.conn().ps(sql);
+	}
 }
 
 module.exports = User;

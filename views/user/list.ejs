@@ -1,31 +1,3 @@
-<div class="col-lg-6">
-	<form class="form-horizontal" action="get" id="formUserSearch">
-		<div class="input-group">
-			<input type="text" name="s_user" class="form-control" aria-label="..." placeholder="имя"/>
-			<div class="input-group-btn">
-				<button type="button" class="btn btn-default ad-dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action <span class="caret"></span></button>
-				<ul class="dropdown-menu dropdown-menu-right">
-					<li class="input-group"><input type="text" name="s_user" class="form-control" aria-label="..." placeholder="имя"/></li>
-					<li><a href="javascript:void(0);">Another action</a></li>
-					<li><a href="javascript:void(0);">Something else here</a></li>
-					<li role="separator" class="divider"></li>
-					<li class="group-btn">
-							<button type="button" class="btn btn-default mc-dropdown-toggle" data-toggle="" aria-haspopup="true" aria-expanded="false">Action <span class="caret"></span></button>
-							<ul class="dropdown-menu dropdown-menu-right">
-								<li class="input-group"><input type="text" name="s_user" class="form-control" aria-label="..." placeholder="имя"/></li>
-								<li><a href="javascript:void(0);">Another action</a></li>
-								<li><a href="javascript:void(0);">Something else here</a></li>
-								<li role="separator" class="divider"></li>
-								<li><a href="javascript:void(0);">Separated link</a></li>
-							</ul>
-					</li>
-				</ul>
-			</div>
-		</div>
-	</form>
-</div>
-
-
 <div class="col-xs-12 user-list js-user-list"><%
 	if (users){
 	users.forEach(function (user)
@@ -37,37 +9,69 @@
 </div>
 <script type="text/javascript">
 //<!--
-(function($)
-{
-	$('.ad-dropdown-toggle').dropdown()
-			.on('show.bs.dropdown', function (event)
-			{
+(function($){
+	var $popover = $('.raad').popover({
+		//trigger: "manual"
+		//trigger: "focus"
+		trigger: "click"
+		, container: 'body'
+		, placement: "auto bottom"
+		, template: '<div class="popover ra" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'
+		, title: "Выберите регион"
+		, html: true
+		//, selector: "#viewport", "padding": 0
+		, content: $('.content').html()
+	});
 
+	$popover
+			.on('show.bs.popover', function (event) {
+				var $self = $(this);
+
+				console.log('show.bs.popover');
+				console.log(event);
 				console.log(this);
-				// do something…
 			})
-			.on('shown.bs.dropdown', function (event)
-			{
+			.on('inserted.bs.popover', function (event) {
+				var $self = $(this);
+
+				$('#'+$self.attr('aria-describedby'))
+						.css({
+							'max-width': '50%'
+							, 'width': '100%'
+						});
+
+				console.log('inserted.bs.popover');
 				console.log(event);
-				// do something…
+				console.log(this);
 			})
-			.on('hide.bs.dropdown', function (event)
-			{
+			.on('shown.bs.popover', function (event) {
+				var $self = $(this);
+				console.log('shown.bs.popover');
 				console.log(event);
-				// do something…
+				console.log(this);
 			})
-			.on('hidden.bs.dropdown', function (event)
-			{
+			.on('hide.bs.popover', function (event) {
+				var $self = $(this);
+
+				console.log('hide.bs.popover');
 				console.log(event);
-				// do something…
+				console.log(this);
+			})
+			.on('hidden.bs.popover', function (event) {
+				var $self = $(this);
+
+				console.log('hidden.bs.popover');
+				console.log(event);
+				console.log(this);
 			});
 
-	$('.mc-dropdown-toggle').dropdown()
-			.on('shown.bs.dropdown', function (event)
-			{
-				console.log(event);
-				// do something…
-			});
+	/*$popover.click(function (event)
+	{
+		if (!!$popover.attr('aria-describedby') === false)
+		{
+			$popover.popover('show');
+		}
+	});*/
 })(jQuery);
 //-->
 </script>
