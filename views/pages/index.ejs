@@ -2,7 +2,9 @@
 <nav class="pagesNavigation js-pages-navigation" aria-label="Page navigation">
 	<ul class="pagination">
 <% if (pages["is_ajax"]) {
-	let link = pages["uri"] + '/page/'+(pages["page"]+1) + '/';
+
+	let link = [pages["uri"], 'page', (pages["page"]+1)].join('/')+'/';
+	if (!!pages["query"]) link += ('?'+pages["query"]);
 %><li><a href="<%=link%>" rel="next" class="nextPages js-next-pages btn btn-default" data-loading-text="загружаю...">еще <span aria-hidden="true">&rarr;</span></a></li><%
 }  else {
 		if (!pages["first_page"]){%><li><a href="<%=pages["uri"]%>/<%=(pages["query"] ? '?'+pages["query"] : '')%>" aria-label="первая"><span aria-hidden="true">&leftarrow;&nbsp;первая</span></a></li><%}%><%

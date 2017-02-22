@@ -59,8 +59,11 @@
 			}
 
 			var sendData = {};
-			var uri = pagesUri+'/page/'+next+'/';
-			
+			var uri = [pagesUri, 'page', next].join('/');
+
+			if (!!Pagination.pages.query)
+			uri += '/?'+Pagination.pages.query;
+
 			$self.button('loading');
 
 			$.ajax({
@@ -94,7 +97,12 @@
 						return;
 
 					page = resData["pages"]["page"];
-					$self.attr('href', [Pagination["pages"]["uri"], 'page', (page+1)].join('/')+'/');
+					var href = [Pagination["pages"]["uri"], 'page', (page+1)].join('/')+'/';
+
+					if (!!resData["pages"]["query"])
+						href += '?'+resData["pages"]["query"];
+
+					$self.attr('href', href);
 
 					//console.log(data);
 

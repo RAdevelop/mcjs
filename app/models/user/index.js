@@ -323,12 +323,26 @@ class User extends BaseModel
 
 	/**
 	 * подсчет кол-ва всех пользователей
+	 * @param loc_ids - массив с id locations
+	 * @param s_name
 	 */
-	countUsers()
+	countUsers(loc_ids = [], s_name = '')
 	{
-		let sql = "SELECT COUNT(u_id) AS u_cnt FROM users";
+		let sqlData = [];
+		let sql = [`SELECT COUNT(u.u_id) AS u_cnt FROM users AS u`];
+		if (loc_ids.length > 0)
+		{
+			sql.push(`JOIN users_locations AS ul ON(ul.u_id = u.u_id AND ul.l_id IN(${this.constructor.placeHoldersForIn(loc_ids)}))`);
+			sqlData = [].concat(loc_ids);
+		}
 
-		return this.constructor.conn().sRow(sql)
+		sql = sql.join(`\n`);
+
+		/*console.log('\n');
+		console.log(sql);
+		console.log(sqlData);*/
+
+		return this.constructor.conn().sRow(sql, sqlData)
 			.then((res) =>
 			{
 				if(!res)
@@ -343,20 +357,35 @@ class User extends BaseModel
 	 *
 	 * @param offset
 	 * @param limit
+	 * @param loc_ids - массив с id locations
+	 * @param s_name
 	 * @returns {Promise}
 	 */
-	getUsers(offset, limit)
+	getUsers(offset, limit, loc_ids = [], s_name = '')
 	{
 		offset = parseInt(offset, 10) || 0;
 		limit = parseInt(limit, 10) || 20;
 
-		let sql = `SELECT u.u_id, u.u_mail, u.u_date_reg, u.u_date_visit, u.u_login, u.u_reg,
+		let sqlData = [];
+		let sql = [`SELECT u.u_id, u.u_mail, u.u_date_reg, u.u_date_visit, u.u_login, u.u_reg,
 		ud.u_name, ud.u_surname, ud.u_sex, ud.u_birthday, ud.u_location_id, ud.u_latitude, ud.u_longitude
 		FROM users AS u
-		JOIN users_data AS ud ON (ud.u_id = u.u_id)
-		LIMIT ${limit} OFFSET ${offset}`;
+		JOIN users_data AS ud ON (ud.u_id = u.u_id)`];
 
-		return this.constructor.conn().s(sql)
+		if (loc_ids.length > 0)
+		{
+			sql.push(`JOIN users_locations AS ul ON(ul.u_id = u.u_id AND ul.l_id IN(${this.constructor.placeHoldersForIn(loc_ids)}))`);
+			sqlData = [].concat(loc_ids);
+		}
+		sql.push(`LIMIT ${limit} OFFSET ${offset}`);
+
+		sql = sql.join(`\n`);
+
+		/*console.log('\n');
+		console.log(sql);
+		console.log(sqlData);*/
+
+		return this.constructor.conn().ps(sql, sqlData)
 			.then((res) =>
 			{
 				let user = {
@@ -406,10 +435,8 @@ class User extends BaseModel
 	 */
 	getUsersCountryList()
 	{
-		let sql = `SELECT
-		ln.l_id, ln.l_name 
-		FROM 
-		(SELECT NULL) AS z
+		let sql = `SELECT ln.l_id, ln.l_name 
+		FROM (SELECT NULL) AS z
 		JOIN location_names AS ln ON(l_kind IN('country'))
 		JOIN users_locations AS ul ON(ul.l_id = ln.l_id)
 		GROUP BY ln.l_id

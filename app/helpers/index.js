@@ -56,15 +56,15 @@ class Helpers
 	
 	static isI(value = '')
 	{
-		if (value.search(/-?0/) == 0 && value.length > 1) return false;
+		if ((value+'').search(/-?0/) == 0 && value.length > 1) return false;
 
-		return (value.search(/^-?\d+$/ig) != -1);
+		return ((value+'').search(/^-?\d+$/ig) != -1);
 	}
 
 
 	static isUi(value = '')
 	{
-		if (value.search(/-/) == 0) return false;
+		if ((value+'').search(/-/) == 0) return false;
 	
 		return Helpers.isI(value);
 	}

@@ -45,14 +45,28 @@ class User extends CtrlMain
 		let isAjax = this.getReq().xhr;
 
 		let {ui_country, ui_city, s_name} = this._locReqQuery();
+
+		console.log('isAjax = ', isAjax);
 		console.log('ui_country = ', ui_country);
 		console.log('ui_city = ', ui_city);
 		console.log('s_name = ', s_name);
 
+		let loc_ids = [];
+		let location_id = [];
+		if (ui_country)
+		{
+			loc_ids.push(ui_country);
+			if (ui_city)
+				loc_ids.push(ui_city);
+		}
+
+		if(!!loc_ids[loc_ids.length-1])
+			location_id = [loc_ids[loc_ids.length-1]];
+
 		return Promise.join(
 			(isAjax ? Promise.resolve(null) : this.getUser(this.getUserId())),
-			this.getClass("user").getUsers( new Pages(i_page, limit_per_page) ),
-			(isAjax ? Promise.resolve(null) : this.getClass("user").getUsersCountryList())
+			this.getClass('user').getUsers( new Pages(i_page, limit_per_page), location_id, s_name ),
+			(isAjax ? Promise.resolve(null) : this.getClass("user").getUsersCountryList(ui_country))
 			, (user, users, country_list)=>
 			{
 				let tplData = {
@@ -63,6 +77,12 @@ class User extends CtrlMain
 				};
 
 				const Pages = users.Pages;
+
+				if (loc_ids.length)
+					Pages.setLinksQuery({loc: loc_ids});
+
+				if (!!s_name)
+					Pages.setLinksQuery({s_name: s_name}, true);
 
 				Pages.setLinksUri(this.getBaseUrl());
 
@@ -95,11 +115,13 @@ class User extends CtrlMain
 		s_name = s_name.trim();
 		loc.forEach((l, inx)=>
 		{
-			l.trim();
-			if (l == '')
-			loc.splice(inx, 1);
+			l = parseInt(l, 10);
+			if (!!l === false)
+				loc.splice(inx, 1);
+			else
+				loc[inx] = l;
 		});
-
+		
 		loc = CtrlMain.helpers.varsValidate({ui_country: loc[0], ui_city: loc[1], s_name: s_name})
 
 		return loc;

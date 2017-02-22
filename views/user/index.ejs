@@ -7,17 +7,16 @@
 				<div class="input-group-btn">
 					<a tabindex="0" class="btn btn-primary" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">страна <i class="caret"></i></a>
 					<ul class="dropdown-menu" aria-labelledby="dLabel">
-						<li>1</li>
-						<% if (country_list.length) {
-							country_list.forEach(function (country)
+						<% if (country_list['list'].length) {
+							country_list['list'].forEach(function (country)
 							{
 								%><li><a href="javascript:void(0); $('#ui_country').val(<%=country['l_id']%>); $('#s_country').val('<%=country['l_name']%>');" data-country-id="<%=country['l_id']%>"><%=country['l_name']%></a></li><%
 							})
 						}%>
 					</ul>
 				</div>
-				<input type="text" name="loc[0]" id="ui_country"/>
-				<input type="text" id="s_country" class="form-control" aria-label="..." placeholder="страна"/>
+				<input type="text" name="loc[0]" id="ui_country" value="<%=(!!country_list['selected'] ? country_list['selected']['l_id'] : '') %>"/>
+				<input type="text"  class="form-control" id="s_country" value="<%=(!!country_list['selected'] ? country_list['selected']['l_name'] : '') %>" aria-label="..." placeholder="страна"/>
 				<div class="input-group-btn">
 					<a tabindex="0" class="btn btn-primary" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">город <i class="caret"></i></a>
 					<ul class="dropdown-menu" aria-labelledby="dLabel">
@@ -29,7 +28,7 @@
 				<input type="text" id="s_city" class="form-control" aria-label="..." placeholder="город"/>
 			</div>
 			<div class="input-group">
-				<input type="text" name="s_user" class="form-control" aria-label="..." placeholder="имя"/>
+				<input type="text" name="s_name" class="form-control" aria-label="..." placeholder="имя"/>
 				<div class="input-group-btn">
 					<button  type="submit" tabindex="0" class="btn btn-primary" role="button">найти</button>
 				</div>

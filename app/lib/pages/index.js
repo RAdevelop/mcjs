@@ -1,3 +1,5 @@
+const QS = require('qs');
+
 /**
  * Created by ra on 16.08.16.
  */
@@ -103,18 +105,31 @@ class Pages
 		return this._linksUri;
 	}
 
-	setLinksQuery(uriQuery = '')
+	setLinksQuery(uriQuery = {}, append = false)
 	{
-		this._linksQuery = uriQuery;
+		if (typeof  uriQuery !== 'object')
+			return this;
+
+		if (Object.keys(uriQuery).length == 0)
+		{
+			//this._linksQuery = '';
+			return this;
+		}
+		
+		if (append && !!this._linksQuery)
+			this._linksQuery += '&'+QS.stringify(uriQuery);
+		else
+			this._linksQuery = QS.stringify(uriQuery);
+
 		return this;
 	}
 
 	getLinksQuery()
 	{
-		if (!this._linksQuery)
-			this.setLinksQuery();
+		//if (!this._linksQuery)
+			//this.setLinksQuery();
 
-		return this._linksQuery;
+		return this._linksQuery||'';
 	}
 
 	limitExceeded()

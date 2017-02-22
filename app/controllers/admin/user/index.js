@@ -44,14 +44,14 @@ class AdminUser extends CtrlMain
 	getUserList(i_page)
 	{
 		//{users:users, users_cnt:users_cnt, Pages:Pages}
-		return this.getClass("user").getUsers(new Pages(i_page))
-			.then((users) => {
-
+		return this.getClass('user').getUsers(new Pages(i_page))
+			.then((users) =>
+			{
 				let tplFile = 'admin/user';
 				let tplData = {};
 				tplData['user_list'] = users.users || [];
 
-				tplData["pages"] = users.Pages.setLinksUri(this.getBaseUrl())
+				tplData['pages'] = users.Pages.setLinksUri(this.getBaseUrl())
 					.setAjaxPagesType(false).pages();
 
 				//экспрот данных в JS на клиента

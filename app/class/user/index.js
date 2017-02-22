@@ -114,26 +114,30 @@ class User extends Base
 
 	/**
 	 * подсчет кол-ва всех пользователей
+	 * @param loc_ids - массив с id locations
+	 * @param s_name
 	 */
-	countUsers()
+	countUsers(loc_ids = [], s_name = '')
 	{
-		return this.model('user').countUsers();
+		return this.model('user').countUsers(loc_ids, s_name);
 	}
 
 	/**
 	 * список пользователей
 	 *
 	 * @param Pages
+	 * @param loc_ids - массив с id locations
+	 * @param s_name
 	 * @returns {Promise} [users, users_cnt, Pages]
 	 */
-	getUsers(Pages)
+	getUsers(Pages, loc_ids = [], s_name = '')
 	{
-		return this.model('user').countUsers()
+		return this.countUsers(loc_ids, s_name)
 			.then((users_cnt) =>
 			{
 				Pages.setTotal(users_cnt);
 
-				let usersData = {"users":null, "users_cnt":users_cnt, "Pages":Pages};
+				let usersData = {'users':null, 'users_cnt':users_cnt, 'Pages':Pages};
 
 				if (!users_cnt)
 					return Promise.resolve(usersData);
@@ -142,7 +146,7 @@ class User extends Base
 					return Promise.reject(new Errors.HttpError(404));
 
 				return this.model('user')
-					.getUsers(Pages.getOffset(), Pages.getLimit())
+					.getUsers(Pages.getOffset(), Pages.getLimit(), loc_ids, s_name)
 					.spread((users, users_ids) =>
 					{
 						return Promise.all([
@@ -155,11 +159,11 @@ class User extends Base
 								{
 									users[uI]['u_display_name'] = User.userDisplayName(user);
 									users[uI] = Object.assign({}, users[uI],
-										usersAva[user["u_id"]],
-										usersLocation[user["u_id"]]
+										usersAva[user['u_id']],
+										usersLocation[user['u_id']]
 									);
 								});
-
+								
 								usersData.users = users;
 								users_ids = null;
 								return Promise.resolve(usersData);
@@ -195,20 +199,19 @@ class User extends Base
 		if (u_ids.length == 0)
 			return Promise.resolve([]);
 
-		return Promise.props({
-			users: this.model('user').getUserListById(u_ids),
-			usersAva: this.getClass('user/photo/profile').getUsersAva(u_ids),
-			usersLocation: this.getClass('user').getUsersLocation(u_ids)
-		})
-			.then((props)=>
+		return Promise.join(
+			this.model('user').getUserListById(u_ids),
+			this.getClass('user/photo/profile').getUsersAva(u_ids),
+			this.getClass('user').getUsersLocation(u_ids)
+			, (users, usersAva, usersLocation) =>
 			{
-				let users = props.users.map((user)=>
+				users.forEach((user)=>
 				{
-					if (props.usersAva.hasOwnProperty(user['u_id']))
-						Object.assign(user, props.usersAva[user['u_id']]);
+					if (usersAva.hasOwnProperty(user['u_id']))
+						Object.assign(user, usersAva[user['u_id']]);
 
-					if (props.usersLocation.hasOwnProperty(user['u_id']))
-						Object.assign(user, props.usersLocation[user['u_id']]);
+					if (usersLocation.hasOwnProperty(user['u_id']))
+						Object.assign(user, usersLocation[user['u_id']]);
 
 					user['u_display_name'] = User.userDisplayName(user);
 
@@ -228,7 +231,6 @@ class User extends Base
 						});
 					});
 				}
-				props = null;
 
 				return Promise.resolve([users, list]);
 			});
@@ -236,11 +238,27 @@ class User extends Base
 
 	/**
 	 * список стран, к которым привязаны юзеры
+	 * @params l_id
 	 * @returns {*}
 	 */
-	getUsersCountryList()
+	getUsersCountryList(l_id = 0)
 	{
-		return this.model('user').getUsersCountryList();
+		return this.model('user').getUsersCountryList()
+			.then((list)=>
+			{
+				let selected = null;
+
+				list.some((item)=>
+				{
+					if (item['l_id'] == l_id)
+					{
+						selected = item;
+						return true;
+					}
+				});
+
+				return Promise.resolve({list: list, selected: selected});
+			});
 	}
 }
 

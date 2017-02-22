@@ -59,8 +59,8 @@ if (app.get('env') === 'prod' || app.get('env') === 'production')
 }
 
 //типа при аккуратном выключении сервера
-app.use(function(req, res, next) {
-
+app.use(function(req, res, next)
+{
 	//config.server_closing = true in bin/www
 	if (!app.get(config.server_closing))
 	return	next();
