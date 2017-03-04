@@ -1,12 +1,12 @@
 <% if(!_isXHR){%><%- layout('layout/user/index') %><% }%>
-<h1><%=_pageH1%></h1>
+<h1><%=_pageH1%> <i class="badge"><%=users_cnt%></i></h1>
 <div class="row">
-	<div class="col-xs-12 col-sm-6">
+	<div class="col-xs-12 ">
 		<form class="form-horizontal" method="get" id="formUserSearch" action="">
-			<div class="input-group user-search-country" style="width: 50%; float: left;">
+			<div class="input-group user-search-fields">
 				<div class="input-group-btn">
 					<a tabindex="0" class="btn btn-primary" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">страна <i class="caret"></i></a>
-					<ul class="dropdown-menu country_list" aria-labelledby=""><%
+					<ul class="dropdown-menu js-country-list" aria-labelledby=""><%
 						if (country_list['list'].length) {
 						country_list['list'].forEach(function (country)
 						{
@@ -18,10 +18,10 @@
 				<input type="hidden" name="loc[0]" id="ui_country" value="<%=(country_list['selected']['l_id']||'') %>"/>
 				<input type="text"  class="form-control" id="s_country" value="<%=(country_list['selected']['l_name']||'') %>" aria-label="..." placeholder="страна"/>
 			</div>
-			<div class="input-group user-search-city" style="width: 50%; float: left;">
+			<div class="input-group user-search-fields">
 				<div class="input-group-btn">
-					<a tabindex="0" class="btn btn-primary" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">город <i class="caret"></i></a>
-					<ul class="dropdown-menu city_list" aria-labelledby=""><%
+					<a tabindex="0" class="btn btn-primary disabled js-city-dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">город <i class="caret"></i></a>
+					<ul class="dropdown-menu js-city-list" aria-labelledby=""><%
 						if (city_list['list'].length)
 						{
 						city_list['list'].forEach(function (city)
@@ -35,7 +35,7 @@
 				<input type="text" id="s_city" value="<%=(city_list['selected']['l_name']||'') %>" class="form-control" aria-label="..." placeholder="город"/>
 			</div>
 			<div class="input-group">
-				<input type="text" name="s_name" class="form-control" aria-label="..." placeholder="имя"/>
+				<input type="text" name="s_name" value="<%=(u_search_name||'')%>" class="form-control" aria-label="..." placeholder="имя"/>
 				<div class="input-group-btn">
 					<button  type="submit" tabindex="0" class="btn btn-primary" role="button">найти</button>
 				</div>

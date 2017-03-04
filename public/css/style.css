@@ -2337,3 +2337,17 @@ ul.shopListContainer .shopItem .motoshopAddress .motoshopAddressData {
     font-size: 50px;
   }
 }
+
+.user-search-fields {
+  width: 50%;
+  float: left;
+}
+@media (max-width: 767px) {
+  .user-search-fields {
+    width: 100%;
+    float: none;
+  }
+  .user-search-fields .btn {
+    min-width: 86px;
+  }
+}

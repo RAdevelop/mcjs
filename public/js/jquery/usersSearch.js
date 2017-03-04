@@ -1,16 +1,21 @@
 (function($) {
 	var $formUserSearch = $('#formUserSearch');
-	var $country_list = $formUserSearch.find('.country_list a');
-	var $city_list = $formUserSearch.find('.city_list');
+	var $country_list = $formUserSearch.find('.js-country-list a');
+	var $city_list = $formUserSearch.find('.js-city-list');
 	var $ui_country = $formUserSearch.find('#ui_country');
 	var $s_country = $formUserSearch.find('#s_country');
 	var $ui_city = $formUserSearch.find('#ui_city');
 	var $s_city = $formUserSearch.find('#s_city');
+	var $city_dropdown = $formUserSearch.find('.js-city-dropdown');
+
 
 	function countrySelect(countryId)
 	{
 		if ($ui_country.val() == countryId || city_list[countryId])
+		{
+			$city_dropdown.removeClass('disabled');
 			return;
+		}
 
 		$ui_country.val(countryId);
 
@@ -22,6 +27,7 @@
 		$city_list.empty();
 		$ui_city.val('');
 		$s_city.val('');
+		$city_dropdown.addClass('disabled');
 
 		$.ajax({
 			url: $formUserSearch.attr('action'),
@@ -42,6 +48,8 @@
 				});
 
 				city_list[countryId] = cityListForAutoComplete(respData['city_list']['list']);
+
+				$city_dropdown.removeClass('disabled');
 			})
 			.fail(function(respData)
 			{
@@ -113,8 +121,11 @@
 		onTyping: function()
 		{
 			city_list = [];
+			$city_list.empty();
 			$s_city.val('');
 			$ui_city.val('');
+			$ui_country.val('');
+			$city_dropdown.addClass('disabled');
 		}
 	});
 })(jQuery);

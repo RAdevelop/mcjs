@@ -336,6 +336,23 @@ class User extends BaseModel
 			sqlData = [].concat(loc_ids);
 		}
 
+		if (!!s_name)
+		{
+			s_name = s_name.split(' ');
+			s_name.forEach((name, inx)=>
+			{
+				if (name.length <= 3)
+					s_name.splice(inx, 1);
+				else
+					s_name[inx] = `*${s_name[inx]}*`;
+			});
+			if (s_name.length)
+			{
+				sql.push(`JOIN users_data AS ud ON (ud.u_id = u.u_id)`);
+				sql.push(`WHERE MATCH(ud.u_name, ud.u_surname) AGAINST('${s_name.join(' ')}' IN BOOLEAN MODE)`);
+			}
+		}
+
 		sql = sql.join(`\n`);
 
 		/*console.log('\n');
@@ -348,7 +365,7 @@ class User extends BaseModel
 				if(!res)
 					return Promise.resolve(0);
 
-				return Promise.resolve(res["u_cnt"]);
+				return Promise.resolve(parseInt(res["u_cnt"], 10));
 			});
 	}
 
@@ -376,6 +393,22 @@ class User extends BaseModel
 		{
 			sql.push(`JOIN users_locations AS ul ON(ul.u_id = u.u_id AND ul.l_id IN(${this.constructor.placeHoldersForIn(loc_ids)}))`);
 			sqlData = [].concat(loc_ids);
+		}
+
+		if (!!s_name)
+		{
+			s_name = s_name.split(' ');
+			s_name.forEach((name, inx)=>
+			{
+				if (name.length <= 3)
+					s_name.splice(inx, 1);
+				else
+					s_name[inx] = `*${s_name[inx]}*`;
+			});
+			if (s_name.length)
+			{
+				sql.push(`WHERE MATCH(ud.u_name, ud.u_surname) AGAINST('${s_name.join(' ')}' IN BOOLEAN MODE)`);
+			}
 		}
 		sql.push(`LIMIT ${limit} OFFSET ${offset}`);
 

@@ -139,11 +139,11 @@ class User extends Base
 
 				let usersData = {'users':null, 'users_cnt':users_cnt, 'Pages':Pages};
 
-				if (!users_cnt)
+				if (!!users_cnt === false)
 					return Promise.resolve(usersData);
 
 				if (Pages.limitExceeded())
-					return Promise.reject(new Errors.HttpError(404));
+					throw (new Errors.HttpError(404));
 
 				return this.model('user')
 					.getUsers(Pages.getOffset(), Pages.getLimit(), loc_ids, s_name)
