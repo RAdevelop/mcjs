@@ -72,7 +72,7 @@ var config = {
 				service: 'Gmail',
 				auth: {
 					user: 'roalexey@gmail.com',
-					pass: 'Doberman2381'
+					pass: 'RoLexey2381'
 				}
 			}
 		}

@@ -34,6 +34,29 @@ class User extends CtrlMain
 		return this.usersList();
 	}
 
+	indexActionPost()
+	{
+		let tplData = this.getParsedBody();
+
+		if (!this.isAuthorized() || !!tplData['btn_user_search'] === false)
+			throw new Errors.HttpError(401);
+
+		if (!tplData['ui_country'])
+			throw new Errors.HttpError(404);
+
+		let isAjax = this.getReq().xhr;
+
+		return this.getClass("user").getUsersCityList(tplData['ui_country'])
+			.then((city_list)=>
+			{
+				tplData['city_list'] = city_list;
+
+				this.view.setTplData(tplData);
+
+				return Promise.resolve(isAjax);
+			});
+	}
+
 	/**
 	 * список пользователей
 	 *
@@ -66,14 +89,16 @@ class User extends CtrlMain
 		return Promise.join(
 			(isAjax ? Promise.resolve(null) : this.getUser(this.getUserId())),
 			this.getClass('user').getUsers( new Pages(i_page, limit_per_page), location_id, s_name ),
-			(isAjax ? Promise.resolve(null) : this.getClass("user").getUsersCountryList(ui_country))
-			, (user, users, country_list)=>
+			(isAjax ? Promise.resolve(null) : this.getClass("user").getUsersCountryList(ui_country)),
+			(isAjax ? Promise.resolve(null) : this.getClass("user").getUsersCityList(ui_country, ui_city))
+			, (user, users, country_list, city_list)=>
 			{
 				let tplData = {
 					'user': user,
 					'users': users['users'],
 					'users_cnt': users['users_cnt'],
-					'country_list': country_list
+					'country_list': country_list||[],
+					'city_list': city_list||[]
 				};
 
 				const Pages = users.Pages;
@@ -99,6 +124,8 @@ class User extends CtrlMain
 					
 					this.getRes().expose(tplData['users'], 'users');
 					this.getRes().expose(tplData["pages"], 'pages');
+					this.getRes().expose(country_list, 'country_list');
+					this.getRes().expose(city_list, 'city_list');
 				}
 
 				return Promise.resolve(isAjax);

@@ -437,12 +437,54 @@ class User extends BaseModel
 	{
 		let sql = `SELECT ln.l_id, ln.l_name 
 		FROM (SELECT NULL) AS z
-		JOIN location_names AS ln ON(l_kind IN('country'))
+		JOIN location_names AS ln ON(ln.l_kind IN('country'))
 		JOIN users_locations AS ul ON(ul.l_id = ln.l_id)
 		GROUP BY ln.l_id
 		ORDER BY ln.l_name`;
-		//console.log(sql, u_ids);
+
+		//console.log(sql);
+
 		return this.constructor.conn().ps(sql);
+	}
+
+	getUsersCityList(ui_country_id)
+	{
+		let sql = `SELECT l_lk, l_rk FROM location WHERE l_id = ?`;
+
+		ui_country_id = parseInt(ui_country_id, 10)||0;
+
+		if (!!ui_country_id === false)
+			return Promise.resolve(null);
+
+		return this.constructor.conn().psRow(sql, [ui_country_id])
+			.then((res)=>
+			{
+				if (!res)
+					return Promise.resolve(null);
+
+				res['l_lk'] = parseInt(res['l_lk'], 10)||0;
+				res['l_rk'] = parseInt(res['l_rk'], 10)||0;
+
+				if (!res['l_lk'] || !res['l_rk'])
+					return Promise.resolve(null);
+
+				let kinds = ['province','locality'];
+
+				let sqlData = [].concat(kinds);
+				sqlData.unshift(res['l_lk'], res['l_rk']);
+
+				sql = `SELECT ln.l_id, ln.l_name, ln.l_full_name
+				FROM (SELECT NULL) AS z
+				JOIN location AS l ON(l.l_lk >= ? AND l.l_rk <= ?)
+				JOIN location_names AS ln ON(l.l_id = ln.l_id AND ln.l_kind IN(${this.constructor.placeHoldersForIn(kinds)}))
+				JOIN users_locations AS ul ON(ul.l_id = ln.l_id)
+				GROUP BY ln.l_id
+				ORDER BY ln.l_name`;
+
+				//console.log(sql, sqlData);
+
+				return this.constructor.conn().ps(sql, sqlData);
+			});
 	}
 }
 

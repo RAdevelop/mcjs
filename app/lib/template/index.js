@@ -320,6 +320,11 @@ Template.prototype.getPageData = function(json = false)
 
 Template.prototype.setTplData = function(tplFile, tplData = {}, ajaxWithHtml = false)
 {
+	if (typeof tplFile === 'object')
+	{
+		tplData = tplFile;
+		tplFile = 'empty.ejs';
+	}
 	this._tplData = {[tplFile]: tplData};
 	this._ajaxWithHtml = ajaxWithHtml;
 

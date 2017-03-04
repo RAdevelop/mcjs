@@ -246,11 +246,37 @@ class User extends Base
 		return this.model('user').getUsersCountryList()
 			.then((list)=>
 			{
-				let selected = null;
+				let selected = {};
+
+				if (!list)
+					return Promise.resolve({list: [], selected: selected});
 
 				list.some((item)=>
 				{
 					if (item['l_id'] == l_id)
+					{
+						selected = item;
+						return true;
+					}
+				});
+
+				return Promise.resolve({list: list, selected: selected});
+			});
+	}
+
+	getUsersCityList(ui_country_id, ui_city_id = 0)
+	{
+		return this.model('user').getUsersCityList(ui_country_id)
+			.then((list)=>
+			{
+				let selected = {};
+
+				if (!list)
+					return Promise.resolve({list: [], selected: selected});
+
+				list.some((item)=>
+				{
+					if (item['l_id'] == ui_city_id)
 					{
 						selected = item;
 						return true;
