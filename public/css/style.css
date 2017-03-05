@@ -1083,7 +1083,14 @@ iframe.iframeVideoEmbed {
   max-width: 216px;
   max-height: 162px;
   min-height: 162px;
-  /*@media (max-width: 1024px)*/
+  /*@media (min-width: $screen-xxs) and (max-width: $screen-xs)
+  {
+    &
+    {
+      @include mix-max-width-calc(100%);
+      @include mix-max-height-calc(162px);
+    }
+  }*/
 }
 .mediaWrapper .mediaList .media .mediaImg {
   clear: both;
@@ -1091,6 +1098,8 @@ iframe.iframeVideoEmbed {
   display: block;
   overflow: hidden;
   background: #F1F1F1;
+  width: 216px;
+  height: 162px;
 }
 .mediaWrapper .mediaList .media .mediaImg .fa-camera {
   font-size: 115px;
@@ -1162,34 +1171,18 @@ iframe.iframeVideoEmbed {
   padding: 5px;
   border-top: 1px dotted #fff;
 }
-@media (max-width: 768px) {
-  .mediaWrapper .mediaList .media {
-    max-width: calc(33%);
-    max-width: -moz-calc(33%);
-    max-width: -webkit-calc(33%);
-    max-height: calc(162px);
-    max-height: -moz-calc(162px);
-    max-height: -webkit-calc(162px);
-  }
-}
-@media (max-width: 768px) {
-  .mediaWrapper .mediaList .media {
-    max-width: calc(47%);
-    max-width: -moz-calc(47%);
-    max-width: -webkit-calc(47%);
-    max-height: calc(162px);
-    max-height: -moz-calc(162px);
-    max-height: -webkit-calc(162px);
-  }
-}
-@media (min-width: 320px) and (max-width: 480px) {
+@media (max-width: 767px) {
   .mediaWrapper .mediaList .media {
     max-width: calc(100%);
     max-width: -moz-calc(100%);
     max-width: -webkit-calc(100%);
+    width: 100%;
     max-height: calc(162px);
     max-height: -moz-calc(162px);
     max-height: -webkit-calc(162px);
+  }
+  .mediaWrapper .mediaList .media .mediaImg {
+    width: 100%;
   }
 }
 .mediaWrapper .mediaList .media.user {
@@ -1229,6 +1222,14 @@ iframe.iframeVideoEmbed {
   max-height: -webkit-calc(162px);
   /*@media (max-width: 1024px)*/
   /*@media (max-width: 768px)*/
+  /*@media (min-width: $screen-xxs) and (max-width: $screen-xs)
+  {
+    &
+    {
+      @include mix-max-width-calc(100%);
+      @include mix-max-height-calc(162px);
+    }
+  }*/
 }
 .mediaWrapper .imageList .image img {
   cursor: move;
@@ -1251,19 +1252,9 @@ iframe.iframeVideoEmbed {
     max-width: calc(47%);
     max-width: -moz-calc(47%);
     max-width: -webkit-calc(47%);
-    max-height: calc(162px);
-    max-height: -moz-calc(162px);
-    max-height: -webkit-calc(162px);
-  }
-}
-@media (min-width: 320px) and (max-width: 480px) {
-  .mediaWrapper .imageList .image {
-    max-width: calc(100%);
-    max-width: -moz-calc(100%);
-    max-width: -webkit-calc(100%);
-    max-height: calc(162px);
-    max-height: -moz-calc(162px);
-    max-height: -webkit-calc(162px);
+    max-height: calc(122px);
+    max-height: -moz-calc(122px);
+    max-height: -webkit-calc(122px);
   }
 }
 

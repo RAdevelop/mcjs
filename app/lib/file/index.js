@@ -8,6 +8,9 @@ const Path = require('path');
 const Promise = require("bluebird");
 const GM = require('gm');
 const FileErrors = require('./errors');
+const Http = require("http");
+const Https = require("https");
+const Url = require('url');
 
 /**
  * список директорий для загрузки файлов
@@ -523,12 +526,12 @@ class File
 			return Promise.all(dirData.files)
 				.then(function ()
 				{
-					return Promise.mapSeries(dirData.dirs, function (dPath)
+					return Promise.mapSeries(dirData.dirs, (dPath)=>
 					{
 						if (File.isForbiddenDir(dPath))
 							return Promise.reject(new FileErrors.ForbiddenDirectory(dPath));
 
-						FS.rmdir(dPath, function (err)
+						FS.rmdir(dPath, (err)=>
 						{
 							//if (err) return Promise.reject(err);
 
@@ -540,14 +543,14 @@ class File
 						});
 					});
 				})
-				.then(function ()
+				.then(()=>
 				{
-					return new Promise(function (resolve, reject)
+					return new Promise((resolve, reject)=>
 					{
 						if (File.isForbiddenDir(dir))
 							return reject(new FileErrors.ForbiddenDirectory(dir));
 
-						FS.rmdir(dir, function (err)
+						FS.rmdir(dir, (err)=>
 						{
 							//if (err) return reject(err);
 							//если ошибка не связана с директории или файла, которых хотим удалить
@@ -559,14 +562,14 @@ class File
 					});
 				});
 		})
-		.catch(FileErrors.DirEmpty, function ()//err
+		.catch(FileErrors.DirEmpty, ()=>//err
 		{
-			return new Promise(function (resolve, reject)
+			return new Promise((resolve, reject)=>
 			{
 				if (File.isForbiddenDir(dir))
 					return reject(new FileErrors.ForbiddenDirectory(dir));
 
-				FS.rmdir(dir, function (err)
+				FS.rmdir(dir, (err)=>
 				{
 					//если ошибка не связана с директории или файла, которых хотим удалить
 					if (err && err.code != 'ENOENT')
@@ -576,16 +579,16 @@ class File
 				});
 			});
 		})
-		.catch(FileErrors.DirNotEmpty, function ()//err
+		.catch(FileErrors.DirNotEmpty, ()=>//err
 		{
 			return Promise.resolve(true);
 		})
-		.then(function (done)
+		.then((done)=>
 		{
 			//console.log('all done');
 			return Promise.resolve(done);
 		})
-		.catch(function (err)
+		.catch((err)=>
 		{
 			if (err.code == 'ENOENT')//если нет директории, которую хотим удалить
 			{
@@ -654,6 +657,41 @@ class File
 		//return 'part_' + Math.floor(Math.abs(a_id)/20000) + '/' + a_id;
 	}
 
+	static makeDir(dir, mode = 0o755)
+	{
+		return new Promise((resolve, reject)=>
+		{
+			FS.stat(dir, (err, Stats)=>
+			{
+				let errCode = (err ? err.code : null);
+
+				if (err && errCode != 'ENOENT')
+					return reject(err);
+
+				if(File.isForbiddenDir(dir))
+					return reject(new FileErrors.ForbiddenDirectory(dir));
+
+				//права для папки и файлов
+				//let mode = 0o755;//0o755  0o711
+
+				if (errCode == 'ENOENT')//если такой директории нет, создадим ее
+				{
+					FS.mkdir(dir, mode, true, (err)=>
+					{
+						if (err)
+							return reject(err);
+
+						return resolve(dir);
+					});
+				}
+				else
+				{
+					return resolve(dir);
+				}
+			});
+		});
+	}
+
 	copyFile(file, mode, cb)
 	{
 		if (File.isForbiddenDir(file["path"]))
@@ -661,8 +699,6 @@ class File
 
 		if (File.isForbiddenDir(file["fullFilePath"]))
 			return cb(new FileErrors.ForbiddenDirectory(file["fullFilePath"]), file);
-
-		let error = false;
 
 		let rStream = FS.createReadStream(file.path);
 		let options = {
@@ -713,6 +749,80 @@ class File
 		});
 
 		rStream.pipe(wStream);
+	}
+
+	static copyFileByHref(file, mode = 0o755)
+	{
+		if (File.isForbiddenDir(file["path"]))
+			throw (new FileErrors.ForbiddenDirectory(file["path"]), file);
+
+		if (File.isForbiddenDir(file["fullFilePath"]))
+			throw (new FileErrors.ForbiddenDirectory(file["fullFilePath"]), file);
+
+		return File.deleteDir(file['fullPathUploadDir'])
+			.then(()=>
+			{
+				return File.makeDir(file['fullPathUploadDir']);
+			})
+			.then(()=>
+			{
+				return new Promise((resolve, reject)=>
+				{
+					let uriData = Url.parse(file['path']);
+
+					let options = {
+						"mode": mode,
+						"flags": "w"
+					};
+					let wStream = FS.createWriteStream(file["fullFilePath"], options);
+					wStream.on('open', ()=>{
+						//console.log('wStream.on open');
+					});
+
+					wStream.on('finish', ()=>
+					{
+						//console.log('wStream.on finish');
+						return resolve(file);
+					});
+
+					wStream.on('error', (wStreamErr)=>
+					{
+						//console.log('wStream.on error');
+						//console.log(wStreamErr);
+
+						//rStream.destroy();
+
+						reject(wStreamErr);
+					});
+
+					const H = (uriData["protocol"] == 'http:' ? Http : Https);
+					H.get(file['path'], (rStream)=>
+					{
+						rStream.on('error', (rStreamErr)=>
+						{
+							console.log('rStream.on error');
+							//console.log(rStreamErr);
+
+							wStream.destroy();
+
+							reject(rStreamErr);
+						});
+
+						rStream.on('open', ()=>{
+							//console.log('rStream.on open');
+						});
+
+						rStream.on('close', ()=>{
+							//console.log('rStream.on close');
+						});
+						rStream.on('end', ()=>{
+							//console.log('rStream.on end');
+						});
+
+						rStream.pipe(wStream);
+					});
+				});
+			});
 	}
 }
 

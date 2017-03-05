@@ -97,20 +97,17 @@ class ProfileVideo extends CtrlMain
 
 				tplData['videoMove'] = move;
 
-				return Promise.props({
-					userData: this.getUser(move['u_id']),
-					videoAlbum: this.getClass('video').getVideoAlbum(this.getUserId(), move['u_id'], move['va_id'])
-				})
-					.then((props)=>
-					{
-						props.userData["u_is_owner"] = this.isTheSameUser(move['u_id']);
-						tplData['user'] = props.userData;
-						tplData['videoAlbum'] = props.videoAlbum;
+				return Promise.join(
+					this.getUser(move['u_id']),
+					this.getClass('video').getVideoAlbum(this.getUserId(), move['u_id'], move['va_id'])
+					, (userData, videoAlbum)=>
+				{
+					userData["u_is_owner"] = this.isTheSameUser(move['u_id']);
+					tplData['user'] = userData;
+					tplData['videoAlbum'] = videoAlbum;
 
-						props = null;
-
-						return Promise.resolve(tplData);
-					});
+					return Promise.resolve(tplData);
+				});
 			})
 			.then((tplData)=>
 			{
@@ -412,7 +409,7 @@ class ProfileVideo extends CtrlMain
 
 	addVideo(tplData)
 	{
-		tplData = CtrlMain.stripTags(tplData, ['link_v_url', 'link_v_img', 's_v_name', 't_v_text']);
+		tplData = CtrlMain.stripTags(tplData, ['link_v_url', 's_v_img', 's_v_name', 't_v_text']);
 
 		if (!tplData["ui_va_id"])
 			throw new Errors.HttpError(400);
@@ -439,7 +436,7 @@ class ProfileVideo extends CtrlMain
 								throw new Errors.HttpError(400);
 
 							return this.getClass('video')
-								.addVideo(this.getUserId(), tplData["ui_va_id"], tplData["s_v_name"], tplData["t_v_text"], tplData["link_v_img"], tplData["t_v_content"], tplData["link_v_url"]);
+								.addVideo(this.getUserId(), tplData["ui_va_id"], tplData["s_v_name"], tplData["t_v_text"], tplData["s_v_img"], tplData["t_v_content"], tplData["link_v_url"]);
 						});
 				}
 			});
@@ -475,7 +472,7 @@ class ProfileVideo extends CtrlMain
 
 	editVideo(tplData)
 	{
-		tplData = CtrlMain.stripTags(tplData, ['link_v_url', 'link_v_img', 's_v_name', 't_v_text']);
+		tplData = CtrlMain.stripTags(tplData, ['link_v_url', 's_v_img', 's_v_name', 't_v_text']);
 
 		if (!tplData["ui_va_id"] || !tplData["ui_v_id"])
 			throw new Errors.HttpError(400);
@@ -492,6 +489,7 @@ class ProfileVideo extends CtrlMain
 			{
 				if (this.parseFormErrors(tplData, errors))
 				{
+					//console.log('tplData = ', tplData);
 					//return Promise.resolve(tplData);
 
 					return this.getClass('video')
@@ -502,7 +500,7 @@ class ProfileVideo extends CtrlMain
 								throw new Errors.HttpError(400);
 
 							return this.getClass('video')
-								.editVideo(this.getUserId(), tplData["ui_v_id"], tplData["ui_va_id"], tplData["s_v_name"], tplData["t_v_text"], tplData["link_v_img"], tplData["t_v_content"], tplData["link_v_url"]);
+								.editVideo(this.getUserId(), tplData["ui_v_id"], tplData["ui_va_id"], tplData["s_v_name"], tplData["t_v_text"], tplData["s_v_img"], tplData["t_v_content"], tplData["link_v_url"]);
 						});
 				}
 			});

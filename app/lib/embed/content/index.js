@@ -490,6 +490,9 @@ class EmbedContent
 			Object.keys(script).forEach((key) =>
 			{
 				let item = script[key];
+
+				//console.log(item);
+
 				if (item.hasOwnProperty('children') && item['children'][0] && item['children'][0].hasOwnProperty('data'))
 				{
 					let found = item['children'][0]['data'].match(reg);

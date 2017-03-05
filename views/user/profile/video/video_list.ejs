@@ -12,9 +12,9 @@ videoAlbums.forEach(function (video)
 		<div class="mediaTools">
 			<span class="badge"><i class="fa fa-fw fa-video-camera"></i> <%=(video["va_cnt"] > 99 ? '99+':video["va_cnt"])%>&nbsp;<i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;<%=video["dt_create_ts"]%></span>
 		</div>
-		<div class="mediaTitle">
+		<a class="mediaTitle" href="<%=[_reqBaseUrl, video['u_id'], video['va_id'], video['va_alias']].join('/')%>/">
 			<div class="mediaName"><%=video["va_name"]%></div>
 			<% if(video["va_text"]){%><div class="mediaText"><%=video['va_text']%></div><%}%>
-		</div>
+		</a>
 	</div><%})%>
 </div>

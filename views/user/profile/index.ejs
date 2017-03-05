@@ -57,10 +57,10 @@
                 <div class="mediaTools">
                     <span class="badge"><i class="fa fa-fw fa-video-camera"></i> <%=(album["va_cnt"] > 99 ? '99+':album["va_cnt"])%>&nbsp;<i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;<%=album["dt_create_ts"]%></span>
                 </div>
-                <div class="mediaTitle">
+                <a class="mediaTitle" href="<%=[_reqBaseUrl,'video',album["u_id"],album["va_id"],album["va_alias"]].join('/')%>/">
                     <div class="mediaName"><%=album["va_name"]%></div>
                     <% if (album["va_text"]){%><div class="mediaText"><%=album["va_text"]%></div><%}%>
-                </div>
+                </a>
             </div><%
             })%>
         </div>

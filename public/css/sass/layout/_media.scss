@@ -41,6 +41,9 @@
         overflow: hidden;
         background: #F1F1F1;
 
+        width: 216px;
+        height: 162px;
+
         & .fa-camera
         {
           font-size: 115px;
@@ -135,33 +138,28 @@
         }
       }
 
-      /*@media (max-width: 1024px)*/
-      @media (max-width: $screen-sm)
+      @media (max-width: $screen-xs-max)
       {
         &
         {
-          @include mix-max-width-calc(33%);
+          @include mix-max-width-calc(100%);
+          width: 100%;
           @include mix-max-height-calc(162px);
+        }
+
+        & .mediaImg {
+          width: 100%;
         }
       }
 
-      @media (max-width: $screen-sm)
-      {
-        &
-        {
-          @include mix-max-width-calc(47%);
-          @include mix-max-height-calc(162px);
-        }
-      }
-
-      @media (min-width: $screen-xxs) and (max-width: $screen-xs)
+      /*@media (min-width: $screen-xxs) and (max-width: $screen-xs)
       {
         &
         {
           @include mix-max-width-calc(100%);
           @include mix-max-height-calc(162px);
         }
-      }
+      }*/
 
       &.user{
         @include mix-max-height-calc(212px);
@@ -227,18 +225,19 @@
         &
         {
           @include mix-max-width-calc(47%);
-          @include mix-max-height-calc(162px);
+          //@include mix-max-height-calc(162px);
+          @include mix-max-height-calc(122px);
         }
       }
 
-      @media (min-width: $screen-xxs) and (max-width: $screen-xs)
+      /*@media (min-width: $screen-xxs) and (max-width: $screen-xs)
       {
         &
         {
           @include mix-max-width-calc(100%);
           @include mix-max-height-calc(162px);
         }
-      }
+      }*/
     }
   }
 

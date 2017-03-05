@@ -47,7 +47,7 @@ class Video extends VideoAlbums
 
 		/*console.log(sql);
 		console.log([v_id]);*/
-		v_id = parseInt(v_id, 10);
+		v_id = parseInt(v_id, 10)||0;
 		return this.constructor.conn().sRow(sql, [v_id]);
 	}
 

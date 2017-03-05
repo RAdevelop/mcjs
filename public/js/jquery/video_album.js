@@ -392,7 +392,7 @@
 			$loadingError.html(err_msg).show();
 			$dialog.find('#videoData').hide();
 
-			$dialog.find('#link_v_img').val('');
+			$dialog.find('#s_v_img').val('');
 			$dialog.find('#embed_image').attr('src', '');
 			$dialog.find('#t_v_content').val('');
 			$dialog.find('#embed_content').html('');
@@ -452,11 +452,11 @@
 					{
 						var err_msg = '<p>Не удалось загрузить видео по данной ссылке.</p>';
 							err_msg += '<p>Возможно, автор видео запретил встраивание видео на других сайтах.</p>';
+							err_msg += '<p>Если по ссылке не удалось загрузить видеоролик, попробуйте html код для вставки, который предлагает видео-ресурс</p>';
 						loadingError($dialog, $dialogBtn, $loadingInfo, $loadingError, err_msg);
 						return;
 					}
 					var	embedContent = '<iframe src="'+respData["embed_url_video"]+'" data-link="'+uri+'" class="iframeVideoEmbed" frameborder="0" webkitallowfullscreen="webkitallowfullscreen" mozallowfullscreen="mozallowfullscreen" allowfullscreen="allowfullscreen" scrolling="no"></iframe>';
-
 
 					respData['embed_title'] = respData['embed_title'].htmlspecialchars_decode(respData['embed_title']);
 					respData['embed_text'] = respData['embed_text'].htmlspecialchars_decode(respData['embed_text']);
@@ -466,7 +466,7 @@
 					if(respData['embed_url'])
 					$dialog.find('#link_v_url').val(respData['embed_url']);
 
-					$dialog.find('#link_v_img').val(respData['embed_image']);
+					$dialog.find('#s_v_img').val(respData['embed_image']);
 					$dialog.find('#embed_image').attr('src', respData['embed_image']);
 					$dialog.find('#t_v_content').val(embedContent);
 					$dialog.find('#embed_content').html(embedContent);
@@ -527,7 +527,7 @@
 				'<div class="form-group text-center link_v_url">' +
 					'<label for="link_v_url">cсылка на видеоролик или html код для вставки <span class="popoverHelp " id="videoHelpAddMove">*</span></label>' +
 					'<div class="popoverContent" data-popover-for="#videoHelpAddMove">' +
-						'если по ссылке не удалось загрузить видеоролик, попробуйте html код для вставки, который предлагает видео-ресурс.' +
+						'если по ссылке не удалось загрузить видеоролик, попробуйте html код для вставки, который предлагает видео-ресурс' +
 					'</div>' +
 					'<br/><textarea type="text" class="input-sm" style="width: 100%;" id="link_v_url" name="link_v_url" placeholder="cсылка на видеоролик или html код для вставки" required >'+(video['v_url']||'')+'</textarea>' +
 				'</div>' +
@@ -539,8 +539,8 @@
 				'<div id="loadingVideoData" style="display: none;" class="text-center"><i class="fa fa-spinner fa-spin fa-fw"></i>&nbsp;<span>Загрузка...</span></div>' +
 				'<div id="loadingError" style="display: none;" class="text-center alert alert-danger" role="alert alert"></div>' +
 				'<div id="videoData" style="display: none;">' +
-					'<div class="form-group text-center link_v_img">' +
-						'<input type="text" class="form-control hidden" id="link_v_img" name="link_v_img" value="'+(video['v_img']||'')+'" />' +
+					'<div class="form-group text-center s_v_img">' +
+						'<input type="text" class="form-control hidden" id="s_v_img" name="s_v_img" value="'+(video['v_img']||'')+'" />' +
 						'<img  src="'+(video['v_img']||'')+'" id="embed_image" width="100%" style="width: 100%"/>' +
 					'</div>' +
 					'<div class="form-group text-center t_v_content">' +

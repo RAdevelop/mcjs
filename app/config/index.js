@@ -134,12 +134,19 @@ var config = {
 		},
 		user_video: {
 			pathUpload: "user/video",
-			fileTypes: ['avi', 'MP4', '3gp', 'mpeg', 'mov', 'flv', 'wmv'],
+			fileTypes: ['avi', 'MP4', '3gp', 'mpeg', 'mov', 'flv', 'wmv','gif', 'png', 'jpg', 'jpeg'],
 			fileMediaType: 'video',
 			multiUpload: false,
 			maxFileSize: 2048,//Mb
-			sizeParams: [],
-			tokenFields: ['i_time', 'u_id']
+			tokenFields: ['i_time', 'u_id'],
+			sizeParams: [
+				{w: 1280, h: 853},
+				{w: 1024, h: 768},
+				{w: 512, h: 384},
+				{w: 256, h: 192},
+				{w: 50, h: 50}
+			],
+			cropSize: []
 		},
 		user_audio: {
 			pathUpload: "user/audio",

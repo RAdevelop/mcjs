@@ -6,6 +6,11 @@ const Base = require('app/lib/class');
 
 class VideoAlbums extends Base
 {
+	static get uploadConfigName()
+	{
+		return `user_video`;
+	}
+
 	getVideoAlbumList(u_id, owner_u_id, Pages)
 	{
 		return this.model('video').countUserVideoAlbums(owner_u_id)
