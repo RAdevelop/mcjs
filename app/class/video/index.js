@@ -117,16 +117,23 @@ class Video extends VideoAlbums
 
 	delVideo(u_id, va_id, v_id)
 	{
-		return this.model('video').delVideo(u_id, va_id, v_id)
-			.then(()=>
+		return this.getMove(u_id, v_id)
+			.then((move)=>
 			{
-				const UploadFile = new FileUpload(Video.uploadConfigName);
+				if (!move['v_is_owner'])
+					throw (new Errors.HttpError(404));
 
-				let uploadPaths = UploadFile.uploadPaths();
-				let imageUri = FileUpload.getImageUri(va_id, v_id);
-				let dir = Path.join(uploadPaths['uploadDir'], imageUri, '../');
+				return this.model('video').delVideo(u_id, va_id, v_id)
+					.then(()=>
+					{
+						const UploadFile = new FileUpload(Video.uploadConfigName);
 
-				return FileUpload.deleteDir(dir);
+						let uploadPaths = UploadFile.uploadPaths();
+						let imageUri = FileUpload.getImageUri(va_id, v_id);
+						let dir = Path.join(uploadPaths['uploadDir'], imageUri, '../');
+
+						return FileUpload.deleteDir(dir);
+					});
 			});
 	}
 }

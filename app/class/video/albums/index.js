@@ -2,6 +2,9 @@
 
 const Errors = require('app/lib/errors');
 const Promise = require("bluebird");
+const FileUpload = require('app/lib/file/upload');
+const Path = require('path');
+
 const Base = require('app/lib/class');
 
 class VideoAlbums extends Base
@@ -99,7 +102,17 @@ class VideoAlbums extends Base
 
 	delVideoAlbum(u_id, va_id)
 	{
-		return this.model('video').delVideoAlbum(u_id, va_id);
+		return this.model('video').delVideoAlbum(u_id, va_id)
+			.then(()=>
+			{
+				const UploadFile = new FileUpload(VideoAlbums.uploadConfigName);
+
+				let uploadPaths = UploadFile.uploadPaths();
+				let imageUri = FileUpload.getAlbumUri(va_id);
+				let dir = Path.join(uploadPaths['uploadDir'], imageUri);
+
+				return FileUpload.deleteDir(dir);
+			});
 	}
 }
 //************************************************************************* module.exports
