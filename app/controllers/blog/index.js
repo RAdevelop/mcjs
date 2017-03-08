@@ -261,17 +261,7 @@ class Blog extends CtrlMain
 				if(!blog[0] || blog[0].length == 0)
 					return Promise.resolve([[], blog[1]]);
 
-				let u_ids = blog[0].map((u)=>
-				{
-					return u['u_id'];
-				});
-
-				return this.getClass('user').getUserListById(u_ids, blog[0])
-					.spread((users, blogList)=>
-					{
-						users = null;
-						return Promise.resolve([blogList, blog[1]]);
-					});
+				return Promise.resolve([blog[0], blog[1]]);
 			})
 			.spread((blogList, Pages) =>
 			{

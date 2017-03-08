@@ -1,11 +1,17 @@
+<%
+let right_col = (typeof user_right !== 'undefined' && user_right != '');
+let middle_col_md = (right_col ? 8 : 10);
+%>
 <%- include ../header -%>
 <div class="row">
     <div class="col-xs-12 col-sm-4 col-md-2 left-col">
     <%- (typeof user_left === 'undefined' ? '' : user_left) -%>
     </div>
-    <div class="col-xs-12 col-sm-8 col-md-8 middle-col"><%- body -%></div>
+    <div class="col-xs-12 col-sm-8 col-md-<%=middle_col_md%> middle-col"><%- body -%></div>
+    <% if (right_col) { %>
     <div class="col-xs-12 col-sm-12 col-md-2 right-col">
-    <%- (typeof user_right === 'undefined' ? '' : '') -%>
+        <%-user_right -%>
     </div>
+    <%}%>
 </div>
 <%- include ../footer -%>

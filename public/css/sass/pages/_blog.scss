@@ -41,27 +41,27 @@
   //overflow: hidden;
   position: relative;
   display: table;
-  width: 100%;
-}
-.blogListContainer .blogListItem
-{
-  float: left;
-  margin:  0px  10px  10px  0px;
-  width: auto;
-  display: table-cell;
-  border: 1px solid #e2e2e2;
-  @include mix-border-radius(4px);
+  //width: 100%;
 
-  & , & > a {
-    color: #333;
-  }
+  & .blogListItem {
+    float: left;
+    margin:  0px  10px  10px  0px;
+    width: auto;
+    display: table-cell;
+    border: 1px solid #e2e2e2;
+    @include mix-border-radius(4px);
 
-  &:hover {
-    border-color: #333;
-  }
+    & , & > a {
+      color: #333;
+    }
 
-  & .owner_ava {
-    width: 50px;
+    &:hover {
+      border-color: #333;
+    }
+
+    & .owner_ava {
+      width: 50px;
+    }
   }
 }
 

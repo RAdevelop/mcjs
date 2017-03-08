@@ -111,7 +111,17 @@ class Blog extends Base
 						let sizeParams = FileUpload.getUploadConfig(Blog.uploadConfigName).sizeParams;
 						blogList = FileUpload.getPreviews(sizeParams, blogList, "bi_dir")["obj"];
 
-						return Promise.resolve([blogList, Pages]);
+						let u_ids = blogList.map((u)=>
+						{
+							return u['u_id'];
+						});
+
+						return this.getClass('user').getUserListById(u_ids, blogList)
+							.spread((users, blogList)=>
+							{
+								users = null;
+								return Promise.resolve([blogList, Pages]);
+							});
 					});
 			});
 	}

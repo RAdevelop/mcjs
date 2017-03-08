@@ -4,8 +4,12 @@ const Logger = require('app/lib/logger');
 const Errors = require('app/lib/errors');
 const Promise = require("bluebird");
 const Mail = require('app/lib/mail');
+const Moment = require('moment'); //работа со временем
+const Pages = require("app/lib/pages");
 
 const CtrlMain = require('app/lib/controller');
+
+let limit_per_page = 4;
 
 class Home extends CtrlMain
 {
@@ -31,19 +35,34 @@ class Home extends CtrlMain
 	 */
 	indexActionGet()
 	{
-		return this.getUser(this.getUserId())
-			.then((userData) =>
+		let startDate = new Date();
+		let startDateTs = startDate.getTime()/1000;
+
+		//let endDate = Moment(startDateTs).add(1, 'month').unix();
+		let endDateTs = Moment(startDateTs*1000).add(1, 'month').unix();
+		//let endDateTs = endDate.getTime()/1000;
+
+		return Promise.join(
+			this.getUser(this.getUserId()),
+			this.getClass('events').getEvents(startDateTs, endDateTs),
+			this.getClass('news').getNews(new Pages(1, limit_per_page), 1),
+			this.getClass("blog").getBlogList(new Pages(1, limit_per_page), 1)
+		, (userData, eventList, news, blog)=>
 			{
-				this.view.setTplData("home", {});
+				news[1] = null;
+				blog[1] = null;
+				let tplData = {
+					eventList: eventList,
+					newsList: news[0],
+					blogList: blog[0]
+				};
+				this.view.setTplData("home", tplData);
 				this.view.addPartialData("user/left", {user: userData});
 				this.view.addPartialData("user/right", {title: 'right_col'});
 
 				return Promise.resolve(null);
-			})
-			.catch(Errors.NotFoundError, () =>
-			{
-				throw new Errors.HttpError(404);
-			});
+			}
+		);
 	}
 
 	feedbackActionPost()

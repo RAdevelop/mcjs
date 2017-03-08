@@ -605,6 +605,7 @@ class File
 	 * @param obj
 	 * @param obj_dir
 	 * @param spread
+	 * @param obj_key_name
 	 * @returns {Object}
 	 */
 	static getPreviews(sizeParams, obj, obj_dir, spread = false, obj_key_name = null)
@@ -751,13 +752,19 @@ class File
 		rStream.pipe(wStream);
 	}
 
+	/**
+	 *
+	 * @param file
+	 * @param mode
+	 * @returns {Promise}
+	 */
 	static copyFileByHref(file, mode = 0o755)
 	{
 		if (File.isForbiddenDir(file["path"]))
-			throw (new FileErrors.ForbiddenDirectory(file["path"]), file);
+			throw new FileErrors.ForbiddenDirectory(file["path"]);
 
 		if (File.isForbiddenDir(file["fullFilePath"]))
-			throw (new FileErrors.ForbiddenDirectory(file["fullFilePath"]), file);
+			throw new FileErrors.ForbiddenDirectory(file["fullFilePath"]);
 
 		return File.deleteDir(file['fullPathUploadDir'])
 			.then(()=>
@@ -796,11 +803,11 @@ class File
 					});
 
 					const H = (uriData["protocol"] == 'http:' ? Http : Https);
-					H.get(file['path'], (rStream)=>
+					const Req = H.get(file['path'], (rStream)=>
 					{
 						rStream.on('error', (rStreamErr)=>
 						{
-							console.log('rStream.on error');
+							//console.log('rStream.on error');
 							//console.log(rStreamErr);
 
 							wStream.destroy();
@@ -814,6 +821,8 @@ class File
 
 						rStream.on('close', ()=>{
 							//console.log('rStream.on close');
+							rStream.destroy();
+							//wStream.destroy();
 						});
 						rStream.on('end', ()=>{
 							//console.log('rStream.on end');
@@ -821,6 +830,12 @@ class File
 
 						rStream.pipe(wStream);
 					});
+
+					Req.on('error', (err)=>
+					{
+						reject(err);
+					});
+					Req.end();
 				});
 			});
 	}

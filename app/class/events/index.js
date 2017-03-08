@@ -91,7 +91,7 @@ class Events extends Base
 	 *
 	 * @returns {Promise}
 	 */
-	getEvents(date_ts, end_ts = null, l_id = null)
+	getEvents(date_ts, end_ts, l_id = null)
 	{
 		return this.model('events').getEvents(date_ts, end_ts, l_id)
 			.then((eventList) =>
