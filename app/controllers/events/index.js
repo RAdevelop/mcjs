@@ -118,7 +118,6 @@ class Events extends CtrlMain
 
 		tplData['selectedDate']['obj'] = this._getSelectedDateObj();
 
-
 		if (b_tag)
 		{
 			s_tag = decodeURIComponent(s_tag);
@@ -409,8 +408,13 @@ class Events extends CtrlMain
 				u_id: '',
 				kw_names: []
 			},
-			eventLocations: null
+			eventLocations: null,
+			selectedDate: {}
 		};
+
+		let now = new Date();
+		this._setSelectedDateObj();
+		tplData['selectedDate']['obj'] = {i_yy:now.getFullYear(), i_mm:now.getMonth()+1, i_dd:now.getDate()};
 
 		return this.getClass('keywords').getKeyWordList()
 			.then((keywords)=>
@@ -580,7 +584,12 @@ class Events extends CtrlMain
 				}
 
 				let tplFile = "events";
-				let tplData = { event: event, eventImages: images, eventLocations: null };
+				let tplData = { event: event, eventImages: images, eventLocations: null, selectedDate: {} };
+
+				let now = new Date();
+				this._setSelectedDateObj();
+				tplData['selectedDate']['obj'] = {i_yy:now.getFullYear(), i_mm:now.getMonth()+1, i_dd:now.getDate()};
+
 				this.view.setTplData(tplFile, tplData);
 
 				this.view.setPageTitle(event['e_title']);

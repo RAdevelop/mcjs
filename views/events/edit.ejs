@@ -1,6 +1,7 @@
 <h4><%=(event.e_title ? 'редактирование' : 'добавление')%> события</h4>
 <ul class="nav nav-pills nav-justified" role="tablist">
-	<li class="active" role="presentation"><a href="#base" aria-controls="base" role="tab" data-toggle="tab"><span class="fa fa-cog"></span> Основное</a></li>
+	<li class="active" role="presentation"><a href="#requirements" aria-controls="requirements" role="tab" data-toggle="tab"><span class="fa fa-exclamation-triangle"></span> Требования</a></li>
+	<li role="presentation"><a href="#base" aria-controls="base" role="tab" data-toggle="tab"><span class="fa fa-cog"></span> Основное</a></li>
 	<li role="presentation"><a href="#locations" aria-controls="locations" role="tab" data-toggle="tab"><span class="fa fa-map-marker "></span> Адрес</a></li>
 </ul>
 <!-- Tab panes -->
@@ -8,7 +9,30 @@
 	<input type="hidden" id="i_event_id" name="i_event_id" value="<%=event.e_id%>" />
 	<div class="panel panel-default">
 		<div class="panel-body tab-content">
-			<div role="tabpanel" class="tab-pane active" id="base">
+			<div role="tabpanel" class="tab-pane active" id="requirements">
+				<p>Ваше событие быстро смогут найти с помощью поисковых систем. <strong>Наш портал находится в ТОП3 поисковых систем:</strong> <a href="http://yandex.ru/yandsearch?text=%D0%BC%D0%BE%D1%82%D0%BE%D1%81%D0%BE%D0%B1%D1%8B%D1%82%D0%B8%D1%8F" target="_blank">Yandex</a>, <a href="https://www.google.ru/search?ie=UTF-8&amp;hl=ru&amp;q=%D0%BC%D0%BE%D1%82%D0%BE%D1%81%D0%BE%D0%B1%D1%8B%D1%82%D0%B8%D1%8F" target="_blank">Google</a>, <a href="http://go.mail.ru/search?mailru=1&amp;q=%D0%BC%D0%BE%D1%82%D0%BE%D1%81%D0%BE%D0%B1%D1%8B%D1%82%D0%B8%D1%8F" target="_blank">Mail.ru</a>, <a href="http://nova.rambler.ru/search?utm_source=nhp&amp;query=%D0%BC%D0%BE%D1%82%D0%BE%D1%81%D0%BE%D0%B1%D1%8B%D1%82%D0%B8%D1%8F" target="_blank">Rambler</a>, <a href="http://www.bing.com/search?q=%D0%BC%D0%BE%D1%82%D0%BE%D1%81%D0%BE%D0%B1%D1%8B%D1%82%D0%B8%D1%8F" target="_blank">Bing</a>.</p>
+				<p>А так же мы самостоятельно и бесплатно для Вас добавляем информацию о событии в социальных сетях: ВКонтакте, Одноклассники, FaceBook, Twitter.</p>
+				<ol>
+					<li>Администрация оставляет за собой право редактировать данные, указанные для мотособытия.</li>
+					<li>Перед добавлением мотособытия, просьба убедится в том, что информация о нем не была добавлена ранее. Это можно будет сделать с помощью календаря на странице "МотоСобытия".</li>
+					<li>МотоСобытия будут удалены без предварительного оповещения если:
+						<ol>
+							<li>информация о таком мотособытии уже была добавлена кем-то раньше</li>
+							<li>описание не относится к мото-тематике</li>
+							<li>описание или прикрепленные файлы содержат нецензурную лексику</li>
+						</ol>
+					</li>
+					<li>Заполните поля во вкладках "Когда и где?" и "Опсание"</li>
+					<li>Обязательная информация:
+						<ol>
+							<li>Указать даты проведения. Если событие проходит в один день, заполните оба поля с одинаковой датой.</li>
+							<li>Указать место, где будет проходить событие. Вы можете указать адрес в описании, тогда мы сможем помочь указать точку на карте.</li>
+							<li>Если есть файлы (изображения), которые считаете нужным прикрепить к описанию, Вы сможете это сделать после того, как выволните пункт №4, и сохраните информацию. После этого сможете прикрепить файлы.</li>
+						</ol>
+					</li>
+				</ol>
+			</div>
+			<div role="tabpanel" class="tab-pane" id="base">
 				<div class="form-group dd_start_ts dd_end_ts">
 					<label class="col-sm-2 control-label">даты проведения *</label>
 					<div class="col-sm-5">

@@ -1420,8 +1420,8 @@ iframe.iframeVideoEmbed {
   position: relative;
   max-width: 274px;
   min-width: 274px;
-  max-height: 274px;
-  min-height: 274px;
+  max-height: 234px;
+  min-height: 234px;
   overflow: hidden;
 }
 

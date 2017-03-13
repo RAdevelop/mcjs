@@ -4,18 +4,21 @@
 		{%><div class="btn-group btn-group-sm" role="group" aria-label="Опции для мотосалонов">
 			<button type="button" class="btn btn-default dropdown-toggle toolbarBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-fw fa-cog"></i> опции <i class="caret"></i></button>
 			<ul class="dropdown-menu "><%
-				if (_access['post_add']) {%><li><a href="<%=menuItem['m_path']+'/add/'%>" ><i class="fa fa-fw fa-plus-square-o"></i> добавить мотосалон</a></li><% }
+				if (_access['post_add']) {%><li><a href="<%=menuItem['m_path']%>/add/" ><i class="fa fa-fw fa-plus-square-o"></i> добавить мотосалон</a></li><% }
 				if (_access['post_edit'] && motoshop && motoshop["mts_id"])
-				{%><li><a href="<%=menuItem['m_path']+'/edit/'+motoshop["mts_id"]%>/"><i class="fa fa-fw fa-edit"></i> редактировать мотосалон</a></li>
+				{%><li><a href="<%=[menuItem['m_path'],'edit',motoshop["mts_id"]].join('/')%>/"><i class="fa fa-fw fa-edit"></i> редактировать мотосалон</a></li>
 				<li><a href="javascript:void(0)" class="js-motoshop-tools" data-action="delete"><i class="fa fa-fw fa-trash-o"></i> удалить мотосалон</a></li><% }%>
 			</ul>
 		</div><%
 		}%>
 		<div class="btn-group btn-group-sm" role="group" aria-label="список мотосалонов">
-			<a href="<%=menuItem['m_path']+'/'%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-list"></i> все мотосалоны</a>
+			<a href="<%=menuItem['m_path']%>/" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-list"></i> все мотосалоны</a>
 		</div>
 		<div class="btn-group btn-group-sm" role="group" aria-label="список мотосалонов на карте">
-			<a href="<%=menuItem['m_path']+'/map/'%>" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-map-o"></i> на карте</a>
+			<a href="<%=menuItem['m_path']%>/map/" class="btn btn-default toolbarBtn"><i class="fa fa-fw fa-map-o"></i> на карте</a>
+		</div>
+		<div class="btn-group btn-group-sm" role="group" aria-label="владельцам">
+			<a href="javascript:void(0);" data-action="requirements" class="btn btn-default toolbarBtn js-motoshop-tools"><i class="fa fa-fw fa-users"></i> владельцам</a>
 		</div>
 		<div class="sharingSocNet" data-soc-list="vk,ok,fb,tw,gp"></div>
 	</div>
@@ -34,6 +37,19 @@
 		{
 			case 'delete':
 				deleteMotoshop(MCJS['motoshop']||{});
+				break;
+
+			case 'requirements':
+				var requirements = '<p>Если Вы являетесь владельцем мотосалона, и хотите добавить или обновить дополнительную информацию, напишите нам. Для этого воспользуйтесь обратной связью. Информация размещается бесплатно.</p>' +
+						'<p>Чтобы информация о Вашем мотосалоне была размещена на нашем ресурсе, необходимо прислать следующие данные.</p><p>Обязательная информация</p>' +
+						' <ul><li>Название мотосалона.</li><li>Для каждого адреса точный адрес мотосервиса и/или магазина. С адресом желательно прислать GPS координаты местоположения. Это нужно для отображения местоположения на карте, если сервис не сможет точно определить точку по адресу.</li><li>Для каждого адреса контактные телефоны.</li><li>Для каждого адреса, что находится по адресу: магазин и/или мотосервис.</li></ul>'+
+						'<p>Не обязательная информация</p>'+
+						'<ul><li>Адрес Интернет сайта</li><li>Адрес электронной почты.</li></ul>'+
+						'<p>Информация о вашем мотосалоне будет <strong>бесплатно размещена в социальных сетях</strong>: Вконтакте, Facebook, Одноклассники, Twitter, Google+.</p>';
+				$('__motoshop_requirements__').mcDialog({
+					title: 'Если Вы являетесь владельцем мотосалона'
+					,body: requirements
+				});
 				break;
 		}
 	});
