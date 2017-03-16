@@ -44,7 +44,19 @@ module.exports = function(Classes, Control)
 		if (!Controllers.has(cn))
 			Controllers.set(cn, new (Control.get(cName))(req, res, Classes) );
 
-		Controllers.get(cn)
+		let C = Controllers.get(cn);
+
+		return C.callAction()
+			.then(() =>
+			{
+				return calcTimeForGC();
+			})
+			.catch((err) =>
+			{
+				return next(err);
+			});
+
+		/*Controllers.get(cn)
 			.callAction()
 			.then((json) =>
 			{
@@ -67,7 +79,7 @@ module.exports = function(Classes, Control)
 				//C = null;
 				//cn = null;
 				return next(err);
-			});
+			});*/
 	});
 
 	return router;
@@ -84,6 +96,7 @@ tInterval = setInterval(function ()
 		//console.log("\n------------------------");
 	}
 }, 60000);
+
 function calcTimeForGC()
 {
 	if (!global.gc || (memoryUsage && ['rss'] && memoryUsage['rss']/ 1000000 <= 100))
@@ -91,6 +104,7 @@ function calcTimeForGC()
 		clearInterval(tInterval);
 		tInterval = null;
 	}
+	return Promise.resolve(1);
 }
 /*
 

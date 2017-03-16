@@ -394,17 +394,13 @@ class Base
 		if (!this.isAction() || !this._parseRoutePaths())
 			throw new Errors.HttpError(404);
 
-		return this.checkAccess()
-			.then((localAccess) => {
-
+		return this._checkAccess()
+			.spread((localAccess, ug_ids) =>
+			{
 				let check_method = this.httpMethod+'_'+this.getActionName();
 
 				if (this.getMenuItem['m_id'] && !localAccess[check_method])
 					throw new Errors.HttpError(403);
-
-				return Promise.resolve(localAccess);
-			})
-			.then((localAccess) => {
 
 				this.setLocalAccess(localAccess);
 				//this._getClasses().setSession(this.getReq().session);
@@ -412,7 +408,29 @@ class Base
 				//this.view = new Template(this.getReq(), this.getRes(), this);
 				this.view = Template.getTemplate(this);
 
-				return this[this.getAction()]();
+				let keyData = [].concat(ug_ids);
+				keyData.push(this.getMenuItem['m_id']);
+
+				//если авторизованны юзер иначе как гость
+				let сacheSeconds = (!!ug_ids.length ? 10 : 60);
+
+				this.view.setCacheKeyData(keyData)
+					.setCacheSeconds(сacheSeconds);
+				//console.log('this.view.cacheHtmlKey() = ', this.view.cacheHtmlKey());
+				return this.view.getCacheHtml()
+					.then((cacheData)=>
+					{
+						//return Promise.resolve([this[this.getAction()](), null]);
+
+						if (!this.getReq().xhr && !!cacheData)
+							return [this.getReq().xhr, cacheData];
+
+						return Promise.resolve([this[this.getAction()](), null]);
+					})
+					.spread((json, cacheData)=>
+					{
+						return this.view.render(json, cacheData);
+					});
 			});
 	}
 
@@ -422,20 +440,20 @@ class Base
 	 * @param m_id
 	 * @returns {Promise}
 	 */
-	checkAccess(m_id = null)
+	_checkAccess(m_id = null)
 	{
 		//когда меню из файла /app/middlewares/menu/menu.js
 		if (!this.getMenuItem['m_id'])
-			return Promise.resolve({});
+			return Promise.resolve([{}, []]);
 
 		m_id = m_id || this.getMenuItem['m_id'];
 
 		return this.getUser(this.getUserId())
-			.then((user) => {
-
+			.then((user) =>
+			{
 				let ug_ids = (user.ug_ids ? user.ug_ids : []);
-				return this.getClass('user/groups')
-					.checkAccessToMenu(m_id, ug_ids);
+
+				return [this.getClass('user/groups').checkAccessToMenu(m_id, ug_ids), ug_ids];
 			});
 	}
 

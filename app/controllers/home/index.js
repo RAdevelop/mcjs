@@ -58,7 +58,7 @@ class Home extends CtrlMain
 				};
 				this.view.setTplData("home", tplData);
 				this.view.addPartialData("user/left", {user: userData});
-				this.view.addPartialData("user/right", {title: 'right_col'});
+				//this.view.addPartialData("user/right", {title: 'right_col'});
 
 				return Promise.resolve(null);
 			}

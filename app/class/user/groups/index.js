@@ -79,8 +79,8 @@ class UserGroups extends Base
 	checkAccessToMenu(m_id, ug_ids)
 	{
 		return Promise.resolve(ug_ids)
-			.then((ug_ids) => {
-				
+			.then((ug_ids) =>
+			{
 				if (!ug_ids.length)
 					return this.model('user/groups').getGroupRightsByPathAndMenu(m_id, 'guest');
 				

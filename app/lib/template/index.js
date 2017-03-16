@@ -4,7 +4,15 @@
  */
 "use strict";
 const Promise = require('bluebird');
+const Crypto = require('crypto');
 const _ = require("lodash");
+
+const IORedis = require('app/lib/ioredis');
+const Config = require('app/config');
+
+let opt = {connectionName : 'Template'};
+opt = Object.assign({}, Config.redis, opt);
+const Redis = IORedis(opt);
 
 function Template(req, res, Controller = null)
 {
@@ -140,6 +148,41 @@ Template.prototype.setDataNull = function()
 	return this;
 };
 
+
+Template.prototype.cacheHtmlKey = function()
+{
+	let keyData = [].concat(this.getCacheKeyData());
+	keyData.push(this.req.originalUrl);
+
+	return 'tpl:cache:'+Crypto.createHash('md5').update(keyData.join('|')).digest("hex");
+}
+
+Template.prototype.setCacheKeyData = function(cacheKeyData = [])
+{
+	this._cacheKeyData = cacheKeyData;
+	return this;
+}
+
+Template.prototype.getCacheKeyData = function()
+{
+	return this._cacheKeyData||[];
+}
+Template.prototype.setCacheSeconds = function(сacheSeconds = 10)
+{
+	this._сacheSeconds = сacheSeconds;
+	return this;
+}
+
+Template.prototype.getCacheSeconds = function()
+{
+	return this._сacheSeconds||10;
+}
+
+Template.prototype.getCacheHtml = function()
+{
+	return Redis.get(this.cacheHtmlKey());
+}
+
 /**
  *
  * рисуем и отдаем шаблон
@@ -147,12 +190,19 @@ Template.prototype.setDataNull = function()
  * @param json - флаг, true - вернуть в формате json, false - отрисовать страницу
  * @throws ?
  */
-Template.prototype.render = function(json = false)
+Template.prototype.render = function(json = false, cacheData = null)
 {
 	if (this.res.headersSent)
 		return Promise.resolve(true);
 
 	json = (json || this.req.xhr);
+
+	if (cacheData)
+	{
+		//console.log('this.res.send(cacheData) from cacheData');
+		this.res.send(cacheData);
+		return Promise.resolve(true);
+	}
 
 	let renderData = this.getPageData(json);
 
@@ -234,8 +284,30 @@ Template.prototype.render = function(json = false)
 						return reject(err);
 					
 					this.setController(null);
-					this.res.send(html);
-					return resolve(true);
+
+					html = html.trim();
+
+					//console.log('======= html =======');
+					//console.log(html);
+					//console.log('this.res.statusCode = ', this.res.statusCode);
+					//console.log('this.getCacheSeconds() = ', this.getCacheSeconds());
+
+					if (this.res.statusCode >= 200 && this.res.statusCode < 300)
+					{
+						Redis.set(this.cacheHtmlKey(), html, 'EX', this.getCacheSeconds(), (err)=>
+						{ //(err, res)
+							if (err)
+								return reject(err);
+
+							this.res.send(html);
+							return resolve(true);
+						});
+					}
+					else
+					{
+						this.res.send(html);
+						return resolve(true);
+					}
 				});
 			});
 		})
