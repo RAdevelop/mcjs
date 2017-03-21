@@ -52,6 +52,9 @@ class Blog extends CtrlMain
 	indexActionGet()
 	{
 		//console.log('this.name', this.constructor.name);
+
+		this.view.useCache(true);
+
 		let {i_u_id=null, i_blog_id=null, s_blog_alias=null, ui_bs_id=null, s_bs_alias=null, b_draft=false
 			, b_tag=null, s_tag=null
 		} = this.routeArgs;

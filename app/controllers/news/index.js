@@ -49,6 +49,8 @@ class News extends CtrlMain
 	 */
 	indexActionGet()
 	{
+		this.view.useCache(true);
+		
 		let tplData = {
 			news: null,
 			newsList: null

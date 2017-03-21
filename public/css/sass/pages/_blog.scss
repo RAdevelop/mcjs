@@ -228,3 +228,39 @@
     //background-color: rgba(0, 0, 0, 0.7);
   }
 }
+
+.blogListContainer.home {
+  width: 100%;
+
+  .blogListItem {
+    @media (min-width: $screen-sm) {
+      & {
+        width: 48%;
+      }
+    }
+    @media (min-width: $screen-md-max) {
+      & {
+        width: 24%;
+      }
+    }
+
+    & .blogListItemInfo {
+
+      @media (max-width: $screen-sm) {
+        & {
+          width: auto;
+          @include mix-min-width-calc(100%);
+          @include mix-max-width-calc(100%);
+        }
+      }
+
+      @media (min-width: $screen-md-max) {
+        & {
+          width: auto;
+          @include mix-min-width-calc(100%);
+          @include mix-max-width-calc(100%);
+        }
+      }
+    }
+  }
+}

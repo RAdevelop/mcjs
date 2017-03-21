@@ -31,6 +31,8 @@ class User extends CtrlMain
 		if (!this.isAuthorized())
 			throw new Errors.HttpError(401);
 
+		this.view.useCache(true);
+
 		return this.usersList();
 	}
 

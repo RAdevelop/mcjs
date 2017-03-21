@@ -1547,6 +1547,42 @@ iframe.iframeVideoEmbed {
     top: 52px;
   }
 }
+.blogListContainer.home {
+  width: 100%;
+}
+@media (min-width: 768px) {
+  .blogListContainer.home .blogListItem {
+    width: 48%;
+  }
+}
+@media (min-width: 1199px) {
+  .blogListContainer.home .blogListItem {
+    width: 24%;
+  }
+}
+@media (max-width: 768px) {
+  .blogListContainer.home .blogListItem .blogListItemInfo {
+    width: auto;
+    min-width: calc(100%);
+    min-width: -moz-calc(100%);
+    min-width: -webkit-calc(100%);
+    max-width: calc(100%);
+    max-width: -moz-calc(100%);
+    max-width: -webkit-calc(100%);
+  }
+}
+@media (min-width: 1199px) {
+  .blogListContainer.home .blogListItem .blogListItemInfo {
+    width: auto;
+    min-width: calc(100%);
+    min-width: -moz-calc(100%);
+    min-width: -webkit-calc(100%);
+    max-width: calc(100%);
+    max-width: -moz-calc(100%);
+    max-width: -webkit-calc(100%);
+  }
+}
+
 /**********  СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ СОБЫТИЯ  **************/
 .eventLocationsMenu li.selected {
   background-color: #f5f5f5;
@@ -1688,6 +1724,31 @@ iframe.iframeVideoEmbed {
     max-width: 100%;
   }
 }
+@media (min-width: 1199px) {
+  .home .eventListItem {
+    width: 24%;
+  }
+}
+@media (max-width: 767px) {
+  .home .eventListItem .eventListItemInfo {
+    width: 100%;
+    min-width: calc(100%);
+    min-width: -moz-calc(100%);
+    min-width: -webkit-calc(100%);
+  }
+}
+@media (min-width: 1199px) {
+  .home .eventListItem .eventListItemInfo {
+    width: auto;
+    min-width: calc(100%);
+    min-width: -moz-calc(100%);
+    min-width: -webkit-calc(100%);
+    max-width: calc(100%);
+    max-width: -moz-calc(100%);
+    max-width: -webkit-calc(100%);
+  }
+}
+
 /**********  мототреки **************/
 .mototrekMapContainer {
   position: relative;
@@ -2242,6 +2303,31 @@ ul.shopListContainer .shopItem .motoshopAddress .motoshopAddressData {
     background-color: rgba(0, 0, 0, 0.7);
   }
 }
+@media (min-width: 1199px) {
+  .home .newsListItem {
+    width: 24%;
+  }
+}
+@media (max-width: 767px) {
+  .home .newsListItem .newsListItemInfo {
+    width: 100%;
+    min-width: calc(100%);
+    min-width: -moz-calc(100%);
+    min-width: -webkit-calc(100%);
+  }
+}
+@media (min-width: 1199px) {
+  .home .newsListItem .newsListItemInfo {
+    width: auto;
+    min-width: calc(100%);
+    min-width: -moz-calc(100%);
+    min-width: -webkit-calc(100%);
+    max-width: calc(100%);
+    max-width: -moz-calc(100%);
+    max-width: -webkit-calc(100%);
+  }
+}
+
 /********** профиль просматриваемого юзера **************/
 .userProfile .blocks {
   /*float: left;

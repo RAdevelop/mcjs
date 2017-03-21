@@ -50,6 +50,8 @@ class ProfilePhoto extends CtrlMain
 				if (!userData['u_id'])
 					throw new Errors.HttpError(404);
 
+				this.view.useCache(true);
+
 				let tplData = {
 					'user': userData
 					,   'addUsersAva': false

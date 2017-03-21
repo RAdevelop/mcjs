@@ -191,3 +191,29 @@
 {
 
 }
+
+.home .newsListItem {
+  @media (min-width: $screen-md-max) {
+    & {
+      width: 24%;
+    }
+  }
+
+  & .newsListItemInfo {
+
+    @media (max-width: $screen-xs-max) {
+      & {
+        width: 100%;
+        @include mix-min-width-calc(100%);
+      }
+    }
+
+    @media (min-width: $screen-md-max) {
+      & {
+        width: auto;
+        @include mix-min-width-calc(100%);
+        @include mix-max-width-calc(100%);
+      }
+    }
+  }
+}

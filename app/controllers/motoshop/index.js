@@ -44,6 +44,8 @@ class Motoshop extends CtrlMain
 	 */
 	indexActionGet()
 	{
+		this.view.useCache(true);
+
 		let {i_mts_id, i_loc_id} = this.routeArgs;
 		let mts_show = (this.getLocalAccess()['post_edit'] ? null : 1);
 
@@ -598,10 +600,12 @@ class Motoshop extends CtrlMain
 	/**
 	 * просмотр на карте
 	 *
-	 * @returns {Promise.<T>}
+	 * @returns {Promise}
 	 */
 	mapActionGet()
 	{
+		this.view.useCache(true);
+
 		let mts_show = (this.getLocalAccess()['post_edit'] ? null : 1);
 		return Promise.props({
 			motoshopList: this.getClass("motoshop").getAllMotoshop(mts_show),

@@ -46,6 +46,8 @@ class ProfileVideo extends CtrlMain
 	 */
 	indexActionGet()
 	{
+		this.view.useCache(true);
+		
 		let {i_u_id=this.getUserId(), i_va_id=null, i_v_id=null} = this.routeArgs;
 
 		let tplData = {

@@ -411,7 +411,7 @@ class Base
 				let keyData = [].concat(ug_ids);
 				keyData.push(this.getMenuItem['m_id']);
 
-				//если авторизованны юзер иначе как гость
+				//если авторизованный юзер иначе как гость
 				let сacheSeconds = (!!ug_ids.length ? 10 : 60);
 
 				this.view.setCacheKeyData(keyData)
@@ -425,7 +425,7 @@ class Base
 						if (!this.getReq().xhr && !!cacheData)
 							return [this.getReq().xhr, cacheData];
 
-						return Promise.resolve([this[this.getAction()](), null]);
+						return [this[this.getAction()](), null];
 					})
 					.spread((json, cacheData)=>
 					{

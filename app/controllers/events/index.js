@@ -77,6 +77,8 @@ class Events extends CtrlMain
 	 */
 	indexActionGet()
 	{
+		this.view.useCache(true);
+		
 		let tplData = {
 			event: null,
 			eventList: null,

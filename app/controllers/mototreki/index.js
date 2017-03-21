@@ -37,43 +37,42 @@ class Mototreki extends CtrlMain
 	 */
 	indexActionGet()
 	{
+		this.view.useCache(true);
+
 		let {i_mtt_id} = this.routeArgs;
 
-		return this.trekData(i_mtt_id)
-			.spread((trek, trekList) =>
+		return Promise.props({
+			trekData: this.trekData(i_mtt_id),
+			userData: this.getUser(this.getUserId())
+		})
+			.then((props) =>
 			{
-				return this.getUser(this.getUserId())
-					.then((userData) =>
-					{
-						let tplData = {};
+				//trek, trekList
+				let tplData = {};
 
-						tplData.trek = trek || null;
-						tplData.trekList = trekList || null;
+				tplData.trek = props.trekData[0] || null;
+				tplData.trekList = props.trekData[1] || null;
 
-						let tplFile = "mototreki";
-						if (trek)
-						{
-							this.getRes().expose(trek, 'trek');
+				let tplFile = "mototreki";
+				if (props.trekData[0])
+				{
+					this.getRes().expose(props.trekData[0], 'trek');
 
-							this.view.setPageTitle(trek["mtt_name"]);
-							this.view.setPageH1(trek["mtt_name"]);
-							this.view.setPageDescription(CtrlMain.cheerio(trek["mtt_descrip"]).text());
-						}
-						else
-						{
-							this.getRes().expose(trekList, 'trekList');
-							//this.getRes().expose(trekLocations, 'trekLocations');
-						}
+					this.view.setPageTitle(props.trekData[0]["mtt_name"]);
+					this.view.setPageH1(props.trekData[0]["mtt_name"]);
+					this.view.setPageDescription(CtrlMain.cheerio(props.trekData[0]["mtt_descrip"]).text());
+				}
+				else
+				{
+					this.getRes().expose(props.trekData[1], 'trekList');
+					//this.getRes().expose(trekLocations, 'trekLocations');
+				}
 
-						this.view.setTplData(tplFile, tplData);
-						this.view.addPartialData("user/left", {user: userData});
-						//this.view.addPartialData("user/right", {title: 'right_col'});
+				this.view.setTplData(tplFile, tplData);
+				this.view.addPartialData("user/left", {user: props.userData});
+				//this.view.addPartialData("user/right", {title: 'right_col'});
 
-						return Promise.resolve(null);
-					});
-			})
-			.catch((err) => {
-				throw err;
+				return Promise.resolve(null);
 			});
 	}
 
@@ -438,12 +437,14 @@ class Mototreki extends CtrlMain
 	 */
 	mapActionGet()
 	{
+		this.view.useCache(true);
+
 		return Promise.props({
 			trekList: this.getClass("mototrek").getAll(),
 			trekLocations: this.getClass("mototrek").getLocations()
 		})
-			.then((props) => {
-
+			.then((props) =>
+			{
 				let tplData = {
 					trek: null,
 					trekList: props.trekList || [],
@@ -457,10 +458,6 @@ class Mototreki extends CtrlMain
 				this.getRes().expose(props.trekLocations, 'trekLocations');
 
 				return Promise.resolve(null);
-			})
-			.catch((err) =>
-			{
-				throw err;
 			});
 	}
 }

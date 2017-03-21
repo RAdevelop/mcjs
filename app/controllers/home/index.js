@@ -35,6 +35,8 @@ class Home extends CtrlMain
 	 */
 	indexActionGet()
 	{
+		this.view.useCache(true);
+		
 		let startDate = new Date();
 		let startDateTs = startDate.getTime()/1000;
 
@@ -54,10 +56,12 @@ class Home extends CtrlMain
 				let tplData = {
 					eventList: eventList,
 					newsList: news[0],
-					blogList: blog[0]
+					blogList: blog[0],
+					user: userData
 				};
-				this.view.setTplData("home", tplData);
-				this.view.addPartialData("user/left", {user: userData});
+				let tplFile = 'home';
+				this.view.setTplData(tplFile, tplData);
+				//this.view.addPartialData("user/left", {user: userData});
 				//this.view.addPartialData("user/right", {title: 'right_col'});
 
 				return Promise.resolve(null);

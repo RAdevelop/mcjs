@@ -62,6 +62,9 @@ class Profile extends CtrlMain
 				if (!userData || !userData.u_id)
 					throw new Errors.HttpError(404);
 
+				if (userData['u_id'] != this.getUserId())
+					this.view.useCache(true);
+
 				return Promise.props({
 					photoAlbums: this.getClass('user/photo').getAlbumList(this.getUserId(), i_u_id, new Pages(1, 4)),
 					videoAlbums: this.getClass('video').getVideoAlbumList(this.getUserId(), i_u_id, new Pages(1, 4)),

@@ -167,15 +167,26 @@ Template.prototype.getCacheKeyData = function()
 {
 	return this._cacheKeyData||[];
 }
+
+
 Template.prototype.setCacheSeconds = function(сacheSeconds = 10)
 {
 	this._сacheSeconds = сacheSeconds;
 	return this;
 }
-
 Template.prototype.getCacheSeconds = function()
 {
 	return this._сacheSeconds||10;
+}
+
+Template.prototype.useCache = function(useCache = true)
+{
+	this._useCache = useCache;
+	return this;
+}
+Template.prototype.isUseCache = function()
+{
+	return !!this._useCache;
 }
 
 Template.prototype.getCacheHtml = function()
@@ -292,8 +303,10 @@ Template.prototype.render = function(json = false, cacheData = null)
 					//console.log('this.res.statusCode = ', this.res.statusCode);
 					//console.log('this.getCacheSeconds() = ', this.getCacheSeconds());
 
-					if (this.res.statusCode >= 200 && this.res.statusCode < 300)
+					if (this.isUseCache() && this.res.statusCode >= 200 && this.res.statusCode < 300)
 					{
+						//console.log('set cache: this.isUseCache() = ', this.isUseCache());
+
 						Redis.set(this.cacheHtmlKey(), html, 'EX', this.getCacheSeconds(), (err)=>
 						{ //(err, res)
 							if (err)
@@ -305,6 +318,7 @@ Template.prototype.render = function(json = false, cacheData = null)
 					}
 					else
 					{
+						//console.log('NOT set cache: this.isUseCache() = ', this.isUseCache());
 						this.res.send(html);
 						return resolve(true);
 					}
