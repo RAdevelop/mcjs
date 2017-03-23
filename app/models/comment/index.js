@@ -6,7 +6,7 @@ const Promise = require("bluebird");
 
 const BaseModel = require('app/lib/db');
 
-class KeyWords extends BaseModel
+class Comment extends BaseModel
 {
 	/**
 	 * получаем список слов-меток для указанного объекта
@@ -140,13 +140,59 @@ class KeyWords extends BaseModel
 			});
 	}
 
-	getKeyWordList()
+	countComment(obj_id, obj_name)
 	{
-		let sql = `SELECT kw_id, kw_name FROM key_words ORDER BY kw_name`;
-		return this.constructor.conn().ps(sql);
+		obj_id = parseInt(obj_id, 10);
+		if (!!obj_id === false || !!obj_name === false)
+			return Promise.resolve(0);
+
+		let sql = `SELECT COUNT(cm_id) AS cnt FROM comments AS cm
+		WHERE cm_obj_id = ? AND cm_obj_name = ?`;
+
+		let sqlData = [obj_id, obj_name];
+
+		//console.log(sql, sqlData);
+
+		return this.constructor.conn().sRow(sql, sqlData)
+			.then((res) =>
+			{
+				return Promise.resolve(res["cnt"] || 0);
+			});
+	}
+
+	/**
+	 *
+	 * @param objClass - инстанс класса, для которого работает с комментариями
+	 * @param obj_id - id объекта (например, id новости, или события)
+	 * @returns {Promise}
+	 */
+	getCommentList(obj_id, obj_name, limit = 20, offset = 0)
+	{
+		obj_id = parseInt(obj_id, 10)||0;
+
+		if (!!obj_id === false)
+			return Promise.resolve([]);
+
+		limit = parseInt(limit, 10)||20;
+		offset = parseInt(offset, 10)||0;
+
+		let sql = `SELECT 
+		cm_id, cm_obj_name, cm_obj_id, cm_lk, cm_rk, cm_level, cm_create_ts, cm_u_id, cm_text, 
+		cm_sum_vote, cm_moderated, cm_moderate_ts, cm_hide,
+		FROM_UNIXTIME(cm_create_ts, "%d-%m-%Y %H:%i:%s") AS dt_create_ts,
+		FROM_UNIXTIME(cm_moderate_ts, "%d-%m-%Y %H:%i:%s") AS dt_moderate_ts
+		FROM comments
+		WHERE cm_obj_id = ? AND cm_obj_name = ?
+		ORDER BY cm_obj_id, cm_lk
+		LIMIT ${limit} OFFSET ${offset}`;
+
+		let sqlData = [obj_id, obj_name];
+
+		console.log(sql, sqlData);
+		return this.constructor.conn().ps(sql, sqlData);
 	}
 }
 
 //************************************************************************* module.exports
 //писать после class Name....{}
-module.exports = KeyWords;
+module.exports = Comment;

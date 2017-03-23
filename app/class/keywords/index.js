@@ -25,8 +25,9 @@ class KeyWords extends Base
 	/**
 	 * получаем список слов-меток для указанного объекта
 	 *
-	 * @param obj_name - например, для таблицы blog_list = blog_list
-	 * @param obj - например, для блогов obj = blog
+	 * @param objClass
+	 * @param obj
+	 * @param obj_id_name
 	 *
 	 * @returns {Promise}
 	 */

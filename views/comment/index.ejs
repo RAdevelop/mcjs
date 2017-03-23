@@ -1,0 +1,32 @@
+<% if (typeof comments !== 'undefined' && comments.length) {
+%>
+<h3>Комментарии&nbsp;<span class="badge"><%=comments_count%></span></h3>
+<ul class="commentListContainer"><%
+		let paddingLeft = 0;
+		comments.forEach(function (commnet)
+		{
+			paddingLeft = commnet['cm_level'];
+			%><li class="commentItem" style="margin-left: <%=paddingLeft%>00px;">
+			<%=commnet['cm_u_id']%>
+			<%=commnet['cm_hide']%>
+			<%=commnet['dt_create_ts']%>
+			<%=commnet['cm_text']%>
+	</li><%})%>
+</ul><%
+}%>
+<%- include ../pages/index.ejs %>
+<script type="text/javascript">
+	//<!--
+	//console.log(MCJS);
+
+	if (MCJS['pages'] && Pagination)
+	{
+		MCJS['pages']['ajaxDataSrc'] = ['comments'];
+		MCJS['pages']['ajaxDataTarget'] = 'comments';
+		MCJS['pages']['jQuerySelector'] = '.commentListContainer .commentItem';
+
+		Pagination.init();
+	}
+	//console.log(Pagination);
+	//-->
+</script>

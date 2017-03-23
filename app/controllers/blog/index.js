@@ -26,7 +26,11 @@ class Blog extends CtrlMain
 				'^\/?$': null
 				,'^\/?subj\/[1-9]+[0-9]*\/[a-z0-9-_]{3,}\/page\/[1-9]+[0-9]*\/?$': [,'ui_bs_id','s_bs_alias',, 'i_page']
 				,'^\/?subj\/[1-9]+[0-9]*\/[a-z0-9-_]{3,}\/?$': [,'ui_bs_id','s_bs_alias']
+
+				//для комментариев
+				,'^\/?[1-9]+[0-9]*\/[a-z0-9-_]{3,}\/page\/[1-9]+[0-9]*\/?$': ['i_blog_id','s_blog_alias',, 'i_page']
 				,'^\/?[1-9]+[0-9]*\/[a-z0-9-_]{3,}\/?$': ['i_blog_id','s_blog_alias']
+
 				,"^\/?tag\/\\S+\/page\/[1-9]+[0-9]*\/?$" : ['b_tag','s_tag',,'i_page'] //по тегам
 				,"^\/?tag\/\\S+\/?$" : ['b_tag','s_tag']
 				,"^\/?page\/[1-9]+[0-9]*\/?$" : [ ,'i_page'] //список с постраничкой
@@ -175,7 +179,9 @@ class Blog extends CtrlMain
 	_blog(tplData, i_blog_id, s_alias, i_u_id=null)
 	{
 		//let show = (this.getLocalAccess()['post_edit'] ? null : 1);
-		
+		let isAjax = this.getReq().xhr;
+		let {i_page=1} = this.routeArgs;
+
 		return this._getBlogData(i_blog_id, i_u_id)
 			.spread((isRootAdmin, blog, user, blogSubjects)=>
 			{
@@ -193,39 +199,63 @@ class Blog extends CtrlMain
 			})
 			.then((blog) =>
 			{
-				return this.getClass('blog').getImageList(blog['b_id'])
-					.spread((images, allPreviews) =>
+				return Promise.join(
+					this.getClass('blog').getImageList(blog['b_id']),
+					//this.getClass('comment').getCommentList(this.getClass('blog'), blog['b_id'], new Pages(i_page, 2))
+					this.getClass('comment').getCommentList(this.getClass('blog'), 1, new Pages(i_page, 2))
+				, (images, comments)=>
 					{
-						return Promise.resolve([blog, images, allPreviews]);
+						return Promise.resolve([blog, images[0], images[1], comments]);
 					});
 			})
-			.spread((blog, images, allPreviews) =>
+			.spread((blog, images, allPreviews, comments) =>
 			{
-				blog["blogImages"] = images;
-				blog["blogImagesPreviews"] = allPreviews;
+				//console.log('comments =', comments);
 
-				let tplFile = "blog";
+				blog['blogImages'] = images;
+				blog['blogImagesPreviews'] = allPreviews;
 
-				tplData["blog"] = blog;
-				tplData["blogImages"] = blog["blogImages"];
+				let tplFile = (isAjax ? 'blog.ejs' : 'blog');
 
-				this.view.setPageTitle(blog["b_title"]);
-				this.view.setPageDescription(blog["b_notice"]);
+				tplData['blog'] = blog;
+				tplData['blogImages'] = blog['blogImages'];
+				tplData['comments'] = comments[0];//list
+				tplData['comments_count'] = comments[1].getTotal();// = Pages
 
-				if (blog["blogImages"] && blog["blogImages"][0] && blog["blogImages"][0]["previews"]["512_384"])
-					this.view.setPageOgImage(blog["blogImages"][0]["previews"]["512_384"]);
+				this.view.setPageTitle(blog['b_title']);
+				this.view.setPageDescription(blog['b_notice']);
 
-				if (!!tplData["blogSubjects"]['selected']['bs_id'])
+				if (
+					blog['blogImages'] && blog['blogImages'][0]
+				&&  blog['blogImages'][0]['previews']['512_384']
+				)
 				{
-					this.view.setPageH1(tplData["blogSubjects"]['selected']['bs_name']);
+					this.view.setPageOgImage(blog['blogImages'][0]['previews']['512_384']);
 				}
-				//экспрот данных в JS на клиента
-				this.getRes().expose(tplData["blog"], 'blogData');
-				this.view.setTplData(tplFile, tplData);
-				//this.view.addPartialData("user/left", {user: userData});
-				//this.view.addPartialData("user/right", {title: 'right_col'});
 
-				return Promise.resolve(null);
+				if (!!tplData['blogSubjects']['selected']['bs_id'])
+				{
+					this.view.setPageH1(tplData['blogSubjects']['selected']['bs_name']);
+				}
+
+				comments[1].setLinksUri(this.getOriginalUrl());
+
+				tplData['pages'] = comments[1].pages();
+
+				this.view.setTplData(tplFile, tplData, isAjax);
+
+				if (!isAjax)
+				{
+					//экспрот данных в JS на клиента
+					this.getRes().expose(tplData['blog'], 'blogData');
+					this.getRes().expose(tplData['comments'], 'comments');
+					this.getRes().expose(tplData['pages'], 'pages');
+
+					//this.view.addPartialData('user/left', {user: userData});
+					//this.view.addPartialData('user/right', {title: 'right_col'});
+				}
+
+				return Promise.resolve(isAjax);
 			});
 	}
 
