@@ -3,7 +3,7 @@
 	<li class="active" role="presentation"><a href="#base" aria-controls="base" role="tab" data-toggle="tab"><span class="fa fa-cog"></span> Основное</a></li>
 </ul>
 <!-- Tab panes -->
-<form class="form-horizontal blogData" action="<%=menuItem['m_path']+'/'+_action%>/" method="post" id="formBlog">
+<form class="form-horizontal blogData" action="<%=[menuItem['m_path'], _action].join('/')%>/" method="post" id="formBlog">
 	<input type="hidden" id="i_blog_id" name="i_blog_id" value="<%=blog['b_id']%>" />
 	<div class="panel panel-default">
 		<div class="panel-body tab-content">

@@ -2,9 +2,9 @@
 <%- layout('layout/default') %>
 <%- include toolbar.ejs %>
 <h1><%=_pageH1%></h1>
-<% if (blogDraft){%><h3>черновики</h3><% }%>
-<% } %>
-<% if(blog && ['edit', 'add'].indexOf(_action) != -1){ %><%- include edit.ejs %><% }
+<% if (blogDraft){%><h3>черновики</h3><% }
+}
+if(blog && ['edit', 'add'].indexOf(_action) != -1){ %><%- include edit.ejs %><% }
 else if (blog){%>
 <%- include blog.ejs %><%- include ../comment/index.ejs %>
 <%}

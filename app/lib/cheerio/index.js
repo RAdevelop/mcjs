@@ -109,7 +109,9 @@ let settings = {
 module.exports = function (html, options = {})
 {
 	options = Object.assign({}, settings, options);
-
+	
+	if (!html)
+		html = '';
 	const ch = _cheerio.load(html, options);
 
 	/*ch.fn.logger = function()

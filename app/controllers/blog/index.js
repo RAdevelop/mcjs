@@ -44,6 +44,9 @@ class Blog extends CtrlMain
 			},
 			"upload": {
 				'^\/?$': null
+			},
+			"comment": {
+				'^\/?$': null
 			}
 		};
 	}
@@ -182,7 +185,7 @@ class Blog extends CtrlMain
 		let isAjax = this.getReq().xhr;
 		let {i_page=1} = this.routeArgs;
 
-		return this._getBlogData(i_blog_id, i_u_id)
+		return this._getBlogData(i_blog_id, i_u_id, isAjax)
 			.spread((isRootAdmin, blog, user, blogSubjects)=>
 			{
 				if (
@@ -200,9 +203,8 @@ class Blog extends CtrlMain
 			.then((blog) =>
 			{
 				return Promise.join(
-					this.getClass('blog').getImageList(blog['b_id']),
-					//this.getClass('comment').getCommentList(this.getClass('blog'), blog['b_id'], new Pages(i_page, 2))
-					this.getClass('comment').getCommentList(this.getClass('blog'), 1, new Pages(i_page, 2))
+					(isAjax ? [[],[]] : this.getClass('blog').getImageList(blog['b_id'])),
+					this.getClass('comment').getCommentList(this.getClass('blog'), blog['b_id'], new Pages(i_page, limit_per_page))
 				, (images, comments)=>
 					{
 						return Promise.resolve([blog, images[0], images[1], comments]);
@@ -219,42 +221,41 @@ class Blog extends CtrlMain
 
 				tplData['blog'] = blog;
 				tplData['blogImages'] = blog['blogImages'];
-				tplData['comments'] = comments[0];//list
-				tplData['comments_count'] = comments[1].getTotal();// = Pages
 
-				this.view.setPageTitle(blog['b_title']);
-				this.view.setPageDescription(blog['b_notice']);
-
-				if (
-					blog['blogImages'] && blog['blogImages'][0]
-				&&  blog['blogImages'][0]['previews']['512_384']
-				)
-				{
-					this.view.setPageOgImage(blog['blogImages'][0]['previews']['512_384']);
-				}
-
-				if (!!tplData['blogSubjects']['selected']['bs_id'])
-				{
-					this.view.setPageH1(tplData['blogSubjects']['selected']['bs_name']);
-				}
+				tplData['comments'] = this.getClass('comment')
+					.commentsData(blog['b_id'], comments[0], comments[1].getTotal());
 
 				comments[1].setLinksUri(this.getOriginalUrl());
 
 				tplData['pages'] = comments[1].pages();
 
-				this.view.setTplData(tplFile, tplData, isAjax);
-
 				if (!isAjax)
 				{
+					this.view.setPageTitle(blog['b_title']);
+					this.view.setPageDescription(blog['b_notice']);
+
+					if (
+						blog['blogImages'] && blog['blogImages'][0]
+						&&  blog['blogImages'][0]['previews']['512_384']
+					)
+					{
+						this.view.setPageOgImage(blog['blogImages'][0]['previews']['512_384']);
+					}
+
+					if (!!tplData['blogSubjects']['selected']['bs_id'])
+					{
+						this.view.setPageH1(tplData['blogSubjects']['selected']['bs_name']);
+					}
+					
 					//экспрот данных в JS на клиента
 					this.getRes().expose(tplData['blog'], 'blogData');
-					this.getRes().expose(tplData['comments'], 'comments');
+					this.getRes().expose(tplData['comments']['list'], 'comments');
 					this.getRes().expose(tplData['pages'], 'pages');
 
 					//this.view.addPartialData('user/left', {user: userData});
 					//this.view.addPartialData('user/right', {title: 'right_col'});
 				}
-
+				this.view.setTplData(tplFile, tplData, isAjax);
 				return Promise.resolve(isAjax);
 			});
 	}
@@ -773,7 +774,7 @@ class Blog extends CtrlMain
 			});
 	}
 
-	_getBlogData(b_id, i_u_id=null)
+	_getBlogData(b_id, i_u_id=null, isAjax = false)
 	{
 		return Promise.all([
 			this.getClass('user/groups').isRootAdmin(this.getUserId()),
@@ -787,8 +788,8 @@ class Blog extends CtrlMain
 				let u_id = (!i_u_id && blog['u_id'] ? blog['u_id'] : i_u_id);
 
 				return Promise.all([
-					this.getUser(u_id),
-					this.getClass('blog').getBlogSubjectList(blog['bs_id'], i_u_id)
+					(isAjax ? {} : this.getUser(u_id)),
+					(isAjax ? {} : this.getClass('blog').getBlogSubjectList(blog['bs_id'], i_u_id))
 				])
 					.spread((user, blogSubjects)=>
 					{
@@ -796,6 +797,15 @@ class Blog extends CtrlMain
 						return Promise.resolve([isRootAdmin, blog, user, blogSubjects]);
 					});
 			});
+	}
+
+	/**
+	 * обработка запросов по работе с комментариями
+	 * @returns {Promise}
+	 */
+	commentActionPost()
+	{
+		return this.getClass('comment').commentActionPost(this, this.getClass('blog'));
 	}
 }
 //************************************************************************* module.exports

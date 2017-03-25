@@ -598,7 +598,7 @@ class Base
 		if (u_id == this.getUserId())
 			return Promise.resolve(this.getReq()._user);
 
-		return this.getClass("user").getUser(u_id);
+		return this.getClass('user').getUser(u_id);
 	}
 
 	getUserId()

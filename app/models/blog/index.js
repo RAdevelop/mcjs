@@ -320,8 +320,7 @@ class Blog extends BaseModel {
 		return this.constructor.conn().multis(sql, [b_id, bi_id])
 			.then((res) =>
 			{
-				let is_del = (res[1] && res[1]["is_del"] ? res[1]["is_del"] : 0);
-
+				let is_del = (res[1] && res[1]["is_del"] ? parseInt(res[1]["is_del"], 10) : 0);
 				return Promise.resolve(is_del);
 			});
 	}
@@ -373,7 +372,7 @@ class Blog extends BaseModel {
 		return this.constructor.conn().sRow(sql, [b_id])
 			.then((res) =>
 			{
-				return Promise.resolve(res["cnt"]);
+				return Promise.resolve(parseInt(res["cnt"], 10)||0);
 			});
 	}
 

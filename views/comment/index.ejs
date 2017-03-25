@@ -1,12 +1,23 @@
-<% if (typeof comments !== 'undefined' && comments.length) {
-%>
-<h3>Комментарии&nbsp;<span class="badge"><%=comments_count%></span></h3>
-<ul class="commentListContainer"><%
+<% if (typeof comments !== 'undefined' && comments['list']  && comments['list'].length) { %>
+<h3>Комментарии&nbsp;<span class="badge"><%=comments['count']%></span></h3>
+<form action="<%=menuItem['m_path']%>/comment/" method="post" class="form-horizontal text-center" id="formAddComment">
+	<input type="hidden" name="ui_obj_id" id="ui_obj_id" value="<%=comments['obj_id']%>"/>
+	<div class="form-group t_comment">
+		<div class="col-sm-6 col-sm-offset-3">
+			<textarea class="form-control" id="t_comment" name="t_comment" placeholder="комментарий"></textarea>
+		</div>
+	</div>
+	<div class="form-group">
+		<input type="hidden" name="btn_save_comment" value="add">
+		<button type="submit" class="btn btn-sm btn-primary" id="btn_add_comment" value="1" data-loading-text="добавляю..." autocomplete="off">добавить</button>
+	</div>
+</form>
+<ul class="comment-list-container js-comment-list-container" style="border: 1px solid red;"><%
 		let paddingLeft = 0;
-		comments.forEach(function (commnet)
+		comments['list'].forEach(function (commnet)
 		{
 			paddingLeft = commnet['cm_level'];
-			%><li class="commentItem" style="margin-left: <%=paddingLeft%>00px;">
+			%><li data-cm-id="<%=commnet['cm_id']%>" class="comment-item js-comment-item" style="margin-left: <%=paddingLeft%>00px;">
 			<%=commnet['cm_u_id']%>
 			<%=commnet['cm_hide']%>
 			<%=commnet['dt_create_ts']%>
@@ -15,18 +26,21 @@
 </ul><%
 }%>
 <%- include ../pages/index.ejs %>
+<script type="text/javascript" src="/js/jquery/mcComment.js"></script>
 <script type="text/javascript">
-	//<!--
-	//console.log(MCJS);
+//<!--
+$('__formAddComment__').mcComment({
+	formAddComment:'formAddComment',
+	commentList: '.js-comment-list-container',
+	commentItem: '.js-comment-list-container .js-comment-item'
+});
+if (MCJS['pages'] && Pagination)
+{
+	MCJS['pages']['ajaxDataSrc'] = ['comments', 'list'];
+	MCJS['pages']['ajaxDataTarget'] = 'comments';
+	MCJS['pages']['jQuerySelector'] = '.js-comment-item';
 
-	if (MCJS['pages'] && Pagination)
-	{
-		MCJS['pages']['ajaxDataSrc'] = ['comments'];
-		MCJS['pages']['ajaxDataTarget'] = 'comments';
-		MCJS['pages']['jQuerySelector'] = '.commentListContainer .commentItem';
-
-		Pagination.init();
-	}
-	//console.log(Pagination);
-	//-->
+	Pagination.init();
+}
+//-->
 </script>
