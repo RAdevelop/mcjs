@@ -21,11 +21,15 @@
   &_ava {
     //border: 1px solid green;
     display: table-cell;
-
+    text-decoration: none;
     min-height: 50px;
     max-height: 50px;
     min-width: 50px;
     max-width: 50px;
+
+    &:hover {
+      text-decoration: none;
+    }
 
     & > .fa-user {
       display: block;

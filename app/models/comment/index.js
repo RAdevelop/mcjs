@@ -29,7 +29,7 @@ class Comment extends BaseModel
 	}
 
 	/**
-	 *
+	 * комментарии для указанного "объекта" комментирования
 	 * @param objClass - инстанс класса, для которого работает с комментариями
 	 * @param obj_id - id объекта (например, id новости, или события)
 	 * @returns {Promise}
@@ -44,11 +44,10 @@ class Comment extends BaseModel
 		limit = parseInt(limit, 10)||20;
 		offset = parseInt(offset, 10)||0;
 
-		let sql = `SELECT 
-		cm_id, cm_obj_name, cm_obj_id, cm_lk, cm_rk, cm_level, cm_create_ts, cm_u_id, cm_text, 
+		let sql = `SELECT cm_id, cm_obj_name, cm_obj_id, cm_lk, cm_rk, cm_level, cm_create_ts, u_id, cm_text, 
 		cm_sum_vote, cm_moderated, cm_moderate_ts, cm_hide,
 		FROM_UNIXTIME(cm_create_ts, "%d-%m-%Y %H:%i:%s") AS dt_create_ts,
-		FROM_UNIXTIME(cm_moderate_ts, "%d-%m-%Y %H:%i:%s") AS dt_moderate_ts
+		FROM_UNIXTIME(cm_moderate_ts, "%d-%m-%Y %H:%i:%s") AS dt_moderate_ts, cm_pid
 		FROM comments
 		WHERE cm_obj_id = ? AND cm_obj_name = ?
 		ORDER BY cm_obj_id, cm_lk
@@ -60,7 +59,38 @@ class Comment extends BaseModel
 		return this.constructor.conn().ps(sql, sqlData);
 	}
 
-	commentCreate(u_id, obj_id, obj_name, t_comment, pid_cm_id = 0)
+	/**
+	 * комментарий по его id
+	 *
+	 * @param cm_id
+	 * @returns {Promise}
+	 */
+	getComment(cm_id)
+	{
+		cm_id = parseInt(cm_id, 10)||0;
+
+		let sql = `SELECT cm_id, cm_obj_name, cm_obj_id, cm_lk, cm_rk, cm_level, cm_create_ts, u_id, cm_text, 
+		cm_sum_vote, cm_moderated, cm_moderate_ts, cm_hide,
+		FROM_UNIXTIME(cm_create_ts, "%d-%m-%Y %H:%i:%s") AS dt_create_ts,
+		FROM_UNIXTIME(cm_moderate_ts, "%d-%m-%Y %H:%i:%s") AS dt_moderate_ts, cm_pid
+		FROM comments
+		WHERE cm_id = ?`;
+
+		//console.log(sql, sqlData);
+		return this.constructor.conn().psRow(sql, [cm_id]);
+	}
+
+	/**
+	 * добавляем комментарий
+	 *
+	 * @param u_id - кто
+	 * @param obj_id - id объекта
+	 * @param obj_name - имя объекта (новости, блоги и тп)
+	 * @param t_comment - текст комментария
+	 * @param cm_pid - id комментария, к которому добавляем комментарий
+	 * @returns {*}
+	 */
+	commentCreate(u_id, obj_id, obj_name, t_comment, cm_pid = 0)
 	{
 		obj_id = parseInt(obj_id, 10)||0;
 		u_id = parseInt(u_id, 10)||0;
@@ -71,7 +101,7 @@ class Comment extends BaseModel
 		let sql = `CALL comment_create (?, ?, ?, UNIX_TIMESTAMP(), ?, ?, @com_id,@com_rgt,@com_lv);
 		SELECT @com_id AS cm_id, @com_rgt AS com_rgt, @com_lv AS com_lv FROM DUAL;`;
 
-		let sqlData = [obj_id, obj_name, pid_cm_id, u_id, t_comment];
+		let sqlData = [obj_id, obj_name, cm_pid, u_id, t_comment];
 		//console.log(sql, sqlData);
 
 		return this.constructor.conn().multis(sql, sqlData)

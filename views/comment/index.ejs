@@ -1,5 +1,12 @@
-<% if (typeof comments !== 'undefined' && comments['list']  && comments['list'].length) { %>
-<h3>Комментарии&nbsp;<span class="badge"><%=comments['count']%></span></h3>
+<%
+if (typeof comments == 'undefined') {
+	let comments = {
+		list: [],
+		count: 0,
+		obj_id: null
+	};
+}%>
+<h3>Комментарии&nbsp;<span class="badge js-comments-count"><%=comments['count']%></span></h3>
 <form action="<%=menuItem['m_path']%>/comment/" method="post" class="form-horizontal text-center" id="formAddComment">
 	<input type="hidden" name="ui_obj_id" id="ui_obj_id" value="<%=comments['obj_id']%>"/>
 	<div class="form-group t_comment">
@@ -13,18 +20,26 @@
 	</div>
 </form>
 <ul class="comment-list-container js-comment-list-container" style="border: 1px solid red;"><%
+	if (comments['list']  && comments['list'].length)
+	{
 		let paddingLeft = 0;
+		let  user_owner = {};
 		comments['list'].forEach(function (commnet)
 		{
+			user_owner = commnet['user'];
 			paddingLeft = commnet['cm_level'];
-			%><li data-cm-id="<%=commnet['cm_id']%>" class="comment-item js-comment-item" style="margin-left: <%=paddingLeft%>00px;">
-			<%=commnet['cm_u_id']%>
+			%><li data-cm-id="<%=commnet['cm_id']%>" data-cm-pid="<%=commnet['cm_pid']%>" class="comment-item js-comment-item" style="margin-left: <%=paddingLeft%>00px;">
+		<%- include ../user/owner.ejs %>
+			<%=commnet['u_id']%>
 			<%=commnet['cm_hide']%>
 			<%=commnet['dt_create_ts']%>
 			<%=commnet['cm_text']%>
+		<button class="bnt btn-xs btn-default">удалить</button>
+		<button class="bnt btn-xs btn-default">скрыть</button>
+		<button class="bnt btn-xs btn-default">изменить</button>
 	</li><%})%>
-</ul><%
-}%>
+	<% } %>
+</ul>
 <%- include ../pages/index.ejs %>
 <script type="text/javascript" src="/js/jquery/mcComment.js"></script>
 <script type="text/javascript">
@@ -32,7 +47,8 @@
 $('__formAddComment__').mcComment({
 	formAddComment:'formAddComment',
 	commentList: '.js-comment-list-container',
-	commentItem: '.js-comment-list-container .js-comment-item'
+	commentItem: '.js-comment-list-container .js-comment-item',
+	commentsCount: '.js-comments-count'
 });
 if (MCJS['pages'] && Pagination)
 {

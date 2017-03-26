@@ -356,6 +356,15 @@ body.mce-content-body,
   background-color: #ccc;
 }
 
+.comment-list-container {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.comment-list-container .comment-item {
+  list-style: none;
+}
+
 .breadcrumb {
   margin-bottom: 10px;
 }
@@ -672,10 +681,14 @@ img.image {
 }
 .owner_ava {
   display: table-cell;
+  text-decoration: none;
   min-height: 50px;
   max-height: 50px;
   min-width: 50px;
   max-width: 50px;
+}
+.owner_ava:hover {
+  text-decoration: none;
 }
 .owner_ava > .fa-user {
   display: block;

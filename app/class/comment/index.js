@@ -83,12 +83,14 @@ class Comment extends Base
 	_addCommentAction(Controller, obj_name, tplData, tplFile)
 	{
 		let errors = {};
-		
+
 		tplData = Controller.constructor.stripTags(tplData, ['t_comment']);
 		tplData['t_comment'] = Controller.constructor.cheerio(tplData["t_comment"]).root().cleanTagEvents().html();
 
 		if (!!tplData['t_comment'] === false)
 			errors['t_comment'] = 'Укажите комментарий';
+
+		tplData['ui_cm_pid'] = tplData['ui_cm_pid']||0;
 
 		return Promise.resolve(errors)
 			.then((errors) =>
@@ -96,14 +98,16 @@ class Comment extends Base
 				if (Controller.parseFormErrors(tplData, errors))
 				{
 					return this.model('comment')
-						.commentCreate(Controller.getUserId(), tplData['ui_obj_id'], obj_name, tplData['t_comment'], 12)
+						.commentCreate(Controller.getUserId(), tplData['ui_obj_id'], obj_name, tplData['t_comment'], tplData['ui_cm_pid'])
 						.then((cm_id)=>
 						{
-							return Controller.getUser(Controller.getUserId())
-								.then((user)=>
+							return Promise.join(
+								Controller.getUser(Controller.getUserId()),
+								this.model('comment').getComment(cm_id)
+							, (user, comment)=>
 								{
 									tplData['user'] = user;
-									tplData['ui_cm_id'] = cm_id;
+									Object.assign(tplData, comment);
 
 									Controller.view.setTplData(tplFile, tplData);
 									return Promise.resolve(true);
@@ -143,10 +147,21 @@ class Comment extends Base
 				if (!cnt)
 					return [[], Pages];
 
-				return this.model("comment").getCommentList(obj_id, obj_name, Pages.getLimit(), Pages.getOffset())
+				return this.model("comment")
+					.getCommentList(obj_id, obj_name, Pages.getLimit(), Pages.getOffset())
 					.then((comments)=>
 					{
-						return [comments, Pages];
+						let u_ids = comments.map((u)=>
+						{
+							return u['u_id'];
+						});
+
+						return this.getClass('user').getUserListById(u_ids, comments)
+							.spread((users, comments)=>
+							{
+								u_ids = users = null;
+								return [comments, Pages];
+							});
 					});
 			});
 	}
