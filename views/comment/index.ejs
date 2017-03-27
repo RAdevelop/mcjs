@@ -7,11 +7,11 @@ if (typeof comments == 'undefined') {
 	};
 }%>
 <h3>Комментарии&nbsp;<span class="badge js-comments-count"><%=comments['count']%></span></h3>
-<form action="<%=menuItem['m_path']%>/comment/" method="post" class="form-horizontal text-center" id="formAddComment">
+<form action="<%=menuItem['m_path']%>/comment/" method="post" class="form-horizontal text-center js-form-add-comment">
 	<input type="hidden" name="ui_obj_id" id="ui_obj_id" value="<%=comments['obj_id']%>"/>
 	<div class="form-group t_comment">
 		<div class="col-sm-6 col-sm-offset-3">
-			<textarea class="form-control" id="t_comment" name="t_comment" placeholder="комментарий"></textarea>
+			<textarea class="form-control" id="t_comment" name="t_comment" placeholder="комментарий" maxlength="1000"></textarea>
 		</div>
 	</div>
 	<div class="form-group">
@@ -19,24 +19,37 @@ if (typeof comments == 'undefined') {
 		<button type="submit" class="btn btn-sm btn-primary" id="btn_add_comment" value="1" data-loading-text="добавляю..." autocomplete="off">добавить</button>
 	</div>
 </form>
-<ul class="comment-list-container js-comment-list-container" style="border: 1px solid red;"><%
+<ul class="comment-list-container js-comment-list-container"><%
 	if (comments['list']  && comments['list'].length)
 	{
 		let paddingLeft = 0;
 		let  user_owner = {};
-		comments['list'].forEach(function (commnet)
+		comments['list'].forEach(function (comment)
 		{
-			user_owner = commnet['user'];
-			paddingLeft = commnet['cm_level'];
-			%><li data-cm-id="<%=commnet['cm_id']%>" data-cm-pid="<%=commnet['cm_pid']%>" class="comment-item js-comment-item" style="margin-left: <%=paddingLeft%>00px;">
-		<%- include ../user/owner.ejs %>
-			<%=commnet['u_id']%>
-			<%=commnet['cm_hide']%>
-			<%=commnet['dt_create_ts']%>
-			<%=commnet['cm_text']%>
-		<button class="bnt btn-xs btn-default">удалить</button>
-		<button class="bnt btn-xs btn-default">скрыть</button>
-		<button class="bnt btn-xs btn-default">изменить</button>
+			user_owner = comment['user'];
+			paddingLeft = comment['cm_level'];
+		
+		
+		//TODO 
+		/*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		определять кто какой комментарий может удалить/изменить (админ/подератор + автор коммента)
+		 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		 */
+			%><li data-cm-id="<%=comment['cm_id']%>" data-cm-pid="<%=comment['cm_pid']%>" class="comment-item js-comment-item" style="padding-left: <%=paddingLeft%>00px;">
+			<div class="comment-user">
+				<%- include ../user/owner.ejs %>
+			</div>
+			<div class="comment-data">
+				<div class="comment-date"><%=comment['dt_create_ts']%></div>
+				<div class="comment-action">
+					<a class="js-comment-action" data-action="add">комментировать</a>
+					<a class="js-comment-action" data-action="del" title="удалить" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-trash-o"  aria-hidden="true"></i></a>
+					<a class="js-comment-action" data-action="edit" title="изменить" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-pencil-square-o" aria-hidden="true"></i></a>
+					<a class="js-comment-action" data-action="like" title="нравится" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-thumbs-o-up" aria-hidden="true"></i></a>
+					<a class="js-comment-action" data-action="dislike" title="не нравится" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-thumbs-o-down" aria-hidden="true"></i></a>
+				</div>
+				<div class="comment-text js-comment-text"><%=comment['cm_hide']%><%=comment['cm_text']%></div>
+			</div>
 	</li><%})%>
 	<% } %>
 </ul>
@@ -45,10 +58,13 @@ if (typeof comments == 'undefined') {
 <script type="text/javascript">
 //<!--
 $('__formAddComment__').mcComment({
-	formAddComment:'formAddComment',
+	formAddComment:'.js-form-add-comment',
 	commentList: '.js-comment-list-container',
 	commentItem: '.js-comment-list-container .js-comment-item',
-	commentsCount: '.js-comments-count'
+	commentCount: '.js-comments-count',
+	commentActions: '.js-comment-action',
+	commentText: '.js-comment-text',
+	objId: '<%=comments['obj_id']%>'
 });
 if (MCJS['pages'] && Pagination)
 {

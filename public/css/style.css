@@ -363,6 +363,44 @@ body.mce-content-body,
 }
 .comment-list-container .comment-item {
   list-style: none;
+  overflow: hidden;
+  display: table;
+  margin-bottom: 10px;
+  width: 100%;
+}
+.comment-list-container .comment-item .comment-user {
+  display: table-cell;
+  vertical-align: top;
+}
+.comment-list-container .comment-item .comment-data {
+  display: table-cell;
+  vertical-align: top;
+  width: 80%;
+  border: 1px solid #e2e2e2;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  border-radius: 4px;
+  padding: 4px;
+}
+.comment-list-container .comment-item .comment-data .comment-date {
+  float: left;
+  font-size: 12px;
+  line-height: 20px;
+  color: #ccc;
+}
+.comment-list-container .comment-item .comment-data .comment-date:after {
+  content: ' | ';
+  margin-right: 5px;
+}
+.comment-list-container .comment-item .comment-data .comment-action {
+  float: left;
+}
+.comment-list-container .comment-item .comment-data .comment-action a {
+  cursor: pointer;
+}
+.comment-list-container .comment-item .comment-data .comment-text {
+  clear: both;
 }
 
 .breadcrumb {

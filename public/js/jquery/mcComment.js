@@ -11,16 +11,64 @@
 			, formAddComment: null
 			, commentList: null
 			, commentItem: null
-			, commentsCount: null
+			, commentCount: null
+			, commentActions: null
+			, commentText: null
+			, objId: null
 		};
 
 		/*при многократном вызове функции настройки будут сохранятся, и замещаться при необходимости*/
 		var options = $.extend({}, defaults, params);
 		/**/
 
-		var $formAddComment = $('#'+options.formAddComment);
+		//var $formAddComment = $(options.formAddComment);
 		//var formAddCommentAction = $formAddComment.attr('action');
 		
+		addComment($(options.formAddComment), options);
+
+		$(document).on('click', options.commentActions, function(event)
+		{
+			event.preventDefault();
+			event.stopPropagation();
+
+			var $self = $(this);
+			var action = $self.data('action');
+			
+			var $commentItem = $self.parents(options.commentItem);
+			var cmId = $commentItem.data('cmId');
+			console.log('action = ', action);
+			console.log('options.commentItem = ', options.commentItem);
+			console.log('cmId = ', cmId);
+
+			switch (action)
+			{
+				default:
+					break;
+				
+				case 'cancel':
+					$self.parents('form').remove();
+					return;
+				break;
+				
+				case 'add':
+					var $form = $(commentForm(options, cmId));
+					$form.appendTo($commentItem.find(options.commentText));
+					$form = $('#'+$form.attr('id'));
+					$form.find('textarea').focus();
+					
+					console.log($form);
+					addComment($form, options);
+					return;
+				break;
+			}
+		});
+		
+
+		return $(this);
+	};
+
+	function addComment($formAddComment, options)
+	{
 		$formAddComment.postRes({
 			btnId: 'btn_add_comment',
 			buttons: [
@@ -39,20 +87,39 @@
 			],
 			onSuccess: function($dialog, respData)
 			{
-				addComment(respData, options, $formAddComment);
+				addCommentToPage(respData, options, $formAddComment);
 				return false;
 			}
 		});
+	}
 
-		return $(this);
-	};
+	function commentForm(options, cmPid)
+	{
+		var html = '<form action="/blog/comment/" method="post" class="text-center form-add-comment js-form-add-comment" id="formAddComment'+cmPid+'">';
+		html += '<input type="hidden" name="ui_obj_id" id="ui_obj_id" value="'+options.objId+'">';
+		html += '<input type="hidden" name="ui_cm_pid" id="ui_cm_pid" value="'+cmPid+'">';
+		html += '<div class="form-group t_comment">';
+		//html += '<div class="col-sm-6">';
+		html += '<textarea class="form-control" id="t_comment" name="t_comment" autofocus="true" placeholder="комментарий" maxlength="1000"></textarea>';
+		//html += '</div>';
+		html += '</div>';
+		html += '<div class="form-group">';
+		html += '<input type="hidden" name="btn_save_comment" value="add">';
+		html += '<button type="button" class="btn btn-xs btn-primary" id="btn_add_comment" value="1" data-loading-text="добавляю..." autocomplete="off">добавить</button>';
+		html += '&nbsp;';
+		html += '<button type="button" class="btn btn-xs btn-danger js-comment-action" data-action="cancel" autocomplete="off">отменить</button>';
+		html += '</div>';
+		html += '</form>';
+		
+		return html;
+	}
 
-	function addComment(respData, options, $formAddComment)
+	function addCommentToPage(respData, options, $formAddComment)
 	{
 		var html = '<li class="comment-item js-comment-item" data-cm-id="'+respData['cm_id']+'" data-cm-pid="'+respData['cm_pid']+'" style="margin-left: '+respData['cm_level']+'00px;">';
-
+		
 		html += userHtml(respData['user']);
-
+		
 		html += respData['u_id'];
 		html += respData['cm_hide'];
 		html += respData['dt_create_ts'];
@@ -61,16 +128,28 @@
 		var $commentList = $(options.commentList);
 		//var $options = $(options.commentItem);
 		//commentList
-
+		
 		console.log('respData = ', respData);
-
+		
+		$formAddComment.find('textarea').val('');
+		commentCountUpdate($(options.commentCount), '+');
+		
+		var $uiCmPid = $formAddComment.find('input#ui_cm_pid');
+		if ($uiCmPid.length && parseInt($uiCmPid.val(), 10) > 0)
+		{
+			$formAddComment.remove();
+		}
+		
 		if (respData['cm_pid'] == 0)
 			$commentList.append(html);
 		else
-			$('[data-cm-pid="'+respData['cm_pid']+'"]').last().after(html);
-
-		$formAddComment.find('textarea').val('');
-		commentsCountUpdate($(options.commentsCount), '+');
+		{
+			var $last = $('[data-cm-pid="'+respData['cm_pid']+'"]').last();
+			if (!$last.length)
+				$last = $('[data-cm-id="'+respData['cm_pid']+'"]');
+			
+			$last.after(html);
+		}
 	}
 	
 	function userHtml(user_owner)
@@ -92,15 +171,15 @@
 		return html;
 	}
 	
-	function commentsCountUpdate($commentsCount, type)
+	function commentCountUpdate($commentCount, type)
 	{
-		var cnt = parseInt($commentsCount.text(), 10);
+		var cnt = parseInt($commentCount.text(), 10);
 
 		if (type == '+')
 			cnt = (!cnt ? 0 : cnt) + 1;
 		else if (type == '-')
 			cnt = (!cnt ? 0 : cnt) - 1;
 
-		$commentsCount.text(cnt);
+		$commentCount.text(cnt);
 	}
 })(jQuery);

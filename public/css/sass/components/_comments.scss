@@ -5,5 +5,48 @@
 
   .comment-item {
     list-style: none;
+    overflow: hidden;
+    display: table;
+    margin-bottom: 10px;
+    width: 100%;
+    
+    .form-add-comment {
+      //max-width: 50%;
+    }
+    
+    .comment-user {
+      display: table-cell;
+      vertical-align: top;
+    }
+    .comment-data {
+      display: table-cell;
+      vertical-align: top;
+      width: 80%;
+      border: 1px solid #e2e2e2;
+      @include mix-border-radius(4px);
+      padding: 4px;
+      
+      .comment-date {
+        float: left;
+        font-size: 12px;
+        line-height: 20px;
+        color: #ccc;
+        
+        &:after {
+          content: ' | ';
+          margin-right: 5px;
+        }
+      }
+      .comment-action {
+        float: left;
+        
+        a {
+          cursor: pointer;
+        }
+      }
+      .comment-text {
+        clear: both;
+      }
+    }
   }
 }
