@@ -152,19 +152,13 @@ class UserPhoto extends User
 			{
 				if (!album)
 					return Promise.resolve(null);
-
+				
 				album["a_is_owner"] = (album["u_id"]        == u_id);
 				album["a_profile"]  = (album["a_profile"]   == 1);
 				album["a_named"]    = (album["a_named"]     == 1);
-
-				album['a_text_arr'] = album['a_text'].split(/\r?\n/);
-				album['a_text_arr'].forEach((text, inx, arr)=>
-				{
-					if (text == '')
-						arr.splice(inx, 1);
-				});
-				//console.log(album['a_text_arr']);
-
+				
+				this.helpers.nlTextSplit(album, 'a_text');
+				
 				return this.getClass('keywords').getObjKeyWords(this, album, 'a_id')
 					.then((album)=>
 					{

@@ -66,7 +66,7 @@ class Comment extends Base
 			case 'add':
 				return this._addCommentAction(Controller, obj_name, tplData, tplFile);
 				break;
-
+			
 			//для добавления коммента к другому комменту не забыть проверять наличие этого комментария и передавать его id
 		}
 	}
@@ -89,9 +89,9 @@ class Comment extends Base
 
 		if (!!tplData['t_comment'] === false)
 			errors['t_comment'] = 'Укажите комментарий';
-
+		
 		tplData['ui_cm_pid'] = tplData['ui_cm_pid']||0;
-
+		
 		return Promise.resolve(errors)
 			.then((errors) =>
 			{
@@ -103,12 +103,12 @@ class Comment extends Base
 						{
 							return Promise.join(
 								Controller.getUser(Controller.getUserId()),
-								this.model('comment').getComment(cm_id)
+								this.getComment(cm_id)
 							, (user, comment)=>
 								{
 									tplData['user'] = user;
 									Object.assign(tplData, comment);
-
+									
 									Controller.view.setTplData(tplFile, tplData);
 									return Promise.resolve(true);
 								});
@@ -119,16 +119,15 @@ class Comment extends Base
 			{
 				//такие ошибки не уводят со страницы.
 				Controller.view.setTplData(tplFile, err.data);
-
 				return Promise.resolve(true);
 			});
 	}
-
+	
 	countComment(obj_id, obj_name)
 	{
 		return this.model("comment").countComment(obj_id, obj_name);
 	}
-
+	
 	/**
 	 *
 	 * @param objClass - инстанс класса, для которого работает с комментариями
@@ -146,7 +145,7 @@ class Comment extends Base
 				Pages.setTotal(cnt);
 				if (!cnt)
 					return [[], Pages];
-
+				
 				return this.model("comment")
 					.getCommentList(obj_id, obj_name, Pages.getLimit(), Pages.getOffset())
 					.then((comments)=>
@@ -155,16 +154,38 @@ class Comment extends Base
 						{
 							return u['u_id'];
 						});
-
+						
 						return this.getClass('user').getUserListById(u_ids, comments)
 							.spread((users, comments)=>
 							{
 								u_ids = users = null;
+								
+								this.helpers.nlTextSplit(comments, 'cm_text');
 								return [comments, Pages];
 							});
 					});
 			});
 	}
+	
+	/**
+	 * данные указанного комментария
+	 * 
+	 * @param cm_id
+	 * @returns {Promise}
+	 */
+	getComment(cm_id)
+	{
+		return this.model('comment').getComment(cm_id)
+			.then((comment)=>
+			{
+				if (!comment)
+					return Promise.resolve(comment);
+				
+				this.helpers.nlTextSplit(comment, 'cm_text');
+				return Promise.resolve(comment);
+			});
+	}
+	
 }
 //************************************************************************* module.exports
 //писать после class Name....{}

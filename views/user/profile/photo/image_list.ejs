@@ -4,12 +4,9 @@ if (album['kw_names'].length>0){%>
 <div class="blog-info_about_tags"><i class="fa fa-tags" aria-hidden="true"></i>
 	<%-(album['kw_names'].map(function(kw_name){return `<a rel="tag" class="line" href="${_reqBaseUrl}/tag/${kw_name}/">${kw_name}</a>`;}).join(' '))%>
 </div><%}
-
-if (album["a_text_arr"].length){%>
-	<div id="a_text">
-	<p><%-album["a_text_arr"].join(`</p><p>`)%></p>
-	</div>
-
+if (album["a_text_array"].length)
+{%>
+	<div id="a_text"><p><%-album["a_text_array"].join(`</p><p>`)%></p></div>
 <%}%>
 <div class="imageList albumImages">
 <% album["images"].forEach(function (image)

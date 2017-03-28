@@ -24,8 +24,8 @@
 		//var $formAddComment = $(options.formAddComment);
 		//var formAddCommentAction = $formAddComment.attr('action');
 		
-		addComment($(options.formAddComment), options);
-
+		addComment(options, 0, 'add');
+		
 		$(document).on('click', options.commentActions, function(event)
 		{
 			event.preventDefault();
@@ -51,30 +51,69 @@
 				break;
 				
 				case 'add':
-					var $form = $(commentForm(options, cmId));
-					$form.appendTo($commentItem.find(options.commentText));
-					$form = $('#'+$form.attr('id'));
-					$form.find('textarea').focus();
-					
-					console.log($form);
-					addComment($form, options);
+					addComment(options, cmId, action, $commentItem);
 					return;
+				break;
+				
+				case 'edit':
+					var $formAddComment = addComment(options, cmId, action, $commentItem);
+					if ($formAddComment)
+					{
+						var comment = findComment(cmId);
+						console.log(comment);
+						$formAddComment.find('textarea').val(comment['cm_text']);
+					}
 				break;
 			}
 		});
 		
-
 		return $(this);
 	};
-
-	function addComment($formAddComment, options)
+	
+	function findComment(cmId)
 	{
+		var comment = {};
+		var list = MCJS['comments']||[];
+		if (!list.length)
+		return comment;
+		
+		list.some(function(item)
+		{
+			if (item['cm_id'] == cmId)
+			{
+				comment = item;
+				return true;
+			}
+			return false;
+		});
+		return comment;
+	}
+	
+	function addComment(options, cmId, action, $commentItem)
+	{
+		var $formAddComment;
+		if ($commentItem)
+		{
+			$formAddComment = $(commentForm(options, cmId, action));
+			var $commentText = $commentItem.find(options.commentText);
+			if ($commentText.find('form').length)
+				return;
+			
+			$formAddComment.appendTo($commentText);
+			$formAddComment = $('#'+$formAddComment.attr('id'));
+			$formAddComment.find('textarea').focus();
+		}
+		else 
+		{
+			$formAddComment = $(options.formAddComment+'#formAddComment0');
+		}
+		
 		$formAddComment.postRes({
-			btnId: 'btn_add_comment',
+			btnId: 'btn_comment_'+action,
 			buttons: [
 				{
 					title: 'Ok'
-					,name: 'btn_add_error'
+					,name: 'btn_error_'+action
 					,cssClass: 'btn-danger'
 					,func: {
 						'click': function($mcDialog)
@@ -91,21 +130,33 @@
 				return false;
 			}
 		});
+		
+		return $formAddComment;
 	}
-
-	function commentForm(options, cmPid)
+	
+	function commentForm(options, cmPid, action)
 	{
+		var btnText='';
+		if (action == 'add')
+		{
+			btnText = 'добавить';
+		}
+		else
+		{
+			action = 'edit';
+			btnText = 'сохранить';
+		}
 		var html = '<form action="/blog/comment/" method="post" class="text-center form-add-comment js-form-add-comment" id="formAddComment'+cmPid+'">';
 		html += '<input type="hidden" name="ui_obj_id" id="ui_obj_id" value="'+options.objId+'">';
 		html += '<input type="hidden" name="ui_cm_pid" id="ui_cm_pid" value="'+cmPid+'">';
 		html += '<div class="form-group t_comment">';
 		//html += '<div class="col-sm-6">';
-		html += '<textarea class="form-control" id="t_comment" name="t_comment" autofocus="true" placeholder="комментарий" maxlength="1000"></textarea>';
+		html += '<textarea class="form-control" id="t_comment" name="t_comment" autofocus="true" placeholder="комментарий" maxlength="1000" rows="5"></textarea>';
 		//html += '</div>';
 		html += '</div>';
 		html += '<div class="form-group">';
-		html += '<input type="hidden" name="btn_save_comment" value="add">';
-		html += '<button type="button" class="btn btn-xs btn-primary" id="btn_add_comment" value="1" data-loading-text="добавляю..." autocomplete="off">добавить</button>';
+		html += '<input type="hidden" name="btn_save_comment" value="'+action+'">';
+		html += '<button type="button" class="btn btn-xs btn-primary" id="btn_comment_'+action+'" value="1" data-loading-text="добавляю..." autocomplete="off">'+btnText+'</button>';
 		html += '&nbsp;';
 		html += '<button type="button" class="btn btn-xs btn-danger js-comment-action" data-action="cancel" autocomplete="off">отменить</button>';
 		html += '</div>';
@@ -123,7 +174,8 @@
 		html += respData['u_id'];
 		html += respData['cm_hide'];
 		html += respData['dt_create_ts'];
-		html += respData['cm_text'];
+		//html += respData['cm_text'];
+		html += '<p>'+respData['cm_text_array'].join('</p><p>')+'</p>';
 		html += '</li>';
 		var $commentList = $(options.commentList);
 		//var $options = $(options.commentItem);

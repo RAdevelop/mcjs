@@ -255,14 +255,50 @@ class Helpers
 		str = str.slice(zeroPos);
 		return +str;
 	}
-
+	
 	static nl2br(str, is_xhtml)
 	{
 		let breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br ' + '/>' : '<br>'; // Adjust comment to avoid issue on phpjs.org display
 
 		return (str+'').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
 	}
-
+	
+	static nl2brList(list, key, is_xhtml = true)
+	{
+		list.forEach((item)=>
+		{
+			if (item[key])
+			item[`${key}_nl2br`] = Helpers.nl2br(item[key], is_xhtml);
+		});
+	}
+	
+	static nlTextSplit(list, key)
+	{
+		if (!!list['map'] === false)
+		{
+			list[`${key}_array`] = list[key].split(/\r?\n/);
+			list[`${key}_array`].forEach((text, inx, arr)=>
+			{
+				if (text == '')
+					arr.splice(inx, 1);
+			});
+			return;
+		}
+		
+		list.forEach((item)=>
+		{
+			if (item[key])
+			{
+				item[`${key}_array`] = item[key].split(/\r?\n/);
+				item[`${key}_array`].forEach((text, inx, arr)=>
+				{
+					if (text == '')
+						arr.splice(inx, 1);
+				});
+			}
+		});
+	}
+	
 	static translit(str, space = true, lowerCase = true)
 	{
 		let arr = {

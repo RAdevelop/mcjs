@@ -7,8 +7,9 @@ if (typeof comments == 'undefined') {
 	};
 }%>
 <h3>Комментарии&nbsp;<span class="badge js-comments-count"><%=comments['count']%></span></h3>
-<form action="<%=menuItem['m_path']%>/comment/" method="post" class="form-horizontal text-center js-form-add-comment">
+<form action="<%=menuItem['m_path']%>/comment/" method="post" class="form-horizontal text-center js-form-add-comment" id="formAddComment0">
 	<input type="hidden" name="ui_obj_id" id="ui_obj_id" value="<%=comments['obj_id']%>"/>
+	<input type="hidden" name="ui_cm_pid" id="ui_cm_pid" value="0"/>
 	<div class="form-group t_comment">
 		<div class="col-sm-6 col-sm-offset-3">
 			<textarea class="form-control" id="t_comment" name="t_comment" placeholder="комментарий" maxlength="1000"></textarea>
@@ -16,7 +17,7 @@ if (typeof comments == 'undefined') {
 	</div>
 	<div class="form-group">
 		<input type="hidden" name="btn_save_comment" value="add">
-		<button type="submit" class="btn btn-sm btn-primary" id="btn_add_comment" value="1" data-loading-text="добавляю..." autocomplete="off">добавить</button>
+		<button type="button" class="btn btn-sm btn-primary" id="btn_comment_add" value="1" data-loading-text="добавляю..." autocomplete="off">добавить</button>
 	</div>
 </form>
 <ul class="comment-list-container js-comment-list-container"><%
@@ -45,10 +46,10 @@ if (typeof comments == 'undefined') {
 					<a class="js-comment-action" data-action="add">комментировать</a>
 					<a class="js-comment-action" data-action="del" title="удалить" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-trash-o"  aria-hidden="true"></i></a>
 					<a class="js-comment-action" data-action="edit" title="изменить" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-pencil-square-o" aria-hidden="true"></i></a>
-					<a class="js-comment-action" data-action="like" title="нравится" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-thumbs-o-up" aria-hidden="true"></i></a>
-					<a class="js-comment-action" data-action="dislike" title="не нравится" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-thumbs-o-down" aria-hidden="true"></i></a>
+					<a style="color: #5cb85c;" class="js-comment-action" data-action="like" title="нравится" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-thumbs-o-up" aria-hidden="true"></i><sup class="badge">21</sup></a>
+					<a style="color: #cc0000;" class="js-comment-action" data-action="dislike" title="не нравится" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-thumbs-o-down" aria-hidden="true"></i><sub class="badge">21</sub></a>
 				</div>
-				<div class="comment-text js-comment-text"><%=comment['cm_hide']%><%=comment['cm_text']%></div>
+				<div class="comment-text js-comment-text"><%=comment['cm_hide']%><p><%-comment['cm_text_array'].join('</p><p>')%></p></div>
 			</div>
 	</li><%})%>
 	<% } %>
