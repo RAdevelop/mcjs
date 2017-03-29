@@ -60,7 +60,7 @@
 					if ($formAddComment)
 					{
 						var comment = findComment(cmId);
-						console.log(comment);
+						//console.log(comment);
 						$formAddComment.find('textarea').val(comment['cm_text']);
 					}
 				break;
@@ -97,7 +97,10 @@
 			$formAddComment = $(commentForm(options, cmId, action));
 			var $commentText = $commentItem.find(options.commentText);
 			if ($commentText.find('form').length)
+			{
+				$('#'+$formAddComment.attr('id')).remove();
 				return;
+			}
 			
 			$formAddComment.appendTo($commentText);
 			$formAddComment = $('#'+$formAddComment.attr('id'));
@@ -126,7 +129,11 @@
 			],
 			onSuccess: function($dialog, respData)
 			{
+				if (action == 'add')
 				addCommentToPage(respData, options, $formAddComment);
+				
+				else if (action == 'edit')
+					updateComment(respData, $formAddComment, $commentText);
 				return false;
 			}
 		});
@@ -134,7 +141,7 @@
 		return $formAddComment;
 	}
 	
-	function commentForm(options, cmPid, action)
+	function commentForm(options, cmIid, action)
 	{
 		var btnText='';
 		if (action == 'add')
@@ -146,9 +153,15 @@
 			action = 'edit';
 			btnText = 'сохранить';
 		}
-		var html = '<form action="/blog/comment/" method="post" class="text-center form-add-comment js-form-add-comment" id="formAddComment'+cmPid+'">';
+		var html = '<form action="/blog/comment/" method="post" class="text-center form-add-comment js-form-add-comment" id="formAddComment'+cmIid+'">';
 		html += '<input type="hidden" name="ui_obj_id" id="ui_obj_id" value="'+options.objId+'">';
-		html += '<input type="hidden" name="ui_cm_pid" id="ui_cm_pid" value="'+cmPid+'">';
+		
+		if (action == 'add')
+			html += '<input type="hidden" name="ui_cm_pid" id="ui_cm_pid" value="'+cmIid+'">';
+		
+		if (action == 'edit')
+			html += '<input type="hidden" name="ui_cm_id" id="ui_cm_id" value="'+cmIid+'">';
+		
 		html += '<div class="form-group t_comment">';
 		//html += '<div class="col-sm-6">';
 		html += '<textarea class="form-control" id="t_comment" name="t_comment" autofocus="true" placeholder="комментарий" maxlength="1000" rows="5"></textarea>';
@@ -164,22 +177,44 @@
 		
 		return html;
 	}
-
+	
+	function updateComment(respData, $formAddComment, $commentText)
+	{
+		$formAddComment.remove();
+		
+		if (!!$commentText === false || !$commentText.length || !!respData['cm_text_array'] === false)
+			return;
+		
+		$commentText.html('<p>'+respData['cm_text_array'].join('</p><p>')+'</p>');
+		
+		respData['cm_id'];
+		
+		(MCJS['comments']||[]).forEach(function(item, inx, arr)
+		{
+			if (item['cm_id'] == respData['cm_id'])
+			{
+				arr[inx] = respData;
+			}
+		});
+	}
 	function addCommentToPage(respData, options, $formAddComment)
 	{
 		var html = '<li class="comment-item js-comment-item" data-cm-id="'+respData['cm_id']+'" data-cm-pid="'+respData['cm_pid']+'" style="margin-left: '+respData['cm_level']+'00px;">';
 		
-		html += userHtml(respData['user']);
+		html += userHtml(respData['user']||{});
 		
 		html += respData['u_id'];
 		html += respData['cm_hide'];
 		html += respData['dt_create_ts'];
 		//html += respData['cm_text'];
-		html += '<p>'+respData['cm_text_array'].join('</p><p>')+'</p>';
+		html += '<p>'+(respData['cm_text_array']||[]).join('</p><p>')+'</p>';
 		html += '</li>';
 		var $commentList = $(options.commentList);
-		//var $options = $(options.commentItem);
-		//commentList
+		
+		if (!!MCJS['comments'])
+		{
+			MCJS['comments'].push(respData);
+		}
 		
 		console.log('respData = ', respData);
 		
@@ -206,6 +241,7 @@
 	
 	function userHtml(user_owner)
 	{
+		//console.log("!!user_owner['previews'] = ", !!user_owner['previews']);
 		var ava = (!!user_owner['previews'] && user_owner['previews']['100_100']);
 		var avaSrc = (ava ? user_owner['previews']['100_100'] : '/_0.gif');
 		

@@ -184,10 +184,10 @@ class Blog extends CtrlMain
 		//let show = (this.getLocalAccess()['post_edit'] ? null : 1);
 		let isAjax = this.getReq().xhr;
 		let {i_page=1} = this.routeArgs;
-
+		
 		return this._getBlogData(i_blog_id, i_u_id, isAjax)
 			.spread((isRootAdmin, blog, user, blogSubjects)=>
-			{
+			{;
 				if (
 					blog && blog["b_alias"] == s_alias
 					&& (isRootAdmin || blog['u_id'] == this.getUserId() || blog['b_show'] == 1)
@@ -195,16 +195,16 @@ class Blog extends CtrlMain
 				{
 					tplData["user"] = (i_u_id ? user : {u_id: null});
 					tplData["blogSubjects"] = blogSubjects;
-					return Promise.resolve(blog);
+					return Promise.resolve([blog, isRootAdmin]);
 				}
-
+				
 				throw new Errors.HttpError(404);
 			})
-			.then((blog) =>
+			.spread((blog, isRootAdmin) =>
 			{
 				return Promise.join(
 					(isAjax ? [[],[]] : this.getClass('blog').getImageList(blog['b_id'])),
-					this.getClass('comment').getCommentList(this.getClass('blog'), blog['b_id'], new Pages(i_page, limit_per_page))
+					this.getClass('comment').getCommentList(this, this.getClass('blog'), isRootAdmin, blog['b_id'], new Pages(i_page, limit_per_page))
 				, (images, comments)=>
 					{
 						return Promise.resolve([blog, images[0], images[1], comments]);
@@ -784,9 +784,9 @@ class Blog extends CtrlMain
 			{
 				if (!blog)
 					throw new Errors.HttpError(404);
-
+				
 				let u_id = (!i_u_id && blog['u_id'] ? blog['u_id'] : i_u_id);
-
+				
 				return Promise.all([
 					(isAjax ? {} : this.getUser(u_id)),
 					(isAjax ? {} : this.getClass('blog').getBlogSubjectList(blog['bs_id'], i_u_id))

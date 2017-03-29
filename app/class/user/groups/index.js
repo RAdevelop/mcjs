@@ -135,8 +135,7 @@ class UserGroups extends Base
 			.then((userGroups)=>
 			{
 				//console.log('userGroups =', userGroups);
-
-				return Promise.resolve((userGroups['root'] || userGroups['admin']));
+				return Promise.resolve((!!userGroups['root'] || !!userGroups['admin']));
 			});
 	}
 	

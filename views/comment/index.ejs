@@ -43,11 +43,12 @@ if (typeof comments == 'undefined') {
 			<div class="comment-data">
 				<div class="comment-date"><%=comment['dt_create_ts']%></div>
 				<div class="comment-action">
-					<a class="js-comment-action" data-action="add">комментировать</a>
+					<a class="js-comment-action" data-action="add">комментировать</a><% 
+					if (comment['cm_editable']) {%>
 					<a class="js-comment-action" data-action="del" title="удалить" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-trash-o"  aria-hidden="true"></i></a>
-					<a class="js-comment-action" data-action="edit" title="изменить" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-pencil-square-o" aria-hidden="true"></i></a>
-					<a style="color: #5cb85c;" class="js-comment-action" data-action="like" title="нравится" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-thumbs-o-up" aria-hidden="true"></i><sup class="badge">21</sup></a>
-					<a style="color: #cc0000;" class="js-comment-action" data-action="dislike" title="не нравится" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-thumbs-o-down" aria-hidden="true"></i><sub class="badge">21</sub></a>
+					<a class="js-comment-action" data-action="edit" title="изменить" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-pencil-square-o" aria-hidden="true"></i></a><%}
+					if (!comment['cm_owner']) {%><a style="color: #5cb85c;" class="js-comment-action" data-action="like" title="нравится" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-thumbs-o-up" aria-hidden="true"></i><sup class="badge">21</sup></a>
+					<a style="color: #cc0000;" class="js-comment-action" data-action="dislike" title="не нравится" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-thumbs-o-down" aria-hidden="true"></i><sub class="badge">21</sub></a><%}%>
 				</div>
 				<div class="comment-text js-comment-text"><%=comment['cm_hide']%><p><%-comment['cm_text_array'].join('</p><p>')%></p></div>
 			</div>

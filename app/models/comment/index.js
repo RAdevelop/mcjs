@@ -1,7 +1,7 @@
 "use strict";
 
 //const Errors = require('app/lib/errors');
-//const Moment = require('moment'); //работа со временем
+const Moment = require('moment'); //работа со временем
 const Promise = require("bluebird");
 
 const BaseModel = require('app/lib/db');
@@ -63,21 +63,38 @@ class Comment extends BaseModel
 	 * комментарий по его id
 	 *
 	 * @param cm_id
+	 * @param cm_obj_id
+	 * @param obj_name
 	 * @returns {Promise}
 	 */
-	getComment(cm_id)
+	getComment(cm_id, cm_obj_id = null, obj_name = null)
 	{
 		cm_id = parseInt(cm_id, 10)||0;
-
-		let sql = `SELECT cm_id, cm_obj_name, cm_obj_id, cm_lk, cm_rk, cm_level, cm_create_ts, u_id, cm_text, 
+		cm_obj_id = parseInt(cm_obj_id, 10)||0;
+		
+		let sqlData = [cm_id];
+		
+		let sql = [`SELECT cm_id, cm_obj_name, cm_obj_id, cm_lk, cm_rk, cm_level, cm_create_ts, u_id, cm_text, 
 		cm_sum_vote, cm_moderated, cm_moderate_ts, cm_hide,
 		FROM_UNIXTIME(cm_create_ts, "%d-%m-%Y %H:%i:%s") AS dt_create_ts,
 		FROM_UNIXTIME(cm_moderate_ts, "%d-%m-%Y %H:%i:%s") AS dt_moderate_ts, cm_pid
 		FROM comments
-		WHERE cm_id = ?`;
-
-		//console.log(sql, sqlData);
-		return this.constructor.conn().psRow(sql, [cm_id]);
+		WHERE cm_id = ?`];
+		
+		if (!!cm_obj_id && !!obj_name)
+		{
+			sqlData.push(cm_obj_id);
+			sql.push(`cm_obj_id = ?`);
+		
+			sqlData.push(obj_name);
+			sql.push(`cm_obj_name = ?`);
+		}
+		sql = sql.join(` AND `);
+		
+		//console.log(sql);
+		//console.log(sqlData);
+		
+		return this.constructor.conn().psRow(sql, sqlData);
 	}
 
 	/**
@@ -108,9 +125,24 @@ class Comment extends BaseModel
 			.then((res) =>
 			{
 				let cm_id = (res[1] && res[1][0] && res[1][0]['cm_id'] ? parseInt(res[1][0]['cm_id'], 10) : 0);
-
 				return Promise.resolve(cm_id);
 			});
+	}
+	
+	editComment(cm_id, cm_text)
+	{
+		cm_id = parseInt(cm_id, 10)||0;
+		
+		if (!!cm_id === false || !!cm_text === false)
+			return Promise.resolve(null);
+		
+		let now_ts = Moment().unix();
+		let sqlData = [cm_text, now_ts, cm_id];
+		let sql = `UPDATE comments SET cm_text = ?, cm_moderate_ts = ? WHERE cm_id = ?`;
+		
+		console.log(sql, sqlData);
+		
+		return this.constructor.conn().upd(sql, sqlData);
 	}
 }
 

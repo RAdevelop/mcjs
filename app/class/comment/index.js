@@ -56,42 +56,50 @@ class Comment extends Base
 
 		if (!tplData["ui_obj_id"] || !tplData['btn_save_comment'])
 			throw new Errors.HttpError(400);
-
-		switch (tplData['btn_save_comment'])
+		
+		let btn_save_comment = tplData['btn_save_comment'];
+		switch (btn_save_comment)
 		{
 			default:
 				throw new Errors.HttpError(400);
 				break;
-
+			
 			case 'add':
-				return this._addCommentAction(Controller, obj_name, tplData, tplFile);
-				break;
+			case 'edit':
+				let errors = {};
+				
+				tplData = Controller.constructor.stripTags(tplData, ['t_comment']);
+				tplData['t_comment'] = Controller.constructor
+					.cheerio(tplData["t_comment"]).root().cleanTagEvents().html();
+				
+				if (!!tplData['t_comment'] === false)
+					errors['t_comment'] = 'Укажите комментарий';
+				
+				tplData['ui_cm_pid'] = tplData['ui_cm_pid']||0;
+				
+				if (btn_save_comment == 'add')
+				return this._addCommentAction(Controller, obj_name, tplData, tplFile, errors);
+				
+				if (btn_save_comment == 'edit')
+				return this._editCommentAction(Controller, obj_name, tplData, tplFile, errors);
+			break;
 			
 			//для добавления коммента к другому комменту не забыть проверять наличие этого комментария и передавать его id
 		}
 	}
-
+	
 	/**
 	 * добавляем комментарий
 	 *
 	 * @param Controller - класс контроллера
 	 * @param tplData - данные добавляемого комментария
 	 * @param tplFile - названия файла с шаблоном
+	 * @param errors
 	 * @returns {Promise}
 	 * @private
 	 */
-	_addCommentAction(Controller, obj_name, tplData, tplFile)
+	_addCommentAction(Controller, obj_name, tplData, tplFile, errors)
 	{
-		let errors = {};
-
-		tplData = Controller.constructor.stripTags(tplData, ['t_comment']);
-		tplData['t_comment'] = Controller.constructor.cheerio(tplData["t_comment"]).root().cleanTagEvents().html();
-
-		if (!!tplData['t_comment'] === false)
-			errors['t_comment'] = 'Укажите комментарий';
-		
-		tplData['ui_cm_pid'] = tplData['ui_cm_pid']||0;
-		
 		return Promise.resolve(errors)
 			.then((errors) =>
 			{
@@ -123,6 +131,67 @@ class Comment extends Base
 			});
 	}
 	
+	/**
+	 * редактируем комментарий
+	 *
+	 * @param Controller - класс контроллера
+	 * @param tplData - данные добавляемого комментария
+	 * @param tplFile - названия файла с шаблоном
+	 * @param errors
+	 * @returns {Promise}
+	 * @private
+	 */
+	_editCommentAction(Controller, obj_name, tplData, tplFile, errors)
+	{
+		return Promise.resolve(errors)
+			.then((errors) =>
+			{
+				if (Controller.parseFormErrors(tplData, errors))
+				{
+					return Promise.join(
+						this.getClass('user/groups').isRootAdmin(Controller.getUserId()),
+						this.getComment(tplData['ui_cm_id'], tplData['ui_obj_id'], obj_name)
+						, (isRootAdmin, comment)=>
+						{
+							if (!!comment === false || (!isRootAdmin && comment['u_id'] != Controller.getUserId()))
+							{
+								errors['t_comment'] = 'Комментарий не найден';
+								Controller.parseFormErrors(tplData, errors);
+							}
+							else 
+							{
+								return Promise.resolve([tplData, isRootAdmin]);
+							}
+						})
+						.spread((tplData, isRootAdmin)=>
+						{
+							return this.editComment(tplData['ui_cm_id'], tplData['t_comment'])
+								.then((comment)=>
+								{
+									if (!!comment === false)
+									{
+										errors['t_comment'] = 'Комментарий не найден';
+										Controller.parseFormErrors(tplData, errors);
+									}
+									else
+									{
+										Comment._commentEditable(Controller.getUserId(), isRootAdmin, new Date(), comment);
+										
+										Object.assign(tplData, comment);
+										Controller.view.setTplData(tplFile, tplData);
+									}
+								});
+						});
+				}
+			})
+			.catch(Errors.ValidationError, (err) =>
+			{
+				//такие ошибки не уводят со страницы.
+				Controller.view.setTplData(tplFile, err.data);
+				return Promise.resolve(true);
+			});
+	}
+	
 	countComment(obj_id, obj_name)
 	{
 		return this.model("comment").countComment(obj_id, obj_name);
@@ -130,15 +199,17 @@ class Comment extends Base
 	
 	/**
 	 *
+	 * @param Controller
 	 * @param objClass - инстанс класса, для которого работает с комментариями
+	 * @param isRootAdmin
 	 * @param obj_id - id объекта (например, id новости, или события)
 	 * @param Pages
 	 * @returns {Promise}
 	 */
-	getCommentList(objClass, obj_id, Pages)
+	getCommentList(Controller, objClass, isRootAdmin, obj_id, Pages)
 	{
 		let obj_name = this.getObjName(objClass);
-
+		
 		return this.countComment(obj_id, obj_name)
 			.then((cnt)=>
 			{
@@ -150,9 +221,11 @@ class Comment extends Base
 					.getCommentList(obj_id, obj_name, Pages.getLimit(), Pages.getOffset())
 					.then((comments)=>
 					{
-						let u_ids = comments.map((u)=>
+						let nowDate = new Date();
+						let u_ids = comments.map((cm)=>
 						{
-							return u['u_id'];
+							Comment._commentEditable(Controller.getUserId(), isRootAdmin, nowDate, cm);
+							return cm['u_id'];
 						});
 						
 						return this.getClass('user').getUserListById(u_ids, comments)
@@ -167,15 +240,30 @@ class Comment extends Base
 			});
 	}
 	
+	static _commentEditable(u_id, isRootAdmin, nowDate, cm)
+	{
+		let editable = (cm['u_id'] == u_id && !Comment._commentIsOutdated(nowDate, cm['cm_create_ts']));
+		
+		cm['cm_editable'] = (editable || isRootAdmin );
+		cm['cm_owner'] = (u_id == cm['u_id']);
+	}
+	static _commentIsOutdated(nowDate, cm_create_ts, min = 15)
+	{
+		min = min*60; //в секундах
+		return (nowDate.getTime()/1000 - cm_create_ts > min);
+	}
+	
 	/**
 	 * данные указанного комментария
 	 * 
 	 * @param cm_id
+	 * @param cm_obj_id
+	 * @param obj_name
 	 * @returns {Promise}
 	 */
-	getComment(cm_id)
+	getComment(cm_id, cm_obj_id = null, obj_name = null)
 	{
-		return this.model('comment').getComment(cm_id)
+		return this.model('comment').getComment(cm_id, cm_obj_id, obj_name)
 			.then((comment)=>
 			{
 				if (!comment)
@@ -186,6 +274,20 @@ class Comment extends Base
 			});
 	}
 	
+	/**
+	 * редактируем текст комментария
+	 * @param cm_id
+	 * @param cm_text
+	 * @returns {Promise}
+	 */
+	editComment(cm_id, cm_text)
+	{
+		return this.model('comment').editComment(cm_id, cm_text)
+			.then(()=>
+			{
+				return this.getComment(cm_id);
+			});
+	}
 }
 //************************************************************************* module.exports
 //писать после class Name....{}
