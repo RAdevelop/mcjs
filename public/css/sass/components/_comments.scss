@@ -8,7 +8,7 @@
     overflow: hidden;
     display: table;
     margin-bottom: 10px;
-    width: 100%;
+    //width: 100%;
     
     .form-add-comment {
       //max-width: 50%;
@@ -21,7 +21,7 @@
     .comment-data {
       display: table-cell;
       vertical-align: top;
-      width: 80%;
+      width: auto;
       border: 1px solid #e2e2e2;
       @include mix-border-radius(4px);
       padding: 4px;

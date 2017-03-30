@@ -37,9 +37,7 @@ if (typeof comments == 'undefined') {
 		 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		 */
 			%><li data-cm-id="<%=comment['cm_id']%>" data-cm-pid="<%=comment['cm_pid']%>" class="comment-item js-comment-item" style="padding-left: <%=paddingLeft%>00px;">
-			<div class="comment-user">
-				<%- include ../user/owner.ejs %>
-			</div>
+			<div class="comment-user"><%- include ../user/owner.ejs %></div>
 			<div class="comment-data">
 				<div class="comment-date"><%=comment['dt_create_ts']%></div>
 				<div class="comment-action">

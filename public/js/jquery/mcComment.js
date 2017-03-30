@@ -199,16 +199,35 @@
 	}
 	function addCommentToPage(respData, options, $formAddComment)
 	{
-		var html = '<li class="comment-item js-comment-item" data-cm-id="'+respData['cm_id']+'" data-cm-pid="'+respData['cm_pid']+'" style="margin-left: '+respData['cm_level']+'00px;">';
-		
+		var html = '<li data-cm-id="'+respData['cm_id']+'" data-cm-pid="'+respData['cm_pid']+'" class="comment-item js-comment-item" style="margin-left: '+respData['cm_level']+'00px;">';
+					
 		html += userHtml(respData['user']||{});
+		html += '<div class="comment-data">';
 		
-		html += respData['u_id'];
-		html += respData['cm_hide'];
-		html += respData['dt_create_ts'];
+			html += '<div class="comment-date">'+respData['dt_create_ts']+'</div>';
+			html += '<div class="comment-action">';
+				html += '<a class="js-comment-action" data-action="add">комментировать</a>';
+				if (respData['cm_editable'])
+				{
+					html += '<a class="js-comment-action" data-action="del" title="удалить" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-trash-o"  aria-hidden="true"></i></a>';
+					html += '<a class="js-comment-action" data-action="edit" title="изменить" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-pencil-square-o" aria-hidden="true"></i></a>';
+				}
+				if (!respData['cm_owner'])
+				{
+					html += '<a style="color: #5cb85c;" class="js-comment-action" data-action="like" title="нравится" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-thumbs-o-up" aria-hidden="true"></i><sup class="badge">21</sup></a>';
+					html += '<a style="color: #cc0000;" class="js-comment-action" data-action="dislike" title="не нравится" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-thumbs-o-down" aria-hidden="true"></i><sub class="badge">21</sub></a>';
+					html += '';
+				}
+			html += '</div>';
+			
+			html += '<div class="comment-text js-comment-text">';
+				html += respData['cm_hide'];
+				html += '<p>'+(respData['cm_text_array']||[]).join('</p><p>')+'</p>';
+			html += '</div>';
+		html += '</div>';
 		//html += respData['cm_text'];
-		html += '<p>'+(respData['cm_text_array']||[]).join('</p><p>')+'</p>';
 		html += '</li>';
+		
 		var $commentList = $(options.commentList);
 		
 		if (!!MCJS['comments'])
@@ -245,15 +264,17 @@
 		var ava = (!!user_owner['previews'] && user_owner['previews']['100_100']);
 		var avaSrc = (ava ? user_owner['previews']['100_100'] : '/_0.gif');
 		
-		var html = '<div class="owner">';
-		html += '<a class="owner_ava" href="/profile/'+user_owner['u_id']+'/">';
-		html += '<img class="img-circle img-responsive '+(ava ? '':'hidden')+'" src="'+avaSrc+'" alt="'+user_owner['u_display_name']+'" />';
-		html += '<i class="fa fa-user '+(ava ? 'hidden':'')+'"></i>';
-		html += '</a>';
-		html += '<div class="owner_info">';
-		html += '<div class="owner_info_name"><a href="/profile/'+user_owner['u_id']+'/">'+user_owner['u_display_name']+'</a></div>';
-		html += '<div class="owner_info_location" data-toggle="tooltip" data-placement="auto" title="'+user_owner['l_full_name']+'"><i class="fa fa-fw fa-map-marker"></i>'+(user_owner['l_name']||'не указано')+'</div>';
-		html += '</div>';
+		var html = '<div class="comment-user">';
+			html += '<div class="owner">';
+				html += '<a class="owner_ava" href="/profile/'+user_owner['u_id']+'/">';
+				html += '<img class="img-circle img-responsive '+(ava ? '':'hidden')+'" src="'+avaSrc+'" alt="'+user_owner['u_display_name']+'" />';
+				html += '<i class="fa fa-user '+(ava ? 'hidden':'')+'"></i>';
+				html += '</a>';
+				html += '<div class="owner_info">';
+				html += '<div class="owner_info_name"><a href="/profile/'+user_owner['u_id']+'/">'+user_owner['u_display_name']+'</a></div>';
+				html += '<div class="owner_info_location" data-toggle="tooltip" data-placement="auto" title="'+user_owner['l_full_name']+'"><i class="fa fa-fw fa-map-marker"></i>'+(user_owner['l_name']||'не указано')+'</div>';
+				html += '</div>';
+			html += '</div>';
 		html += '</div>';
 		
 		return html;

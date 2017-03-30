@@ -115,6 +115,7 @@ class Comment extends Base
 							, (user, comment)=>
 								{
 									tplData['user'] = user;
+									Comment._commentEditable(Controller.getUserId(), 0, new Date(), comment);
 									Object.assign(tplData, comment);
 									
 									Controller.view.setTplData(tplFile, tplData);
