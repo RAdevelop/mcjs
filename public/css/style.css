@@ -367,6 +367,39 @@ body.mce-content-body,
   display: table;
   margin-bottom: 10px;
 }
+.comment-list-container .comment-item.comment-level-0 {
+  padding-left: 0;
+}
+.comment-list-container .comment-item.comment-level-1 {
+  padding-left: 4%;
+}
+.comment-list-container .comment-item.comment-level-2 {
+  padding-left: 8%;
+}
+.comment-list-container .comment-item.comment-level-3 {
+  padding-left: 12%;
+}
+.comment-list-container .comment-item.comment-level-4 {
+  padding-left: 16%;
+}
+.comment-list-container .comment-item.comment-level-5 {
+  padding-left: 20%;
+}
+.comment-list-container .comment-item.comment-level-6 {
+  padding-left: 24%;
+}
+.comment-list-container .comment-item.comment-level-7 {
+  padding-left: 28%;
+}
+.comment-list-container .comment-item.comment-level-8 {
+  padding-left: 32%;
+}
+.comment-list-container .comment-item.comment-level-9 {
+  padding-left: 36%;
+}
+.comment-list-container .comment-item.comment-level-10 {
+  padding-left: 40%;
+}
 .comment-list-container .comment-item .comment-user {
   display: table-cell;
   vertical-align: top;

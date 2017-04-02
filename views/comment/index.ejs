@@ -23,30 +23,31 @@ if (typeof comments == 'undefined') {
 <ul class="comment-list-container js-comment-list-container"><%
 	if (comments['list']  && comments['list'].length)
 	{
-		let paddingLeft = 0;
+		let cm_level;
 		let  user_owner = {};
 		comments['list'].forEach(function (comment)
 		{
 			user_owner = comment['user'];
-			paddingLeft = comment['cm_level'];
-		
-		
+			if (comment['cm_level'] > 10)
+				cm_level = `comment-level-10`;
+			else
+				cm_level = `comment-level-${comment['cm_level']}`;
+	
 		//TODO 
 		/*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		определять кто какой комментарий может удалить/изменить (админ/подератор + автор коммента)
 		 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		 */
-			%><li data-cm-id="<%=comment['cm_id']%>" data-cm-pid="<%=comment['cm_pid']%>" class="comment-item js-comment-item" style="padding-left: <%=paddingLeft%>00px;">
+			%><li data-cm-id="<%=comment['cm_id']%>" data-cm-pid="<%=comment['cm_pid']%>" class="comment-item <%=cm_level%> js-comment-item">
 			<div class="comment-user"><%- include ../user/owner.ejs %></div>
 			<div class="comment-data">
 				<div class="comment-date"><%=comment['dt_create_ts']%></div>
 				<div class="comment-action">
-					<a class="js-comment-action" data-action="add">комментировать</a><% 
-					if (comment['cm_editable']) {%>
-					<a class="js-comment-action" data-action="del" title="удалить" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-trash-o"  aria-hidden="true"></i></a>
-					<a class="js-comment-action" data-action="edit" title="изменить" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-pencil-square-o" aria-hidden="true"></i></a><%}
-					if (!comment['cm_owner']) {%><a style="color: #5cb85c;" class="js-comment-action" data-action="like" title="нравится" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-thumbs-o-up" aria-hidden="true"></i><sup class="badge">21</sup></a>
-					<a style="color: #cc0000;" class="js-comment-action" data-action="dislike" title="не нравится" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-thumbs-o-down" aria-hidden="true"></i><sub class="badge">21</sub></a><%}%>
+					<a class="js-comment-action" data-action="add">комментировать</a>
+					<a class="js-comment-action" data-action="delete" title="удалить" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-trash-o"  aria-hidden="true"></i></a>
+					<a class="js-comment-action" data-action="edit" title="изменить" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-pencil-square-o" aria-hidden="true"></i></a>
+					<a style="color: #5cb85c;" class="js-comment-action" data-action="like" title="нравится" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-thumbs-o-up" aria-hidden="true"></i><sup class="badge">21</sup></a>
+					<a style="color: #cc0000;" class="js-comment-action" data-action="dislike" title="не нравится" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-thumbs-o-down" aria-hidden="true"></i><sub class="badge">21</sub></a>
 				</div>
 				<div class="comment-text js-comment-text"><%=comment['cm_hide']%><p><%-comment['cm_text_array'].join('</p><p>')%></p></div>
 			</div>
@@ -58,6 +59,7 @@ if (typeof comments == 'undefined') {
 <script type="text/javascript">
 //<!--
 $('__formAddComment__').mcComment({
+	uri: '<%=menuItem['m_path']%>/comment/',
 	formAddComment:'.js-form-add-comment',
 	commentList: '.js-comment-list-container',
 	commentItem: '.js-comment-list-container .js-comment-item',

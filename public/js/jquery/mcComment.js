@@ -50,6 +50,10 @@
 					return;
 				break;
 				
+				case 'delete':
+					deleteComment(options, cmId, $commentItem);
+				break;
+				
 				case 'add':
 					addComment(options, cmId, action, $commentItem);
 					return;
@@ -87,6 +91,66 @@
 			return false;
 		});
 		return comment;
+	}
+	
+	function deleteComment(options, cmId, $commentItem)
+	{
+		var formBtnId = 'btn_del_comment';
+		var formId = 'formDelComment';
+		var formBody = '<form class="form-horizontal" action="'+options.uri+'" method="post" id="'+formId+'"><input type="hidden" name="ui_obj_id" id="ui_obj_id" value="'+options.objId+'"><input type="hidden" name="btn_save_comment" value="delete"><input type="hidden" name="ui_cm_id" value="'+cmId+'"><div class="form-group"><div class="col-sm-12 text-center">Удалить комментарий?</div></div></form>';
+		
+		$('__del_comment_dialog__').mcDialog({
+			title: 'Удаление комментария'
+			, body: formBody
+			, onOpen: function ($dialog)
+			{
+				$dialog.find('#'+formId).postRes({
+					btnId: $dialog.find('#'+formBtnId),
+					onSuccess: function($respDialog, resp)
+					{
+						$dialog.modal('hide');
+						$respDialog.modal('hide');
+						
+						$(window).scrollTo($commentItem, 4, {axis:'y', interrupt: true, limit: false});
+						$commentItem.remove();
+						//TODO передавать кол-во удаленных комментариев
+						alert('TODO передавать кол-во удаленных комментариев');
+						commentCountUpdate($(options.commentCount), '-');
+						return false;
+					},
+					onFail: function ($respDialog, resp)
+					{
+						//$dialog.hide();
+						//$respDialog.modal('hide');
+						return true;
+					},
+					onClose: function ($respDialog)
+					{
+						$dialog.show().css('overflow', 'visible');
+					}
+				});
+			}
+			, buttons: [
+				{
+					title: 'да'
+					, name: formBtnId
+					, cssClass: 'btn-success'
+				},
+				{
+					title: 'нет'
+					,name: 'btn_del_comment_cancel'
+					,cssClass: 'btn-danger'
+					,func:
+					{
+						"click": function($mcDialog)
+						{
+							$mcDialog.modal('hide');
+							$(window).scrollTo($commentItem, 4, {axis:'y', interrupt: true, limit: false});
+						}
+					}
+				}
+			]
+		});
 	}
 	
 	function addComment(options, cmId, action, $commentItem)
@@ -153,7 +217,7 @@
 			action = 'edit';
 			btnText = 'сохранить';
 		}
-		var html = '<form action="/blog/comment/" method="post" class="text-center form-add-comment js-form-add-comment" id="formAddComment'+cmIid+'">';
+		var html = '<form action="'+options.uri+'" method="post" class="text-center form-add-comment js-form-add-comment" id="formAddComment'+cmIid+'">';
 		html += '<input type="hidden" name="ui_obj_id" id="ui_obj_id" value="'+options.objId+'">';
 		
 		if (action == 'add')
@@ -199,7 +263,8 @@
 	}
 	function addCommentToPage(respData, options, $formAddComment)
 	{
-		var html = '<li data-cm-id="'+respData['cm_id']+'" data-cm-pid="'+respData['cm_pid']+'" class="comment-item js-comment-item" style="margin-left: '+respData['cm_level']+'00px;">';
+		var comment_level = 'comment-level-'+(!!respData['cm_level'] && respData['cm_level']>=10 ? 10 : respData['cm_level']);
+		var html = '<li data-cm-id="'+respData['cm_id']+'" data-cm-pid="'+respData['cm_pid']+'" class="comment-item '+comment_level+' js-comment-item">';
 					
 		html += userHtml(respData['user']||{});
 		html += '<div class="comment-data">';
@@ -209,7 +274,7 @@
 				html += '<a class="js-comment-action" data-action="add">комментировать</a>';
 				if (respData['cm_editable'])
 				{
-					html += '<a class="js-comment-action" data-action="del" title="удалить" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-trash-o"  aria-hidden="true"></i></a>';
+					html += '<a class="js-comment-action" data-action="delete" title="удалить" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-trash-o"  aria-hidden="true"></i></a>';
 					html += '<a class="js-comment-action" data-action="edit" title="изменить" data-toggle="tooltip" data-placement="auto"><i class="fa fa-fw fa-pencil-square-o" aria-hidden="true"></i></a>';
 				}
 				if (!respData['cm_owner'])
@@ -246,16 +311,19 @@
 			$formAddComment.remove();
 		}
 		
+		var $last = $('[data-cm-pid="'+respData['cm_pid']+'"]').last();
 		if (respData['cm_pid'] == 0)
 			$commentList.append(html);
 		else
 		{
-			var $last = $('[data-cm-pid="'+respData['cm_pid']+'"]').last();
 			if (!$last.length)
 				$last = $('[data-cm-id="'+respData['cm_pid']+'"]');
 			
 			$last.after(html);
 		}
+		
+		if ($last.length)
+		$(window).scrollTo($last, 4, {axis:'y', interrupt: true, limit: false});
 	}
 	
 	function userHtml(user_owner)
@@ -283,12 +351,11 @@
 	function commentCountUpdate($commentCount, type)
 	{
 		var cnt = parseInt($commentCount.text(), 10);
-
 		if (type == '+')
 			cnt = (!cnt ? 0 : cnt) + 1;
 		else if (type == '-')
 			cnt = (!cnt ? 0 : cnt) - 1;
-
+		
 		$commentCount.text(cnt);
 	}
 })(jQuery);

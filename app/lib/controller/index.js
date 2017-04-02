@@ -412,7 +412,7 @@ class Base
 				keyData.push(this.getMenuItem['m_id']);
 
 				//если авторизованный юзер иначе как гость
-				let сacheSeconds = (!!ug_ids.length ? 10 : 60);
+				let сacheSeconds = (!!ug_ids.length ? AppConfig.cache.user_ts : AppConfig.cache.guest_ts);
 
 				this.view.setCacheKeyData(keyData)
 					.setCacheSeconds(сacheSeconds);

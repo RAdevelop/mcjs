@@ -4,6 +4,40 @@
   padding: 0;
 
   .comment-item {
+    &.comment-level-0 {
+      padding-left: 0;
+    }
+    &.comment-level-1 {
+     padding-left: 4%; 
+    }
+    &.comment-level-2 {
+     padding-left: 8%; 
+    }
+    &.comment-level-3 {
+     padding-left: 12%; 
+    }
+    &.comment-level-4 {
+     padding-left: 16%; 
+    }
+    &.comment-level-5 {
+     padding-left: 20%; 
+    }
+    &.comment-level-6 {
+     padding-left: 24%; 
+    }
+    &.comment-level-7 {
+     padding-left: 28%; 
+    }
+    &.comment-level-8 {
+     padding-left: 32%; 
+    }
+    &.comment-level-9 {
+      padding-left: 36%;
+    }
+    &.comment-level-10 {
+      padding-left: 40%;
+    }
+    
     list-style: none;
     overflow: hidden;
     display: table;

@@ -409,8 +409,7 @@ class Blog extends BaseModel {
 				
 				b_id = parseInt(b_id, 10)||0;
 				setData.push(b_id);
-
-				//return Promise.resolve();
+				
 				return this.constructor.conn().upd(sql, setData);
 			});
 	}

@@ -176,7 +176,7 @@ Template.prototype.setCacheSeconds = function(сacheSeconds = 10)
 }
 Template.prototype.getCacheSeconds = function()
 {
-	return this._сacheSeconds||10;
+	return parseInt(this._сacheSeconds, 10)||10;
 }
 
 Template.prototype.useCache = function(useCache = true)
@@ -303,7 +303,7 @@ Template.prototype.render = function(json = false, cacheData = null)
 					//console.log('this.res.statusCode = ', this.res.statusCode);
 					//console.log('this.getCacheSeconds() = ', this.getCacheSeconds());
 
-					if (this.isUseCache() && this.res.statusCode >= 200 && this.res.statusCode < 300)
+					if (this.isUseCache() && !!this.getCacheSeconds() && this.res.statusCode >= 200 && this.res.statusCode < 300)
 					{
 						//console.log('set cache: this.isUseCache() = ', this.isUseCache());
 

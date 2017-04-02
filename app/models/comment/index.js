@@ -140,9 +140,64 @@ class Comment extends BaseModel
 		let sqlData = [cm_text, now_ts, cm_id];
 		let sql = `UPDATE comments SET cm_text = ?, cm_moderate_ts = ? WHERE cm_id = ?`;
 		
-		console.log(sql, sqlData);
+		//console.log(sql, sqlData);
 		
 		return this.constructor.conn().upd(sql, sqlData);
+	}
+	
+	/**
+	 * удаляем комментария
+	 *
+	 * @param isRootAdmin
+	 * @param u_id
+	 * @param cm_id
+	 * @returns {Promise}
+	 */
+	deleteComment(isRootAdmin, u_id, cm_id)
+	{
+		isRootAdmin = (!!isRootAdmin ? 1 : 0);
+		cm_id = parseInt(cm_id, 10)||0;
+		u_id = parseInt(u_id, 10)||0;
+		
+		if (!!cm_id === false || !!u_id === false)
+			return Promise.resolve(0);
+		
+		let sql = `CALL comment_delete (?, ?, ?, @is_del);
+		SELECT @is_del AS is_del FROM DUAL;`;
+		
+		let sqlData = [cm_id, isRootAdmin, u_id];
+		//console.log(sql, sqlData);
+		
+		return this.constructor.conn().multis(sql, sqlData)
+		.then((res) =>
+		{
+			//console.log('res = ', res[1][0]);
+			let is_del = (res[1] && res[1][0] && res[1][0]['is_del'] ? parseInt(res[1][0]['is_del'], 10) : 0);
+			
+			return Promise.resolve((!!is_del ? cm_id : 0));
+		});
+	}
+	
+	/**
+	 * удаляем все комментарии для указанного объекта (новость, блон и тп)
+	 *
+	 * @param objClass
+	 * @param obj_id
+	 * @returns {Promise}
+	 */
+	deleteCommentForObj(obj_id, obj_name)
+	{
+		obj_id = parseInt(obj_id, 10)||0;
+		
+		if (!!obj_id === false || !!obj_name === false)
+			return Promise.resolve(0);
+		
+		let sqlData = [obj_id, obj_name];
+		let sql = `DELETE FROM comments WHERE obj_id = ? AND obj_name = ?`;
+		
+		//console.log(sql, sqlData);
+		
+		return this.constructor.conn().del(sql, sqlData);
 	}
 }
 

@@ -62,7 +62,11 @@ class Comment extends Base
 		{
 			default:
 				throw new Errors.HttpError(400);
-				break;
+			break;
+			
+			case 'delete':
+				return this._deleteCommentAction(Controller, obj_name, tplData, tplFile);
+			break;
 			
 			case 'add':
 			case 'edit':
@@ -180,6 +184,60 @@ class Comment extends Base
 										
 										Object.assign(tplData, comment);
 										Controller.view.setTplData(tplFile, tplData);
+										return Promise.resolve(true);
+									}
+								});
+						});
+				}
+			})
+			.catch(Errors.ValidationError, (err) =>
+			{
+				//такие ошибки не уводят со страницы.
+				Controller.view.setTplData(tplFile, err.data);
+				return Promise.resolve(true);
+			});
+	}
+	
+	_deleteCommentAction(Controller, obj_name, tplData, tplFile)
+	{
+		let errors = {};
+		if (!tplData['ui_cm_id'])
+			errors['ui_cm_id'] = 'Укажите комментарий';
+		
+		return Promise.resolve(errors)
+			.then((errors) =>
+			{
+				if (Controller.parseFormErrors(tplData, errors))
+				{
+					return Promise.join(
+						this.getClass('user/groups').isRootAdmin(Controller.getUserId()),
+						this.getComment(tplData['ui_cm_id'], tplData['ui_obj_id'], obj_name)
+						, (isRootAdmin, comment)=>
+						{
+							if (!!comment === false || (!isRootAdmin && comment['u_id'] != Controller.getUserId()))
+							{
+								errors['t_comment'] = 'Комментарий не найден';
+								Controller.parseFormErrors(tplData, errors);
+							}
+							else 
+							{
+								return Promise.resolve([tplData, isRootAdmin]);
+							}
+						})
+						.spread((tplData, isRootAdmin)=>
+						{
+							return this.deleteComment(isRootAdmin, Controller.getUserId(), tplData['ui_cm_id'])
+								.then((is_del)=>
+								{
+									if (!is_del)
+									{
+										errors['t_comment'] = 'Комментарий не найден';
+										Controller.parseFormErrors(tplData, errors);
+									}
+									else
+									{
+										Controller.view.setTplData(tplFile, tplData);
+										return Promise.resolve(true);
 									}
 								});
 						});
@@ -288,6 +346,32 @@ class Comment extends Base
 			{
 				return this.getComment(cm_id);
 			});
+	}
+	
+	/**
+	 * удаляем комментария
+	 * 
+	 * @param isRootAdmin
+	 * @param u_id
+	 * @param cm_id
+	 * @returns {Promise}
+	 */
+	deleteComment(isRootAdmin, u_id, cm_id)
+	{
+		return this.model('comment').deleteComment(isRootAdmin, u_id, cm_id);
+	}
+	
+	/**
+	 * удаляем все комментарии для указанного объекта (новость, блон и тп)
+	 * 
+	 * @param objClass
+	 * @param obj_id
+	 * @returns {Promise}
+	 */
+	deleteCommentForObj(objClass, obj_id)
+	{
+		let obj_name = this.getObjName(objClass);
+		return this.model('comment').deleteCommentForObj(obj_id, obj_name);
 	}
 }
 //************************************************************************* module.exports

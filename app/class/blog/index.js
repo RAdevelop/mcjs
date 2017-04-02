@@ -405,7 +405,11 @@ class Blog extends Base
 			})
 			.then(() =>
 			{
-				return this.getClass('keywords').saveKeyWords(this, blog['b_id']);
+				//return this.getClass('keywords').saveKeyWords(this, blog['b_id']);
+				return Promise.all([
+					this.getClass('keywords').saveKeyWords(this, blog['b_id']),
+					this.getClass('comment').deleteCommentForObj(this, blog['b_id'])
+				]);
 			});
 	}
 
