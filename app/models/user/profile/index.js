@@ -80,19 +80,19 @@ class Profile extends User
 	createReqChangeMailKey(user, new_mail, cb)
 	{
 		const self = this;
-		self.getByEmail(new_mail, function(err, tmpUser)
+		self.getByEmail(new_mail, (err, tmpUser)=>
 		{
 			if (err)
 			{
 				switch (err.name)
 				{
 					default:
-						if(err) return cb(err, null);
+						if(err)
+							return cb(err, null);
 						break;
-					
 					case 'NotFoundError':
-						//если не нашли, то все ок, 
-						break;
+						//если не нашли, то все ок,
+					break;
 				}
 			}
 			else if (tmpUser.u_id != user.u_id)
@@ -112,11 +112,15 @@ class Profile extends User
 			ON DUPLICATE KEY UPDATE u_req_key=VALUES(u_req_key), 
 			u_req_end_ts=VALUES(u_req_end_ts), u_req_data=VALUES(u_req_data);`;
 			
-			self.constructor.conn().ins(sql, [user.u_id, u_req_type, user.u_req_key, u_req_end_ts, new_mail], function(err)
+			self.constructor.conn().ins(sql, [user.u_id, u_req_type, user.u_req_key, u_req_end_ts, new_mail], (err)=>
 			{
-				if (err) return cb(err, user);
+				if (err)
+					return cb(err, user);
 				
-				return cb(null, user);
+				process.nextTick(()=>
+				{
+					return cb(null, user);
+				});
 			});
 		});
 	}
@@ -137,33 +141,41 @@ class Profile extends User
 		
 		let sql = `SELECT u_req_data FROM user_change_request
 		WHERE u_id = ? AND u_req_type = ? AND u_req_key = ? AND u_req_end_ts >= ?`;
-
+		
 		u_id = parseInt(u_id, 10);
-		self.constructor.conn().ps(sql, [u_id, u_req_type, key, Moment().unix()], function(err, res)
+		self.constructor.conn().ps(sql, [u_id, u_req_type, key, Moment().unix()], (err, res)=>
 		{
 			if (err)
 				return cb(err);
 			
 			if (res["info"]["numRows"] != 1)
-				return cb(null, false);
+			{
+				process.nextTick(()=>
+				{
+					return cb(null, false);
+				});
+			}
 			
 			sql = `UPDATE users SET u_mail = ? WHERE u_id = ?;`;
 			
-			self.constructor.conn().upd(sql, [res[0]["u_req_data"], u_id], function(err)
+			self.constructor.conn().upd(sql, [res[0]["u_req_data"], u_id], (err)=>
 			{
-				if (err) return cb(err, false);
+				if (err)
+					return cb(err, false);
 				
-				sql = `DELETE FROM user_change_request
-				WHERE u_id = ? AND u_req_type = ?`;
+				sql = `DELETE FROM user_change_request WHERE u_id = ? AND u_req_type = ?`;
 				
-				self.constructor.conn().del(sql, [u_id, u_req_type], function(err)
+				self.constructor.conn().del(sql, [u_id, u_req_type], (err)=>
 				{
-					if (err) return cb(err, true);
+					if (err)
+						return cb(err, true);
 					
-					return cb(null, true);
+					process.nextTick(()=>
+					{
+						return cb(null, true);
+					});
 				});
 			});
-			
 		});
 	}
 	

@@ -224,68 +224,69 @@ class Events extends Base
 		const UploadFile = new FileUpload(Events.uploadConfigName, req, res);
 
 		return UploadFile.upload()
-			.then((file) => {
-
+			.then((file) =>
+			{
 				ufile = file;
 				e_id = file.e_id;
 				
 				return this.get(e_id)
-					.then((event) => {
+					.then((event) => 
+					{
 						if (event["e_img_cnt"] >= 5)
 							throw new FileErrors.LimitExceeded('Можно добавить не более 5 файлов.');
-
+						
 						return Promise.resolve(ufile);
 					});
 			})
-			.then((file) => {
-
+			.then((file) => 
+			{
 				return this.model('events')
 					.addPhoto(u_id, file)
-					.then((file) => {
-
+					.then((file) => 
+					{
 						ei_id = file.ei_id;
-
+						
 						file["moveToDir"] = FileUpload.getImageUri(file.e_id, file.ei_id);
-
-						return new Promise((resolve, reject) => {
-							
-							UploadFile.moveUploadedFile(file, file["moveToDir"], (err, file) => {
+						
+						return new Promise((resolve, reject) => 
+						{
+							UploadFile.moveUploadedFile(file, file["moveToDir"], (err, file) => 
+							{
 								if (err) return reject(err);
-
 								return resolve(file);
 							});
 						});
 					});
 			})
-			.then((file) => {
-
+			.then((file) =>
+			{
 				if (file.type != 'image')
 					return Promise.resolve(file);
-
 				return UploadFile.setImageGeo(file)
-					.then((file) => {
+					.then((file) => 
+					{
 						return UploadFile.resize(file, Events.uploadConfigName);
 					});
 			})
-			.then((file) => {
-
+			.then((file) =>
+			{
 				//console.log(file);
-
 				return this.model('events')
 					.updImage(file.e_id, file.ei_id, file.latitude, file.longitude, file.webDirPath, file.name, true)
-					.then(() => {
-
+					.then(() => 
+					{
 						ufile = null;
 						file["ei_name"] = file.name;
 						return Promise.resolve(file);
 					});
 			})
-			.catch((err) => {
-
+			.catch((err) => 
+			{
 				//console.log(ufile);
 				Logger.error(err);
 				return this.delImage(u_id, e_id, ei_id, ufile)
-					.catch((delErr) => {
+					.catch((delErr) => 
+					{
 						switch (err.name)
 						{
 							case 'FileTooBig':

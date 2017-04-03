@@ -137,14 +137,17 @@ class Menu extends BaseModel
 			if (err)
 				return cb(err, null);
 			
-			//не нашли
-			if(res["info"]["numRows"] == 0)
-				return cb(null, null);
-			
-			//let list = JSON.parse(JSON.stringify(res));
-			//cb(null, list);
-
-			cb(null, res);
+			process.nextTick(()=>
+			{
+				//не нашли
+				if(res["info"]["numRows"] == 0)
+					return cb(null, null);
+				
+				//let list = JSON.parse(JSON.stringify(res));
+				//cb(null, list);
+				
+				cb(null, res);
+			});
 		});
 	}
 
@@ -204,9 +207,9 @@ class Menu extends BaseModel
 		${where}
 		ORDER BY LENGTH(m.m_path) DESC
 		LIMIT 1`;
-
+		
 		//console.log(sql);
-
+		
 		this.constructor.conn().sRow(sql, resPath, (err, res) =>
 		{
 			if (err)
@@ -214,8 +217,10 @@ class Menu extends BaseModel
 			
 			//не нашли
 			//if(res["info"]["numRows"] == 0) return cb(null, null);
-			
-			cb(null, res);
+			process.nextTick(()=>
+			{
+				cb(null, res);
+			});
 		});
 	}
 }

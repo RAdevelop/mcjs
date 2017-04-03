@@ -27,7 +27,7 @@ class Auth extends User
 		password = password.trim();
 		const self = this;
 		//поиск пользователя по email
-		self.getByEmail(email, function(err, userData)
+		self.getByEmail(email, (err, userData)=>
 		{
 			if(err)
 			{
@@ -48,11 +48,15 @@ class Auth extends User
 				return cb(new Errors.AlreadyInUseError('Такой пользователь уже зарегистрирован!', 'm_email'),null);
 			
 			//создаем нового пользователя (регистрируем)
-			self.createUser(email, password, function(err, user)
+			self.createUser(email, password, (err, user)=>
 			{
-				if(err) return cb(err, null);
+				if(err) 
+					return cb(err, null);
 				
-				return cb(null, user);
+				process.nextTick(()=>
+				{
+					return cb(null, user);
+				});
 			});
 		});
 	}
@@ -80,13 +84,13 @@ class Auth extends User
 			let now_ts = Moment().unix();
 			let sqlData = [user.u_mail.trim(), hashData.salt, hashData.hash, now_ts, now_ts];
 			
-			self.constructor.conn().ins(sql, sqlData, function(err, res)
+			self.constructor.conn().ins(sql, sqlData, (err, res)=>
 			{
 				if(err) return cb(err);
 
 				user.u_id = res.insertId;
 				
-				self.createReqConfirmKey(user, function(err, user)
+				self.createReqConfirmKey(user, (err, user)=>
 				{
 					if (err) return cb(err);
 					
@@ -117,11 +121,14 @@ class Auth extends User
 			 VALUES(?,?,?,?)
 			 ON DUPLICATE KEY UPDATE u_req_key=VALUES(u_req_key), u_req_end_ts=VALUES(u_req_end_ts);`;
 		
-		this.constructor.conn().ins(sql, [user.u_id, u_req_type, user.u_req_key, u_req_end_ts], function(err)
+		this.constructor.conn().ins(sql, [user.u_id, u_req_type, user.u_req_key, u_req_end_ts], (err)=>
 		{
 			if (err) return cb(err, user);
 			
-			return cb(null, user);
+			process.nextTick(()=>
+			{
+				return cb(null, user);
+			});
 		});
 	}
 	
@@ -145,10 +152,15 @@ class Auth extends User
 			VALUES(?,?,?,?)
 			ON DUPLICATE KEY UPDATE u_req_key=VALUES(u_req_key), u_req_end_ts=VALUES(u_req_end_ts);`;
 		
-		this.constructor.conn().ins(sql, [user.u_id, u_req_type, user.u_req_key, u_req_end_ts], (err) => {
-
-			if (err) return cb(err, user);
-			return cb(null, user);
+		this.constructor.conn().ins(sql, [user.u_id, u_req_type, user.u_req_key, u_req_end_ts], (err) => 
+		{
+			if (err)
+				return cb(err, user);
+			
+			process.nextTick(()=>
+			{
+				return cb(null, user);
+			});
 		});
 	}
 	
@@ -202,32 +214,41 @@ class Auth extends User
 		u_id = parseInt(u_id, 10);
 		let sqlData = [u_id,u_req_type, u_reg_key, Moment().unix()];
 		
-		self.constructor.conn().ps(sql, sqlData, function(err, res)
+		self.constructor.conn().ps(sql, sqlData, (err, res)=>
 		{
-			if (err) return cb(err, false);
+			if (err)
+				return cb(err, false);
 			
 			if (res["info"]["numRows"] == 1)
 			{
 				sql = `DELETE FROM user_change_request WHERE (u_id = ? AND u_req_type = ?) OR u_req_end_ts < ?;`;
 				
-				self.constructor.conn().del(sql, [u_id, u_req_type, Moment().unix()], function(err)
+				self.constructor.conn().del(sql, [u_id, u_req_type, Moment().unix()], (err)=>
 				{
-					if (err) return cb(err, false);
+					if (err)
+						return cb(err, false);
 					
 					sql = `UPDATE users SET u_reg = ? WHERE u_id = ?;`;
 					
-					self.constructor.conn().upd(sql, [1, u_id], function(err)
+					self.constructor.conn().upd(sql, [1, u_id], (err)=>
 					{
-						if (err) return cb(err, false);
+						if (err)
+							return cb(err, false);
 						
-						return cb(null, true);
+						process.nextTick(()=>
+						{
+							return cb(null, true);
+						});
 					});
 				});
 			}
 			else
 			{
 				//обязательно через {else}
-				return cb(null, false);
+				process.nextTick(()=>
+				{
+					return cb(null, false);
+				});
 			}
 		});
 	}
@@ -243,13 +264,13 @@ class Auth extends User
 	{
 		const self = this;
 		
-		self.hashPassword(password, (err, hashData) => {
-
+		self.hashPassword(password, (err, hashData) =>
+		{
 			if(err)
 				return cb(err);
 			
 			let sql = `UPDATE users SET u_salt = ?, u_pass = ? WHERE u_id = ?`;
-
+			
 			u_id = parseInt(u_id, 10);
 			let sqlData = [hashData.salt, hashData.hash, u_id];
 			
@@ -258,7 +279,10 @@ class Auth extends User
 				if(err)
 					return cb(err);
 				
-				return cb();
+				process.nextTick(()=>
+				{
+					return cb();
+				});
 			});
 		});
 	}

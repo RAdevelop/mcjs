@@ -95,11 +95,10 @@ class Login extends CtrlMain
 	{
 		if(this.getUserId())
 			return this.getRes().redirect('back');
-
+		
 		const self = this;
-
 		let {s_key} = this.routeArgs;
-
+		
 		let tplData = {
 			s_password:'',
 			s_password2:'',
@@ -112,12 +111,11 @@ class Login extends CtrlMain
 			{
 				if (err)
 					return reject(err);
-
+				
 				if (!isset)
 					tplData.s_key = null;
-
+				
 				self.view.setTplData("auth/reset", tplData);
-
 				return resolve(null);
 			});
 		});
@@ -253,9 +251,9 @@ class Login extends CtrlMain
 				{
 					if (err)
 						return reject(error);
-
+					
 					const Mailer = new Mail(CtrlMain.appConfig.mail.service);
-
+					
 					let sendParams = {
 						to:         tplData.m_email,
 						subject:    'Запрос на смену пароля на сайте www.MotoCommunity.ru',
@@ -267,7 +265,7 @@ class Login extends CtrlMain
 							key: user.u_req_key
 						}
 					};
-
+					
 					Mailer.send(sendParams, (err)=>
 					{
 						let error = null;
@@ -276,10 +274,10 @@ class Login extends CtrlMain
 							error = new Errors.AppMailError('Ошибка при отправке письма', err);
 							Logger.error(error);
 						}
-
+						
 						if (error)
 							return reject(error);
-
+						
 						return resolve(null);
 					});
 				});

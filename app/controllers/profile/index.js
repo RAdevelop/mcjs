@@ -443,23 +443,24 @@ class Profile extends CtrlMain
 			errors["s_password"] = 'пароли не совпадают';
 		}
 		
-		const self = this;
+		//const self = this;
 		
 		return Promise.resolve(errors)
-		.then(function(errors)
+		.then((errors)=>
 		{
-			if (self.parseFormErrors(tplData, errors))
+			if (this.parseFormErrors(tplData, errors))
 			{
-				return new Promise(function(resolve, reject)
+				return new Promise((resolve, reject)=>
 				{
-					self.model("user/auth").updPassword(self.getUser().u_id, tplData["s_password"], function(err)
+					this.model("user/auth").updPassword(this.getUser().u_id, tplData["s_password"], (err)=>
 					{
 						tplData.s_password = tplData.s_password2 = '';
-
-						if (err) return reject(err);
-
+						
+						if (err)
+							return reject(err);
+						
 						tplData.formError.message = 'Пароль успешно изменен';
-
+						
 						return resolve(tplData);
 					});
 				});
@@ -526,25 +527,23 @@ class Profile extends CtrlMain
 			errors["m_mail"] = 'e-mail указан неверно';
 		}
 		
-		const self = this;
-		
 		return Promise.resolve(errors)
-			.then(function(errors)
+		.then((errors)=>
 		{
-			if (self.parseFormErrors(tplData, errors))
+			if (this.parseFormErrors(tplData, errors))
 			{
 				tplData.sendMail = false;
-
-				if (tplData.m_mail == self.getUser().u_mail)
+				
+				if (tplData.m_mail == this.getUser().u_mail)
 				{
 					tplData.formError.message = 'Данные успешно сохранены';
 					return Promise.resolve(tplData);
 				}
-
-				return new Promise(function(resolve, reject)
+				
+				return new Promise((resolve, reject)=>
 				{
-					self.model("user/profile")
-						.createReqChangeMailKey(self.getUser(), tplData.m_mail, (err, userData)=>
+					this.model("user/profile")
+						.createReqChangeMailKey(this.getUser(), tplData.m_mail, (err, userData)=>
 						{
 							if(err)
 								return reject(err);
@@ -556,13 +555,13 @@ class Profile extends CtrlMain
 				});
 			}
 		})
-		.then(function(tplData)
+		.then((tplData)=>
 		{
 			if (tplData.sendMail == false)
 			return Promise.resolve(tplData);
 			
 			const Mailer = new Mail(CtrlMain.appConfig.mail.service);
-						
+			
 			let title = 'Смена Вашего e-mail адреса на сайте www.MotoCommunity.ru';
 			let sendParams = {
 				to:         tplData.m_mail,
@@ -570,15 +569,15 @@ class Profile extends CtrlMain
 				tplName:    'user/change_email',
 				tplData: {
 					title: title,
-					links: 'https://'+self.getHostPort(),
-					link: 'http://'+self.getHostPort(),
+					links: 'https://'+this.getHostPort(),
+					link: 'http://'+this.getHostPort(),
 					key: tplData.userData.u_req_key
 				}
 			};
 			
-			return new Promise(function(resolve, reject)
+			return new Promise((resolve, reject)=>
 			{
-				Mailer.send(sendParams, function (err)
+				Mailer.send(sendParams, (err)=>
 				{
 					if(err)
 					{
@@ -596,7 +595,7 @@ class Profile extends CtrlMain
 				});
 			});
 		})
-		.catch(Errors.AlreadyInUseError, function(err)
+		.catch(Errors.AlreadyInUseError, (err)=>
 		{
 			tplData.formError.message = 'Ошибки при заполнении формы';
 			tplData.formError.fields["m_mail"] = 'Такой e-mail уже занят';

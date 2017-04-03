@@ -69,17 +69,18 @@ class User extends BaseModel
 			//console.log(userData);
 			if (err)
 				return cb(err, user);
-
-			if (userData)
+			else if (userData)
 			{
-				userData['ug_ids'] = User.userGroupIds(userData['ug_ids']);
-				
-				Object.assign(user, userData);
-				return cb(null, user);
+				process.nextTick(()=>
+				{
+					userData['ug_ids'] = User.userGroupIds(userData['ug_ids']);
+					
+					Object.assign(user, userData);
+					return cb(null, user);
+				});
 			}
-			
-			//не нашли
-			return cb(new Errors.NotFoundError(msg), user);
+			else //не нашли
+				return cb(new Errors.NotFoundError(msg), user);
 		});
 	}
 	
@@ -105,7 +106,10 @@ class User extends BaseModel
 			if (err)
 				return cb(err);
 			
-			cb(null, now_ts);
+			process.nextTick(()=>
+			{
+				cb(null, now_ts);
+			});
 			
 			/*const Redis = new IORedis();
 			 Redis.hset(rKey, 'u_date_visit', now_ts, (err) => {
@@ -137,15 +141,16 @@ class User extends BaseModel
 		{
 			if (err)
 				return cb(err, null);
-			
-			if (userData)
+			else if (userData)
 			{
-				userData['ug_ids'] = User.userGroupIds(userData['ug_ids']);
-				return cb(null, userData);
+				process.nextTick(()=>
+				{
+					userData['ug_ids'] = User.userGroupIds(userData['ug_ids']);
+					return cb(null, userData);
+				});
 			}
-			
-			//не нашли
-			return cb(new Errors.NotFoundError("Пользователя с таким email не существует", err), null);
+			else //не нашли
+				return cb(new Errors.NotFoundError("Пользователя с таким email не существует", err), null);
 		});
 	}
 	
@@ -294,7 +299,10 @@ class User extends BaseModel
 			if (err)
 				return cb(err, false);
 			
-			return cb(null, (res["info"]["numRows"] == 1));
+			process.nextTick(()=>
+			{
+				return cb(null, (res["info"]["numRows"] == 1));
+			});
 		});
 	}
 
@@ -310,14 +318,17 @@ class User extends BaseModel
 	{
 		let sql = `DELETE FROM user_change_request
 		WHERE u_id = ? AND u_req_type = ?;`;
-
+		
 		u_id = parseInt(u_id, 10);
 		return this.constructor.conn().del(sql, [u_id, u_req_type], (err) =>
 		{
 			if (err)
 				return cb(err, u_id);
-
-			return cb(null, u_id);
+			
+			process.nextTick(()=>
+			{
+				return cb(null, u_id);
+			});
 		});
 	}
 

@@ -29,7 +29,7 @@ module.exports = function(Classes)
 						return asyncCb(null, req.session.user);
 
 					return Classes.getClass("user").getUser(rtid)
-						.then(function (userData)
+						.then((userData)=>
 						{
 							/*if (req.session.rtid)
 							{
@@ -44,11 +44,11 @@ module.exports = function(Classes)
 
 							//если пришли/авторизовались с кукой
 							//console.log('если пришли/авторизовались с кукой');
-							req.session.regenerate(function (err)
+							req.session.regenerate((err)=>
 							{
 								if (err)
 								{
-									req.session.destroy(function ()//err
+									req.session.destroy(()=>//err
 									{
 										delete req.session;
 									});
@@ -77,7 +77,7 @@ module.exports = function(Classes)
 								case 'NotFoundError':
 								case 'TypeError':
 
-									req.session.destroy(function ()//err
+									req.session.destroy(()=>//err
 									{
 										delete req.session;
 									});
@@ -154,7 +154,7 @@ module.exports = function(Classes)
 					if (!userData)
 						return asyncCb(null, null);
 					
-					Classes.model('user').setLastVisit(userData.u_id, function (err, ts)
+					Classes.model('user').setLastVisit(userData.u_id, (err, ts)=>
 					{
 						if (err)
 							return asyncCb(err, null);

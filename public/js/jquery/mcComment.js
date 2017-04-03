@@ -113,8 +113,8 @@
 						
 						$(window).scrollTo($commentItem, 4, {axis:'y', interrupt: true, limit: false});
 						$commentItem.remove();
-						//TODO передавать кол-во удаленных комментариев
-						alert('TODO передавать кол-во удаленных комментариев');
+						//TODO передавать кол-во удаленных комментариев?
+						alert('TODO передавать кол-во удаленных комментариев?');
 						commentCountUpdate($(options.commentCount), '-');
 						return false;
 					},

@@ -56,14 +56,14 @@ Mailer.prototype.transporter = function()
  *  errors.ArgumentError
  *  Error
  */
-Mailer.prototype.send = function (params, callback){
-
+Mailer.prototype.send = function (params, callback)
+{
 	if(!_.isPlainObject(params))
 	return callback(new errors.ArgumentError('params'));
-
+	
 	if (params['mailFrom'])
 		this.mailFrom = params['mailFrom'];
-
+	
 	params = _.assign({
 		to:this.mailTo,
 		from:this.mailFrom,
@@ -71,32 +71,32 @@ Mailer.prototype.send = function (params, callback){
 		tplName:'',
 		tplData: {}
 	},params);
-
+	
 	for(var idx in params)
 	{
 		if(params[idx] == '')
 		return callback(new errors.ArgumentError(idx));
 	}
-
+	
 	if(!_.isPlainObject(params.tplData))
 		return callback(new errors.ArgumentError('tplData'));
-
+	
 	//путь к шаблону html
 	let template = __dirname + '/views/' +params.tplName+'.ejs';
 	let content = params.tplData;
 	//let to = params.to;
 	let subject = params.subject;
-
+	
 	// Use fileSystem module to read template file
-
+	
 	fs.readFile(template, 'utf8', (err, file)=>
 	{
 		if(err)
 			return callback (err);
-
+		
 		//ejs.render(file, content); returns a string that will set in mailOptions
 		let html = ejs.render(file, content);
-
+		
 		let mailOptions = {
 			from: params.from,
 			to: params.to,
@@ -104,18 +104,19 @@ Mailer.prototype.send = function (params, callback){
 			subject: subject,
 			html: html
 		};
-
 		//console.log(mailOptions);
-
+		
 		//пытаемся отправить письмо
 		this.transporter().sendMail(mailOptions, (err)=>//, info
 		{
 			if(err)
 				return callback(err);
-			//console.log(info);
-
+			
 			//успешная отправка
-			callback(null);
+			process.nextTick(()=>
+			{
+				callback(null);
+			});
 		});
 	});
 };

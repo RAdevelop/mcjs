@@ -107,7 +107,7 @@ function menu(Classes, req, cb)
 				{
 					if (err)
 						return aCb(err, menuData);
-
+					
 					menuData.menuList = menuList || [];
 					return aCb(null, menuData);
 				});
@@ -138,24 +138,28 @@ function menu(Classes, req, cb)
 						return aCb(null, menuData);
 					}
 				}
-
+				
 				//если там нет, смотрим тут
-				Classes.model("menu").getByPath(req.path, menu_type, m_show, function(err, menuItem)
+				Classes.model("menu").getByPath(req.path, menu_type, m_show, (err, menuItem)=>
 				{
 					if (err)
 						return aCb(err, menuData);
-
+					
 					menuData.menuItem = (menuItem ? menuItem : getRootMenuItem(menuData.menuList));
-
+					
 					return aCb(null, menuData);
 				});
 			}
 		],
 		function(err, menuData)
 		{
-			if(err) return cb(err, menuData);
+			if(err)
+				return cb(err, menuData);
 			
-			return cb(null, menuData);
+			process.nextTick(()=>
+			{
+				return cb(null, menuData);
+			});
 		}
 	);
 }
