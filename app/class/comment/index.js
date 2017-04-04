@@ -16,7 +16,7 @@ class Comment extends Base
 			return 'blog_list';
 		if (objClass instanceof this.getClass('user').constructor)
 			return 'user_photo';
-
+		
 		objClass = null;
 		
 		return null;
@@ -227,7 +227,7 @@ class Comment extends Base
 						.spread((tplData, isRootAdmin)=>
 						{
 							return this.deleteComment(isRootAdmin, Controller.getUserId(), tplData['ui_cm_id'])
-								.then((is_del)=>
+								.spread((is_del, cm_cnt)=>
 								{
 									if (!is_del)
 									{
@@ -236,6 +236,7 @@ class Comment extends Base
 									}
 									else
 									{
+										tplData['cm_cnt'] = cm_cnt;
 										Controller.view.setTplData(tplFile, tplData);
 										return Promise.resolve(true);
 									}

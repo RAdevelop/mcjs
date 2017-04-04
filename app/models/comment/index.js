@@ -13,18 +13,20 @@ class Comment extends BaseModel
 		obj_id = parseInt(obj_id, 10);
 		if (!!obj_id === false || !!obj_name === false)
 			return Promise.resolve(0);
-
-		let sql = `SELECT COUNT(cm_id) AS cnt FROM comments AS cm
-		WHERE cm_obj_id = ? AND cm_obj_name = ?`;
-
+		
+		/*let sql = `SELECT COUNT(cm_id) AS cnt FROM comments AS cm
+		WHERE cm_obj_id = ? AND cm_obj_name = ?`;*/
+		
+		let sql = `SELECT cm_cnt AS cnt FROM comments_stat AS cm WHERE cm_obj_id = ? AND cm_obj_name = ?`;
 		let sqlData = [obj_id, obj_name];
-
+		
 		//console.log(sql, sqlData);
-
+		
 		return this.constructor.conn().sRow(sql, sqlData)
 			.then((res) =>
 			{
-				return Promise.resolve(res["cnt"] || 0);
+				let cnt = (!!res && !!res['cnt'] ? parseInt(res['cnt'], 10) : 0);
+				return Promise.resolve(cnt);
 			});
 	}
 
@@ -50,6 +52,7 @@ class Comment extends BaseModel
 		FROM_UNIXTIME(cm_moderate_ts, "%d-%m-%Y %H:%i:%s") AS dt_moderate_ts, cm_pid
 		FROM comments
 		WHERE cm_obj_id = ? AND cm_obj_name = ?
+		GROUP BY cm_lk
 		ORDER BY cm_obj_id, cm_lk
 		LIMIT ${limit} OFFSET ${offset}`;
 
@@ -162,8 +165,8 @@ class Comment extends BaseModel
 		if (!!cm_id === false || !!u_id === false)
 			return Promise.resolve(0);
 		
-		let sql = `CALL comment_delete (?, ?, ?, @is_del);
-		SELECT @is_del AS is_del FROM DUAL;`;
+		let sql = `CALL comment_delete (?, ?, ?, @is_del, @cm_cnt);
+		SELECT @is_del AS is_del, @cm_cnt AS cm_cnt FROM DUAL;`;
 		
 		let sqlData = [cm_id, isRootAdmin, u_id];
 		//console.log(sql, sqlData);
@@ -172,9 +175,10 @@ class Comment extends BaseModel
 		.then((res) =>
 		{
 			//console.log('res = ', res[1][0]);
-			let is_del = (res[1] && res[1][0] && res[1][0]['is_del'] ? parseInt(res[1][0]['is_del'], 10) : 0);
+			let is_del = (!!res[1] && !!res[1][0] && !!res[1][0]['is_del'] ? parseInt(res[1][0]['is_del'], 10) : 0);
+			let cm_cnt = (!!res[1] && !!res[1][0] && !!res[1][0]['cm_cnt'] ? parseInt(res[1][0]['cm_cnt'], 10) : 0);
 			
-			return Promise.resolve((!!is_del ? cm_id : 0));
+			return Promise.resolve([is_del, cm_cnt]);
 		});
 	}
 	

@@ -113,9 +113,8 @@
 						
 						$(window).scrollTo($commentItem, 4, {axis:'y', interrupt: true, limit: false});
 						$commentItem.remove();
-						//TODO передавать кол-во удаленных комментариев?
-						alert('TODO передавать кол-во удаленных комментариев?');
-						commentCountUpdate($(options.commentCount), '-');
+						
+						commentCountUpdate($(options.commentCount), '-', (resp['cm_cnt']||0));
 						return false;
 					},
 					onFail: function ($respDialog, resp)
@@ -348,13 +347,12 @@
 		return html;
 	}
 	
-	function commentCountUpdate($commentCount, type)
+	function commentCountUpdate($commentCount, type, cnt)
 	{
-		var cnt = parseInt($commentCount.text(), 10);
+		cnt = parseInt(cnt, 10)||0;
+		
 		if (type == '+')
-			cnt = (!cnt ? 0 : cnt) + 1;
-		else if (type == '-')
-			cnt = (!cnt ? 0 : cnt) - 1;
+		cnt = parseInt($commentCount.text(), 10) + 1;
 		
 		$commentCount.text(cnt);
 	}
