@@ -13,3 +13,16 @@ newsList.forEach(function (nItem)
 	</div><%
 }); %></div>
 </div>
+<%- include ../pages/index.ejs %>
+<script type="text/javascript">
+//<!--
+if (MCJS['pages'] && Pagination)
+{
+	MCJS['pages']['ajaxDataSrc'] = ['newsList'];
+	MCJS['pages']['ajaxDataTarget'] = 'newsList';
+	MCJS['pages']['jQuerySelector'] = '.newsListContainer .newsListItem';
+	
+	Pagination.init();
+}
+//-->
+</script>

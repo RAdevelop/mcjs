@@ -413,7 +413,7 @@ class Base
 
 				//если авторизованный юзер иначе как гость
 				let сacheSeconds = (!!ug_ids.length ? AppConfig.cache.user_ts : AppConfig.cache.guest_ts);
-
+				
 				this.view.setCacheKeyData(keyData)
 					.setCacheSeconds(сacheSeconds);
 				//console.log('this.view.cacheHtmlKey() = ', this.view.cacheHtmlKey());

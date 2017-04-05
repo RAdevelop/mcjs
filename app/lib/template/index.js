@@ -169,14 +169,14 @@ Template.prototype.getCacheKeyData = function()
 }
 
 
-Template.prototype.setCacheSeconds = function(сacheSeconds = 10)
+Template.prototype.setCacheSeconds = function(сacheSeconds = 0)
 {
 	this._сacheSeconds = сacheSeconds;
 	return this;
 }
 Template.prototype.getCacheSeconds = function()
 {
-	return parseInt(this._сacheSeconds, 10)||10;
+	return parseInt(this._сacheSeconds, 10)||0;
 }
 
 Template.prototype.useCache = function(useCache = true)

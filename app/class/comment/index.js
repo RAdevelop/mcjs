@@ -277,7 +277,7 @@ class Comment extends Base
 				if (!cnt)
 					return [[], Pages];
 				
-				return this.model("comment")
+				return this.model('comment')
 					.getCommentList(obj_id, obj_name, Pages.getLimit(), Pages.getOffset())
 					.then((comments)=>
 					{

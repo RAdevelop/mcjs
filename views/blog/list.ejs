@@ -29,17 +29,14 @@ blogList.forEach(function (bItem)
 </div>
 <%- include ../pages/index.ejs %>
 <script type="text/javascript">
-	//<!--
-	//console.log(MCJS);
+//<!--
+if (MCJS['pages'] && Pagination)
+{
+	MCJS['pages']['ajaxDataSrc'] = ['blogList'];
+	MCJS['pages']['ajaxDataTarget'] = 'blogList';
+	MCJS['pages']['jQuerySelector'] = '.blogListContainer .blogListItem';
 
-	if (MCJS['pages'] && Pagination)
-	{
-		MCJS['pages']['ajaxDataSrc'] = ['blogList'];
-		MCJS['pages']['ajaxDataTarget'] = 'blogList';
-		MCJS['pages']['jQuerySelector'] = '.blogListContainer .blogListItem';
-
-		Pagination.init();
-	}
-	//console.log(Pagination);
-	//-->
+	Pagination.init();
+}
+//-->
 </script>

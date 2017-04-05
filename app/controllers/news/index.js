@@ -38,6 +38,9 @@ class News extends CtrlMain
 			},
 			"upload": {
 				'^\/?$': null
+			},
+			"comment": {
+				'^\/?$': null
 			}
 		};
 	}
@@ -117,43 +120,58 @@ class News extends CtrlMain
 	_news(tplData, i_news_id, s_alias)
 	{
 		let show = (this.getLocalAccess()['post_edit'] ? null : 1);
-		return this.getClass('news').get(i_news_id, show)
-			.then((news) =>
+		let isAjax = this.getReq().xhr;
+		let {i_page=1} = this.routeArgs;
+		
+		return Promise.join(
+			this.getClass('user/groups').isRootAdmin(this.getUserId()),
+			this.getClass('news').get(i_news_id, show)
+		, (isRootAdmin, news)=>
 			{
 				if (!news || news['n_alias'] != s_alias)
 					throw new Errors.HttpError(404);
-
-				return this.getClass('news').getImageList(news.n_id)
-					.spread((images, allPreviews) =>
+				
+				return Promise.join(
+					(isAjax ? [[],[]] : this.getClass('news').getImageList(news['n_id'])),
+					this.getClass('comment').getCommentList(this, this.getClass('news'), isRootAdmin, news['n_id'], new Pages(i_page, limit_per_page))
+					, (images, comments)=>
 					{
-						return Promise.resolve([news, images, allPreviews]);
-					});
-			})
-			.spread((news, images, allPreviews) =>
-			{
-				news['newsImages'] = images;
-				news['newsImagesPreviews'] = allPreviews;
-
-				let tplFile = 'news';
-
-				tplData['news'] = news;
-				tplData['newsImages'] = news['newsImages'];
-
-				this.view.setPageTitle(news['n_title']);
-				this.view.setPageDescription(news['n_notice']);
-
-				if (news['newsImages'] && news['newsImages'][0] && news['newsImages'][0]['previews']['512_384'])
-					this.view.setPageOgImage(news['newsImages'][0]['previews']['512_384']);
-
-				//this.view.setPageH1(news.n_title);
-
-				//экспрот данных в JS на клиента
-				this.getRes().expose(tplData['news'], 'newsData');
-				this.view.setTplData(tplFile, tplData);
-				//this.view.addPartialData("user/left", {user: userData});
-				//this.view.addPartialData("user/right", {title: 'right_col'});
-
-				return Promise.resolve(null);
+						return Promise.resolve([news, images[0], images[1], comments]);
+					})
+				.spread((news, images, allPreviews, comments) =>
+				{
+					news['newsImages'] = images;
+					news['newsImagesPreviews'] = allPreviews;
+					
+					let tplFile = 'news';
+					
+					tplData['news'] = news;
+					tplData['newsImages'] = news['newsImages'];
+					
+					tplData['comments'] = this.getClass('comment')
+					.commentsData(news['n_id'], comments[0], comments[1].getTotal());
+					
+					comments[1].setLinksUri(this.getOriginalUrl());
+					tplData['pages'] = comments[1].pages();
+					
+					if (!isAjax)
+					{
+						this.view.setPageTitle(news['n_title']);
+						this.view.setPageDescription(news['n_notice']);
+						
+						if (news['newsImages'] && news['newsImages'][0] && news['newsImages'][0]['previews']['512_384'])
+							this.view.setPageOgImage(news['newsImages'][0]['previews']['512_384']);
+						
+						//this.view.setPageH1(news.n_title);
+						//экспрот данных в JS на клиента
+						this.getRes().expose(tplData['news'], 'newsData');
+						this.getRes().expose(tplData['comments']['list'], 'comments');
+						this.getRes().expose(tplData['pages'], 'pages');
+					}
+					
+					this.view.setTplData(tplFile, tplData, isAjax);
+					return Promise.resolve(isAjax);
+				});
 			});
 	}
 
@@ -625,6 +643,15 @@ class News extends CtrlMain
 				this.view.setTplData(tplFile, tplData);
 				return Promise.resolve(true);
 			});
+	}
+	
+	/**
+	 * обработка запросов по работе с комментариями
+	 * @returns {Promise}
+	 */
+	commentActionPost()
+	{
+		return this.getClass('comment').commentActionPost(this, this.getClass('news'));
 	}
 }
 //************************************************************************* module.exports

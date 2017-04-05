@@ -162,10 +162,13 @@ class Comment extends BaseModel
 		cm_id = parseInt(cm_id, 10)||0;
 		u_id = parseInt(u_id, 10)||0;
 		
+		//console.log('isRootAdmin, u_id, cm_id');
+		//console.log(isRootAdmin, u_id, cm_id);
+		
 		if (!!cm_id === false || !!u_id === false)
 			return Promise.resolve(0);
 		
-		let sql = `CALL comment_delete (?, ?, ?, @is_del, @cm_cnt);
+		let sql = `CALL comment_delete(?, ?, ?, @is_del, @cm_cnt);
 		SELECT @is_del AS is_del, @cm_cnt AS cm_cnt FROM DUAL;`;
 		
 		let sqlData = [cm_id, isRootAdmin, u_id];

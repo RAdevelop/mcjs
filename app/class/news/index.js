@@ -389,7 +389,10 @@ class News extends Base
 			})
 			.then(() =>
 			{
-				return this.getClass('keywords').saveKeyWords(this, news['n_id']);
+				return Promise.all([
+					this.getClass('keywords').saveKeyWords(this, news['n_id']),
+					this.getClass('comment').deleteCommentForObj(this, news['n_id'])
+				]);
 			});
 	}
 }

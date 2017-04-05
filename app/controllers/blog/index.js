@@ -187,7 +187,7 @@ class Blog extends CtrlMain
 		
 		return this._getBlogData(i_blog_id, i_u_id, isAjax)
 			.spread((isRootAdmin, blog, user, blogSubjects)=>
-			{;
+			{
 				if (
 					blog && blog["b_alias"] == s_alias
 					&& (isRootAdmin || blog['u_id'] == this.getUserId() || blog['b_show'] == 1)
@@ -226,7 +226,6 @@ class Blog extends CtrlMain
 					.commentsData(blog['b_id'], comments[0], comments[1].getTotal());
 
 				comments[1].setLinksUri(this.getOriginalUrl());
-
 				tplData['pages'] = comments[1].pages();
 
 				if (!isAjax)
