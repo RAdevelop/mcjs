@@ -129,25 +129,22 @@ class Profile extends CtrlMain
 	{
 		if (!this.isAuthorized())
 			throw new Errors.HttpError(401);
-
-		return this.getUser(this.getUserId())
-			.then((userData) =>
-			{
-				let uploadConfigName = this.getClass('user/photo').constructor.uploadAvaConfigName;
-				let tplData = {};
-				Object.assign(tplData, userData, FileUpload.createToken(uploadConfigName, {"u_id": userData["u_id"]}) );
-
-				let tplFile = 'user/profile/edit.ejs';
-				this.view.setTplData(tplFile, tplData);
-				this.view.addPartialData('user/left', {user: userData});
-
-				//экспрот данных в JS на клиента
-				this.getRes().expose(this.reqQuery().hasOwnProperty('empty_name'), 'userEmptyName');
-				this.getRes().expose(userData, 'userLocation');
-				this.getRes().expose(FileUpload.exposeUploadOptions(uploadConfigName), 'avaUploadOpts');
-
-				return Promise.resolve(null);
-			});
+		
+		let userData = this.user();
+		let uploadConfigName = this.getClass('user/photo').constructor.uploadAvaConfigName;
+		let tplData = {};
+		Object.assign(tplData, userData, FileUpload.createToken(uploadConfigName, {"u_id": userData["u_id"]}) );
+		
+		let tplFile = 'user/profile/edit.ejs';
+		this.view.setTplData(tplFile, tplData);
+		this.view.addPartialData('user/left', {user: this.getUserData()});
+		
+		//экспрот данных в JS на клиента
+		this.getRes().expose(this.reqQuery().hasOwnProperty('empty_name'), 'userEmptyName');
+		this.getRes().expose(userData, 'userLocation');
+		this.getRes().expose(FileUpload.exposeUploadOptions(uploadConfigName), 'avaUploadOpts');
+		
+		return Promise.resolve(null);
 	}
 	
 	/**
@@ -223,19 +220,17 @@ class Profile extends CtrlMain
 	{
 		//let key = this.getArgs().shift();
 		
-		const self = this;
-		
-		return new Promise(function(resolve, reject)
+		return new Promise((resolve, reject)=>
 		{
-			self.model("user/profile")
-				.confirmReqChangeMail(self.getUser().u_id, key, function(err, confirmed)
-				{
-					if (err)
-						return reject(err);
-
-					tplData.confirmed = confirmed;
-					return resolve(tplData);
-				});
+			this.model('user/profile')
+			.confirmReqChangeMail(this.user()['u_id'], key, (err, confirmed)=>
+			{
+				if (err)
+					return reject(err);
+				
+				tplData.confirmed = confirmed;
+				return resolve(tplData);
+			});
 		});
 	}
 	
@@ -350,7 +345,7 @@ class Profile extends CtrlMain
 		
 		if (!s_location.length || !f_lat || !f_lng)
 			errors["s_location"] = "Укажите свой населенный пункт";
-
+		
 		return Promise.resolve(errors)
 			.then((errors) =>
 			{
@@ -390,34 +385,35 @@ class Profile extends CtrlMain
 	_formProfileLoginValidation(tplData)
 	{
 		let errors = {};
-		let s_login = tplData["s_login"] || '';
+		let s_login = tplData['s_login'] || '';
 		
 		if (s_login.length < 5 || s_login.length > 20)
-			errors["s_login"] = "логин указан неверно (от 5 до 20 символов)";
+			errors['s_login'] = "логин указан неверно (от 5 до 20 символов)";
 		
 		if (s_login.search(/[a-zA-Z]{1,20}/ig) == -1)
-			errors["s_login"] = "логин указан неверно (латинские буквы обязательны)";
+			errors['s_login'] = "логин указан неверно (латинские буквы обязательны)";
 		
 		if (s_login.search(/^[a-zA-Z\-_0-9]{5,20}$/ig) == -1)
-			errors["s_login"] = "логин указан неверно";
+			errors['s_login'] = "логин указан неверно";
 		
 		return Promise.resolve(errors)
 			.then((errors) =>
 			{
 				if (this.parseFormErrors(tplData, errors))
 				{
-					return this.model("user/profile")
-						.updLogin(tplData["i_u_id"], tplData["s_login"])
-						.then(() => {
+					return this.model('user/profile')
+						.updLogin(tplData['i_u_id'], tplData['s_login'])
+						.then(() => 
+						{
 							return Promise.resolve(tplData);
 						});
 				}
 			})
-			.catch(Errors.AlreadyInUseError, (err) => {
-
+			.catch(Errors.AlreadyInUseError, (err) => 
+			{
 				tplData.formError.message = 'Ошибки при заполнении формы';
-				tplData.formError.fields["s_login"] = 'Такой логин уже занят';
-
+				tplData.formError.fields['s_login'] = 'Такой логин уже занят';
+				
 				throw err;
 			});
 	}
@@ -433,15 +429,11 @@ class Profile extends CtrlMain
 		let errors = {};
 		tplData.s_password = (tplData.s_password || '').trim();
 		tplData.s_password2 = (tplData.s_password2 || '').trim();
-
+		
 		if(tplData.s_password.length < 6)
-		{
-			errors["s_password"] = 'короткий пароль';
-		}
+			errors['s_password'] = 'короткий пароль';
 		else if(tplData.s_password != tplData.s_password2 || tplData.s_password2 == '')
-		{
-			errors["s_password"] = 'пароли не совпадают';
-		}
+			errors['s_password'] = 'пароли не совпадают';
 		
 		//const self = this;
 		
@@ -452,7 +444,7 @@ class Profile extends CtrlMain
 			{
 				return new Promise((resolve, reject)=>
 				{
-					this.model("user/auth").updPassword(this.getUser().u_id, tplData["s_password"], (err)=>
+					this.model('user/auth').updPassword(this.user()['u_id'], tplData['s_password'], (err)=>
 					{
 						tplData.s_password = tplData.s_password2 = '';
 						
@@ -477,33 +469,34 @@ class Profile extends CtrlMain
 	{
 		let errors = {};
 		
-		if (!tplData["i_u_id"])
-			errors["i_u_id"] = "неверно указан id пользователя";
+		if (!tplData['i_u_id'])
+			errors['i_u_id'] = "неверно указан id пользователя";
 		
 		/*if (this.getReq()._reqbody["s_nick"] == null || this.getReq()._reqbody["s_nick"].trim() == '')
 			errors["s_nick"] = "неверно указан ник";
 		*/
-		if (!tplData["s_name"])
-			errors["s_name"] = "неверно указано имя";
+		if (!tplData['s_name'])
+			errors['s_name'] = "неверно указано имя";
 		
-		if (!tplData["s_surname"])
-			errors["s_surname"] = "неверно указано фамилия";
+		if (!tplData['s_surname'])
+			errors['s_surname'] = "неверно указано фамилия";
 		
-		if (!tplData["bd_birthday"])
-			errors["bd_birthday"] = "неверно указан день рождения";
+		if (!tplData['bd_birthday'])
+			errors['bd_birthday'] = "неверно указан день рождения";
 		
-		if (!tplData["i_sex"] || (tplData["i_sex"] != 0 && tplData["i_sex"] != 1))
-			errors["i_sex"] = "неверно указан пол";
+		if (!tplData['i_sex'] || (tplData['i_sex'] != 0 && tplData['i_sex'] != 1))
+			errors['i_sex'] = "неверно указан пол";
 
 		return Promise.resolve(errors)
 			.then((errors) =>
 			{
 				if (this.parseFormErrors(tplData, errors))
 				{
-					let bd = Moment(tplData["bd_birthday"], "DD-MM-YYYY").unix();
-					return this.model("user/profile")
-						.updBaseInfo(tplData["i_u_id"], tplData["s_name"], tplData["s_surname"], tplData["i_sex"], bd)
-						.then(() => {
+					let bd = Moment(tplData['bd_birthday'], "DD-MM-YYYY").unix();
+					return this.model('user/profile')
+						.updBaseInfo(tplData['i_u_id'], tplData['s_name'], tplData['s_surname'], tplData['i_sex'], bd)
+						.then(() => 
+						{
 							tplData.formError.message = 'Данные успешно сохранены';
 							return Promise.resolve(tplData);
 						});
@@ -523,9 +516,7 @@ class Profile extends CtrlMain
 		let errors = {};
 		
 		if(!tplData.m_mail)
-		{
-			errors["m_mail"] = 'e-mail указан неверно';
-		}
+			errors['m_mail'] = 'e-mail указан неверно';
 		
 		return Promise.resolve(errors)
 		.then((errors)=>
@@ -542,16 +533,16 @@ class Profile extends CtrlMain
 				
 				return new Promise((resolve, reject)=>
 				{
-					this.model("user/profile")
-						.createReqChangeMailKey(this.getUser(), tplData.m_mail, (err, userData)=>
-						{
-							if(err)
-								return reject(err);
-
-							tplData.userData = userData;
-							tplData.sendMail = true;
-							return resolve(tplData);
-						});
+					this.model('user/profile')
+					.createReqChangeMailKey(this.user(), tplData.m_mail, (err, userData)=>
+					{
+						if(err)
+							return reject(err);
+						
+						tplData.userData = userData;
+						tplData.sendMail = true;
+						return resolve(tplData);
+					});
 				});
 			}
 		})

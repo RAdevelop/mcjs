@@ -262,19 +262,20 @@ class Auth extends User
 	 */
 	updPassword(u_id, password, cb)
 	{
-		const self = this;
-		
-		self.hashPassword(password, (err, hashData) =>
+		this.hashPassword(password, (err, hashData) =>
 		{
 			if(err)
 				return cb(err);
 			
-			let sql = `UPDATE users SET u_salt = ?, u_pass = ? WHERE u_id = ?`;
+			u_id = parseInt(u_id, 10)||0;
 			
-			u_id = parseInt(u_id, 10);
+			if (!!u_id === false)
+				return cb(new Errors.NotFoundError());
+			
+			let sql = `UPDATE users SET u_salt = ?, u_pass = ? WHERE u_id = ?`;
 			let sqlData = [hashData.salt, hashData.hash, u_id];
 			
-			self.constructor.conn().upd(sql, sqlData, (err) =>
+			this.constructor.conn().upd(sql, sqlData, (err) =>
 			{
 				if(err)
 					return cb(err);

@@ -6,7 +6,7 @@
 (function ($)
 {
 	if (window["McMap"]) return;
-
+	
 	function McMap(mapId, params)
 	{
 		this.mapId = mapId;
@@ -76,8 +76,8 @@
 			if (state.center[0] && state.center[1])
 				self.map = new ymaps.Map(self.mapId, state, options);
 		}
-
-		return Promise.resolve(typeof ymaps != 'undefined')
+		
+		return Promise.resolve(typeof ymaps !== 'undefined')
 			.then(function (is_ymaps)
 			{
 				if (is_ymaps)

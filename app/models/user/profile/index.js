@@ -79,8 +79,7 @@ class Profile extends User
 	 */
 	createReqChangeMailKey(user, new_mail, cb)
 	{
-		const self = this;
-		self.getByEmail(new_mail, (err, tmpUser)=>
+		this.getByEmail(new_mail, (err, tmpUser)=>
 		{
 			if (err)
 			{
@@ -112,7 +111,9 @@ class Profile extends User
 			ON DUPLICATE KEY UPDATE u_req_key=VALUES(u_req_key), 
 			u_req_end_ts=VALUES(u_req_end_ts), u_req_data=VALUES(u_req_data);`;
 			
-			self.constructor.conn().ins(sql, [user.u_id, u_req_type, user.u_req_key, u_req_end_ts, new_mail], (err)=>
+			let sqlData = [user.u_id, u_req_type, user.u_req_key, u_req_end_ts, new_mail];
+			
+			this.constructor.conn().ins(sql, sqlData, (err)=>
 			{
 				if (err)
 					return cb(err, user);
@@ -135,15 +136,15 @@ class Profile extends User
 	 */
 	confirmReqChangeMail(u_id, key, cb)
 	{
-		const self = this;
-		
+		u_id = parseInt(u_id, 10);
 		let u_req_type = 'reg_mail_change';
 		
 		let sql = `SELECT u_req_data FROM user_change_request
 		WHERE u_id = ? AND u_req_type = ? AND u_req_key = ? AND u_req_end_ts >= ?`;
 		
-		u_id = parseInt(u_id, 10);
-		self.constructor.conn().ps(sql, [u_id, u_req_type, key, Moment().unix()], (err, res)=>
+		let sqlData = [u_id, u_req_type, key, Moment().unix()];
+		
+		this.constructor.conn().ps(sql, sqlData, (err, res)=>
 		{
 			if (err)
 				return cb(err);
@@ -155,27 +156,29 @@ class Profile extends User
 					return cb(null, false);
 				});
 			}
-			
-			sql = `UPDATE users SET u_mail = ? WHERE u_id = ?;`;
-			
-			self.constructor.conn().upd(sql, [res[0]["u_req_data"], u_id], (err)=>
+			else 
 			{
-				if (err)
-					return cb(err, false);
+				sql = `UPDATE users SET u_mail = ? WHERE u_id = ?;`;
 				
-				sql = `DELETE FROM user_change_request WHERE u_id = ? AND u_req_type = ?`;
-				
-				self.constructor.conn().del(sql, [u_id, u_req_type], (err)=>
+				this.constructor.conn().upd(sql, [res[0]["u_req_data"], u_id], (err)=>
 				{
 					if (err)
-						return cb(err, true);
+						return cb(err, false);
 					
-					process.nextTick(()=>
+					sql = `DELETE FROM user_change_request WHERE u_id = ? AND u_req_type = ?`;
+					
+					this.constructor.conn().del(sql, [u_id, u_req_type], (err)=>
 					{
-						return cb(null, true);
+						if (err)
+							return cb(err, true);
+						
+						process.nextTick(()=>
+						{
+							return cb(null, true);
+						});
 					});
 				});
-			});
+			}
 		});
 	}
 	

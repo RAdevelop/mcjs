@@ -601,6 +601,11 @@ class Base
 		return this.getClass('user').getUser(u_id);
 	}
 
+	user()
+	{
+		return (this.getReq()._user && !!this.getReq()._user['u_id'] ? this.getReq()._user : {u_id: null});
+	}
+	
 	getUserId()
 	{
 		return (this.getReq()._user && this.getReq()._user["u_id"] ? this.getReq()._user["u_id"] : null);
