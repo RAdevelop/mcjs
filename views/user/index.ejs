@@ -7,11 +7,12 @@
 				<div class="input-group-btn">
 					<a tabindex="0" class="btn btn-primary" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">страна <i class="caret"></i></a>
 					<ul class="dropdown-menu js-country-list" aria-labelledby=""><%
-						if (country_list['list'].length) {
-						country_list['list'].forEach(function (country)
+						if (country_list['list'].length)
 						{
-						%><li><a href="javascript:void(0);" data-country-id="<%=country['l_id']%>" data-country-name="<%=country['l_name']%>"><%=country['l_name']%></a></li><%
-						})
+							country_list['list'].forEach(function (country)
+							{
+							%><li><a href="javascript:void(0);" data-country-id="<%=country['l_id']%>" data-country-name="<%=country['l_name']%>"><%=country['l_name']%></a></li><%
+							});
 						}%>
 					</ul>
 				</div>
@@ -19,15 +20,18 @@
 				<input type="text"  class="form-control" id="s_country" value="<%=(country_list['selected']['l_name']||'') %>" aria-label="..." placeholder="страна"/>
 			</div>
 			<div class="input-group user-search-fields">
-				<div class="input-group-btn">
-					<a tabindex="0" class="btn btn-primary disabled js-city-dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">город <i class="caret"></i></a>
+				<div class="input-group-btn"><%
+				let cityDisabled = (city_list.hasOwnProperty('selected') && city_list['selected']['l_id'] ? '' : ' disabled ');
+				 %><a tabindex="0" class="<%=cityDisabled%> btn btn-primary js-city-dropdown" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">город <i class="caret"></i></a>
 					<ul class="dropdown-menu js-city-list" aria-labelledby=""><%
 						if (city_list['list'].length)
 						{
-						city_list['list'].forEach(function (city)
-						{
-						%><li><a href="javascript:void(0);" data-city-id="<%=city['l_id']%>" data-city-name="<%=city['l_name']%>"><%=city['l_name']%></a></li><%
-						})
+							let citySelected = '';
+							city_list['list'].forEach(function (city)
+							{
+								citySelected = (!cityDisabled && city_list['selected']['l_id']==city['l_id'] ? ' selected ' :'');
+							%><li class="<%=citySelected%>"><a href="javascript:void(0);" data-city-id="<%=city['l_id']%>" data-city-name="<%=city['l_name']%>"><%=city['l_name']%></a></li><%
+							});
 						}%>
 					</ul>
 				</div>

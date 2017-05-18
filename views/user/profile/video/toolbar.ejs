@@ -4,12 +4,12 @@
 		{%><div class="btn-group btn-group-sm" role="group" aria-label="Опции для видео">
 			<button type="button" class="btn btn-default dropdown-toggle toolbarBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-fw fa-cog"></i> опции <i class="caret"></i></button>
 			<ul class="dropdown-menu js-toolbar"><%
-				if (_access['post_add']) {%><li><a href="javascript:void(0);" data-action="add"><i class="fa fa-fw fa-plus-square-o"></i> добавить видео-альбом</a></li><% }
+				if (_access['post_add']) {%><li><a href="javascript:void(0);" data-action="add"><i class="fa fa-fw fa-plus-square-o"></i> добавить альбом</a></li><% }
 				if (_access['post_edit'] && videoAlbum && videoAlbum['va_id'])
-				{ %><li><a href="javascript:void(0);" data-action="edit"><i class="fa fa-fw fa-edit"></i> редактировать видео-альбом</a></li>
-				<li><a href="javascript:void(0);" data-action="delete" data-video-id="<%=videoAlbum['va_id']%>"><i class="fa fa-fw fa-trash-o"></i> удалить видео-альбом</a></li>
+				{ %><li><a href="javascript:void(0);" data-action="edit"><i class="fa fa-fw fa-edit"></i> редактировать альбом</a></li>
+				<li><a href="javascript:void(0);" data-action="delete" data-video-id="<%=videoAlbum['va_id']%>"><i class="fa fa-fw fa-trash-o"></i> удалить альбом</a></li>
 				<li role="separator" class="divider"></li>
-				<li><a href="javascript:void(0);" data-action="add_video"><i class="fa fa-fw fa-video-camera"></i> добавить видео в альбом</a></li>
+				<li><a href="javascript:void(0);" data-action="add_video"><i class="fa fa-fw fa-video-camera"></i> добавить видео</a></li>
 				<% if (videoMove)
 				{%><li><a href="javascript:void(0);" data-action="edit_video" data-video-id="<%=videoMove['v_id']%>"><i class="fa fa-fw fa-edit"></i> редактировать видео</a></li><% }
 				}%>

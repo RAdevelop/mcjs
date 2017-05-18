@@ -35,26 +35,35 @@ $(function(){
 			,"transports" : ['polling', 'websocket']                //forces the transport to be only websocket. Server needs to be setup as well/
 	};
 
-	var chat = io('//'+window.location.host+'/chats', opts);
+	//var chat = io('//'+window.location.host+'/chats', opts);
+	var chat = io('//'+window.location.host+'/', opts);
 
 
-	chat.on('connect', function(){
-
-		console.log('on connection event');
-		chat.emit('chat:user:connected', {"userName": navigator.userAgent}, function(data){});
-
-	}).on('connecting', function () {
-
-		console.log('connecting');
-
-	})
-	.on('reconnect', function ()
+	chat.on('connect', function(data)
 	{
-		console.log('reconnected ');
+		console.log('on connection event data=' ,data);
+		//при подключении попробовать передать набор namespace'ов
+		var sendData = {
+			//'userName': navigator.userAgent
+			'chanel': 'ad'
+		};
+		
+		chat.emit('join', sendData, function(respData)
+		{
+			console.log('cb chat:user:connected respData = ', respData);
+		});
 	})
-	.on('reconnecting', function ()
+	.on('connecting', function (connecting)
 	{
-		console.log('reconnecting');
+		console.log('connecting ', connecting)
+	})
+	.on('reconnect', function (data)
+	{
+		console.log('reconnected data = ', data);
+	})
+	.on('reconnecting', function (data)
+	{
+		console.log('reconnecting data = ', data);
 	})
 	.on('reconnect_error', function(err)
 	{
@@ -75,7 +84,8 @@ $(function(){
 
 		if(err == 'error:authentication')
 		{
-			chat.emit('chat:error:auth', {}, function(data){
+			chat.emit('chat:error:auth', {}, function(data)
+			{
 				console.log('chat:error:auth');
 			});
 
@@ -97,7 +107,8 @@ $(function(){
 		}
 	});
 
-	$formSendMessage.submit(function(event){
+	$formSendMessage.submit(function(event)
+	{
 		event.preventDefault();
 
 		var msg = $.trim($msg.val());
@@ -106,26 +117,45 @@ $(function(){
 		{
 			$msg.val('');
 
-			chat.emit('chat:msg:send', msg, function(data){
+			chat.emit('chat:msg:send', msg, function(data)
+			{
 				//if(data) console.log('сообщение получено сервером');
 			});
 		}
 		return false;
 	});
-
-	chat.on('chat:msg:get', function(data)
+	
+	chat.on('join', function(data)
 	{
+		console.log('on join');
 		console.log(data);
-
-		var ava = !!(data['from']['user']['previews']['50_50']);
+		
+		//var ava = !!(data['from']['user']['previews']['50_50']);
+		var ava = '';
 		var avaSrc = (ava ? data['from']['user']['previews']['50_50'] : '/_0.gif');
 
 		var html = '<li>';
 			html += '<div><img src="'+avaSrc+'"/></div>';
-			html += '<div>'+nl2br(data['text'])+'</div>';
+			html += '<div>'+nl2br(data['u_login'])+'</div>';
 			html += '</li>';
+		
+		$messages.append(html);
+		$messagesWrapper.scrollTop($messagesWrapper.height());
+	});
+	
+	chat.on('chat:msg:get', function(data)
+	{
+		console.log('on chat:msg:get');
+		console.log(data);
 
-		console.log(ava);
+		//var ava = !!(data['from']['user']['previews']['50_50']);
+		var ava = '';
+		var avaSrc = (ava ? data['from']['user']['previews']['50_50'] : '/_0.gif');
+
+		var html = '<li>';
+			html += '<div><img src="'+avaSrc+'"/></div>';
+			html += '<div>'+nl2br(data['u_login'])+'</div>';
+			html += '</li>';
 
 		$messages.append(html);
 		$messagesWrapper.scrollTop($messagesWrapper.height());

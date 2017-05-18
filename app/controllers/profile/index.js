@@ -137,7 +137,7 @@ class Profile extends CtrlMain
 		
 		let tplFile = 'user/profile/edit.ejs';
 		this.view.setTplData(tplFile, tplData);
-		this.view.addPartialData('user/left', {user: this.getUserData()});
+		this.view.addPartialData('user/left', {user: this.user()});
 		
 		//экспрот данных в JS на клиента
 		this.getRes().expose(this.reqQuery().hasOwnProperty('empty_name'), 'userEmptyName');

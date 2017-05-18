@@ -208,8 +208,8 @@ var config = {
 	},
 	vk: {
 		app_id: 5806988, //он же client_id
-		app_secret: 'b71t4NPbRmlhAUipFNrz',
-		app_access_token: '705d1ac0705d1ac0700d4eb5e97005814c7705d705d1ac028b8e9834df958f002a97982',
+		app_secret: 'GbZHOh3ILid62kNGk1qU',
+		app_service_token: '6ed715a46ed715a46e880e51e06e8f8e2866ed76ed715a43638e6645a6ea87fddedece8',
 		group_id: 34886964,
 		api_host: 'api.vk.com',
 		api_service: '/method/',

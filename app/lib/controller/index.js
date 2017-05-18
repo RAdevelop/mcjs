@@ -545,7 +545,7 @@ class Base
 	
 	isAuthorized()
 	{
-		return this.getUserId();
+		return !!this.getUserId();
 	}
 	
 	isTheSameUser(u_id)
@@ -608,7 +608,7 @@ class Base
 	
 	getUserId()
 	{
-		return (this.getReq()._user && this.getReq()._user["u_id"] ? this.getReq()._user["u_id"] : null);
+		return this.user()['u_id'];
 	}
 
 	isUserAdmin()
