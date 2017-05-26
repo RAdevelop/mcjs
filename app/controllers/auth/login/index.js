@@ -107,7 +107,7 @@ class Login extends CtrlMain
 		
 		return new Promise((resolve, reject)=>
 		{
-			self.model("user").issetChangeRequest('pass_reset_confirm', s_key, (err, isset)=>
+			self.model('user').issetChangeRequest('pass_reset_confirm', s_key, (err, isset)=>
 			{
 				if (err)
 					return reject(err);
@@ -169,7 +169,7 @@ class Login extends CtrlMain
 					tplData.formError.message = 'Пароль успешно изменен';
 					tplData.formError.text = 'Вы можете войти с новым паролем.';
 
-					self.model("user").clearUserChangeRequest(u_id, 'pass_reset_confirm', (err)=>
+					self.model('user').clearUserChangeRequest(u_id, 'pass_reset_confirm', (err)=>
 					{
 						if (err)
 							return reject(err);
@@ -218,12 +218,12 @@ class Login extends CtrlMain
 		{
 			return new Promise((resolve, reject)=>
 			{
-				self.model("user").getByEmail(tplData.m_email, (err, userData)=>
+				self.model('user').getByEmail(tplData.m_email, true, (err, userData)=>
 				{
 					if(err)
 						return reject(err);
 					
-					tplData.userData = self.model("user").filterData(userData);
+					tplData.userData = self.model('user').filterData(userData);
 					
 					return resolve(tplData);
 				});
@@ -330,7 +330,7 @@ class Login extends CtrlMain
 		{
 			return new Promise((resolve, reject)=>
 			{
-				self.model("user").getByEmail(tplData.m_email, (err, userData)=>
+				self.model('user').getByEmail(tplData.m_email, true, (err, userData)=>
 				{
 					if(err) return reject(err);
 					
@@ -344,14 +344,14 @@ class Login extends CtrlMain
 						
 						if(userData["u_pass"] == hash)
 						{
-							tplData.userData = self.model("user").filterData(userData);
+							tplData.userData = self.model('user').filterData(userData);
 							tplData.s_password = '';
 							
-							if (tplData.userData["u_reg"] == 0)
+							/*if (tplData.userData["u_state"] == 0)
 							{
 								return reject(new Errors.AppRegistrationNotConfirmed(""));
 							}
-							else
+							else*/
 							return resolve(tplData);
 							
 						}//пароль неверный

@@ -28,17 +28,53 @@
 			</div>
 		</div>
 	</div>
+	<div class="col-xs-12 col-sm-3">
+		<div class="panel panel-default">
+			<div class="panel-heading">Изменить статус пользователя</div>
+			<div class="panel-body">
+				<form id="formuEditUserState" class="form-horizontal" action="<%= menuItem['m_path'] %>/edit/" method="post">
+					<ul class="list-group"><%
+						let user_state_list = {
+							0: 'удален',
+							1: 'зарегистрирован',
+							2: 'забанен'
+						};
+					
+					for(let st in user_state_list){
+						let checked = (user['u_state'] == st ? ' checked="checked" ' : '' );
+						%><li class="radio">
+							<label>
+								<input <%-checked%> type="radio" name="ui_u_state" value="<%=st%>"/> <%= user_state_list[st] %>
+							</label>
+						</li><% }
+					%></ul>
+					<div class="text-center">
+						<input type="hidden" name="ui_u_id" value="<%=user['u_id']%>" />
+						<input type="hidden" name="btn_user_save" value="user_state" />
+						<button class="btn btn-primary" type="submit" id="btn_user_state">изменить</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
 </div>
 <script type="text/javascript">
 //<!--
 (function($)
 {
 	var $formuAddUserToGroup = $('#formuAddUserToGroup');
+	var $formuEditUserState = $('#formuEditUserState');
 	$formuAddUserToGroup.postRes({btnId: 'btn_user_to_groups',
 		onSuccess: function($dialog, respData)
 		{
 			//console.log(respData);
-
+			return true;
+		}
+	});
+	$formuEditUserState.postRes({btnId: 'btn_user_state',
+		onSuccess: function($dialog, respData)
+		{
+			//console.log(respData);
 			return true;
 		}
 	});

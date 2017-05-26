@@ -79,7 +79,7 @@ class Profile extends User
 	 */
 	createReqChangeMailKey(user, new_mail, cb)
 	{
-		this.getByEmail(new_mail, (err, tmpUser)=>
+		this.getByEmail(new_mail, true, (err, tmpUser)=>
 		{
 			if (err)
 			{

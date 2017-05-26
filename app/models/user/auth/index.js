@@ -27,7 +27,7 @@ class Auth extends User
 		password = password.trim();
 		const self = this;
 		//поиск пользователя по email
-		self.getByEmail(email, (err, userData)=>
+		self.getByEmail(email, false, (err, userData)=>
 		{
 			if(err)
 			{
@@ -228,9 +228,9 @@ class Auth extends User
 					if (err)
 						return cb(err, false);
 					
-					sql = `UPDATE users SET u_reg = ? WHERE u_id = ?;`;
+					sql = `UPDATE users SET u_state = ? WHERE u_id = ?;`;
 					
-					self.constructor.conn().upd(sql, [1, u_id], (err)=>
+					self.constructor.conn().upd(sql, [User.USER_STATE_REG, u_id], (err)=>
 					{
 						if (err)
 							return cb(err, false);

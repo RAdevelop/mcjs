@@ -589,7 +589,7 @@ class Base
 			u_mail: 'roalexey@yandex.ru',
 			u_date_visit: '1473530081',
 			u_login: 'MotoCommunity',
-			u_reg: '1' }
+			u_state: '1' }
 		*/
 
 		if (!u_id)

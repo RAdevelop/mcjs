@@ -76,7 +76,8 @@ module.exports = function(Classes)
 									break;
 								case 'NotFoundError':
 								case 'TypeError':
-
+								case 'HttpError':
+									
 									req.session.destroy(()=>//err
 									{
 										delete req.session;

@@ -3,7 +3,8 @@
   "version": "0.6.1",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "test": "vows test/*/*-test.js --spec"
   },
   "main": "app.js",
   "dependencies": {

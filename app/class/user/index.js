@@ -15,12 +15,12 @@ class User extends Base
 	{
 		return `user_photo`;
 	}
-
+	
 	static userDisplayName(user)
 	{
 		return (user["u_login"] ? user["u_login"] : (user["u_name"] || user["u_surname"] ? [user["u_name"]||'', user["u_surname"]||''].join(' ') : ''))
 	}
-
+	
 	/**
 	 * данные пользователя (имя, фамилия, пол, ДР...)
 	 *
@@ -29,7 +29,7 @@ class User extends Base
 	 */
 	getUserData(u_id)
 	{
-		return this.model("user").getUserData(u_id);
+		return this.model('user').getUserData(u_id);
 	}
 	
 	/**
@@ -40,55 +40,74 @@ class User extends Base
 	 */
 	getUserLocation(u_id)
 	{
-		return this.model("user").getUserLocation(u_id);
+		return this.model('user').getUserLocation(u_id);
 	}
 
-	getById(u_id)
+	getById(u_id, check_state = true)
 	{
-		return new Promise((resolve, reject) =>
-		{
-			this.model("user").getById(u_id, (err, uData) =>
+		return this.model('user').getById(u_id)
+			.then((user)=>
 			{
+				if (check_state && user['u_state'] != this.model('user').constructor.USER_STATE_REG)
+					//throw new Errors.NotFoundError();
+					throw new Errors.HttpError(404);
+				
+				return Promise.resolve(user);
+			});
+		
+		/*return new Promise((resolve, reject) =>
+		{
+			this.model('user').getById(u_id, (err, uData) =>
+			{
+				//console.log('err = ', err);
+				//console.log('userData = ', uData);
 				if (err && err.name != 'NotFoundError')
 					return reject(err);
-
+				
 				return resolve(uData);
 			});
-		});
+		});*/
 	}
 
 	/**
 	 * данные пользователя
 	 *
 	 * @param u_id
+	 * @param check_state
 	 * @returns {Promise}
 	 */
-	getUser(u_id)
+	getUser(u_id, check_state = true)
 	{
-		return Promise.props({
-			user:           this.getById(u_id),
-			userData:       this.getUserData(u_id),
-			userLocation:   this.getUserLocation(u_id),
-			userAva:        this.getClass('user/photo/profile').getUserAva(u_id)
-			//,userGroups:     this.getClass('user/groups').getUsersGroups(u_id)
-		})
+		return this.getById(u_id, check_state)
+		.then((user)=>
+		{
+			if (!user['u_id'])
+				return Promise.resolve(user);
+			
+			return Promise.props({
+				userData:       this.getUserData(u_id),
+				userLocation:   this.getUserLocation(u_id),
+				userAva:        this.getClass('user/photo/profile').getUserAva(u_id)
+				//,userGroups:     this.getClass('user/groups').getUsersGroups(u_id)
+			})
 			.then((props) =>
 			{
-				let user = Object.assign({}, props.userAva, props.userLocation, props.userData, props.user);
-					user['u_display_name'] = User.userDisplayName(user);
-
+				user = Object.assign({}, props.userAva, props.userLocation, props.userData, user);
+				user['u_display_name'] = User.userDisplayName(user);
+				
 				//TODO данные о группах пользователья нельзя сохранять в сессию
 				//так как, если удалить пользователя из группы, то он все равно может в ней остаться по данным сессии
 				//то есть, пока сессия не удалится...
-
+				
 				//user['u_groups'] = props.userGroups;
 				//user['u_is_root'] = (user['u_groups']['root'] ? true : false);
 				//user['u_is_admin'] = (user['u_groups']['admin']||user['u_is_root'] ? true : false);
-
+				
 				//console.log(user);
-
+				
 				return Promise.resolve(user);
 			});
+		});
 	}
 
 	/**
@@ -136,15 +155,15 @@ class User extends Base
 			.then((users_cnt) =>
 			{
 				Pages.setTotal(users_cnt);
-
+				
 				let usersData = {'users':null, 'users_cnt':users_cnt, 'Pages':Pages};
-
+				
 				if (!!users_cnt === false)
 					return Promise.resolve(usersData);
-
+				
 				if (Pages.limitExceeded())
 					throw (new Errors.HttpError(404));
-
+				
 				return this.model('user')
 					.getUsers(Pages.getOffset(), Pages.getLimit(), loc_ids, s_name)
 					.spread((users, users_ids) =>
@@ -282,9 +301,19 @@ class User extends Base
 						return true;
 					}
 				});
-
+				
 				return Promise.resolve({list: list, selected: selected});
 			});
+	}
+	
+	getUserStateList()
+	{
+		return this.model('user').constructor.getUserStateList();
+	}
+	
+	updUserState(u_id, u_state)
+	{
+		return this.model('user').updUserState(u_id, u_state);
 	}
 }
 

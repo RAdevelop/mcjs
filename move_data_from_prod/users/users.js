@@ -58,7 +58,7 @@ function insertUsersData()
 		, UNIX_TIMESTAMP(u.u_date_reg) AS u_date_reg
 		, UNIX_TIMESTAMP(u.u_date_vizit) AS u_date_visit
 		, IF(ud.u_login = 'MotoCommunity', 'RA', '') AS u_login
-		, 1 AS u_reg
+		, 1 AS u_state
 		, 3 AS ug_ids
 		FROM users AS u
 		JOIN users_private_data AS ud ON (ud.u_id = u.u_id)
@@ -82,7 +82,7 @@ function insertUsersData()
 					user['u_date_reg'],
 					user['u_date_visit'],
 					user['u_login'],
-					user['u_reg'],
+					user['u_state'],
 					user['ug_ids']
 				);
 			});
@@ -90,7 +90,7 @@ function insertUsersData()
 			sqlIns = sqlIns.join(',');
 
 			let sql = `INSERT INTO users
-			(u_id, u_mail, u_salt, u_pass, u_date_reg, u_date_visit, u_login, u_reg, ug_ids)
+			(u_id, u_mail, u_salt, u_pass, u_date_reg, u_date_visit, u_login, u_state, ug_ids)
 			VALUES ${sqlIns}`;
 
 			return DB.conn().ins(sql, sqlData)
@@ -105,10 +105,10 @@ function insertUsersData()
 				.then(()=>
 				{
 					let sql = `SELECT 
-						(ud.u_id+10) AS u_id, ud.u_name, ud.u_surname, ud.u_sex
-					    , IFNULL(UNIX_TIMESTAMP(ud.u_birthday), 0) AS u_birthday
-					    FROM users_private_data AS ud`;
-
+						(ud.u_id+10) AS u_id, ud.u_name, ud.u_surname, ud.u_sex, 
+						IFNULL(UNIX_TIMESTAMP(ud.u_birthday), 0) AS u_birthday
+						FROM users_private_data AS ud`;
+					
 					return DB.conn(null, prodDbConf).s(sql)
 						.then((list)=>
 						{

@@ -6,6 +6,11 @@ const Base = require('app/lib/class');
 
 class UserGroups extends Base
 {
+	static get GROUP_GUEST() {return 'guest'; }
+	static get GROUP_USER() {return 'user'; }
+	static get GROUP_ADMIN() {return 'admin'; }
+	static get GROUP_ROOT() {return 'root'; }
+	
 	/**
 	 * список групп
 	 * @param ug_ids - массив id групп
@@ -82,7 +87,7 @@ class UserGroups extends Base
 			.then((ug_ids) =>
 			{
 				if (!ug_ids.length)
-					return this.model('user/groups').getGroupRightsByPathAndMenu(m_id, 'guest');
+					return this.model('user/groups').getGroupRightsByPathAndMenu(m_id, UserGroups.GROUP_GUEST);
 				
 				return this.getUserRights(m_id, ug_ids);
 			});

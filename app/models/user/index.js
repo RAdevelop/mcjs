@@ -15,6 +15,15 @@ const BaseModel = require('app/lib/db');
 
 class User extends BaseModel
 {
+	static get USER_STATE_DELETED(){return 0; }
+	static get USER_STATE_REG(){return 1; }
+	static get USER_STATE_BANNED(){return 2; }
+	
+	static getUserStateList()
+	{
+		return [User.USER_STATE_DELETED, User.USER_STATE_REG, User.USER_STATE_BANNED];
+	}
+	
 	filterData(uData, keys)
 	{
 		keys = keys || [];
@@ -50,21 +59,35 @@ class User extends BaseModel
 	 *  errors.data.SQLError
 	 *  errors.NotFoundError
 	 */
-	getById(uId, cb)
+	getById(uId)
 	{
 		uId = parseInt(uId, 10);
-		let user = {u_id: null, u_mail: '', u_date_visit: '', u_login: '', u_reg: '', ug_ids: []};
-
+		let user = {u_id: null, u_mail: '', u_date_visit: '', u_login: '', u_state: '', ug_ids: []};
 		let msg = "Такого пользователя не существует";
-
-		if (!uId)
-			return cb(new Errors.NotFoundError(msg), user);
 		
-		let sql = `SELECT u_id, u_mail, u_date_visit, u_login, u_reg, ug_ids 
+		if (!uId)
+			throw new Errors.NotFoundError(msg);
+			//return cb(new Errors.NotFoundError(msg), user);
+		
+		let sql = `SELECT u_id, u_mail, u_date_visit, u_login, u_state, ug_ids 
 		FROM users WHERE u_id = ?;`;
-
+		
 		uId = parseInt(uId, 10);
-		this.constructor.conn().psRow(sql, [uId], (err, userData) =>
+		let sqlData = [uId];
+		
+		return this.constructor.conn().psRow(sql, sqlData)
+		.then((userData)=>
+		{
+			if (!userData)
+				throw new Errors.NotFoundError(msg);
+			
+			userData['ug_ids'] = User.userGroupIds(userData['ug_ids']);
+			Object.assign(user, userData);
+			
+			return Promise.resolve(user);
+		});
+		
+		/*this.constructor.conn().psRow(sql, sqlData, (err, userData) =>
 		{
 			//console.log(userData);
 			if (err)
@@ -81,7 +104,7 @@ class User extends BaseModel
 			}
 			else //не нашли
 				return cb(new Errors.NotFoundError(msg), user);
-		});
+		});*/
 	}
 	
 	/**
@@ -130,27 +153,35 @@ class User extends BaseModel
 	 *  errors.data.SQLError
 	 *  errors.NotFoundError
 	 */
-	getByEmail(email, cb)
+	getByEmail(email, check_state, cb)
 	{
 		email = email.toLowerCase().trim();
 		
-		let sql = `SELECT u_id, u_mail, u_salt, u_pass, u_date_visit, u_reg, u_login, ug_ids 
+		let sql = `SELECT u_id, u_mail, u_salt, u_pass, u_date_visit, u_state, u_login, ug_ids 
 		FROM users WHERE u_mail = ?;`;
-
-		this.constructor.conn().sRow(sql, [email], (err, userData) =>
+		let sqlData = [email];
+		
+		this.constructor.conn().sRow(sql, sqlData, (err, userData) =>
 		{
 			if (err)
+			{
 				return cb(err, null);
+			}
 			else if (userData)
 			{
 				process.nextTick(()=>
 				{
+					if (check_state && userData['u_state'] != User.USER_STATE_REG)
+						return cb(new Errors.NotFoundError("Пользователя с таким email не существует", err), null);
+					
 					userData['ug_ids'] = User.userGroupIds(userData['ug_ids']);
 					return cb(null, userData);
 				});
 			}
 			else //не нашли
+			{
 				return cb(new Errors.NotFoundError("Пользователя с таким email не существует", err), null);
+			}
 		});
 	}
 	
@@ -395,7 +426,7 @@ class User extends BaseModel
 		limit = parseInt(limit, 10) || 20;
 
 		let sqlData = [];
-		let sql = [`SELECT u.u_id, u.u_mail, u.u_date_reg, u.u_date_visit, u.u_login, u.u_reg,
+		let sql = [`SELECT u.u_id, u.u_mail, u.u_date_reg, u.u_date_visit, u.u_login, u.u_state,
 		ud.u_name, ud.u_surname, ud.u_sex, ud.u_birthday, ud.u_location_id, ud.u_latitude, ud.u_longitude
 		FROM users AS u
 		JOIN users_data AS ud ON (ud.u_id = u.u_id)`];
@@ -433,7 +464,7 @@ class User extends BaseModel
 			.then((res) =>
 			{
 				let user = {
-					u_id:null, u_mail:null, u_date_reg:null, u_date_visit:null, u_login:null, u_reg:null,
+					u_id:null, u_mail:null, u_date_reg:null, u_date_visit:null, u_login:null, u_state:null,
 					u_name:null, u_surname:null, u_sex:null, u_birthday:null,
 					u_location_id:null, u_latitude:null, u_longitude:null
 				};
@@ -464,7 +495,7 @@ class User extends BaseModel
 	 */
 	getUserListById(u_ids)
 	{
-		let sql = `SELECT u.u_id, u.u_mail, u.u_date_reg, u.u_date_visit, u.u_login, u.u_reg,
+		let sql = `SELECT u.u_id, u.u_mail, u.u_date_reg, u.u_date_visit, u.u_login, u.u_state,
 		ud.u_name, ud.u_surname, ud.u_sex, ud.u_birthday, ud.u_location_id, ud.u_latitude, ud.u_longitude
 		FROM users AS u
 		LEFT JOIN users_data AS ud ON (ud.u_id = u.u_id)
@@ -524,11 +555,25 @@ class User extends BaseModel
 				JOIN users_locations AS ul ON(ul.l_id = ln.l_id)
 				GROUP BY ln.l_id
 				ORDER BY ln.l_name`;
-
+				
 				//console.log(sql, sqlData);
-
+				
 				return this.constructor.conn().ps(sql, sqlData);
 			});
+	}
+	
+	updUserState(u_id, u_state)
+	{
+		u_id	= parseInt(u_id, 10)||0;
+		u_state	= parseInt(u_state, 10);
+		
+		if (!u_id)
+			return Promise.resolve(1);
+		
+		let sql = `UPDATE users SET u_state = ? WHERE u_id = ?`;
+		let sql_data = [u_state, u_id];
+		
+		return this.constructor.conn().upd(sql, sql_data);
 	}
 }
 
