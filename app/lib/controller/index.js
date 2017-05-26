@@ -445,9 +445,9 @@ class Base
 		//когда меню из файла /app/middlewares/menu/menu.js
 		if (!this.getMenuItem['m_id'])
 			return Promise.resolve([{}, []]);
-
+		
 		m_id = m_id || this.getMenuItem['m_id'];
-
+		
 		return this.getUser(this.getUserId())
 			.then((user) =>
 			{
@@ -553,7 +553,7 @@ class Base
 		return (this.getUserId() == u_id);
 	}
 	
-	getUser(u_id)
+	getUser(u_id, chack_state = false)
 	{
 		/*
 		{ a_id: '1',
@@ -598,7 +598,7 @@ class Base
 		if (u_id == this.getUserId())
 			return Promise.resolve(this.getReq()._user);
 
-		return this.getClass('user').getUser(u_id);
+		return this.getClass('user').getUser(u_id, chack_state);
 	}
 
 	user()

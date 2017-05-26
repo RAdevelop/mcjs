@@ -43,7 +43,7 @@ class User extends Base
 		return this.model('user').getUserLocation(u_id);
 	}
 
-	getById(u_id, check_state = true)
+	getById(u_id, check_state = false)
 	{
 		return this.model('user').getById(u_id)
 			.then((user)=>
@@ -76,7 +76,7 @@ class User extends Base
 	 * @param check_state
 	 * @returns {Promise}
 	 */
-	getUser(u_id, check_state = true)
+	getUser(u_id, check_state = false)
 	{
 		return this.getById(u_id, check_state)
 		.then((user)=>
@@ -135,10 +135,11 @@ class User extends Base
 	 * подсчет кол-ва всех пользователей
 	 * @param loc_ids - массив с id locations
 	 * @param s_name
+	 * @param b_check_state
 	 */
-	countUsers(loc_ids = [], s_name = '')
+	countUsers(loc_ids = [], s_name = '', b_check_state = true)
 	{
-		return this.model('user').countUsers(loc_ids, s_name);
+		return this.model('user').countUsers(loc_ids, s_name, b_check_state);
 	}
 
 	/**
@@ -147,11 +148,12 @@ class User extends Base
 	 * @param Pages
 	 * @param loc_ids - массив с id locations
 	 * @param s_name
+	 * @param b_check_state
 	 * @returns {Promise} [users, users_cnt, Pages]
 	 */
-	getUsers(Pages, loc_ids = [], s_name = '')
+	getUsers(Pages, loc_ids = [], s_name = '', b_check_state = true)
 	{
-		return this.countUsers(loc_ids, s_name)
+		return this.countUsers(loc_ids, s_name, b_check_state)
 			.then((users_cnt) =>
 			{
 				Pages.setTotal(users_cnt);
@@ -164,8 +166,7 @@ class User extends Base
 				if (Pages.limitExceeded())
 					throw (new Errors.HttpError(404));
 				
-				return this.model('user')
-					.getUsers(Pages.getOffset(), Pages.getLimit(), loc_ids, s_name)
+				return this.model('user').getUsers(Pages.getOffset(), Pages.getLimit(), loc_ids, s_name, b_check_state)
 					.spread((users, users_ids) =>
 					{
 						return Promise.all([

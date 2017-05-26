@@ -9,7 +9,7 @@ const Pages = require('app/lib/pages');
 
 const CtrlMain = require('app/lib/controller');
 
-//let limit_per_page = 20;
+let limit_per_page = 20;
 
 class AdminUser extends CtrlMain
 {
@@ -44,7 +44,7 @@ class AdminUser extends CtrlMain
 	_getUserList(i_page)
 	{
 		//{users:users, users_cnt:users_cnt, Pages:Pages}
-		return this.getClass('user').getUsers(new Pages(i_page, limit_per_page))
+		return this.getClass('user').getUsers(new Pages(i_page, limit_per_page), [], '', false)
 			.then((users) =>
 			{
 				let tplFile = 'admin/user';

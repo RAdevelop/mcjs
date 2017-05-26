@@ -3,12 +3,12 @@ let ava = (!!user_owner['previews'] && user_owner['previews']['100_100']);
 let avaSrc = (ava ? user_owner['previews']['100_100'] : '/_0.gif');
 %>
 <div class="owner">
-    <a class="owner_ava" href="/profile/<%=user_owner['u_id']%>/">
+    <% if (user_owner['u_state'] == 1){%><a class="owner_ava" href="/profile/<%=user_owner['u_id']%>/">
         <img class="img-circle img-responsive <%=(ava ? '':'hidden')%>" src="<%=avaSrc%>" alt="<%=user_owner['u_display_name']%>" />
         <i class="fa fa-user <%=(ava ? 'hidden':'')%>"></i>
     </a>
     <div class="owner_info">
         <div class="owner_info_name"><a href="/profile/<%=user_owner['u_id']%>/"><%=user_owner['u_display_name']%></a></div>
         <div class="owner_info_location" data-toggle="tooltip" data-placement="auto" title="<%=user_owner['l_full_name']%>"><i class="fa fa-fw fa-map-marker"></i><%=(user_owner['l_name']||'не указано')%></div>
-    </div>
+    </div><%} else {%><a class="owner_ava"><i class="fa fa-user-secret"></i></a><%}%>
 </div>

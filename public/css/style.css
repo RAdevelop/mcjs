@@ -761,7 +761,7 @@ img.image {
 .owner_ava:hover {
   text-decoration: none;
 }
-.owner_ava > .fa-user {
+.owner_ava > .fa-user, .owner_ava > .fa-user-secret {
   display: block;
   min-height: inherit;
   max-height: inherit;

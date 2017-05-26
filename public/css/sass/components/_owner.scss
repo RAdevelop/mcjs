@@ -31,7 +31,8 @@
       text-decoration: none;
     }
 
-    & > .fa-user {
+    & > .fa-user,
+    & > .fa-user-secret {
       display: block;
       min-height: inherit;
       max-height: inherit;

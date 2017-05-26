@@ -56,15 +56,15 @@ class Profile extends CtrlMain
 
 		let b_show = (i_u_id==this.getUserId() ? null : 1);
 
-		return this.getUser(i_u_id)
+		return this.getUser(i_u_id, true)
 			.then((userData) =>
 			{
 				if (!userData || !userData.u_id)
 					throw new Errors.HttpError(404);
-
+				
 				if (userData['u_id'] != this.getUserId())
 					this.view.useCache(true);
-
+				
 				return Promise.props({
 					photoAlbums: this.getClass('user/photo').getAlbumList(this.getUserId(), i_u_id, new Pages(1, 4)),
 					videoAlbums: this.getClass('video').getVideoAlbumList(this.getUserId(), i_u_id, new Pages(1, 4)),
@@ -525,7 +525,7 @@ class Profile extends CtrlMain
 			{
 				tplData.sendMail = false;
 				
-				if (tplData.m_mail == this.getUser().u_mail)
+				if (tplData.m_mail == this.user().u_mail)
 				{
 					tplData.formError.message = 'Данные успешно сохранены';
 					return Promise.resolve(tplData);

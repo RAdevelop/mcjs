@@ -28,7 +28,7 @@ module.exports = function(Classes)
 					if (req.session.user && req.session.user.u_id)
 						return asyncCb(null, req.session.user);
 
-					return Classes.getClass("user").getUser(rtid)
+					return Classes.getClass("user").getUser(rtid, true)
 						.then((userData)=>
 						{
 							/*if (req.session.rtid)
