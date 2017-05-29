@@ -84,7 +84,7 @@ var config = {
 	userCookieExpires: 15552000000, //значение в милисекундах= 60*60*24 * 30 (дн) * 6 (мес) = пол года
 	uploads: {
 		default: {
-			pathUpload: "upload",
+			pathUpload: "files/upload",
 			fileTypes: [],
 			fileMediaType: '',
 			multiUpload: false,
@@ -93,7 +93,7 @@ var config = {
 			sizeParams: []
 		},
 		user_photo: {
-			pathUpload: "user/photo",
+			pathUpload: "files/user/photo",
 			fileTypes: ['gif', 'png', 'jpg', 'jpeg'],
 			fileMediaType: 'image',
 			multiUpload: true,
@@ -109,7 +109,7 @@ var config = {
 			cropSize: []
 		},
 		user_ava: {
-			pathUpload: "user/photo",
+			pathUpload: "files/user/photo",
 			fileTypes: ['gif', 'png', 'jpg', 'jpeg'],
 			fileMediaType: 'image',
 			multiUpload: false,
@@ -133,7 +133,7 @@ var config = {
 			]
 		},
 		user_video: {
-			pathUpload: "user/video",
+			pathUpload: "files/user/video",
 			fileTypes: ['avi', 'MP4', '3gp', 'mpeg', 'mov', 'flv', 'wmv','gif', 'png', 'jpg', 'jpeg'],
 			fileMediaType: 'video',
 			multiUpload: false,
@@ -149,7 +149,7 @@ var config = {
 			cropSize: []
 		},
 		user_audio: {
-			pathUpload: "user/audio",
+			pathUpload: "files/user/audio",
 			fileTypes: ['avi', 'MP4', '3gp', 'mpeg', 'mov', 'flv', 'wmv'],
 			fileMediaType: 'audio',
 			multiUpload: false,
@@ -158,7 +158,7 @@ var config = {
 			tokenFields: ['i_time', 'u_id']
 		},
 		user_blog: {
-			pathUpload: "user/blog",
+			pathUpload: "files/user/blog",
 			fileTypes: ['gif', 'png', 'jpg', 'jpeg'],
 			fileMediaType: 'image',
 			multiUpload: true,
@@ -174,7 +174,7 @@ var config = {
 			cropSize: []
 		}
 		,events: {
-			pathUpload: "events",
+			pathUpload: "files/events",
 			fileTypes: ['gif', 'png', 'jpg', 'jpeg'],
 			fileMediaType: 'image',
 			multiUpload: true,
@@ -190,7 +190,7 @@ var config = {
 			cropSize: []
 		},
 		news: {
-			pathUpload: "news",
+			pathUpload: "files/news",
 			fileTypes: ['gif', 'png', 'jpg', 'jpeg'],
 			fileMediaType: 'image',
 			multiUpload: true,

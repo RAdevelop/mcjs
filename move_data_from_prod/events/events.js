@@ -14,7 +14,7 @@ const Classes = require('app/class');
 //console.log(Classes.getClass('location'));
 
 let uploadConf = 'events';
-let dir_prefix = '/'+uploadConf+'/';
+let dir_prefix = '/files/'+uploadConf+'/';
 const UploadFile = new FileUpload(uploadConf);
 
 let full_path_to_dir = Path.join(__dirname+'/../../', 'public');

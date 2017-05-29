@@ -15,7 +15,7 @@ const Classes = require('app/class');
 
 let uploadConfAva = 'user_ava';
 let uploadConf = 'user_photo';
-let dir_prefix = '/'+uploadConf.split('_').join('/')+'/';
+let dir_prefix = '/files/'+uploadConf.split('_').join('/')+'/';
 const UploadFileAva = new FileUpload(uploadConfAva);
 const UploadFile = new FileUpload(uploadConf);
 

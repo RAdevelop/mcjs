@@ -10,7 +10,7 @@ const FileUpload = require('app/lib/file/upload');
 const DB  = require('app/lib/db');
 
 let uploadConf = 'news';
-let dir_prefix = '/'+uploadConf+'/';
+let dir_prefix = '/files/'+uploadConf+'/';
 
 const UploadFile = new FileUpload(uploadConf);
 
