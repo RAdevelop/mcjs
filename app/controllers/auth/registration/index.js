@@ -120,7 +120,10 @@ class Registration extends CtrlMain
 		{
 			errors["s_password"] = 'пароли не совпадают';
 		}
-
+		
+		if (!tplData["b_user_agreement"])
+			errors["b_user_agreement"] = 'Необходимо принять соглашение';
+		
 		const self = this;
 		
 		return Promise.resolve(errors)

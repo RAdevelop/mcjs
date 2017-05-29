@@ -112,7 +112,7 @@ class Home extends CtrlMain
 			.then((tplData)=>
 			{
 				let errors = {};
-
+				
 				if (!tplData["m_email"])
 					errors["m_email"] = 'Укажите свой e-mail';
 
@@ -121,7 +121,10 @@ class Home extends CtrlMain
 
 				if (tplData["t_feedback_text"] == '')
 					errors["t_feedback_text"] = 'Укажите текст сообщения';
-
+				
+				if (!tplData["b_user_agreement"])
+					errors["b_user_agreement"] = 'Необходимо принять соглашение';
+				
 				return Promise.resolve(errors)
 					.then((errors) =>
 					{

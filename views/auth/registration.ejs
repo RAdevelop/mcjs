@@ -1,18 +1,22 @@
 <%  if(!_isXHR){%><%- layout('layout/default') %><% } -%>
 <form class="form-signin" action="<%=menuItem.m_path%>" method="post" id="registrationForm">
 	<h2 class="form-signin-heading">Регистрация</h2>
-    <div class="form-group m_email">
-        <label for="m_email" class="sr-only">введите e-mail</label>
-        <input type="text" id="m_email" name="m_email" value="<%=(m_email ? m_email : '')%>" class="form-control" placeholder="введите e-mail" required autofocus />
-    </div>
-    <div class="form-group s_password">
-	    <label for="s_password" class="sr-only">введите пароль</label>
-	    <input type="password" id="s_password" name="s_password" value="<%=(s_password ? s_password : '' )%>" class="form-control" placeholder="введите пароль" required />
-    </div>
-    <div class="form-group s_password">
-        <label for="s_password" class="sr-only">повторите пароль</label>
-        <input type="password" id="s_password2" name="s_password2" value="<%=(s_password2 ? s_password2 : '' )%>" class="form-control" placeholder="повторите пароль" required />
-        <span class="text-center help-block">не менее 6 символов</span>
+	<div class="form-group m_email">
+		<label for="m_email" class="sr-only">введите e-mail</label>
+		<input type="text" id="m_email" name="m_email" value="<%=(m_email ? m_email : '')%>" class="form-control" placeholder="введите e-mail" required autofocus />
+	</div>
+	<div class="form-group s_password">
+		<label for="s_password" class="sr-only">введите пароль</label>
+		<input type="password" id="s_password" name="s_password" value="<%=(s_password ? s_password : '' )%>" class="form-control" placeholder="введите пароль" required />
+	</div>
+	<div class="form-group s_password">
+		<label for="s_password" class="sr-only">повторите пароль</label>
+		<input type="password" id="s_password2" name="s_password2" value="<%=(s_password2 ? s_password2 : '' )%>" class="form-control" placeholder="повторите пароль" required />
+		<span class="text-center help-block">не менее 6 символов</span>
+	</div>
+	<div class="form-group checkbox b_user_agreement">
+        <label><input type="checkbox" name="b_user_agreement">принимаю пользовательское соглашение</label>
+        <span class="help-block">регистрируясь на сайте, принимаю <a href="/user_agreement.html" target="_blank">пользовательское соглашение?</a></span>
     </div>
 	<button class="btn btn-lg btn-primary btn-block" type="submit" id="btn_reg" name="btn_reg">Зарегистрироваться</button>
 </form>
@@ -21,38 +25,38 @@
 //<!--
 $(function()
 {
-    var $formReg = $('#registrationForm');
-    $formReg.postRes({btnId: 'btn_reg',
-        onSuccess: function($dialog)
-        {
-            $formReg.find("#s_password").val('');
-            $formReg.find("#s_password2").val('');
-            //показать диалог
-            return true;
-        },
-        onFail: function($dialog)
-        {
-            //показать диалог
-            return true;
-        },
-        buttons: [
-            {
-                title: 'Ok',
-                name: 'btnClose',
-                cssClass: 'btn-primary',
-                func:
-                {
-                    click: function($dialog, postRes)
-                    {
-                        $dialog.modal('hide');
-                        
-                        if (postRes)
-                        window.location.href = "/login";
-                    }
-                }
-            }
-        ]
-    });
+	var $formReg = $('#registrationForm');
+	$formReg.postRes({btnId: 'btn_reg',
+		onSuccess: function($dialog)
+		{
+			$formReg.find("#s_password").val('');
+			$formReg.find("#s_password2").val('');
+			//показать диалог
+			return true;
+		},
+		onFail: function($dialog)
+		{
+			//показать диалог
+			return true;
+		},
+		buttons: [
+			{
+				title: 'Ok',
+				name: 'btnClose',
+				cssClass: 'btn-primary',
+				func:
+				{
+					click: function($dialog, postRes)
+					{
+						$dialog.modal('hide');
+						
+						if (postRes)
+						window.location.href = "/login";
+					}
+				}
+			}
+		]
+	});
 });
 //-->
 </script>

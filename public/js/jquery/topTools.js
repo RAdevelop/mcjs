@@ -13,13 +13,12 @@
 		options.u_id = parseInt(options.u_id, 10)||null;
 		/**/
 		var $topTools = $(this);
-
-
+		
 		function feedBackForm(formId)
 		{
 			var html = '<form class="form-horizontal" action="/feedback" method="post" id="'+formId+'">' +
 				'<input type="hidden" name="ui_u_id" value="'+options.u_id+'"/>';
-
+			
 				if (!options.u_id)
 				{
 					html += '<div class="form-group m_email">' +
@@ -28,7 +27,7 @@
 					'</div>' +
 					'</div>';
 				}
-
+			
 			html += '<div class="form-group s_feedback_subject">' +
 					'<div class="col-sm-12">' +
 						'<input type="text" class="form-control" id="s_feedback_subject" name="s_feedback_subject" value="" placeholder="тема сообщения" required maxlength="100"/>' +
@@ -37,9 +36,15 @@
 				'<div class="form-group t_feedback_text">' +
 					'<div class="col-sm-12">' +
 						'<textarea class="form-control" id="t_feedback_text" name="t_feedback_text" required placeholder="текст сообщения"></textarea>' +
-					'</div>';
-				'</div>';
-				'</form>';
+					'</div>' +
+				'</div>'+
+				'<div class="form-group b_user_agreement">' +
+					'<div class="col-sm-12 checkbox">' +
+						'<label><input type="checkbox" name="b_user_agreement">принимаю</label>' +
+						'<span class="help-block">отправляя письмо, принимаю <a href="/user_agreement.html" target="_blank">пользовательское соглашение?</a></span>' +
+					'</div>' +
+				'</div>' +
+			'</form>';
 
 			return html;
 		}
