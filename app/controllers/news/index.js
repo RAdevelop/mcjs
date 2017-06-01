@@ -132,7 +132,7 @@ class News extends CtrlMain
 					throw new Errors.HttpError(404);
 				
 				return Promise.join(
-					(isAjax ? [[],[]] : this.getClass('news').getImageList(news['n_id'])),
+					(isAjax ? [[],[]] : this.getClass('news').getFileList(news['n_id'])),
 					this.getClass('comment').getCommentList(this, this.getClass('news'), isRootAdmin, news['n_id'], new Pages(i_page, limit_per_page))
 					, (images, comments)=>
 					{
@@ -349,21 +349,21 @@ class News extends CtrlMain
 	editActionGet()
 	{
 		let {i_news_id} = this.routeArgs;
-
+		
 		if (!i_news_id)
 			throw new Errors.HttpError(404);
-
+		
 		let show = (this.getLocalAccess()['post_edit'] ? null : 1);
-
+		
 		return this.getClass('news').get(i_news_id, show)
 			.then((news) =>
 			{
 				if (!news)
 					throw new Errors.HttpError(404);
-
+				
 				return Promise.all([
 					this.getClass('keywords').getKeyWordList(),
-					this.getClass('news').getImageList(news['n_id'])
+					this.getClass('news').getFileList(news['n_id'])
 				])
 					.spread((keywords, imageData) =>
 					{
@@ -375,18 +375,19 @@ class News extends CtrlMain
 				if (this.getLocalAccess()['post_upload'])
 				{
 					let uploadConfigName = this.getClass('news').constructor.uploadConfigName;
-
+					
 					Object.assign(news, FileUpload.createToken(uploadConfigName, {'n_id': news['n_id']}));
 					this.getRes().expose(FileUpload.exposeUploadOptions(uploadConfigName), 'newsUploadOpts');
 				}
-
+				
 				let tplFile = "news";
 				let tplData = {
 					news: news,
 					newsImages: imageData[0] //images
 				};
+				
 				this.view.setTplData(tplFile, tplData);
-
+				
 				this.view.setPageTitle(news.n_title);
 				this.view.setPageH1(news.n_title);
 				//экспрот данных в JS на клиента
@@ -420,24 +421,24 @@ class News extends CtrlMain
 			{
 				if (!news)
 					throw new Errors.HttpError(404);
-
+				
 				switch(tplData['btn_save_news'])
 				{
 					default :
 						throw new Errors.HttpError(404);
 						break;
-
+					
 					case 'main':
 						return this._editNews(tplData, tplFile, news);
 						break;
 					case 'sort_img':
 						return this._sortImg(tplData, tplFile);
 						break;
-
+					
 					case 'del_img':
-						return this._delImg(tplData, tplFile);
+						return this._delFile(tplData, tplFile);
 						break;
-
+					
 					case 'del_news':
 						return this._delNews(tplData, tplFile, news);
 						break;
@@ -516,14 +517,14 @@ class News extends CtrlMain
 									link_to: [this.getMenuItem['m_path'],'edit',news['n_id']].join('/')
 								}
 							};
-
+							
 							Mailer.send(sendParams,  (err) =>
 							{
 								if(err)
 									Logger.error(new Errors.AppMailError('Ошибка при отправке письма', err));
 							});
 						});
-
+						
 						this.view.setTplData(tplFile, tplData);
 						return Promise.resolve(true);
 					});
@@ -550,15 +551,14 @@ class News extends CtrlMain
 			return Promise.resolve(true);
 		}
 		
-		return this.getClass('news')
-			.sortImgUpd(tplData['i_news_id'], tplData['ni_pos'])
+		return this.getClass('news').sortImgUpd(tplData['i_news_id'], tplData['ni_pos'])
 			.then(() =>
 			{
 				this.view.setTplData(tplFile, tplData);
 				return Promise.resolve(true);
 			});
 	}
-
+	
 	/**
 	 * добавляем фотографи к новости
 	 *
@@ -572,18 +572,19 @@ class News extends CtrlMain
 		this.getRes().on('cancelUploadedFile', (file) =>
 		{
 			if (file['u_id'] && file['n_id'] && file['ni_id'])
-				return this.getClass('news').delImage(file['u_id'], file['n_id'], file['ni_id'], file);
+				return this.getClass('news').delFile(file['u_id'], file['n_id'], file['ni_id'], file);
 		});
-
-		return this.getClass('news').uploadImage(this.getUserId(), this.getReq(), this.getRes())
+		
+		return this.getClass('news').uploadFile(this.getUserId(), this.getReq(), this.getRes())
 			.then((file) =>
 			{
-				//console.log(file);
+				//console.log(__dirname , file);
 				tplData = {
 					n_id: file.n_id,
 					ni_id: file.ni_id,
 					ni_pos: file.ni_pos,
 					ni_name: file.ni_name,
+					ni_type: file.type,
 					ni_latitude: file.latitude,
 					ni_longitude: file.longitude,
 					u_id: file.u_id,
@@ -591,7 +592,7 @@ class News extends CtrlMain
 					size: file.size,
 					previews: file.previews
 				};
-
+				
 				this.view.setTplData(tplFile, tplData);
 				return Promise.resolve(true);
 			})
@@ -608,18 +609,18 @@ class News extends CtrlMain
 	}
 
 	/**
-	 * удаление фотографии пользователем
+	 * удаление файла пользователем
 	 *
 	 * @param tplData
 	 * @param tplFile
 	 * @returns {Promise}
 	 */
-	_delImg(tplData, tplFile)
+	_delFile(tplData, tplFile)
 	{
 		if (!tplData['i_ni_id'])
 			throw new Errors.HttpError(400);
 		
-		return this.getClass('news').delImage(this.getUserId(), tplData['i_news_id'], tplData['i_ni_id'])
+		return this.getClass('news').delFile(this.getUserId(), tplData['i_news_id'], tplData['i_ni_id'])
 			.then(() =>
 			{
 				this.view.setTplData(tplFile, tplData);

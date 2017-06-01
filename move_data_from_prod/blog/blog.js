@@ -33,7 +33,7 @@ let prodDbConf = {
 
 function truncateTables()
 {
-	let sql = `truncate blog_list; truncate blog_image; truncate blog_subject;`;
+	let sql = `truncate blog_list; truncate blog_file; truncate blog_subject;`;
 	return DB.conn().multis(sql);
 }
 
@@ -224,7 +224,7 @@ function insertFiles()
 
 			sqlIns = sqlIns.join(',');
 
-			let sql = `INSERT INTO blog_image
+			let sql = `INSERT INTO blog_file
 					(bi_id, b_id, bi_create_ts, bi_update_ts, bi_dir, bi_pos, bi_name) 
 					VALUES ${sqlIns}`;
 

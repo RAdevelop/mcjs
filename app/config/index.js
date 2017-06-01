@@ -14,7 +14,7 @@ var config = {
 	port: 3000,
 	server_closing: 'server_closing', //название переменной для app.set(name, value) при выключении или перезагрузки сервера
 	document_root: document_root,
-	session:  {
+	session:	{
 		name: 'sessionId',
 		saveUninitialized: true, // saved new sessions
 		resave           : true, // false do not automatically write to the session store
@@ -29,7 +29,7 @@ var config = {
 		, unset: 'destroy'
 		, prefix:'appsess:'
 	},
-	redis:{
+	redis:	{
 		// /usr/local/opt/redis/bin/redis-server /usr/local/etc/redis.conf
 		port: 6379,
 		host: 'localhost',
@@ -52,7 +52,7 @@ var config = {
 			return delay;
 		}*/
 	},
-	db:   {
+	db:	{
 		mariasql: {
 			host: 'localhost', //192.168.0.91
 			user: 'mc',
@@ -63,7 +63,7 @@ var config = {
 			keepQueries: true //true false
 		}
 	},
-	mail: {
+	mail:	{
 		from: 'info@motocommunity.ru',
 		to: 'info@motocommunity.ru',
 		service: 'gmail',
@@ -77,15 +77,15 @@ var config = {
 			}
 		}
 	},
-	ssl: {
+	ssl:	{
 		key: FS.readFileSync(Path.join(__dirname, '../../openssl/mc_cert.key')),
 		cert: FS.readFileSync(Path.join(__dirname, '../../openssl/mc_cert.pem'))
 	},
 	userCookieExpires: 15552000000, //значение в милисекундах= 60*60*24 * 30 (дн) * 6 (мес) = пол года
-	uploads: {
+	uploads:	{
 		default: {
 			pathUpload: "files/upload",
-			fileTypes: [],
+			fileTypes: {},
 			fileMediaType: '',
 			multiUpload: false,
 			maxFileSize: 0,//Mb
@@ -94,8 +94,10 @@ var config = {
 		},
 		user_photo: {
 			pathUpload: "files/user/photo",
-			fileTypes: ['gif', 'png', 'jpg', 'jpeg'],
-			fileMediaType: 'image',
+			fileTypes: {
+				image: ['gif', 'png', 'jpg', 'jpeg']
+			},
+			fileMediaType: 'application', //deprecated
 			multiUpload: true,
 			maxFileSize: 6,//Mb
 			tokenFields: ['i_time', 'a_id'],
@@ -110,8 +112,10 @@ var config = {
 		},
 		user_ava: {
 			pathUpload: "files/user/photo",
-			fileTypes: ['gif', 'png', 'jpg', 'jpeg'],
-			fileMediaType: 'image',
+			fileTypes: {
+				image: ['gif', 'png', 'jpg', 'jpeg']
+			},
+			fileMediaType: 'application', //deprecated
 			multiUpload: false,
 			maxFileSize: 6,//Mb
 			tokenFields: ['i_time', 'u_id'],
@@ -134,8 +138,12 @@ var config = {
 		},
 		user_video: {
 			pathUpload: "files/user/video",
-			fileTypes: ['avi', 'MP4', '3gp', 'mpeg', 'mov', 'flv', 'wmv','gif', 'png', 'jpg', 'jpeg'],
-			fileMediaType: 'video',
+			fileTypes: {
+				video: ['avi', 'MP4', '3gp', 'mpeg', 'mov', 'flv', 'wmv','gif', 'png', 'jpg', 'jpeg']
+				//application: ['avi', 'MP4', '3gp', 'mpeg', 'mov', 'flv', 'wmv','gif', 'png', 'jpg', 'jpeg']
+			},
+			fileMediaType: 'application', //deprecated
+			
 			multiUpload: false,
 			maxFileSize: 2048,//Mb
 			tokenFields: ['i_time', 'u_id'],
@@ -150,8 +158,12 @@ var config = {
 		},
 		user_audio: {
 			pathUpload: "files/user/audio",
-			fileTypes: ['avi', 'MP4', '3gp', 'mpeg', 'mov', 'flv', 'wmv'],
-			fileMediaType: 'audio',
+			fileTypes: {
+				audio: ['avi', 'MP4', '3gp', 'mpeg', 'mov', 'flv', 'wmv']
+				//application: ['avi', 'MP4', '3gp', 'mpeg', 'mov', 'flv', 'wmv']
+			},
+			fileMediaType: 'application', //deprecated
+			
 			multiUpload: false,
 			maxFileSize: 10,//Mb
 			sizeParams: [],
@@ -159,8 +171,15 @@ var config = {
 		},
 		user_blog: {
 			pathUpload: "files/user/blog",
-			fileTypes: ['gif', 'png', 'jpg', 'jpeg'],
-			fileMediaType: 'image',
+			fileTypes: {
+				image: ['gif', 'png', 'jpg', 'jpeg'],
+				application: [
+					'xls', 'xlsx', 'xml', 'csv', 'doc', 'docx', 'pdf', 'ppt', 'pptx', 'pxd', 'rtf', 'txt',
+					'vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+					'7z', 'zip', 'gz', 'gzip', 'rar', 'tar', 'tgz'
+				]
+			},
+			fileMediaType: 'application', //deprecated
 			multiUpload: true,
 			maxFileSize: 6,//Mb
 			tokenFields: ['i_time','b_id', 'u_id'],
@@ -175,8 +194,17 @@ var config = {
 		}
 		,events: {
 			pathUpload: "files/events",
-			fileTypes: ['gif', 'png', 'jpg', 'jpeg'],
-			fileMediaType: 'image',
+			
+			fileTypes: {
+				image: ['gif', 'png', 'jpg', 'jpeg'],
+				application: [
+					'xls', 'xlsx', 'xml', 'csv', 'doc', 'docx', 'pdf', 'ppt', 'pptx', 'pxd', 'rtf', 'txt',
+					'vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+					'7z', 'zip', 'gz', 'gzip', 'rar', 'tar', 'tgz'
+				]
+			},
+			fileMediaType: 'application', //deprecated
+			
 			multiUpload: true,
 			maxFileSize: 6,//Mb
 			tokenFields: ['i_time','e_id'],
@@ -191,8 +219,15 @@ var config = {
 		},
 		news: {
 			pathUpload: "files/news",
-			fileTypes: ['gif', 'png', 'jpg', 'jpeg'],
-			fileMediaType: 'image',
+			fileTypes: {
+				image: ['gif', 'png', 'jpg', 'jpeg'],
+				application: [
+					'xls', 'xlsx', 'xml', 'csv', 'doc', 'docx', 'pdf', 'ppt', 'pptx', 'pxd', 'rtf', 'txt', 
+					'vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+					'7z', 'zip', 'gz', 'gzip', 'rar', 'tar', 'tgz'
+				]
+			},
+			fileMediaType: 'application', //deprecated
 			multiUpload: true,
 			maxFileSize: 6,//Mb
 			tokenFields: ['i_time','n_id'],

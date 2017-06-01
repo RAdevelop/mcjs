@@ -56,8 +56,8 @@
 </form>
 <% if (_action == 'edit'){%>
 <ul>
-	<li><span class="popoverHelp " id="newsHelpImages">Как добавить изображения в "описание"</span></li>
-	<li><span class="popoverHelp " id="newsHelpVideo">Как добавить видео в "описание"</span></li>
+	<li><span class="popoverHelp" id="newsHelpImages">Как добавить файл/изображения в "описание"</span></li>
+	<li><span class="popoverHelp" id="newsHelpVideo">Как добавить видео в "описание"</span></li>
 </ul>
 <div class="popoverContent" data-popover-for="#newsHelpImages">
 	<ol>
@@ -75,7 +75,7 @@
 	</ol>
 </div>
 <fieldset class="col-xs-12">
-	<legend><a href="javascript:void(0);" id="uploadimages"><i class="fa fa-cloud-upload" aria-hidden="true"></i> загрузить</a> Изображения</legend>
+	<legend><a href="javascript:void(0);" id="uploadimages"><i class="fa fa-cloud-upload" aria-hidden="true"></i> загрузить</a> файлы/изображения</legend>
 	<%- include news_images.ejs %>
 </fieldset>
 <%}%>
@@ -168,24 +168,23 @@
 				return;
 
 			var i, image, html, imgSrc;
-
+			
 			for(i = 0; i < filesUploaded.length; i++)
 			{
 				image = filesUploaded[i];
 				imgSrc = (image["previews"] && image["previews"]["256_192"] ? image["previews"]["256_192"] : '/_0.gif');
-
 				var img = '<img src="'+imgSrc+'" alt="" class="image" data-img-id="'+image["ni_id"]+'"/>';
-
+				
 				html = '<div class="imageItem">';
 				html += imgToolsHtml($(img));
 				html += img;
 				html += '</div>';
-
+				
 				$imagesContainer.prepend(html);
 				images.unshift(image);
 			}
 		}
-
+		
 		newsUploadOpts.onEnd = function()
 		{
 			var filesUploaded = ($(this).data('uploadFileData') ? $(this).data('uploadFileData') : null);
@@ -231,27 +230,32 @@
 			});
 		});
 	}
-
+	
 	$imagesWrapper.find('.imagesContainer').sortable({
 		update: function( event, ui )
 		{
-			$( ui.item[0] ).one('click', function(e){ e.stopImmediatePropagation(); } );
-
-			var imgPos = [];
-			$('.imagesContainer img.image').each(function (i, item)
+			var $uiItem = $( ui.item[0] );
+			$uiItem.one('click', function(e){ e.stopImmediatePropagation(); } );
+			var type = $uiItem.find('.image').data('imgType');
+			
+			var imgPos = [], $item;
+			$('.imagesContainer .image').each(function (i, item)
 			{
-				imgPos.push($(item).attr("data-img-id"));
+				$item = $(item);
+				
+				if (type == $item.data('imgType'))
+				imgPos.push($item.data('imgId'));
 			});
-
+			
 			if (!imgPos.length)
 				return;
-
+			
 			var postData = {
 				"btn_save_news": "sort_img",
 				"i_news_id": '<%=news["n_id"]%>',
 				"ni_pos": imgPos
 			};
-
+			
 			$.ajax({
 				url: '<%=_reqBaseUrl%>',
 				method: "POST",
@@ -268,7 +272,7 @@
 			});
 		}
 	});
-
+	
 	function imgToolsHtml($img)
 	{
 		var html = '<div class="imageTools">'
@@ -276,30 +280,30 @@
 		html += '</div>';
 		return html;
 	}
-
+	
 	function imgTools(editor)
 	{
-		$imagesWrapper.find('.imageItem img').each(function(i, img)
+		$imagesWrapper.find('.imageItem .image').each(function(i, img)
 		{
 			$(this).parent().prepend(imgToolsHtml($(img)));
 		});
-
+		
 		$(document).on('click','.imagesWrapper .imagesContainer .imageTools a', function (event)
 		{
 			event.preventDefault();
 			event.stopPropagation();
 			var $this = $(this);
-
+			
 			switch ($this.data('action'))
 			{
 				case 'delete':
-
+						
 					var postData = {
 						"btn_save_news": "del_img",
 						"i_news_id": '<%=news["n_id"]%>',
 						"i_ni_id": $this.data('imgId')
 					};
-
+					
 					$.ajax({
 						url: '<%=_reqBaseUrl%>',
 						method: "POST",

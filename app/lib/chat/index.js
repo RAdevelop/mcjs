@@ -108,6 +108,11 @@ class Messenger extends SocketIO
 		return this._socket.handshake.session['user'];
 	}
 	
+	/**
+	 * 
+	 * @param data - данные, полученные от "клиента"
+	 * @param cb - колбэк ф-ция. если указана, то вызывается - работает на строне клиента
+	 */
 	join(data, cb)
 	{
 		console.log('someone join to: ', data);
@@ -117,7 +122,7 @@ class Messenger extends SocketIO
 		
 		/*
 		 если на клиенте указана ф-ция вот так:
-		 chat.emit('join', sendData, function cb(respData){});
+		 chat.emit('join', sendData, function cb(respData){//do something});
 		 */
 		cb && cb('RAAD'); //RAAD - вернется на клиентскую часть
 	}
@@ -158,7 +163,7 @@ module.exports = function(server, app)
 		console.log('on connection');
 		//console.log(this);
 		//console.log(this.server instanceof Messenger); //Messenger
-		console.log('io.getUser = ', io.getUser() );
+		//console.log('io.getUser = ', io.getUser() );
 		
 		console.log('\n------------------------------------------------\n');
 		//console.log(socket);

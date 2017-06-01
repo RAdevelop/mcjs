@@ -158,50 +158,50 @@ class News extends Base
 	}
 
 	/**
-	 * добавляем фотографию к событию
+	 * добавляем файл к статье
 	 *
 	 * @param u_id
 	 * @param req
 	 * @param res
 	 * @returns {Promise}
 	 */
-	uploadImage(u_id, req, res)
+	uploadFile(u_id, req, res)
 	{
 		let ni_id, n_id;
 		let ufile = {};
-
+		
 		const UploadFile = new FileUpload(News.uploadConfigName, req, res);
-
+		
 		return UploadFile.upload()
 			.then((file) =>
 			{
 				ufile = file;
 				n_id = file.n_id;
 				
-				return this.get(n_id)
-					.then((event) =>
-					{
-						if (event["e_img_cnt"] >= 10)
-							throw new FileErrors.LimitExceeded('Можно добавить не более 10 файлов.');
-
-						return Promise.resolve(ufile);
-					});
+				return this.get(n_id).then((news) => 
+				{
+					if (news["n_img_cnt"] >= 10)
+						throw new FileErrors.LimitExceeded('Можно добавить не более 10 файлов.');
+					
+					return Promise.resolve(ufile);
+				});
 			})
 			.then((file) =>
 			{
-				return this.model('news').addPhoto(u_id, file)
+				return this.model('news').addFile(u_id, file)
 					.then((file) =>
 					{
 						ni_id = file.ni_id;
-
+						
 						file["moveToDir"] = FileUpload.getImageUri(file.n_id, file.ni_id);
-
+						
 						return new Promise((resolve, reject) =>
 						{
 							UploadFile.moveUploadedFile(file, file["moveToDir"], (err, file) =>
 							{
-								if (err) return reject(err);
-
+								if (err)
+									return reject(err);
+								
 								return resolve(file);
 							});
 						});
@@ -209,9 +209,9 @@ class News extends Base
 			})
 			.then((file) =>
 			{
-				if (file.type != 'image')
+				if (file.type != FileUpload.TYPE_IMAGE)
 					return Promise.resolve(file);
-
+				
 				return UploadFile.setImageGeo(file)
 					.then((file) =>
 					{
@@ -220,10 +220,10 @@ class News extends Base
 			})
 			.then((file) =>
 			{
-				//console.log(file);
-
+				//console.log(__dirname, file);
+				
 				return this.model('news')
-					.updImage(file.n_id, file.ni_id, file.latitude, file.longitude, file.webDirPath, file.name, true)
+					.updFile(file.n_id, file.ni_id, file.latitude, file.longitude, file.webDirPath, file.name, file.type, true)
 					.then(() =>
 					{
 						ufile = null;
@@ -235,7 +235,7 @@ class News extends Base
 			{
 				//console.log(ufile);
 				Logger.error(err);
-				return this.delImage(u_id, n_id, ni_id, ufile)
+				return this.delFile(u_id, n_id, ni_id, ufile)
 					.catch((delErr) =>
 					{
 						switch (err.name)
@@ -256,49 +256,49 @@ class News extends Base
 	}
 	
 	/**
-	 * получаем данные для указанной фотографии
+	 * получаем данные для указанного файла
 	 *
 	 * @param ni_id
 	 * @returns {Promise}
 	 */
-	getImage(ni_id)
+	getFile(ni_id)
 	{
-		return this.model('news').getImage(ni_id)
+		return this.model('news').getFile(ni_id)
 			.then((image) =>
 			{
 				if (!image)
-					throw new FileErrors.io.FileNotFoundError("фотография не найдена: EVents.getImage(ni_id="+ni_id+")");
-
+					throw new FileErrors.io.FileNotFoundError("фотография не найдена: News.getFile(ni_id="+ni_id+")");
+				
 				let sizeParams = FileUpload.getUploadConfig(News.uploadConfigName).sizeParams;
 				let previews = FileUpload.getPreviews(sizeParams, image, "ni_dir", true, 'ni_name');
 				previews['previews'] = null;
-
+				
 				image = previews['obj'];
-
+				
 				return Promise.resolve(image);
 			});
 	}
-
+	
 	/***
-	 * получаем фотографии для указанной новости
+	 * получаем файлы для указанной новости
 	 *
 	 * @param n_id
 	 * @return [images, allPreviews]
 	 */
-	getImageList(n_id)
+	getFileList(n_id)
 	{
-		return this.model('news').getImageList(n_id)
-			.then((images) => {
-
-				if (!images)
+		return this.model('news').getFileList(n_id)
+			.then((file_list) => 
+			{
+				if (!file_list)
 					return [[], []];
-
+				
 				let sizeParams = FileUpload.getUploadConfig(News.uploadConfigName).sizeParams;
-				let previews = FileUpload.getPreviews(sizeParams, images, "ni_dir", true, 'ni_name');
-
-				images = previews['obj'];
-
-				return [images, previews['previews']];
+				let previews = FileUpload.getPreviews(sizeParams, file_list, "ni_dir", true, 'ni_name', 'ni_type');
+				
+				file_list = previews['obj'];
+				
+				return [file_list, previews['previews']];
 			});
 	}
 	
@@ -311,46 +311,50 @@ class News extends Base
 	 * @param file
 	 * @returns {Promise}
 	 */
-	delImage(u_id, n_id, ni_id, file = {})
+	delFile(u_id, n_id, ni_id, file = {})
 	{
 		//console.log(file);
-
+		
 		return FileUpload.deleteFile(file.path || '')
-			.then(() => {
-				return this.getImage(ni_id);
+			.then(() => 
+			{
+				return this.getFile(ni_id);
 			})
-			.then((image) => {
+			.then((image) => 
+			{
 				if (!image || image["n_id"] != n_id)
 					throw new FileErrors.io.FileNotFoundError();
-
+				
 				return Promise.resolve(image);
 			})
-			.then((image) => {
-
+			.then((image) => 
+			{
 				let dir = (image["ni_dir"] ? image["ni_dir"] : (file["webDirPath"] ? file["webDirPath"] : null));
-
+				
 				if (!dir)
 					return Promise.reject(new FileErrors.io.DirectoryNotFoundError());
-
+				
 				dir = Path.dirname(Path.join(FileUpload.getDocumentRoot, dir));
-
+				
 				return FileUpload.deleteDir(dir, true)
-					.then(() => {
-
-						return this.model('news').delImage(n_id, ni_id);
+					.then(() => 
+					{
+						return this.model('news').delFile(n_id, ni_id);
 					})
-					.then(() => {
+					.then(() => 
+					{
 						return Promise.resolve(image);
 					});
 			})
-			.catch((err) => {
-
-				console.log('class Events delImage catch');
+			.catch((err) => 
+			{
+				console.log('class News delImage catch');
 				Logger.error(err);
 				console.log('\n');
-
-				return this.model('news').delImage(n_id, ni_id)
-					.then(() => {
+				
+				return this.model('news').delFile(n_id, ni_id)
+					.then(() =>
+					{
 						throw err;
 					});
 			});
@@ -379,9 +383,9 @@ class News extends Base
 		news['n_id'] = parseInt(news['n_id'], 10)||0;
 		if (!news || !!news['n_id'] === false)
 			return Promise.resolve(0);
-
+		
 		let dir = Path.join(FileUpload.getDocumentRoot, FileUpload.getUploadConfig(News.uploadConfigName)["pathUpload"], FileUpload.getAlbumUri(news['n_id']));
-
+		
 		return FileUpload.deleteDir(dir, true)
 			.then(() =>
 			{

@@ -35,11 +35,11 @@ class UploadFile extends File
 		this.tokenFields    = opts.tokenFields || [];
 		this.fileMediaType  = opts.fileMediaType || null;
 
-		this.fileTypes      = opts.fileTypes || [];
-		this.fileTypes.forEach(function(value, index, arr)
+		this.fileTypes      = opts.fileTypes || {};
+		/*this.fileTypes.forEach(function(value, index, arr)
 		{
 			arr[index] = value.toLowerCase();
-		});
+		});*/
 
 		this.maxFileSize    = opts.maxFileSize || 0;//в мегабайтах. если не указано - 0Мб запрещено закачивать
 	}
@@ -53,10 +53,10 @@ class UploadFile extends File
 			fileMediaType  : this.fileMediaType,
 			fileTypes      : this.fileTypes
 		};
-
+		
 		if (name && opts[name])
 			return opts[name];
-
+		
 		return opts;
 	}
 
@@ -68,7 +68,6 @@ class UploadFile extends File
 	static exposeUploadOptions(uploadType)
 	{
 		let conf = UploadFile.getUploadConfig(uploadType);
-
 		return {
 			"fileMediaType":    conf.fileMediaType
 			,"fileSizeLimit":   conf.fileSizeLimit
@@ -78,9 +77,23 @@ class UploadFile extends File
 		};
 	}
 	
-	isAllowedFileType(fileType)
+	isAllowedFileType(fileExt)
 	{
-		return (this.fileTypes.indexOf(fileType.toLowerCase()) != -1);
+		//console.log('fileExt = ', fileExt);
+		//console.log('this.fileTypes = ', this.fileTypes);
+		
+		let isAllowed = false;
+		
+		Object.keys(this.fileTypes).some((f_type)=>{
+			if (this.fileTypes[f_type].indexOf(fileExt.toLowerCase()) != -1)
+			{
+				isAllowed = true;
+				return true;
+			}
+			return false;
+		});
+		
+		return isAllowed;
 	}
 	
 	uploadPaths()
@@ -266,15 +279,20 @@ class UploadFile extends File
 							//console.log(err);
 						});
 					}
-
-					return uploadCb(new FileErrors.FileType(file.ext, self.fileTypes.join(', ')));
+					let f_typ_list = '';
+					
+					Object.keys(self.fileTypes).forEach((f_type)=>{
+						f_typ_list += '<br/>' + self.fileTypes[f_type].join(', ');
+					});
+					
+					return uploadCb(new FileErrors.FileType(file.ext, f_typ_list));
 				}
-
+				
 				if (file.size > self.constructor.MEGABYTE * self.maxFileSize)
 				{
 					if(!File.isForbiddenDir(file.path))
 					{
-						FS.unlink(file.path, function(err)
+						FS.unlink(file.path, (err)=>
 						{
 							if (err)
 								return uploadCb(err);
@@ -296,14 +314,13 @@ class UploadFile extends File
 			});
 		form.parse(this.req);
 	}
-
+	
 	/**
 	 * создаем токен для проверки подделки данных во время загрузки
 	 * @returns {{i_time: number, s_token: *}}
 	 */
 	static createToken(uploadTypeConf, tokenData)
 	{
-
 		let tokenFields = UploadFile.getUploadConfig(uploadTypeConf)["tokenFields"] || ['i_time'];
 		let tokenStr = secret;
 		tokenData.i_time = (new Date()).getTime();

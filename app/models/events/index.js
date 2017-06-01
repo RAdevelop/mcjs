@@ -258,7 +258,7 @@ class Events extends BaseModel
 			, e.u_id, ei.ei_id, ei.ei_latitude, ei.ei_longitude, ei.ei_dir, ei.ei_pos, ei.ei_name
 			FROM (SELECT NULL) AS z
 			JOIN events_list AS e ON(e.e_end_ts >= ? AND e.e_start_ts <= ?)
-			LEFT JOIN events_image AS ei ON(ei.e_id = e.e_id AND ei.ei_pos = 0)`;
+			LEFT JOIN events_file AS ei ON(ei.e_id = e.e_id AND ei.ei_pos = 0)`;
 
 		if (l_id > 0)
 		{
@@ -294,7 +294,7 @@ class Events extends BaseModel
 			, e.u_id, ei.ei_id, ei.ei_latitude, ei.ei_longitude, ei.ei_dir, ei.ei_pos, ei.ei_name
 			FROM (SELECT NULL) AS z
 			JOIN events_list AS e ON(e.e_id IN(${this.constructor.placeHoldersForIn(e_ids)}))
-			LEFT JOIN events_image AS ei ON(ei.e_id = e.e_id AND ei.ei_pos = 0)
+			LEFT JOIN events_file AS ei ON(ei.e_id = e.e_id AND ei.ei_pos = 0)
 			ORDER BY e.e_start_ts DESC`;
 
 		/*console.log(sql);
@@ -349,7 +349,7 @@ class Events extends BaseModel
 	{
 		let now_ts = Moment().unix();
 		let sql =
-			`INSERT INTO events_image (e_id, ei_create_ts, ei_update_ts)
+			`INSERT INTO events_file (e_id, ei_create_ts, ei_update_ts)
 			VALUES (?, ?, ?);`;
 
 		return this.constructor.conn().ins(sql, [e_id, now_ts, now_ts]);
@@ -388,7 +388,7 @@ class Events extends BaseModel
 	updImage(e_id, ei_id, ei_latitude, ei_longitude, ei_dir, ei_name, posUpd = true)
 	{
 		posUpd = (posUpd ? 1 : 0);
-		let sql = "CALL events_image_update(?, ?, ?, ?, ?, ?, ?)";
+		let sql = "CALL events_file_update(?, ?, ?, ?, ?, ?, ?)";
 		let sqlData = [e_id, ei_id, ei_latitude, ei_longitude, ei_dir, ei_name, posUpd];
 
 		return this.constructor.conn().call(sql, sqlData)
@@ -406,7 +406,7 @@ class Events extends BaseModel
 	 */
 	delImage(e_id, ei_id)
 	{
-		let sql = "CALL events_image_delete(?, ?, @is_del); SELECT @is_del AS is_del FROM DUAL;";
+		let sql = "CALL events_file_delete(?, ?, @is_del); SELECT @is_del AS is_del FROM DUAL;";
 
 		return this.constructor.conn().multis(sql, [e_id, ei_id])
 			.then((res) => {
@@ -423,11 +423,13 @@ class Events extends BaseModel
 	 */
 	getImage(ei_id)
 	{
-		let sql = `SELECT ei.ei_id, ei.e_id, ei.ei_create_ts, ei.ei_update_ts, ei.ei_latitude, ei.ei_longitude, ei.ei_dir, ei.ei_pos, ei.ei_name
-			FROM events_image AS ei
-			JOIN events_list AS e ON (e.e_id = ei.e_id)
-			WHERE ei.ei_id = ?`;
-		ei_id = parseInt(ei_id, 10);
+		let sql = `SELECT ei.ei_id, ei.e_id, ei.ei_create_ts, ei.ei_update_ts, ei.ei_latitude, ei.ei_longitude, 
+		ei.ei_dir, ei.ei_pos, ei.ei_name
+		FROM events_file AS ei
+		WHERE ei.ei_id = ?`;
+		
+		ei_id = parseInt(ei_id, 10)||0;
+		
 		return this.constructor.conn().sRow(sql, [ei_id]);
 	}
 
@@ -440,7 +442,7 @@ class Events extends BaseModel
 	{
 		let sql = `SELECT ei.ei_id, ei.e_id, ei.ei_create_ts, ei.ei_update_ts, ei.ei_latitude, ei.ei_longitude, 
 			ei.ei_dir, ei.ei_pos, ei.ei_name
-			FROM events_image AS ei
+			FROM events_file AS ei
 			WHERE ei.e_id = ?
 			GROUP BY ei.ei_pos
 			ORDER BY ei.ei_pos`;
@@ -457,7 +459,7 @@ class Events extends BaseModel
 	 */
 	countAlbumImages(e_id)
 	{
-		let sql = "SELECT COUNT(ei_id) AS cnt FROM events_image WHERE e_id = ?;";
+		let sql = "SELECT COUNT(ei_id) AS cnt FROM events_file WHERE e_id = ?;";
 
 		e_id = parseInt(e_id, 10);
 		return this.constructor.conn().sRow(sql, [e_id])
@@ -492,7 +494,7 @@ class Events extends BaseModel
 					setData.push(ei_id, i);
 				});
 
-				let sql = "UPDATE events_image SET ei_pos = " + setOrdi.join(',') + ', ei_pos' +')'.repeat(setOrdi.length) +
+				let sql = "UPDATE events_file SET ei_pos = " + setOrdi.join(',') + ', ei_pos' +')'.repeat(setOrdi.length) +
 					" WHERE e_id = ? ";
 
 				e_id = parseInt(e_id, 10);
@@ -511,7 +513,7 @@ class Events extends BaseModel
 	 */
 	delEvent(e_id)
 	{
-		let sql = `DELETE FROM events_image WHERE e_id = ?;
+		let sql = `DELETE FROM events_file WHERE e_id = ?;
 		DELETE FROM events_locations WHERE e_id = ?;
 		DELETE FROM events_list WHERE e_id = ?;
 		`;

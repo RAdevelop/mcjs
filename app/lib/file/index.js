@@ -120,18 +120,40 @@ class File
 
 		return file;
 	}
-
+	
+	static get TYPE_IMAGE()
+	{
+		return `image`;
+	}
+	static get TYPE_APPLICATION()
+	{
+		return `application`;
+	}
+	
 	static get getDocumentRoot()
 	{
-		return AppConfig["document_root"];
+		return AppConfig['document_root'];
 	}
-
-	static get imageTypes()
+	//документы
+	static get docTypeExt()
+	{
+		return [
+			'xls', 'xlsx', 'xml', 'csv', 'doc', 'docx', 'pdf', 'ppt', 'pptx', 'pxd', 'rtf', 'txt', 
+			'vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+		];
+	}
+	//архивы
+	static get archiveTypeExt()
+	{
+		return ['7z', 'zip', 'gz', 'gzip', 'rar', 'tar', 'tgz'];
+	}
+	
+	static get imageTypeExt()
 	{
 		return ['gif', 'png', 'jpg', 'jpeg'];
 	}
-
-	static get videoTypes()
+	
+	static get videoTypeExt()
 	{
 		return ['avi', 'mp4', '3gp', 'mpeg', 'mov', 'flv', 'wmv'];
 	}
@@ -139,10 +161,10 @@ class File
 	static getUploadConfig(type)
 	{
 		let uploadOpts = (AppConfig.uploads[type] ? AppConfig.uploads[type] : AppConfig.uploads.default);
-
+		
 		//uploadOpts["tokenFields"] = ['i_time'];
 		uploadOpts["fileSizeLimit"] = this.megaToKiloByte(uploadOpts.maxFileSize, true);
-
+		
 		return uploadOpts;
 	}
 
@@ -606,46 +628,50 @@ class File
 	 * @param obj_dir
 	 * @param spread
 	 * @param obj_key_name
+	 * @param obj_type
 	 * @returns {Object}
 	 */
-	static getPreviews(sizeParams, obj, obj_dir, spread = false, obj_key_name = null)
+	static getPreviews(sizeParams, obj, obj_dir, spread = false, obj_key_name = null, obj_type = null)
 	{
 		let previews = [];
 		//if (!obj["previews"]) obj["previews"] = {};
-
+		
 		let single = false;
 		if (!!obj.map === false)
 		{
 			obj = [obj];
 			single = true;
 		}
-
+		
 		obj.forEach((item)=>
 		{
 			if (!item["previews"])
-				item["previews"] = {};
-
+			item["previews"] = {};
+			
 			if (item[obj_dir])
 			{
-				sizeParams.forEach(function (size)
+				if (item[obj_type] == File.TYPE_IMAGE)
 				{
-					item["previews"][size.w+'_'+size.h] = `${item[obj_dir]}/${size.w}_${size.h}.jpg`;
-
-					if (spread)
+					sizeParams.forEach((size)=>
 					{
-						item["previews"]['orig'] = item[obj_dir] + '/orig/' + item[obj_key_name];
-						previews.push(item["previews"][size.w+'_'+size.h]);
-					}
-				});
+						item["previews"][size.w+'_'+size.h] = `${item[obj_dir]}/${size.w}_${size.h}.jpg`;
+						
+						if (spread)
+						{
+							previews.push(item["previews"][size.w+'_'+size.h]);
+						}
+					});
+				}
+				item["previews"]['orig'] = item[obj_dir] + '/orig/' + item[obj_key_name];
 			}
 		});
-
+		
 		if (single)
 			obj = obj.shift();
-
+		
 		return {obj: obj, previews: previews};
 	}
-
+	
 	static getAlbumUri(a_id)
 	{
 		return Math.floor(Math.abs(a_id)/20000) + '/' + a_id;

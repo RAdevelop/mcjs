@@ -37,7 +37,7 @@ let prodDbConf = {
 function truncateTables()
 {
 	console.log('start truncateTables');
-	let sql = `truncate events_list; truncate events_image; truncate events_locations;`;
+	let sql = `truncate events_list; truncate events_file; truncate events_locations;`;
 	return DB.conn().multis(sql);
 }
 
@@ -282,7 +282,7 @@ function insertFiles()
 
 			sqlIns = sqlIns.join(',')
 
-			let sql = `INSERT INTO events_image
+			let sql = `INSERT INTO events_file
 					(ei_id, e_id, ei_create_ts, ei_update_ts, ei_dir, ei_pos, ei_name) 
 					VALUES ${sqlIns}`;
 

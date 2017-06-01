@@ -694,15 +694,14 @@ class Blog extends CtrlMain
 	{
 		let tplFile = 'blog/blog_images.ejs';
 		let tplData = this.getParsedBody();
-
+		
 		this.getRes().on('cancelUploadedFile', (file) =>
 		{
 			if (file["u_id"] && file["b_id"] && file["bi_id"])
 				return this.getClass('blog').delImage(file["u_id"], file["b_id"], file["bi_id"], file);
 		});
-
-		return this.getClass('blog')
-			.uploadImage(this.getUserId(), this.getReq(), this.getRes())
+		
+		return this.getClass('blog').uploadImage(this.getUserId(), this.getReq(), this.getRes())
 			.then((file) =>
 			{
 				//console.log(file);
@@ -718,7 +717,7 @@ class Blog extends CtrlMain
 					size: file.size,
 					previews: file.previews
 				};
-
+				
 				this.view.setTplData(tplFile, tplData);
 				return Promise.resolve(true);
 			})

@@ -23,8 +23,8 @@ $(function(){
 	//TODO добавить ip или домен сайта
 	//var chat = io('//192.168.0.91:5003/rooms');
 	//var chat = io('//'+window.location.host+'/rooms');
-
-
+	
+	
 	var opts =  {
 		"force new connection" : true,
 		"reconnection": true,
@@ -34,11 +34,11 @@ $(function(){
 		"timeout" : 10000                           //before connect_error and connect_timeout are emitted.
 			,"transports" : ['polling', 'websocket']                //forces the transport to be only websocket. Server needs to be setup as well/
 	};
-
+	
+	
 	//var chat = io('//'+window.location.host+'/chats', opts);
 	var chat = io('//'+window.location.host+'/', opts);
-
-
+	
 	chat.on('connect', function(data)
 	{
 		console.log('on connection event data=' ,data);
@@ -50,7 +50,7 @@ $(function(){
 		
 		chat.emit('join', sendData, function(respData)
 		{
-			console.log('cb chat:user:connected respData = ', respData);
+			console.log('cb join respData = ', respData);
 		});
 	})
 	.on('connecting', function (connecting)

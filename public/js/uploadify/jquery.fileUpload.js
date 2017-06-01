@@ -57,23 +57,37 @@
 
 		function getFileTypes(types, type)
 		{
-			if (!types.length) return [];
-
-
+			var type_list = Object.keys(types);
+			if (!type_list.length) return [];
+			
+			var res_types = [];
 			if (winFileReader())
 			{
-				types = types.map(function(item){return type+'\/'+item;});
-				//types = types.join(';');
+				//types = types.map(function(item){return type+'\/'+item;});
+				 type_list.forEach(function(f_type){
+					 types[f_type].forEach(function(item){
+						 res_types.push(f_type+'\/'+item); 
+					 });
+				});
 			}
 			else
 			{
-				types = types.map(function(item){return '*.'+item;});
-				types = types.join('; ');
+				//res_types = types.map(function(item){return '*.'+item;});
+				
+				type_list.forEach(function(f_type){
+					types[f_type].forEach(function(item){
+						res_types.push('*.'+item);
+					});
+				});
+				
+				res_types = types.join('; ');
 			}
-
-			return types;
+			
+			//console.log('res_types ', res_types);
+			
+			return res_types;
 		}
-
+		
 		function onFileTooBig(file)
 		{
 			if (!file) return;
@@ -280,8 +294,7 @@
 			settings.uploadScript = $fileUpload.parents('form').attr('action');
 			settings.fileType = getFileTypes(settings.fileTypes, settings.fileMediaType);
 			settings.simUploadLimit = 10;
-
-
+			
 			/*
 			 settings.itemTemplate = '<div id="${fileID}" class="uploadifive-queue-item">' +
 			 '<span class="filename">${fileName} (${fileSize})</span> | <button type="button" class="btn btn-danger btn-xs" onclick="$(\'#${instanceID}\').uploadify(\'cancel\', \'${fileID}\');">отменить</button>' +
@@ -381,8 +394,9 @@
 						break;
 					default:
 						console.log(errorType); //TODO
-						mcDialog('Повторите попытку позже. TODO: ' + errorType, true);
-
+						mcDialog('Повторите попытку позже: неизвестная ошибка <br/>' + errorType, true);
+						//mcDialog('Повторите попытку позже. TODO: ' + errorType, true);
+						
 						break;
 				}
 
@@ -465,8 +479,7 @@
 
 				console.log('END uploadifive onQueueComplete');
 			};
-
-
+			
 			$fileUpload.uploadifive(settings);
 		}
 		else//uploadify

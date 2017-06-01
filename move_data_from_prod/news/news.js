@@ -33,7 +33,7 @@ let prodDbConf = {
 
 function truncateTables()
 {
-	let sql = `truncate news_list; truncate news_image;`;
+	let sql = `truncate news_list; truncate news_file;`;
 	return DB.conn().multis(sql);
 }
 
@@ -171,7 +171,7 @@ function insertFiles()
 
 			sqlIns = sqlIns.join(',');
 
-			let sql = `INSERT INTO news_image
+			let sql = `INSERT INTO news_file
 					(ni_id, n_id, ni_create_ts, ni_update_ts, ni_dir, ni_pos, ni_name) 
 					VALUES ${sqlIns}`;
 
@@ -184,7 +184,7 @@ function insertFiles()
 				{
 					console.log("start move file");
 					return moveFile(dir_list)
-						.then((dirs)=>
+					.then((dirs)=>
 					{
 						console.log("start resize file");
 						return resizeFile(dirs);
