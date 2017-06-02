@@ -11,7 +11,7 @@ const EmbedContent = require("app/lib/embed/content");
 //const Moment = require('moment'); //работа со временем
 const CtrlMain = require('app/lib/controller');
 
-let limit_per_page = 2;
+let limit_per_page = 20;
 
 class ProfileVideo extends CtrlMain
 {

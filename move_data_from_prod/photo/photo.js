@@ -72,15 +72,15 @@ function createProfileAlbum()
 	console.log('start createProfileAlbum');
 	let sql = `SELECT 
 	po_id+10 AS u_id
-	, f_id AS ai_id
+	, f_id AS f_id
 	, 0 AS a_id
-	, UNIX_TIMESTAMP(f_date) AS ai_create_ts
-	, UNIX_TIMESTAMP(f_date) AS ai_update_ts
-	, '' AS ai_dir
-	, IF(f_position-1 < 0, 0, f_position-1) AS ai_pos
-	, TRIM(REPLACE(REPLACE(REPLACE(f_name, ':', ''), ',', ''), '+', ' ')) AS ai_name
+	, UNIX_TIMESTAMP(f_date) AS f_create_ts
+	, UNIX_TIMESTAMP(f_date) AS f_update_ts
+	, '' AS f_dir
+	, IF(f_position-1 < 0, 0, f_position-1) AS f_pos
+	, TRIM(REPLACE(REPLACE(REPLACE(f_name, ':', ''), ',', ''), '+', ' ')) AS f_name
 	, f_path_original AS file_from
-	, 1 AS ai_profile
+	, 1 AS f_profile
 	, IF(LOCATE('empty-avatar.png', f_path_original) > 0, 0, 1) AS ava_exists
 	FROM users_avatar
 	GROUP BY f_id
@@ -116,34 +116,34 @@ function createProfileAlbum()
 					let dir = '';
 					list.forEach((file)=>
 					{
-						if (file['ai_name'] == '')
-							file['ai_name'] = 'ava.jpg'
+						if (file['f_name'] == '')
+							file['f_name'] = 'ava.jpg'
 						else
-							file['ai_name'] = Helpers.clearSymbol(file['ai_name'], '_.');
+							file['f_name'] = Helpers.clearSymbol(file['f_name'], '_.');
 
-						dir = dir_prefix+FileUpload.getImageUri(file['a_id'], file['ai_id']);
+						dir = dir_prefix+FileUpload.getImageUri(file['a_id'], file['f_id']);
 						dir_list.push({
 							dir:                full_path_to_dir+dir+'/orig',
 							fullPathMainDir:    full_path_to_dir+dir,
 							webFilePath:        dir+'/orig',
 							file_from:          old_path_to_dir+file['file_from'],
-							file_to:            full_path_to_dir+dir+'/orig/'+file['ai_name']
+							file_to:            full_path_to_dir+dir+'/orig/'+file['f_name']
 						});
 						sqlIns.push(sVals);
-						sqlData.push(file['a_id'],file['u_id'],file['ai_create_ts'],file['ai_update_ts'], dir,file['ai_pos'],file['ai_name'],file['ai_profile']);
+						sqlData.push(file['a_id'],file['u_id'],file['f_create_ts'],file['f_update_ts'], dir,file['f_pos'],file['f_name'],file['f_profile']);
 					});
 
 					sqlIns = sqlIns.join(',');
 
 					let sql = `INSERT INTO album_image
-					(a_id, u_id, ai_create_ts, ai_update_ts, ai_dir, ai_pos, ai_name, ai_profile) 
+					(a_id, u_id, f_create_ts, f_update_ts, f_dir, f_pos, f_name, f_profile) 
 					VALUES ${sqlIns}`;
 
 					return DB.conn().ins(sql, sqlData)
 						.then(()=>
 						{
 
-							sql = `UPDATE album SET a_img_cnt=1 WHERE a_type_id=2;`;
+							sql = `UPDATE album SET file_cnt=1 WHERE a_type_id=2;`;
 							DB.conn().upd(sql);
 							//return Promise.resolve(dir_list);
 
@@ -178,7 +178,7 @@ function insertAlbums()
 		, 3 AS a_type_id
 		, a.upa_name AS a_name
 		, '' AS a_alias
-		, COUNT(af.f_id) AS a_img_cnt
+		, COUNT(af.f_id) AS file_cnt
 		, UNIX_TIMESTAMP(a.upa_date_add) AS a_create_ts
 		, UNIX_TIMESTAMP(a.upa_date_upd) AS a_update_ts
 		, a.upa_description AS a_text
@@ -213,7 +213,7 @@ function insertAlbums()
 					news['a_type_id'],
 					news['a_name'],
 					news['a_alias'],
-					news['a_img_cnt'],
+					news['file_cnt'],
 					news['a_create_ts'],
 					news['a_update_ts'],
 					news['a_text']
@@ -223,7 +223,7 @@ function insertAlbums()
 			sqlIns = sqlIns.join(',')
 
 			let sql = `INSERT INTO album
-					(a_id, u_id, a_type_id, a_name, a_alias, a_img_cnt, a_create_ts, a_update_ts, a_text) 
+					(a_id, u_id, a_type_id, a_name, a_alias, file_cnt, a_create_ts, a_update_ts, a_text) 
 					VALUES ${sqlIns}`;
 
 			/*console.log(sql);
@@ -239,11 +239,11 @@ function insertFiles()
 	let sql = `SELECT
 	af.po_id+33 AS a_id
 	, a.u_id+10 AS u_id
-	, UNIX_TIMESTAMP(af.f_date) AS ai_create_ts
-	, UNIX_TIMESTAMP(af.f_date) AS ai_update_ts
-	, '' AS ai_dir
-	, IF(af.f_position-1 < 0, 0, af.f_position-1) AS ai_pos
-	, TRIM(REPLACE(REPLACE(REPLACE(af.f_name, ':', ''), ',', ''), '+', ' ')) AS ai_name
+	, UNIX_TIMESTAMP(af.f_date) AS f_create_ts
+	, UNIX_TIMESTAMP(af.f_date) AS f_update_ts
+	, '' AS f_dir
+	, IF(af.f_position-1 < 0, 0, af.f_position-1) AS f_pos
+	, TRIM(REPLACE(REPLACE(REPLACE(af.f_name, ':', ''), ',', ''), '+', ' ')) AS f_name
 	, af.f_path_original AS file_from
 	FROM user_photo_album_file AS af
 	JOIN user_photo_album AS a ON(a.upa_id = af.po_id)
@@ -258,22 +258,22 @@ function insertFiles()
 
 			list.forEach((file)=>
 			{
-				if (file['ai_name'] == '')
-					file['ai_name'] = 'image.jpg';
+				if (file['f_name'] == '')
+					file['f_name'] = 'image.jpg';
 				else
-					file['ai_name'] = Helpers.clearSymbol(file['ai_name'], '_.');
+					file['f_name'] = Helpers.clearSymbol(file['f_name'], '_.');
 
-					file['ai_text'] = old_path_to_dir+file['file_from'];
+					file['f_text'] = old_path_to_dir+file['file_from'];
 
 				sqlIns.push(sVals);
-				//sqlData.push(file['ai_id'],file['a_id'],file['ai_create_ts'],file['ai_update_ts'], dir,file['ai_pos'],file['ai_name']);
-				sqlData.push(file['a_id'],file['u_id'],file['ai_create_ts'],file['ai_update_ts'], file['ai_pos'],file['ai_name'],file['ai_text']);
+				//sqlData.push(file['f_id'],file['a_id'],file['f_create_ts'],file['f_update_ts'], dir,file['f_pos'],file['f_name']);
+				sqlData.push(file['a_id'],file['u_id'],file['f_create_ts'],file['f_update_ts'], file['f_pos'],file['f_name'],file['f_text']);
 			});
 
 			sqlIns = sqlIns.join(',');
 
 			let sql = `INSERT INTO album_image
-					(a_id,u_id, ai_create_ts, ai_update_ts, ai_pos, ai_name, ai_text) 
+					(a_id,u_id, f_create_ts, f_update_ts, f_pos, f_name, f_text) 
 					VALUES ${sqlIns}`;
 
 			return DB.conn().ins(sql, sqlData);
@@ -285,7 +285,7 @@ function moveResizeAlbumFiles()
 	console.log('start moveResizeAlbumFiles');
 	let dir_list = [];
 	let sql = `SELECT
-			ai.ai_id, ai.a_id, ai.ai_text AS file_from, ai.ai_name
+			ai.f_id, ai.a_id, ai.f_text AS file_from, ai.f_name
 			FROM album_image AS ai
 			JOIN album AS a ON(a.a_id = ai.a_id AND a.a_type_id = 3)
 			`;
@@ -295,16 +295,16 @@ function moveResizeAlbumFiles()
 		let dir = '';
 		list.forEach((file)=>
 		{
-			dir = dir_prefix+FileUpload.getImageUri(file['a_id'], file['ai_id']);
+			dir = dir_prefix+FileUpload.getImageUri(file['a_id'], file['f_id']);
 
 			dir_list.push({
-				ai_id: file['ai_id'],
-				ai_dir: dir,
+				f_id: file['f_id'],
+				f_dir: dir,
 				dir:                full_path_to_dir+dir+'/orig',
 				fullPathMainDir:    full_path_to_dir+dir,
 				webFilePath:        dir+'/orig',
 				file_from:          file['file_from'],
-				file_to:            full_path_to_dir+dir+'/orig/'+file['ai_name']
+				file_to:            full_path_to_dir+dir+'/orig/'+file['f_name']
 			});
 		});
 		return Promise.resolve(1);
@@ -314,12 +314,12 @@ function moveResizeAlbumFiles()
 			//console.log(dir_list[0]);
 			//return Promise.resolve(dir_list);
 
-			console.log("start UPDATE ai_dir");
+			console.log("start UPDATE f_dir");
 
 			return Promise.mapSeries(dir_list, function (dir)
 			{
-				let sql = `UPDATE album_image SET ai_text='', ai_dir=? WHERE ai_id = ?`;
-				return DB.conn().upd(sql, [dir['ai_dir'], dir['ai_id']]);
+				let sql = `UPDATE album_image SET f_text='', f_dir=? WHERE f_id = ?`;
+				return DB.conn().upd(sql, [dir['f_dir'], dir['f_id']]);
 			})
 				.then(()=>
 				{

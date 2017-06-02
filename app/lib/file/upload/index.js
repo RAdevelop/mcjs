@@ -471,62 +471,56 @@ class UploadFile extends File
 			{
 				rStream.destroy();
 				wStream.destroy();
-
+				
 				this.res.emit("cancelUploadedFile", file);
 			});
 		}
-
+		
 		rStream.on('error', function(rStreamErr)
 		{
 			//console.log('rStream.on error');
 			//console.log(rStreamErr);
-
+			
 			wStream.destroy();
-
+			
 			if (!File.isForbiddenDir(file["fullFilePath"]))
 			{
-				FS.unlink(file["fullFilePath"], (err)=>
-				{
-
-				});
+				FS.unlink(file["fullFilePath"], (err)=> {});
 			}
-
+			
 			if (!File.isForbiddenDir(file["path"]))
 			{
-				FS.unlink(file.path, (err)=>
-				{
-
-				});
+				FS.unlink(file.path, (err)=> {});
 			}
-
+			
 			cb(rStreamErr);
 		});
-
+		
 		rStream.on('open', function(){
 			//console.log('rStream.on open');
 		});
-
+		
 		rStream.on('close', function(){
 			//console.log('rStream.on close');
 		});
 		rStream.on('end', function(){
 			//console.log('rStream.on end');
 		});
-
+		
 		wStream.on('open', function(){
 			//console.log('wStream.on open');
 		});
-
+		
 		wStream.on('finish', function()
 		{
 			//console.log('wStream.on finish');
-
+			
 			if (!File.isForbiddenDir(file["path"]))
 			{
 				FS.unlink(file.path, function(err)
 				{
 					//if (err) return cb(err);
-
+					
 					return cb(null, file);
 				});
 			}

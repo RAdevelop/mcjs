@@ -379,20 +379,24 @@ Template.prototype.getPageData = function(json = false)
  */
 	let pageData = {};
 	pageData["tpl"] = this.getTplData();
-
+	
 	if (json)
 	{
+		if (!pageData["tpl"])
+		{
+			throw new Error("Template: PageData is undefined");
+		}
 		let file = Object.keys(pageData["tpl"]).shift();
-		return {"tpl": file, "data": pageData["tpl"][file]};
+		return {"tpl": file, "data": pageData["tpl"][file] };
 	}
-
+	
 	pageData["partial"] = [];
 	let partialData = this.getPartialData();
-
+	
 	/*console.log('==========partialData==============');
 	console.log(partialData);
 	console.log('==========END partialData==============');*/
-
+	
 	if (partialData && partialData.size)
 	{
 		partialData.forEach((partData, partFile)=>
@@ -400,7 +404,7 @@ Template.prototype.getPageData = function(json = false)
 			pageData["partial"].push({[partFile]: partData});
 		});
 	}
-
+	
 	return pageData;
 };
 

@@ -48,7 +48,7 @@
                         </div>
                         <div class="form-group col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <input type="hidden" name="i_u_id" id="i_u_id" value="<%= _user.u_id%>" />
-                            <input type="hidden" name="i_file_id" id="i_file_id" value="<%= ai_id%>" />
+                            <input type="hidden" name="i_file_id" id="i_file_id" value="<%= f_id%>" />
                             <input type="hidden" name="i_crop_x" id="i_crop_x" value="" />
                             <input type="hidden" name="i_crop_y" id="i_crop_y" value="" />
                             <input type="hidden" name="i_crop_width" id="i_crop_width" value="" />
@@ -237,7 +237,7 @@ $(function()
 
         if (uploadFileData)
         {
-            $formAvaCrop.find('input#i_file_id').val(uploadFileData["ai_id"]);
+            $formAvaCrop.find('input#i_file_id').val(uploadFileData["f_id"]);
             var previews = uploadFileData["previews"];
 
             preloadImages(previews);

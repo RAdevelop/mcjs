@@ -20,27 +20,26 @@ class UserPhotoProfile extends UserPhoto
 	 */
 	uploadProfile(u_id, req, res)
 	{
-		let ai_id, a_id;
+		let f_id, a_id;
 		let ufile = {};
-
+		
 		const UploadFile = new FileUpload(UserPhoto.uploadAvaConfigName, req, res);
-
+		
 		return UploadFile.upload()
 			.then((file) =>
 			{
 				ufile = file;
-
-				return this.model('user/photo')
-					.addProfilePhoto(u_id, file)
+				
+				return this.model('user/photo').addProfilePhoto(u_id, file)
 					.then((file) =>
 					{
 						ufile = file;
-
-						ai_id = file.ai_id;
+						
+						f_id = file.f_id;
 						a_id = file.a_id;
-
-						file["moveToDir"] = FileUpload.getImageUri(file.a_id, file.ai_id);
-
+						
+						file["moveToDir"] = FileUpload.getImageUri(file.a_id, file.f_id);
+						
 						return new Promise((resolve, reject) =>
 						{
 							UploadFile.moveUploadedFile(file, file["moveToDir"], (err, file) =>
@@ -53,9 +52,9 @@ class UserPhotoProfile extends UserPhoto
 			})
 			.then((file) =>
 			{
-				if (file.type != 'image')
+				if (file.type != FileUpload.TYPE_IMAGE)
 					return Promise.resolve(file);
-
+				
 				return UploadFile.setImageGeo(file)
 					.then((file) =>
 					{
@@ -65,9 +64,9 @@ class UserPhotoProfile extends UserPhoto
 			.then((file) =>
 			{
 				//console.log(file);
-
+				
 				return this.model('user/photo')
-					.updImage(u_id, file.a_id, file.ai_id, file.latitude, file.longitude, '', file.webDirPath, file.name, true, 1)
+					.updImage(u_id, file.a_id, file.f_id, file.latitude, file.longitude, '', file.webDirPath, file.name, file.type, true, 1)
 					.then(() =>
 					{
 						ufile = null;
@@ -76,7 +75,7 @@ class UserPhotoProfile extends UserPhoto
 			})
 			.catch((err) =>
 			{
-				return this.getClass('user/photo').delImage(u_id, a_id, ai_id, ufile)
+				return this.getClass('user/photo').delImage(u_id, a_id, f_id, ufile)
 					.catch((delErr) =>
 					{
 						switch (err.name)
@@ -86,7 +85,7 @@ class UserPhotoProfile extends UserPhoto
 							case 'FileTokenError':
 								throw err;
 								break;
-
+							
 							default:
 								throw delErr;
 								break;
@@ -108,12 +107,12 @@ class UserPhotoProfile extends UserPhoto
 			{
 				ava["previews"] = {};
 
-				if (!ava || !ava["ai_id"])
+				if (!ava || !ava["f_id"])
 					return Promise.resolve(ava);
 
 				let sizeParams = FileUpload.getUploadConfig(UserPhoto.uploadAvaConfigName).sizeParams;
 
-				ava = Object.assign(ava, FileUpload.getPreviews(sizeParams, ava, "ai_dir")["obj"]);
+				ava = Object.assign(ava, FileUpload.getPreviews(sizeParams, ava)["obj"]);
 
 				return Promise.resolve(ava);
 			});
@@ -131,12 +130,12 @@ class UserPhotoProfile extends UserPhoto
 			.then((ava) =>
 			{
 				let sizeParams = FileUpload.getUploadConfig(UserPhoto.uploadAvaConfigName).sizeParams;
-
+				
 				Object.keys(ava).forEach((i) =>
 				{
-					Object.assign(ava[i], FileUpload.getPreviews(sizeParams, ava[i], "ai_dir")["obj"]);
+					Object.assign(ava[i], FileUpload.getPreviews(sizeParams, ava[i])["obj"]);
 				});
-
+				
 				return Promise.resolve(ava);
 			});
 	}

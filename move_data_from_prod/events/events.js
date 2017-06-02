@@ -68,7 +68,7 @@ function insertEvents()
 	,'' AS e_gps_lng
     ,'' AS e_location_pids
     , n.u_id+10 AS u_id
-	, COUNT(nf.f_id) AS e_img_cnt
+	, COUNT(nf.f_id) AS file_cnt
 	FROM events AS n
     JOIN city AS c ON(c.c_id = n.c_id AND c.lang = 'ru' )
     JOIN region AS r ON(r.r_id = c.r_id)
@@ -123,14 +123,14 @@ function insertEvents()
 					news['e_gps_lng'],
 					news['e_location_pids'],
 					news['u_id'],
-					news['e_img_cnt']
+					news['file_cnt']
 				);
 			});
 
 			sqlIns = sqlIns.join(',');
 
 			let sql = `INSERT INTO events_list
-					(e_id,e_create_ts,e_update_ts,e_start_ts,e_end_ts,e_title,e_alias,e_notice,e_text,e_address,e_location_id,e_latitude,e_longitude,e_gps_lat,e_gps_lng,e_location_pids,u_id,e_img_cnt) 
+					(e_id,e_create_ts,e_update_ts,e_start_ts,e_end_ts,e_title,e_alias,e_notice,e_text,e_address,e_location_id,e_latitude,e_longitude,e_gps_lat,e_gps_lng,e_location_pids,u_id,file_cnt) 
 					VALUES ${sqlIns}`;
 
 			/*console.log(sql);
@@ -193,7 +193,7 @@ function newsUpdate(news)
 
 function getEvents()
 {
-	let sql = `SELECT e_id, e_create_ts, e_update_ts, e_start_ts, e_end_ts, e_title, e_alias, e_notice, e_text, e_address, e_location_id, e_latitude, e_longitude, e_gps_lat, e_gps_lng, e_location_pids, u_id, e_img_cnt
+	let sql = `SELECT e_id, e_create_ts, e_update_ts, e_start_ts, e_end_ts, e_title, e_alias, e_notice, e_text, e_address, e_location_id, e_latitude, e_longitude, e_gps_lat, e_gps_lng, e_location_pids, u_id, file_cnt
 	, FROM_UNIXTIME(e_start_ts, "%d-%m-%Y") AS dd_start_ts
 	, FROM_UNIXTIME(e_end_ts, "%d-%m-%Y") AS dd_end_ts
 	FROM events_list`;
@@ -252,8 +252,8 @@ function updateText()
 function insertFiles()
 {
 	let sql = `SELECT
-	f_id AS ei_id, po_id AS e_id, UNIX_TIMESTAMP(f_date) AS ei_create_ts, UNIX_TIMESTAMP(f_date) AS ei_update_ts
-	, '' AS ei_dir, IF(f_position-1 < 0, 0, f_position-1) AS ei_pos, REPLACE(REPLACE(REPLACE(f_name, ':', ''), ',', ''), '+', ' ') AS ei_name
+	f_id AS f_id, po_id AS e_id, UNIX_TIMESTAMP(f_date) AS f_create_ts, UNIX_TIMESTAMP(f_date) AS f_update_ts
+	, '' AS f_dir, IF(f_position-1 < 0, 0, f_position-1) AS f_pos, REPLACE(REPLACE(REPLACE(f_name, ':', ''), ',', ''), '+', ' ') AS f_name
 	, f_path_original AS file_from
 	FROM events_file
 	WHERE f_type = 'image'`;
@@ -268,22 +268,22 @@ function insertFiles()
 			let dir = '';
 			list.forEach((file)=>
 			{
-				dir = dir_prefix+FileUpload.getImageUri(file['e_id'], file['ei_id']);
+				dir = dir_prefix+FileUpload.getImageUri(file['e_id'], file['f_id']);
 				dir_list.push({
 					dir:                full_path_to_dir+dir+'/orig',
 					fullPathMainDir:    full_path_to_dir+dir,
 					webFilePath:        dir+'/orig',
 					file_from:          old_path_to_dir+file['file_from'],
-					file_to:            full_path_to_dir+dir+'/orig/'+file['ei_name']
+					file_to:            full_path_to_dir+dir+'/orig/'+file['f_name']
 				});
 				sqlIns.push(sVals);
-				sqlData.push(file['ei_id'],file['e_id'],file['ei_create_ts'],file['ei_update_ts'], dir,file['ei_pos'],file['ei_name']);
+				sqlData.push(file['f_id'],file['e_id'],file['f_create_ts'],file['f_update_ts'], dir,file['f_pos'],file['f_name']);
 			});
 
 			sqlIns = sqlIns.join(',')
 
 			let sql = `INSERT INTO events_file
-					(ei_id, e_id, ei_create_ts, ei_update_ts, ei_dir, ei_pos, ei_name) 
+					(f_id, e_id, f_create_ts, f_update_ts, f_dir, f_pos, f_name) 
 					VALUES ${sqlIns}`;
 
 			return DB.conn().ins(sql, sqlData)

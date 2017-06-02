@@ -218,7 +218,7 @@ class User extends Base
 	{
 		if (u_ids.length == 0)
 			return Promise.resolve([]);
-
+		
 		return Promise.join(
 			this.model('user').getUserListById(u_ids),
 			this.getClass('user/photo/profile').getUsersAva(u_ids),
@@ -229,12 +229,12 @@ class User extends Base
 				{
 					if (usersAva.hasOwnProperty(user['u_id']))
 						Object.assign(user, usersAva[user['u_id']]);
-
+					
 					if (usersLocation.hasOwnProperty(user['u_id']))
 						Object.assign(user, usersLocation[user['u_id']]);
-
+					
 					user['u_display_name'] = User.userDisplayName(user);
-
+					
 					return user;
 				});
 

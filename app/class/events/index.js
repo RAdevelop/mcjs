@@ -98,12 +98,12 @@ class Events extends Base
 			{
 				if (!eventList)
 					return Promise.resolve(null);
-
+				
 				let sizeParams = FileUpload.getUploadConfig(Events.uploadConfigName).sizeParams;
-				let list = FileUpload.getPreviews(sizeParams, eventList, "ei_dir", true, 'ei_name');
+				let list = FileUpload.getPreviews(sizeParams, eventList, false, true);
 				eventList = list["obj"];
 				list['previews'] = null;
-
+				
 				return Promise.resolve(eventList);
 			});
 	}
@@ -145,7 +145,7 @@ class Events extends Base
 									return Promise.resolve([null, Pages]);
 
 								let sizeParams = FileUpload.getUploadConfig(Events.uploadConfigName).sizeParams;
-								eventList = FileUpload.getPreviews(sizeParams, eventList, "ei_dir")["obj"];
+								eventList = FileUpload.getPreviews(sizeParams, eventList)["obj"];
 
 								return Promise.resolve([eventList, Pages]);
 							});
@@ -218,11 +218,11 @@ class Events extends Base
 	 */
 	uploadImage(u_id, req, res)
 	{
-		let ei_id, e_id;
+		let f_id, e_id;
 		let ufile = {};
-
+		
 		const UploadFile = new FileUpload(Events.uploadConfigName, req, res);
-
+		
 		return UploadFile.upload()
 			.then((file) =>
 			{
@@ -232,7 +232,7 @@ class Events extends Base
 				return this.get(e_id)
 					.then((event) => 
 					{
-						if (event["e_img_cnt"] >= 5)
+						if (event["file_cnt"] >= 5)
 							throw new FileErrors.LimitExceeded('Можно добавить не более 5 файлов.');
 						
 						return Promise.resolve(ufile);
@@ -244,9 +244,9 @@ class Events extends Base
 					.addPhoto(u_id, file)
 					.then((file) => 
 					{
-						ei_id = file.ei_id;
+						f_id = file.f_id;
 						
-						file["moveToDir"] = FileUpload.getImageUri(file.e_id, file.ei_id);
+						file["moveToDir"] = FileUpload.getImageUri(file.e_id, file.f_id);
 						
 						return new Promise((resolve, reject) => 
 						{
@@ -260,8 +260,9 @@ class Events extends Base
 			})
 			.then((file) =>
 			{
-				if (file.type != 'image')
+				if (file.type != FileUpload.TYPE_IMAGE)
 					return Promise.resolve(file);
+				
 				return UploadFile.setImageGeo(file)
 					.then((file) => 
 					{
@@ -272,11 +273,11 @@ class Events extends Base
 			{
 				//console.log(file);
 				return this.model('events')
-					.updImage(file.e_id, file.ei_id, file.latitude, file.longitude, file.webDirPath, file.name, true)
+					.updImage(file.e_id, file.f_id, file.latitude, file.longitude, file.webDirPath, file.name, file.type, true)
 					.then(() => 
 					{
 						ufile = null;
-						file["ei_name"] = file.name;
+						file["f_name"] = file.name;
 						return Promise.resolve(file);
 					});
 			})
@@ -284,7 +285,7 @@ class Events extends Base
 			{
 				//console.log(ufile);
 				Logger.error(err);
-				return this.delImage(u_id, e_id, ei_id, ufile)
+				return this.delImage(u_id, e_id, f_id, ufile)
 					.catch((delErr) => 
 					{
 						switch (err.name)
@@ -307,19 +308,19 @@ class Events extends Base
 	/**
 	 * получаем данные для указанной фотографии
 	 *
-	 * @param ei_id
+	 * @param f_id
 	 * @returns {Promise}
 	 */
-	getImage(ei_id)
+	getImage(f_id)
 	{
-		return this.model('events').getImage(ei_id)
+		return this.model('events').getImage(f_id)
 			.then((image) => 
 			{
 				if (!image)
-					throw new FileErrors.io.FileNotFoundError("фотография не найдена: EVents.getImage(ei_id="+ei_id+")");
+					throw new FileErrors.io.FileNotFoundError("фотография не найдена: EVents.getImage(f_id="+f_id+")");
 
 				let sizeParams = FileUpload.getUploadConfig(Events.uploadConfigName).sizeParams;
-				let previews = FileUpload.getPreviews(sizeParams, image, "ei_dir", true, 'ei_name');
+				let previews = FileUpload.getPreviews(sizeParams, image, true);
 				previews['previews'] = null;
 				image = previews['obj'];
 
@@ -342,7 +343,7 @@ class Events extends Base
 					return [[], []];
 
 				let sizeParams = FileUpload.getUploadConfig(Events.uploadConfigName).sizeParams;
-				let previews = FileUpload.getPreviews(sizeParams, images, "ei_dir", true, 'ei_name');
+				let previews = FileUpload.getPreviews(sizeParams, images, true);
 				images = previews['obj'];
 
 				return [images, previews['previews']];
@@ -354,15 +355,15 @@ class Events extends Base
 	 *
 	 * @param u_id
 	 * @param e_id
-	 * @param ei_id
+	 * @param f_id
 	 * @param file
 	 * @returns {Promise}
 	 */
-	delImage(u_id, e_id, ei_id, file = {})
+	delImage(u_id, e_id, f_id, file = {})
 	{
 		return FileUpload.deleteFile(file.path || '')
 			.then(() => {
-				return this.getImage(ei_id);
+				return this.getImage(f_id);
 			})
 			.then((image) => {
 
@@ -373,7 +374,7 @@ class Events extends Base
 			})
 			.then((image) => {
 
-				let dir = (image["ei_dir"] ? image["ei_dir"] : (file["webDirPath"] ? file["webDirPath"] : null));
+				let dir = (image["f_dir"] ? image["f_dir"] : (file["webDirPath"] ? file["webDirPath"] : null));
 
 				if (!dir)
 					return Promise.reject(new FileErrors.io.DirectoryNotFoundError());
@@ -382,7 +383,7 @@ class Events extends Base
 
 				return FileUpload.deleteDir(dir, true)
 					.then(() => {
-						return this.model('events').delImage(e_id, ei_id);
+						return this.model('events').delImage(e_id, f_id);
 					})
 					.then(() => {
 						return Promise.resolve(image);
@@ -395,7 +396,7 @@ class Events extends Base
 				console.log('\n');
 
 				return this.model('events')
-					.delImage(e_id, ei_id)
+					.delImage(e_id, f_id)
 					.then(() => {
 						throw err;
 					});
@@ -406,12 +407,12 @@ class Events extends Base
 	 * сорхранение позиций фотографий после их сортировке на клиенте
 	 *
 	 * @param e_id
-	 * @param ei_pos
+	 * @param file_pos
 	 * @returns {Promise}
 	 */
-	sortImgUpd(e_id, ei_pos)
+	sortImgUpd(e_id, file_pos)
 	{
-		return this.model('events').updSortImg(e_id, ei_pos);
+		return this.model('events').updSortImg(e_id, file_pos);
 	}
 
 	/**

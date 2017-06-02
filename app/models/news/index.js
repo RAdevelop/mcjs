@@ -85,7 +85,7 @@ class News extends BaseModel
 	 */
 	getById(n_id, n_show = null)
 	{
-		let sql = `SELECT n_id, n_create_ts, n_update_ts, n_show_ts, n_title, n_alias, n_notice, n_text, u_id, n_img_cnt
+		let sql = `SELECT n_id, n_create_ts, n_update_ts, n_show_ts, n_title, n_alias, n_notice, n_text, u_id, file_cnt
 		, n_show, FROM_UNIXTIME(n_show_ts, "%d-%m-%Y %H:%i:%s") AS dt_show_ts
 		FROM news_list
 		WHERE n_id = ?`;
@@ -157,10 +157,10 @@ class News extends BaseModel
 		
 		let sql = `SELECT n.n_id, n.n_create_ts, n.n_update_ts, n.n_show_ts, n.n_title, n.n_alias, n.n_notice 
 		, FROM_UNIXTIME(n.n_show_ts, "%d-%m-%Y") AS dt_show_ts
-		, n.u_id, ni.ni_id, ni.ni_dir, ni.ni_pos, ni.ni_name
+		, n.u_id, ni.f_id, ni.f_dir, ni.f_pos, ni.f_name, ni.f_type
 		FROM (SELECT NULL) AS z
 		JOIN news_list AS n ON(${sqlJoin.join(' AND ')})
-		LEFT JOIN news_file AS ni ON(ni.n_id = n.n_id AND ni.ni_pos = 0 AND ni.ni_type = 'image')
+		LEFT JOIN news_file AS ni ON(ni.n_id = n.n_id AND ni.f_pos = 0 AND ni.f_type = 'image')
 		ORDER BY n.n_show_ts DESC
 		LIMIT ${i_limit} OFFSET ${i_offset}`;
 		
@@ -191,10 +191,10 @@ class News extends BaseModel
 		
 		let sql = `SELECT n.n_id, n.n_create_ts, n.n_update_ts, n.n_show_ts, n.n_title, n.n_alias, n.n_notice 
 		, FROM_UNIXTIME(n.n_show_ts, "%d-%m-%Y") AS dt_show_ts
-		, n.u_id, ni.ni_id, ni.ni_dir, ni.ni_pos, ni.ni_name, ni.ni_type
+		, n.u_id, ni.f_id, ni.f_dir, ni.f_pos, ni.f_name, ni.f_type
 			FROM (SELECT NULL) AS z
 			JOIN news_list AS n ON(${where.join(' AND ')})
-			LEFT JOIN news_file AS ni ON(ni.n_id = n.n_id AND ni.ni_pos = 0 AND ni.ni_type = 'image')
+			LEFT JOIN news_file AS ni ON(ni.n_id = n.n_id AND ni.f_pos = 0 AND ni.f_type = 'image')
 		ORDER BY n.n_create_ts DESC`;
 		
 		/*console.log(sql);
@@ -202,7 +202,7 @@ class News extends BaseModel
 		 console.log('\n');*/
 		return this.constructor.conn().ps(sql, sqlData);
 	}
-
+	
 	/**
 	 * вставка записи о фто в БД
 	 *
@@ -215,7 +215,7 @@ class News extends BaseModel
 	_insFile(n_id)
 	{
 		let now_ts = Moment().unix();
-		let sql = `INSERT INTO news_file (n_id, ni_create_ts, ni_update_ts) VALUES (?, ?, ?);`;
+		let sql = `INSERT INTO news_file (n_id, f_create_ts, f_update_ts) VALUES (?, ?, ?);`;
 		
 		return this.constructor.conn().ins(sql, [n_id, now_ts, now_ts]);
 	}
@@ -233,71 +233,72 @@ class News extends BaseModel
 			.then((res) =>
 			{
 				fileData["u_id"] = u_id;
-				fileData["ni_pos"] = "0";
-				fileData["ni_id"] = res['insertId'];
+				fileData["f_pos"] = "0";
+				fileData["f_id"] = res['insertId'];
 				return Promise.resolve(fileData);
 			});
 	}
-
+	
 	/**
 	 * обновление данных о фото после его загрузки на сервер
 	 *
 	 * @param n_id
-	 * @param ni_id
-	 * @param ni_latitude
-	 * @param ni_longitude
-	 * @param ni_dir
-	 * @param ni_name
-	 * @param ni_type
+	 * @param f_id
+	 * @param f_latitude
+	 * @param f_longitude
+	 * @param f_dir
+	 * @param f_name
+	 * @param f_type
 	 * @param posUpd
 	 * @returns {Promise}
 	 */
-	updFile(n_id, ni_id, ni_latitude, ni_longitude, ni_dir, ni_name, ni_type, posUpd = true)
+	updFile(n_id, f_id, f_latitude, f_longitude, f_dir, f_name, f_type, posUpd = true)
 	{
 		posUpd = (posUpd ? 1 : 0);
 		let sql = `CALL news_file_update(?, ?, ?, ?, ?, ?, ?, ?)`;
-		let sqlData = [n_id, ni_id, ni_latitude, ni_longitude, ni_dir, ni_name, ni_type, posUpd];
+		let sqlData = [n_id, f_id, f_latitude, f_longitude, f_dir, f_name, f_type, posUpd];
 		
 		return this.constructor.conn().call(sql, sqlData)
-			.then(() => {
-				return Promise.resolve(ni_id);
+			.then(() => 
+			{
+				return Promise.resolve(f_id);
 			});
 	}
-
+	
 	/**
 	 * удаление фото из БД
 	 *
 	 * @param n_id
-	 * @param ni_id
+	 * @param f_id
 	 * @returns {Promise}
 	 */
-	delFile(n_id, ni_id)
+	delFile(n_id, f_id)
 	{
 		let sql = `CALL news_file_delete(?, ?, @is_del);
 		SELECT @is_del AS is_del FROM DUAL;`;
 		
-		return this.constructor.conn().multis(sql, [n_id, ni_id])
+		return this.constructor.conn().multis(sql, [n_id, f_id])
 			.then((res) => 
 			{
 				let is_del = (res[1] && res[1]["is_del"] ? res[1]["is_del"] : 0);
 				return Promise.resolve(is_del);
 			});
 	}
-
+	
 	/***
 	 * получаем данные для указанного файла
 	 *
-	 * @param ni_id
+	 * @param f_id
 	 */
-	getFile(ni_id)
+	getFile(f_id)
 	{
-		let sql = `SELECT ni.ni_id, ni.n_id, ni.ni_create_ts, ni.ni_update_ts, ni.ni_latitude, ni.ni_longitude, 
-		ni.ni_dir, ni.ni_pos, ni.ni_name, ni.ni_type
+		let sql = `SELECT ni.f_id, ni.n_id, ni.f_create_ts, ni.f_update_ts, ni.f_latitude, ni.f_longitude, 
+		ni.f_dir, ni.f_pos, ni.f_name, ni.f_type
 		FROM news_file AS ni
-		WHERE ni.ni_id = ?`;
+		WHERE ni.f_id = ?`;
 		
-		ni_id = parseInt(ni_id, 10)||0;
-		return this.constructor.conn().sRow(sql, [ni_id]);
+		f_id = parseInt(f_id, 10)||0;
+		return this.constructor.conn().sRow(sql, [f_id]);
 	}
 	
 	/***
@@ -311,19 +312,19 @@ class News extends BaseModel
 		if (!!n_id === false)
 			return Promise.resolve(null);
 		
-		let sql = `SELECT ni.ni_id, ni.n_id, ni.ni_create_ts, ni.ni_update_ts, ni.ni_latitude, ni.ni_longitude, 
-		ni.ni_dir, ni.ni_pos, ni.ni_name, ni.ni_type
+		let sql = `SELECT ni.f_id, ni.n_id, ni.f_create_ts, ni.f_update_ts, ni.f_latitude, ni.f_longitude, 
+		ni.f_dir, ni.f_pos, ni.f_name, ni.f_type
 		FROM news_file AS ni
 		WHERE ni.n_id = ?
-		-- GROUP BY ni.ni_pos, ni.ni_type
-		ORDER BY ni.ni_type, ni.ni_pos`;
+		-- GROUP BY ni.f_pos, ni.f_type
+		ORDER BY ni.f_type, ni.f_pos`;
 		
 		/*console.log(sql);
 		console.log('n_id = ', n_id);*/
 		
 		return this.constructor.conn().s(sql, [n_id]);
 	}
-
+	
 	/**
 	 * кол-вл файлов в новости
 	 *
@@ -337,7 +338,7 @@ class News extends BaseModel
 		if (!!n_id === false)
 			return Promise.resolve(0);
 		
-		let sql = `SELECT COUNT(ni_id) AS cnt FROM news_file WHERE n_id = ?;`;
+		let sql = `SELECT COUNT(f_id) AS cnt FROM news_file WHERE n_id = ?;`;
 		
 		return this.constructor.conn().sRow(sql, [n_id])
 			.then((res) =>
@@ -345,33 +346,33 @@ class News extends BaseModel
 				return Promise.resolve(res["cnt"]);
 			});
 	}
-
+	
 	/**
 	 * сорхранение позиций фотографий после их сортировке на клиенте
 	 *
 	 * @param n_id
-	 * @param ni_pos - id фоток
+	 * @param file_pos - id фоток
 	 * @returns {Promise}
 	 */
-	updSortImg(n_id, ni_pos)
+	updSortImg(n_id, file_pos)
 	{
 		return this.countAlbumImages(n_id)
 			.then((cnt) => 
 			{
 				cnt = parseInt(cnt, 10)||0;
 				
-				if (!cnt || !ni_pos.length || cnt < ni_pos.length)
+				if (!cnt || !file_pos.length || cnt < file_pos.length)
 					return Promise.resolve(true);
 				
 				let setOrdi = [];
 				let setData = [];
 				
-				ni_pos.forEach((ni_id, i) => {
-					setOrdi.push("IF(ni_id = ?, ? ");
-					setData.push(ni_id, i);
+				file_pos.forEach((f_id, i) => {
+					setOrdi.push("IF(f_id = ?, ? ");
+					setData.push(f_id, i);
 				});
 				
-				let sql = "UPDATE news_file SET ni_pos = " + setOrdi.join(',') + ', ni_pos' +')'.repeat(setOrdi.length) + " WHERE n_id = ? ";
+				let sql = "UPDATE news_file SET f_pos = " + setOrdi.join(',') + ', f_pos' +')'.repeat(setOrdi.length) + " WHERE n_id = ? ";
 				n_id = parseInt(n_id, 10)||0;
 				setData.push(n_id);
 				

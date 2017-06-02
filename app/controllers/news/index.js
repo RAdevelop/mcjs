@@ -58,22 +58,22 @@ class News extends CtrlMain
 			news: null,
 			newsList: null
 		};
-
+		
 		let {i_news_id=null, s_news_alias=null, b_tag=null, s_tag=null} = this.routeArgs;
 		b_tag = !!b_tag;
-
+		
 		if (i_news_id)
 			return this._news(tplData, i_news_id, s_news_alias);
-
+		
 		if (b_tag)
 		{
 			s_tag = decodeURIComponent(s_tag);
 			return this._tagNewsList(tplData, s_tag);
 		}
-
+		
 		return this._newsList(tplData);
 	}
-
+	
 	_tagNewsList(tplData, s_tag)
 	{
 		let {i_page=1} = this.routeArgs;
@@ -185,35 +185,35 @@ class News extends CtrlMain
 	{
 		let {i_page=1} = this.routeArgs;
 		let show = (this.getLocalAccess()['post_edit'] ? null : 1);
-
+		
 		return this.getClass('news').getNews(new Pages(i_page, limit_per_page), show)
 			.spread((newsList, Pages) =>
 			{
 				tplData['newsList'] = newsList;
-
+				
 				let exposeNews = 'newsList';
 				Pages.setLinksUri(this.getBaseUrl());
-
+				
 				tplData['pages'] = Pages.pages();
-
+				
 				let isAjax = this.getReq().xhr;
 				let tplFile = (isAjax ? 'news/list.ejs':'news');
 				
 				this.view.setTplData(tplFile, tplData, isAjax);
-
+				
 				if (!isAjax)
 				{
 					this.getRes().expose(newsList, exposeNews);
 					this.getRes().expose(tplData['pages'], 'pages');
-
+					
 					//this.view.addPartialData("user/left", {user: userData});
 					//this.view.addPartialData("user/right", {title: 'right_col'});
 				}
-
+				
 				return Promise.resolve(isAjax);
 			});
 	}
-
+	
 	/**
 	 * форма добавления новости
 	 * @returns {Promise}
@@ -545,13 +545,10 @@ class News extends CtrlMain
 	 */
 	_sortImg(tplData, tplFile)
 	{
-		if (!tplData['i_news_id'] || !tplData.hasOwnProperty('ni_pos') || !tplData['ni_pos'].length)
-		{
-			this.view.setTplData(tplFile, tplData);
-			return Promise.resolve(true);
-		}
+		if (!tplData['i_news_id'] || !tplData.hasOwnProperty('file_pos') || !tplData['file_pos'].length)
+			throw new Errors.HttpError(400);
 		
-		return this.getClass('news').sortImgUpd(tplData['i_news_id'], tplData['ni_pos'])
+		return this.getClass('news').sortImgUpd(tplData['i_news_id'], tplData['file_pos'])
 			.then(() =>
 			{
 				this.view.setTplData(tplFile, tplData);
@@ -571,8 +568,8 @@ class News extends CtrlMain
 
 		this.getRes().on('cancelUploadedFile', (file) =>
 		{
-			if (file['u_id'] && file['n_id'] && file['ni_id'])
-				return this.getClass('news').delFile(file['u_id'], file['n_id'], file['ni_id'], file);
+			if (file['u_id'] && file['n_id'] && file['f_id'])
+				return this.getClass('news').delFile(file['u_id'], file['n_id'], file['f_id'], file);
 		});
 		
 		return this.getClass('news').uploadFile(this.getUserId(), this.getReq(), this.getRes())
@@ -581,12 +578,12 @@ class News extends CtrlMain
 				//console.log(__dirname , file);
 				tplData = {
 					n_id: file.n_id,
-					ni_id: file.ni_id,
-					ni_pos: file.ni_pos,
-					ni_name: file.ni_name,
-					ni_type: file.type,
-					ni_latitude: file.latitude,
-					ni_longitude: file.longitude,
+					f_id: file.f_id,
+					f_pos: file.f_pos,
+					f_name: file.f_name,
+					f_type: file.type,
+					f_latitude: file.latitude,
+					f_longitude: file.longitude,
 					u_id: file.u_id,
 					name: file.name,
 					size: file.size,
@@ -617,10 +614,10 @@ class News extends CtrlMain
 	 */
 	_delFile(tplData, tplFile)
 	{
-		if (!tplData['i_ni_id'])
+		if (!tplData['i_f_id'])
 			throw new Errors.HttpError(400);
 		
-		return this.getClass('news').delFile(this.getUserId(), tplData['i_news_id'], tplData['i_ni_id'])
+		return this.getClass('news').delFile(this.getUserId(), tplData['i_news_id'], tplData['i_f_id'])
 			.then(() =>
 			{
 				this.view.setTplData(tplFile, tplData);

@@ -316,7 +316,7 @@ class Profile extends CtrlMain
 					.then((ava) =>
 					{
 						ava["cropSrc"] = ava["previews"]["1024_768"];
-						ava["dir"] = ava["ai_dir"];
+						ava["dir"] = ava["f_dir"];
 
 						let uploadConfigName = this.getClass('user/photo').constructor.uploadAvaConfigName;
 
@@ -604,45 +604,46 @@ class Profile extends CtrlMain
 	{
 		let tplFile = 'user/profile/edit.ejs';
 		let tplData = this.getParsedBody();
-
+		
 		this.getRes().on('cancelUploadedFile', (file) => {
-			if (file["u_id"] && file["a_id"] && file["ai_id"])
-				return this.getClass('user/photo').delImage(file["u_id"], file["a_id"], file["ai_id"], file);
+			if (file["u_id"] && file["a_id"] && file["f_id"])
+				return this.getClass('user/photo').delImage(file["u_id"], file["a_id"], file["f_id"], file);
 		});
-
-		return this.getClass('user/photo/profile')
-			.uploadProfile(this.getUserId(), this.getReq(), this.getRes())
-			.then((file) => {
+		
+		return this.getClass('user/photo/profile').uploadProfile(this.getUserId(), this.getReq(), this.getRes())
+			.then((file) => 
+			{
 				tplData = {
 					a_id: file.a_id,
-					ai_id: file.ai_id,
-					ai_text: file.ai_text,
-					ai_pos: file.ai_pos,
-					ai_name: file.ai_name,
-					ai_latitude: file.latitude,
-					ai_longitude: file.longitude,
+					f_id: file.f_id,
+					f_text: file.f_text,
+					f_pos: file.f_pos,
+					f_type: file.type,
+					f_name: file.f_name,
+					f_latitude: file.latitude,
+					f_longitude: file.longitude,
 					u_id: file.u_id,
 					name: file.name,
 					size: file.size,
 					previews: file.previews
 				};
-
-				return this.getClass('user')
-					.updateUserSessionData(tplData['u_id']||tplData['i_u_id']||0)
+				
+				return this.getClass('user').updateUserSessionData(tplData['u_id']||tplData['i_u_id']||0)
 					.then(() => {
 						this.view.setTplData(tplFile, tplData);
 						return Promise.resolve(true);
 					});
 			})
-			.catch((err) => {
+			.catch((err) => 
+			{
 				Logger.error(err);
-
+				
 				tplData.formError.text = err.message;
 				tplData.formError.error = true;
 				tplData.formError.errorName = err.name;
-
+				
 				this.view.setTplData(tplFile, tplData);
-
+				
 				return Promise.resolve(true);
 			});
 	}

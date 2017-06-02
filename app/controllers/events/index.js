@@ -615,27 +615,28 @@ class Events extends CtrlMain
 	{
 		let tplFile = "events/edit.ejs";
 		let tplData = this.getParsedBody();
-
+		
 		if (tplData['b_load_embed_content'])
 			return EmbedContent.content(tplData, tplFile, this);
-
+		
 		if (!tplData['i_event_id'] || !tplData['btn_save_event'])
 			throw new Errors.HttpError(404);
-
+		
 		//console.log(tplData);
 		switch(tplData['btn_save_event'])
 		{
 			case 'main':
 				return this._editEvent(tplData, tplFile);
 				break;
+			
 			case 'sort_img':
 				return this._sortImg(tplData, tplFile);
 				break;
-
+			
 			case 'del_img':
 				return this._delImg(tplData, tplFile);
 				break;
-
+			
 			case 'del_event':
 				return this._delEvent(tplData, tplFile);
 				break;
@@ -756,14 +757,14 @@ class Events extends CtrlMain
 	 */
 	_sortImg(tplData, tplFile)
 	{
-		if (!tplData['i_event_id'] || !tplData.hasOwnProperty('ei_pos') || !tplData['ei_pos'].length)
-			return Promise.resolve(tplData);
-
-		return this.getClass('events').sortImgUpd(tplData['i_event_id'], tplData['ei_pos'])
+		if (!tplData['i_event_id'] || !tplData.hasOwnProperty('file_pos') || !tplData['file_pos'].length)
+			throw new Errors.HttpError(400);
+		
+		return this.getClass('events').sortImgUpd(tplData['i_event_id'], tplData['file_pos'])
 			.then(() =>
 			{
 				this.view.setTplData(tplFile, tplData);
-
+				
 				return Promise.resolve(true);
 			});
 	}
@@ -812,22 +813,22 @@ class Events extends CtrlMain
 
 		this.getRes().on('cancelUploadedFile', (file) =>
 		{
-			if (file['u_id'] && file['e_id'] && file['ei_id'])
-				return this.getClass('events').delImage(file['u_id'], file['e_id'], file['ei_id'], file);
+			if (file['u_id'] && file['e_id'] && file['f_id'])
+				return this.getClass('events').delImage(file['u_id'], file['e_id'], file['f_id'], file);
 		});
 
-		return this.getClass('events')
-			.uploadImage(this.getUserId(), this.getReq(), this.getRes())
+		return this.getClass('events').uploadImage(this.getUserId(), this.getReq(), this.getRes())
 			.then( (file) =>
 			{
 				//console.log(file);
 				tplData = {
 					e_id: file.e_id,
-					ei_id: file.ei_id,
-					ei_pos: file.ei_pos,
-					ei_name: file.ei_name,
-					ei_latitude: file.latitude,
-					ei_longitude: file.longitude,
+					f_id: file.f_id,
+					f_pos: file.f_pos,
+					f_name: file.f_name,
+					f_type: file.type,
+					f_latitude: file.latitude,
+					f_longitude: file.longitude,
 					u_id: file.u_id,
 					name: file.name,
 					size: file.size,
@@ -859,11 +860,11 @@ class Events extends CtrlMain
 	 */
 	_delImg(tplData, tplFile)
 	{
-		if (!tplData['i_ei_id'])
+		if (!tplData['i_f_id'])
 			throw new Errors.HttpError(400);
-
+		
 		return this.getClass('events')
-			.delImage(this.getUserId(), tplData['i_event_id'], tplData['i_ei_id'])
+			.delImage(this.getUserId(), tplData['i_event_id'], tplData['i_f_id'])
 			.then( () =>
 			{
 				this.view.setTplData(tplFile, tplData);

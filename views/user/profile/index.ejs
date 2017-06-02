@@ -5,12 +5,10 @@
 </ol>
 <div class="userProfile">
     <ul>
-        <li>логин <%=user.u_login%><% if (user.u_name || user.u_surname) {%>&nbsp;(<%=[user.u_name, user.u_surname].join(' ')%>)<% }%></li>
+        <li>логин <%=user.u_display_name%></li>
         <li>пол <%=user.u_sex_name%></li>
-        <li>населенный пункт <%=user.l_name%> u_location_id = <%=user.u_location_id%></li>
+        <li>населенный пункт <span data-toggle="tooltip" title="<%= user.l_full_name%>" data-container="body" data-placement="auto"><i class="fa fa-map-marker fa-fw" aria-hidden="true"></i> <%= user.l_name%></span></li>
         <li>день рождения <%=user.bd_birthday%></li>
-        <li>мотоцикл CBR1000RA</li>
-        <li>интересы: ...</li>
     </ul><%
     if (photoAlbums && photoAlbums["a_cnt"]>0){
     %><div class="mediaWrapper blocks">
@@ -29,7 +27,7 @@
             %><div class="media">
                 <a class="mediaImg" href="<%=[_reqBaseUrl,'photo',album["u_id"],album["a_id"]].join('/')%>/"><%-img%></a>
                 <div class="mediaTools">
-                    <span class="badge"><i class="fa fa-fw fa-camera"></i> <%=(album["a_img_cnt"] > 99 ? '99+':album["a_img_cnt"])%>&nbsp;<i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;<%=album["dt_create_ts"]%></span>
+                    <span class="badge"><i class="fa fa-fw fa-camera"></i> <%=(album["file_cnt"] > 99 ? '99+':album["file_cnt"])%>&nbsp;<i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;<%=album["dt_create_ts"]%></span>
                 </div>
                 <a class="mediaTitle" href="<%=albumHref%>" title="<%=album["a_name"]%>">
                     <div class="mediaName"><%=album["a_name"]%></div>

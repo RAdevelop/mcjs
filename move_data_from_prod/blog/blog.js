@@ -48,7 +48,7 @@ function insertNews()
 	bp.bp_notice AS b_notice,
 	bp.bp_text AS b_text,
 	(bp.u_id+10) AS u_id,
-	COUNT(bf.f_id) AS b_img_cnt,
+	COUNT(bf.f_id) AS file_cnt,
 	IF(bp.bp_draft = 1, 0, 1) AS b_show,
 	bp.bs_id AS bs_id
 	FROM (SELECT NULL) AS z
@@ -65,13 +65,13 @@ function insertNews()
 			list.forEach((news)=>
 			{
 				sqlIns.push(sVals);
-				sqlData.push(news['b_id'],news['b_create_ts'],news['b_update_ts'],news['b_title'],news['b_alias'],news['b_notice'],news['b_text'],news['u_id'],news['b_img_cnt'],news['b_show'],news['bs_id']);
+				sqlData.push(news['b_id'],news['b_create_ts'],news['b_update_ts'],news['b_title'],news['b_alias'],news['b_notice'],news['b_text'],news['u_id'],news['file_cnt'],news['b_show'],news['bs_id']);
 			});
 
 			sqlIns = sqlIns.join(',');
 
 			let sql = `INSERT INTO blog_list
-			(b_id, b_create_ts, b_update_ts, b_title, b_alias, b_notice, b_text, u_id, b_img_cnt, b_show, bs_id)
+			(b_id, b_create_ts, b_update_ts, b_title, b_alias, b_notice, b_text, u_id, file_cnt, b_show, bs_id)
 			VALUES ${sqlIns}`;
 
 			/*console.log(sql);
@@ -194,8 +194,8 @@ function insertFiles()
 	//return Promise.resolve(1);
 
 	let sql = `SELECT
-	f_id AS bi_id, po_id AS b_id, UNIX_TIMESTAMP(f_date) AS bi_create_ts, UNIX_TIMESTAMP(f_date) AS bi_update_ts
-	, '' AS bi_dir, IF(f_position-1 < 0, 0, f_position-1) AS bi_pos, REPLACE(REPLACE(REPLACE(f_name, ':', ''), ',', ''), '+', ' ') AS bi_name
+	f_id AS f_id, po_id AS b_id, UNIX_TIMESTAMP(f_date) AS f_create_ts, UNIX_TIMESTAMP(f_date) AS f_update_ts
+	, '' AS f_dir, IF(f_position-1 < 0, 0, f_position-1) AS f_pos, REPLACE(REPLACE(REPLACE(f_name, ':', ''), ',', ''), '+', ' ') AS f_name
 	, f_path_original AS file_from
 	FROM blog_post_file
 	WHERE f_type = 'image'`;
@@ -210,22 +210,22 @@ function insertFiles()
 			let dir = '';
 			list.forEach((file)=>
 			{
-				dir = dir_prefix+FileUpload.getImageUri(file['b_id'], file['bi_id']);
+				dir = dir_prefix+FileUpload.getImageUri(file['b_id'], file['f_id']);
 				dir_list.push({
 					dir:                full_path_to_dir+dir+'/orig',
 					fullPathMainDir:    full_path_to_dir+dir,
 					webFilePath:        dir+'/orig',
 					file_from:          old_path_to_dir+file['file_from'],
-					file_to:            full_path_to_dir+dir+'/orig/'+file['bi_name']
+					file_to:            full_path_to_dir+dir+'/orig/'+file['f_name']
 				});
 				sqlIns.push(sVals);
-				sqlData.push(file['bi_id'],file['b_id'],file['bi_create_ts'],file['bi_update_ts'], dir,file['bi_pos'],file['bi_name']);
+				sqlData.push(file['f_id'],file['b_id'],file['f_create_ts'],file['f_update_ts'], dir,file['f_pos'],file['f_name']);
 			});
 
 			sqlIns = sqlIns.join(',');
 
 			let sql = `INSERT INTO blog_file
-					(bi_id, b_id, bi_create_ts, bi_update_ts, bi_dir, bi_pos, bi_name) 
+					(f_id, b_id, f_create_ts, f_update_ts, f_dir, f_pos, f_name) 
 					VALUES ${sqlIns}`;
 
 			/*console.log(sql);

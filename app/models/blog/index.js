@@ -86,7 +86,7 @@ class Blog extends BaseModel {
 	getBlogById(b_id, i_u_id = null, b_show = null)
 	{
 		let sql = `SELECT b.b_id, b.b_create_ts, b.b_update_ts, b.b_title, b.b_alias, b.b_notice, b.b_text
-		, b.u_id, b.b_img_cnt, b.b_show, FROM_UNIXTIME(b.b_create_ts, "%d-%m-%Y %H:%i:%s") AS dt_create_ts
+		, b.u_id, b.file_cnt, b.b_show, FROM_UNIXTIME(b.b_create_ts, "%d-%m-%Y %H:%i:%s") AS dt_create_ts
 		, b.bs_id, bs.bs_name, bs.bs_alias
 		FROM blog_list AS b
 		JOIN blog_subject AS bs ON(bs.bs_id = b.bs_id)
@@ -133,9 +133,9 @@ class Blog extends BaseModel {
 	{
 		let sqlData = [];
 		let where = [];
-
+		
 		let sql = [`SELECT COUNT(b.b_id) AS cnt FROM blog_list AS b`];
-
+		
 		if (b_show === null)
 		{
 			where.push('b.b_show IN(0,1)');
@@ -146,28 +146,29 @@ class Blog extends BaseModel {
 			where.push('b.b_show = ?');
 			sqlData.push(b_show);
 		}
-
+		
 		if (ui_bs_id && s_bs_alias)
 		{
 			sql.push(`JOIN blog_subject AS bs ON(bs.bs_id = b.bs_id AND bs.bs_alias = ?)`);
-
-			ui_bs_id = parseInt(ui_bs_id, 10);
+			
+			ui_bs_id = parseInt(ui_bs_id, 10)||0;
 			where.push('b.bs_id = ?');
 			sqlData.unshift(s_bs_alias);
 			sqlData.push(ui_bs_id);
 		}
-
+		
 		if (i_u_id !== null)
 		{
 			where.push('b.u_id = ?');
-			i_u_id = parseInt(i_u_id, 10);
+			i_u_id = parseInt(i_u_id, 10)||0;
 			sqlData.push(i_u_id);
 		}
-
+		
 		sql.push(`WHERE ${where.join(' AND ')}`);
 		sql = sql.join(`\n`);
+		
 		//console.log(sql, sqlData);
-
+		
 		return this.constructor.conn().sRow(sql, sqlData)
 			.then((res) =>
 			{
@@ -194,10 +195,10 @@ class Blog extends BaseModel {
 		let sql =
 			[`SELECT b.b_id, b.b_create_ts, b.b_update_ts, b.b_title, b.b_alias, b.b_notice 
 			, FROM_UNIXTIME(b.b_create_ts, "%d-%m-%Y") AS dt_create_ts
-			, b.u_id, bi.bi_id, bi.bi_dir, bi.bi_pos, bi.bi_name, b.bs_id
-			, bs.bs_name, bs.bs_alias
+			, b.u_id, bi.f_id, bi.f_dir, bi.f_pos, bi.f_name, bi.f_type
+			, b.bs_id, bs.bs_name, bs.bs_alias
 			FROM blog_list AS b`];
-
+		
 		if (b_show === null)
 		{
 			where.push('b.b_show IN(0,1)');
@@ -208,11 +209,11 @@ class Blog extends BaseModel {
 			where.push('b.b_show = ?');
 			sqlData.push(b_show);
 		}
-
+		
 		if (ui_bs_id && s_bs_alias)
 		{
 			sql.push(`JOIN blog_subject AS bs ON(bs.bs_id = b.bs_id AND bs.bs_alias = ?)`);
-
+			
 			ui_bs_id = parseInt(ui_bs_id, 10)||0;
 			where.push('b.bs_id = ?');
 			sqlData.unshift(s_bs_alias);
@@ -222,27 +223,28 @@ class Blog extends BaseModel {
 		{
 			sql.push(`JOIN blog_subject AS bs ON(bs.bs_id = b.bs_id)`);
 		}
-
+		
 		if (i_u_id !== null)
 		{
 			where.push('b.u_id = ?');
 			i_u_id = parseInt(i_u_id, 10)||0;
 			sqlData.push(i_u_id);
 		}
-
-		sql.push(`LEFT JOIN blog_file AS bi ON(bi.b_id = b.b_id AND bi.bi_pos = 0)
+		
+		sql.push(`LEFT JOIN blog_file AS bi ON(bi.b_id = b.b_id AND bi.f_pos = 0 AND bi.f_type = 'image')
 		WHERE ${where.join(' AND ')}
 		ORDER BY b.b_create_ts DESC
 		LIMIT ${i_limit} OFFSET ${i_offset}`);
-
+		
 		sql = sql.join(`\n`);
-
+		
 		/*console.log(sql);
-		 console.log(sqlData);
-		 console.log('\n');*/
+		console.log(sqlData);
+		console.log('\n');*/
+		
 		return this.constructor.conn().ps(sql, sqlData);
 	}
-
+	
 	/**
 	 * вставка записи о фто в БД
 	 *
@@ -256,9 +258,9 @@ class Blog extends BaseModel {
 	{
 		let now_ts = Moment().unix();
 		let sql =
-			`INSERT INTO blog_file (b_id, bi_create_ts, bi_update_ts)
+			`INSERT INTO blog_file (b_id, f_create_ts, f_update_ts)
 			VALUES (?, ?, ?);`;
-
+		
 		return this.constructor.conn().ins(sql, [b_id, now_ts, now_ts]);
 	}
 
@@ -275,49 +277,50 @@ class Blog extends BaseModel {
 			.then((res) =>
 			{
 				fileData["u_id"] = u_id;
-				fileData["bi_pos"] = "0";
-				fileData["bi_id"] = res['insertId'];
+				fileData["f_pos"] = "0";
+				fileData["f_id"] = res['insertId'];
 				return Promise.resolve(fileData);
 			});
 	}
-
+	
 	/**
 	 * обновление данных о фото после его загрузки на сервер
 	 *
 	 * @param b_id
-	 * @param bi_id
-	 * @param bi_latitude
-	 * @param bi_longitude
-	 * @param bi_dir
-	 * @param bi_name
+	 * @param f_id
+	 * @param f_latitude
+	 * @param f_longitude
+	 * @param f_dir
+	 * @param f_name
+	 * @param f_type
 	 * @param posUpd
 	 * @returns {Promise}
 	 */
-	updImage(b_id, bi_id, bi_latitude, bi_longitude, bi_dir, bi_name, posUpd = true)
+	updImage(b_id, f_id, f_latitude, f_longitude, f_dir, f_name, f_type, posUpd = true)
 	{
 		posUpd = (posUpd ? 1 : 0);
-		let sql = "CALL blog_file_update(?, ?, ?, ?, ?, ?, ?)";
-		let sqlData = [b_id, bi_id, bi_latitude, bi_longitude, bi_dir, bi_name, posUpd];
-
+		let sql = "CALL blog_file_update(?, ?, ?, ?, ?, ?, ?, ?)";
+		let sqlData = [b_id, f_id, f_latitude, f_longitude, f_dir, f_name, f_type, posUpd];
+		
 		return this.constructor.conn().call(sql, sqlData)
 			.then(() =>
 			{
-				return Promise.resolve(bi_id);
+				return Promise.resolve(f_id);
 			});
 	}
-
+	
 	/**
 	 * удаление фото из БД
 	 *
 	 * @param b_id
-	 * @param bi_id
+	 * @param f_id
 	 * @returns {Promise}
 	 */
-	delImage(b_id, bi_id)
+	delImage(b_id, f_id)
 	{
 		let sql = "CALL blog_file_delete(?, ?, @is_del); SELECT @is_del AS is_del FROM DUAL;";
-
-		return this.constructor.conn().multis(sql, [b_id, bi_id])
+		
+		return this.constructor.conn().multis(sql, [b_id, f_id])
 			.then((res) =>
 			{
 				let is_del = (res[1] && res[1]["is_del"] ? parseInt(res[1]["is_del"], 10) : 0);
@@ -328,18 +331,18 @@ class Blog extends BaseModel {
 	/***
 	 * получаем данные для указанной фотографии
 	 *
-	 * @param bi_id
+	 * @param f_id
 	 */
-	getImage(bi_id)
+	getImage(f_id)
 	{
-		let sql = `SELECT bi.bi_id, bi.b_id, bi.bi_create_ts, bi.bi_update_ts, bi.bi_latitude, bi.bi_longitude, 
-		bi.bi_dir, bi.bi_pos, bi.bi_name
+		let sql = `SELECT bi.f_id, bi.b_id, bi.f_create_ts, bi.f_update_ts, bi.f_latitude, bi.f_longitude, 
+		bi.f_dir, bi.f_pos, bi.f_name, bi.f_type
 		FROM blog_file AS bi
-		WHERE bi.bi_id = ?`;
+		WHERE bi.f_id = ?`;
 		
-		bi_id = parseInt(bi_id, 10)||0;
+		f_id = parseInt(f_id, 10)||0;
 		
-		return this.constructor.conn().sRow(sql, [bi_id]);
+		return this.constructor.conn().sRow(sql, [f_id]);
 	}
 
 	/***
@@ -349,13 +352,15 @@ class Blog extends BaseModel {
 	 */
 	getImageList(b_id)
 	{
-		let sql = `SELECT bi.bi_id, bi.b_id, bi.bi_create_ts, bi.bi_update_ts, bi.bi_latitude, bi.bi_longitude, 
-			bi.bi_dir, bi.bi_pos, bi.bi_name
+		let sql = `SELECT bi.f_id, bi.b_id, bi.f_create_ts, bi.f_update_ts, bi.f_latitude, bi.f_longitude, 
+			bi.f_dir, bi.f_pos, bi.f_name, bi.f_type
 			FROM blog_file AS bi
 			WHERE bi.b_id = ?
-			GROUP BY bi.bi_pos
-			ORDER BY bi.bi_pos`;
-		b_id = parseInt(b_id, 10);
+			-- GROUP BY bi.f_pos, bi.f_type
+			ORDER BY bi.f_type, bi.f_pos`;
+		
+		b_id = parseInt(b_id, 10)||0;
+		
 		return this.constructor.conn().s(sql, [b_id]);
 	}
 
@@ -367,9 +372,9 @@ class Blog extends BaseModel {
 	 */
 	countAlbumImages(b_id)
 	{
-		let sql = "SELECT COUNT(bi_id) AS cnt FROM blog_file WHERE b_id = ?;";
+		let sql = "SELECT COUNT(f_id) AS cnt FROM blog_file WHERE b_id = ?;";
 		
-		b_id = parseInt(b_id, 10);
+		b_id = parseInt(b_id, 10)||0;
 		return this.constructor.conn().sRow(sql, [b_id])
 			.then((res) =>
 			{
@@ -381,31 +386,31 @@ class Blog extends BaseModel {
 	 * сорхранение позиций фотографий после их сортировке на клиенте
 	 *
 	 * @param b_id
-	 * @param bi_pos - id фоток
+	 * @param file_pos - id фоток
 	 * @returns {Promise}
 	 */
-	updSortImg(b_id, bi_pos = [])
+	updSortImg(b_id, file_pos = [])
 	{
 		return this.countAlbumImages(b_id)
 			.then((cnt) =>
 			{
-				cnt = parseInt(cnt, 10);
+				cnt = parseInt(cnt, 10)||0;
 				cnt = (!cnt ? 0 : cnt);
-
-				if (!cnt || !bi_pos.length || cnt < bi_pos.length)
+				
+				if (!cnt || !file_pos.length || cnt < file_pos.length)
 					return Promise.resolve(true);
-
+				
 				let setOrdi = [];
 				let setData = [];
-
-				bi_pos.forEach((bi_id, i) =>
+				
+				file_pos.forEach((f_id, i) =>
 				{
-					setOrdi.push("IF(bi_id = ?, ? ");
-					bi_id = parseInt(bi_id, 10);
-					setData.push(bi_id, i);
+					setOrdi.push("IF(f_id = ?, ? ");
+					f_id = parseInt(f_id, 10)||0;
+					setData.push(f_id, i);
 				});
-
-				let sql = "UPDATE blog_file SET bi_pos = " + setOrdi.join(',') + ', bi_pos' + ')'.repeat(setOrdi.length) +
+				
+				let sql = "UPDATE blog_file SET f_pos = " + setOrdi.join(',') + ', f_pos' + ')'.repeat(setOrdi.length) +
 					" WHERE b_id = ? ";
 				
 				b_id = parseInt(b_id, 10)||0;
@@ -432,21 +437,20 @@ class Blog extends BaseModel {
 		
 		return this.constructor.conn().multis(sql, [b_id, b_id]);
 	}
-
+	
 	getBlogSubjectList(i_u_id = null, b_show = null)
 	{
 		let sqlData = [];
 		let joinAnd = [];
-
+		
 		if (b_show === null)
 			b_show = 1;
-
+		
 		sqlData.push(b_show);
 		joinAnd.push(`b.b_show = ?`);
-
 		joinAnd.push(`b.bs_id = bs.bs_id`);
-
-		i_u_id = parseInt(i_u_id, 10);
+		
+		i_u_id = parseInt(i_u_id, 10)||0;
 		i_u_id = (isNaN(i_u_id) ? false : i_u_id);
 		if (i_u_id)
 		{
@@ -460,20 +464,19 @@ class Blog extends BaseModel {
 		JOIN blog_list AS b ON(${joinAnd.join(' AND ')})
 		GROUP BY bs.bs_id
 		ORDER BY bs.bs_lk`;
-
+		
 		//console.log(sql, sqlData);
-
 		return this.constructor.conn().ps(sql, sqlData);
 	}
-
+	
 	getBlogListByIds(obj_ids, b_show = null)
 	{
 		if (!!obj_ids.length === false)
 			return Promise.resolve(null);
-
+		
 		let where = [`b.b_id IN(${this.constructor.placeHoldersForIn(obj_ids)})`];
 		let sqlData = obj_ids;
-
+		
 		if (b_show === null)
 		{
 			where.push('b.b_show IN(0,1)');
@@ -484,20 +487,21 @@ class Blog extends BaseModel {
 			where.push('b.b_show = ?');
 			sqlData.push(b_show);
 		}
-
+		
 		let sql = `SELECT b.b_id, b.b_create_ts, b.b_update_ts, b.b_title, b.b_alias, b.b_notice 
 			, FROM_UNIXTIME(b.b_create_ts, "%d-%m-%Y") AS dt_create_ts
-			, b.u_id, bi.bi_id, bi.bi_dir, bi.bi_pos, bi.bi_name, b.bs_id
-			, bs.bs_name, bs.bs_alias
+			, b.u_id, bi.f_id, bi.f_dir, bi.f_pos, bi.f_name, bi.f_type
+			, b.bs_id, bs.bs_name, bs.bs_alias
 			FROM (SELECT NULL) AS z
 			JOIN blog_list AS b ON(${where.join(' AND ')})
 			JOIN blog_subject AS bs ON(bs.bs_id = b.bs_id)
-			LEFT JOIN blog_file AS bi ON(bi.b_id = b.b_id AND bi.bi_pos = 0)
+			LEFT JOIN blog_file AS bi ON(bi.b_id = b.b_id AND bi.f_pos = 0 AND bi.f_type = 'image')
 		ORDER BY b.b_create_ts DESC`;
-
+		
 		/*console.log(sql);
-		 console.log(sqlData);
-		 console.log('\n');*/
+	 console.log(sqlData);
+	 console.log('\n');*/
+		
 		return this.constructor.conn().ps(sql, sqlData);
 	}
 }

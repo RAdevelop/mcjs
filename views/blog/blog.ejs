@@ -8,8 +8,9 @@ if (user && user['u_id'])
 		blogBaseUrl.push('draft');
 }
 blogBaseUrl = blogBaseUrl.join('/');
-%>
-<div class="blog-info"><% let  user_owner = blog['user']; %><%- include ../user/owner.ejs %>
+let user_owner = blog['user'];
+
+%><div class="blog-info"><%- include ../user/owner.ejs %>
 	<div class="blog-info_about">
 		<div class="blog-info_about_subj">Тема: <a href="<%=[blogBaseUrl,'subj', blog["bs_id"], blog["bs_alias"]].join('/')%>/"><%=blog['bs_name']%></a></div><%
 		if (blog['kw_names'].length>0){%>
@@ -31,7 +32,7 @@ blogBaseUrl = blogBaseUrl.join('/');
 	var blog = MCJS["blogData"] || {};
 
 	$('mcImageBlog').mcImage({
-		imgFieldId: "bi_id"//название поля id у картинки в json'e
+		imgFieldId: "f_id"//название поля id у картинки в json'e
 		, albumImages: '.blogData img.image' //селектор для списка картинок
 		, albumImagesMain: '.blogData .blogText img.image'
 		, albumImagesSub: '.blogData .imagesWrapper .imagesContainer img.image'

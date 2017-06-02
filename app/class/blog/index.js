@@ -94,28 +94,28 @@ class Blog extends Base
 			.then((cnt) =>
 			{
 				Pages.setTotal(cnt);
-
+				
 				if (!cnt)
 					return [null, Pages];
-
+				
 				if (Pages.limitExceeded())
 					return Promise.reject(new FileErrors.HttpError(404));
-
+				
 				return this.model('blog')
 					.getBlogList(Pages.getLimit(), Pages.getOffset(), b_show, i_u_id, ui_bs_id, s_bs_alias)
 					.then((blogList) =>
 					{
 						if (!blogList)
 							return Promise.resolve([null, Pages]);
-
+						
 						let sizeParams = FileUpload.getUploadConfig(Blog.uploadConfigName).sizeParams;
-						blogList = FileUpload.getPreviews(sizeParams, blogList, "bi_dir")["obj"];
-
+						blogList = FileUpload.getPreviews(sizeParams, blogList, false, false)["obj"];
+						
 						let u_ids = blogList.map((u)=>
 						{
 							return u['u_id'];
 						});
-
+						
 						return this.getClass('user').getUserListById(u_ids, blogList)
 							.spread((users, blogList)=>
 							{
@@ -163,7 +163,7 @@ class Blog extends Base
 									return Promise.resolve([null, Pages]);
 
 								let sizeParams = FileUpload.getUploadConfig(Blog.uploadConfigName).sizeParams;
-								blogList = FileUpload.getPreviews(sizeParams, blogList, "bi_dir")["obj"];
+								blogList = FileUpload.getPreviews(sizeParams, blogList)["obj"];
 
 								return Promise.resolve([blogList, Pages]);
 							});
@@ -181,7 +181,7 @@ class Blog extends Base
 	 */
 	uploadImage(u_id, req, res)
 	{
-		let bi_id, b_id;
+		let f_id, b_id;
 		let ufile = {};
 
 		const UploadFile = new FileUpload(Blog.uploadConfigName, req, res);
@@ -195,7 +195,7 @@ class Blog extends Base
 				return this.getBlogById(b_id)
 					.then((blog) =>
 					{
-						if (blog["b_img_cnt"] >= 10)
+						if (blog["file_cnt"] >= 10)
 							throw new FileErrors.LimitExceeded('Можно добавить не более 10 файлов.');
 
 						return Promise.resolve(ufile);
@@ -206,9 +206,9 @@ class Blog extends Base
 				return this.model('blog').addPhoto(u_id, file)
 					.then((file) =>
 					{
-						bi_id = file['bi_id'];
+						f_id = file['f_id'];
 
-						file["moveToDir"] = FileUpload.getImageUri(file['b_id'], file['bi_id']);
+						file["moveToDir"] = FileUpload.getImageUri(file['b_id'], file['f_id']);
 
 						return new Promise((resolve, reject) =>
 						{
@@ -223,9 +223,9 @@ class Blog extends Base
 			})
 			.then((file) =>
 			{
-				if (file.type != 'image')
+				if (file.type != FileUpload.TYPE_IMAGE)
 					return Promise.resolve(file);
-
+				
 				return UploadFile.setImageGeo(file)
 					.then((file) =>
 					{
@@ -235,13 +235,13 @@ class Blog extends Base
 			.then((file) =>
 			{
 				//console.log(file);
-
+				
 				return this.model('blog')
-					.updImage(file.b_id, file.bi_id, file.latitude, file.longitude, file.webDirPath, file.name, true)
+					.updImage(file.b_id, file.f_id, file.latitude, file.longitude, file.webDirPath, file.name, file.type, true)
 					.then(() =>
 					{
 						ufile = null;
-						file["bi_name"] = file.name;
+						file["f_name"] = file.name;
 						return Promise.resolve(file);
 					});
 			})
@@ -249,7 +249,7 @@ class Blog extends Base
 			{
 				//console.log(ufile);
 				Logger.error(err);
-				return this.delImage(u_id, b_id, bi_id, ufile)
+				return this.delImage(u_id, b_id, f_id, ufile)
 					.catch((delErr) =>
 					{
 						switch (err.name)
@@ -272,20 +272,20 @@ class Blog extends Base
 	/**
 	 * получаем данные для указанной фотографии
 	 *
-	 * @param bi_id
+	 * @param f_id
 	 * @returns {Promise}
 	 */
-	getImage(bi_id)
+	getImage(f_id)
 	{
-		return this.model('blog').getImage(bi_id)
+		return this.model('blog').getImage(f_id)
 			.then((image) =>
 			{
 				if (!image)
-					throw new FileErrors.io.FileNotFoundError("фотография не найдена: Blog.getImage(bi_id="+bi_id+")");
-
+					throw new FileErrors.io.FileNotFoundError("фотография не найдена: Blog.getImage(f_id="+f_id+")");
+				
 				let sizeParams = FileUpload.getUploadConfig(Blog.uploadConfigName).sizeParams;
-				image = FileUpload.getPreviews(sizeParams, image, "bi_dir", false)['obj'];
-
+				image = FileUpload.getPreviews(sizeParams, image)['obj'];
+				
 				return Promise.resolve(image);
 			});
 	}
@@ -305,7 +305,7 @@ class Blog extends Base
 					return [[], []];
 
 				let sizeParams = FileUpload.getUploadConfig(Blog.uploadConfigName).sizeParams;
-				let previews = FileUpload.getPreviews(sizeParams, images, "bi_dir", true);
+				let previews = FileUpload.getPreviews(sizeParams, images, true);
 				let allPreviews = previews['previews'];
 
 				images  = previews['obj'];
@@ -319,18 +319,18 @@ class Blog extends Base
 	 *
 	 * @param u_id
 	 * @param b_id
-	 * @param bi_id
+	 * @param f_id
 	 * @param file
 	 * @returns {Promise}
 	 */
-	delImage(u_id, b_id, bi_id, file = {})
+	delImage(u_id, b_id, f_id, file = {})
 	{
 		//console.log(file);
 
 		return FileUpload.deleteFile(file.path || '')
 			.then(() =>
 			{
-				return this.getImage(bi_id);
+				return this.getImage(f_id);
 			})
 			.then((image) =>
 			{
@@ -341,7 +341,7 @@ class Blog extends Base
 			})
 			.then((image) =>
 			{
-				let dir = (image["bi_dir"] ? image["bi_dir"] : (file["webDirPath"] ? file["webDirPath"] : null));
+				let dir = (image["f_dir"] ? image["f_dir"] : (file["webDirPath"] ? file["webDirPath"] : null));
 
 				if (!dir)
 					return Promise.reject(new FileErrors.io.DirectoryNotFoundError());
@@ -351,7 +351,7 @@ class Blog extends Base
 				return FileUpload.deleteDir(dir, true)
 					.then(() =>
 					{
-						return this.model('blog').delImage(b_id, bi_id);
+						return this.model('blog').delImage(b_id, f_id);
 					})
 					.then(() =>
 					{
@@ -363,7 +363,7 @@ class Blog extends Base
 				console.log('class Events delImage catch');
 				Logger.error(err);
 
-				return this.model('blog').delImage(b_id, bi_id)
+				return this.model('blog').delImage(b_id, f_id)
 					.then(() =>
 					{
 						throw err;
@@ -375,12 +375,12 @@ class Blog extends Base
 	 * сорхранение позиций фотографий после их сортировке на клиенте
 	 *
 	 * @param b_id
-	 * @param bi_pos
+	 * @param file_pos
 	 * @returns {Promise}
 	 */
-	sortImgUpd(b_id, bi_pos)
+	sortImgUpd(b_id, file_pos)
 	{
-		return this.model('blog').updSortImg(b_id, bi_pos);
+		return this.model('blog').updSortImg(b_id, file_pos);
 	}
 
 	/**

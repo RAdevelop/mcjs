@@ -488,18 +488,18 @@ class Blog extends CtrlMain
 	editActionGet()
 	{
 		let {i_blog_id} = this.routeArgs;
-
+		
 		if (!i_blog_id)
 			throw new Errors.HttpError(404);
-
+		
 		//let show = (this.getLocalAccess()['post_edit'] ? null : 1);
-
+		
 		return this._getBlogData(i_blog_id)
 			.spread((isRootAdmin, blog, user, blogSubjects)=>
 			{
-				if (!blog || !(isRootAdmin || blog['u_id'] == this.getUserId()))
+				if (!blog || (!isRootAdmin && blog['u_id'] != this.getUserId()))
 					throw new Errors.HttpError(404);
-
+				
 				return Promise.all([
 					this.getClass('keywords').getKeyWordList(),
 					this.getClass('blog').getImageList(blog['b_id'])
@@ -512,7 +512,7 @@ class Blog extends CtrlMain
 							Object.assign(blog, FileUpload.createToken(uploadTypeConf, {"b_id": blog.b_id, "u_id": blog.u_id}) );
 							this.getRes().expose(FileUpload.exposeUploadOptions(uploadTypeConf), 'blogUploadOpts');
 						}
-
+						
 						let tplFile = "blog";
 						let tplData = {
 							blogDraft: '',
@@ -521,9 +521,9 @@ class Blog extends CtrlMain
 							user: {u_id: blog['u_id']}, //user
 							blogSubjects: blogSubjects
 						};
-
+						
 						this.view.setTplData(tplFile, tplData);
-
+						
 						this.view.setPageTitle(blog.b_title);
 						this.view.setPageH1(blog.b_title);
 						//экспрот данных в JS на клиента
@@ -531,7 +531,7 @@ class Blog extends CtrlMain
 						this.getRes().expose(tplData["blogImages"], 'blogImages');
 						this.getRes().expose(imagesData[1], 'blogImagesPreviews');
 						this.getRes().expose(keywords, 'keyWords');
-
+						
 						return Promise.resolve(null);
 					});
 			});
@@ -674,10 +674,10 @@ class Blog extends CtrlMain
 	 */
 	_sortImg(tplData, tplFile)
 	{
-		if (!tplData["i_blog_id"] || !tplData.hasOwnProperty("bi_pos") || !tplData["bi_pos"].length)
-			return Promise.resolve(tplData);
-
-		return this.getClass('blog').sortImgUpd(tplData["i_blog_id"], tplData["bi_pos"])
+		if (!tplData["i_blog_id"] || !tplData.hasOwnProperty("file_pos") || !tplData["file_pos"].length)
+			throw new Errors.HttpError(400);
+		
+		return this.getClass('blog').sortImgUpd(tplData["i_blog_id"], tplData["file_pos"])
 			.then(() =>
 			{
 				this.view.setTplData(tplFile, tplData);
@@ -697,8 +697,8 @@ class Blog extends CtrlMain
 		
 		this.getRes().on('cancelUploadedFile', (file) =>
 		{
-			if (file["u_id"] && file["b_id"] && file["bi_id"])
-				return this.getClass('blog').delImage(file["u_id"], file["b_id"], file["bi_id"], file);
+			if (file["u_id"] && file["b_id"] && file["f_id"])
+				return this.getClass('blog').delImage(file["u_id"], file["b_id"], file["f_id"], file);
 		});
 		
 		return this.getClass('blog').uploadImage(this.getUserId(), this.getReq(), this.getRes())
@@ -707,11 +707,12 @@ class Blog extends CtrlMain
 				//console.log(file);
 				tplData = {
 					b_id: file.b_id,
-					bi_id: file.bi_id,
-					bi_pos: file.bi_pos,
-					bi_name: file.bi_name,
-					bi_latitude: file.latitude,
-					bi_longitude: file.longitude,
+					f_id: file.f_id,
+					f_pos: file.f_pos,
+					f_name: file.f_name,
+					f_type: file.type,
+					f_latitude: file.latitude,
+					f_longitude: file.longitude,
 					u_id: file.u_id,
 					name: file.name,
 					size: file.size,
@@ -742,11 +743,11 @@ class Blog extends CtrlMain
 	 */
 	_delImg(tplData, tplFile)
 	{
-		if (!tplData["i_bi_id"])
+		if (!tplData["i_f_id"])
 			throw new Errors.HttpError(400);
 
 		return this.getClass('blog')
-			.delImage(this.getUserId(), tplData["i_blog_id"], tplData["i_bi_id"])
+			.delImage(this.getUserId(), tplData["i_blog_id"], tplData["i_f_id"])
 			.then(() =>
 			{
 				this.view.setTplData(tplFile, tplData);

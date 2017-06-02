@@ -3,7 +3,7 @@ let eDate = (event["dd_start_ts"] == event["dd_end_ts"]
 		? [event["dd_start_ts"]]
 		: [event["dd_start_ts"], event["dd_end_ts"]])
 		.join(' &mdash; ');
-let hasImages = (!!eventImages && !!eventImages.length);
+let hasImages = (!!eventImages['image'] && !!eventImages['image'].length);
 %>
 <h2><%-event['e_title']%></h2>
 <div class="row eventData">
@@ -37,17 +37,17 @@ let hasImages = (!!eventImages && !!eventImages.length);
 (function($)
 {
 	var event = MCJS["eventData"] || {};
-
+	
 	$('mcImage').mcImage({
-		imgFieldId: "ei_id"//название поля id у картинки в json'e
+		imgFieldId: "f_id"//название поля id у картинки в json'e
 		, albumImages: '.eventData img.image' //селектор для списка картинок
 		, albumImagesMain: '.eventData .eventText img.image'
 		, albumImagesSub: '.eventData .imagesWrapper .imagesContainer img.image'
 		, albumImagesSubWrapper: '.eventData .imagesWrapper'
-		, jsonImageList: event["eventImages"] || {}
+		, jsonImageList: event["eventImages"]['image'] || []
 		, jsPreviewsList: event["eventImagesPreviews"] || []
 	});
-
+	
 	var mapState = {
 		 controls: ["typeSelector"]
 		, center: [event["e_latitude"], event["e_longitude"]]
@@ -58,7 +58,7 @@ let hasImages = (!!eventImages && !!eventImages.length);
 	};
 	var mapOptions = {};
 	var EventMcMap = new McMap('eventMap', {state: mapState, options: mapOptions});
-
+	
 	EventMcMap.init()
 			.then(function (EventMap)
 			{

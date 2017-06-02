@@ -20,13 +20,13 @@ module.exports = function(app)
 			if((err.status >= 500) == false)
 				Logger.error(err);
 		}*/
-
+		
 		err.status = err.status || 500;
-
+		
 		if (err.status >= 500)
 		{
 			Logger.error(err);
-
+			
 			const Mailer = new Mail(AppConfig.mail.service);
 			let sendParams = {
 				to: 'roalexey@yandex.ru',//AppConfig.mail.to

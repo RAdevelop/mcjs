@@ -19,25 +19,25 @@ class UserPhotoProfile extends UserPhoto
 		let ava = {
 			a_id: null,
 			u_id: null,
-			ai_id: null,
-			ai_dir: null
+			f_id: null,
+			f_dir: null
 		};
-		let sql = `SELECT a.a_id, a.u_id, ai.ai_id, ai.ai_dir
+		let sql = `SELECT a.a_id, a.u_id, ai.f_id, ai.f_dir, ai.f_type
 		FROM (SELECT NULL) AS z
 		JOIN album_type AS t ON (t.a_type_alias = ?)
 		JOIN album AS a ON (t.a_type_id = a.a_type_id)
-		JOIN album_image AS ai ON (ai.a_id = a.a_id AND ai.u_id = ? AND ai.ai_profile = ?)
+		JOIN album_image AS ai ON (ai.a_id = a.a_id AND ai.u_id = ? AND ai.f_profile = ?)
 		LIMIT 1;`;
-
+		
 		u_id = parseInt(u_id, 10);
 		let sqlData = [this.constructor.albumProfile, u_id, 1];
-
+		
 		return this.constructor.conn().psRow(sql, sqlData)
 			.then((res) =>
 			{
 				if (res)
 					Object.assign(ava, res);
-
+				
 				return Promise.resolve(ava);
 			});
 	}
@@ -51,11 +51,11 @@ class UserPhotoProfile extends UserPhoto
 	getUsersAva(user_ids = [])
 	{
 		let placeHolders = this.constructor.placeHoldersForIn(user_ids);
-		let sql = `SELECT a.a_id, a.u_id, ai.ai_id, ai.ai_dir
+		let sql = `SELECT a.a_id, a.u_id, ai.f_id, ai.f_dir, ai.f_type
 		FROM (SELECT NULL) AS z
 		JOIN album_type AS t ON (t.a_type_alias = ?)
 		JOIN album AS a ON (t.a_type_id = a.a_type_id)
-		JOIN album_image AS ai ON (ai.a_id = a.a_id AND ai.u_id IN (${placeHolders}) AND ai.ai_profile = ?);`;
+		JOIN album_image AS ai ON (ai.a_id = a.a_id AND ai.u_id IN (${placeHolders}) AND ai.f_profile = ?);`;
 
 		let sqlData = [];
 		sqlData = sqlData.concat(user_ids);
@@ -68,8 +68,8 @@ class UserPhotoProfile extends UserPhoto
 				let ava = {
 					a_id: null,
 					u_id: null,
-					ai_id: null,
-					ai_dir: null
+					f_id: null,
+					f_dir: null
 				};
 
 				let avaList = {};

@@ -52,7 +52,7 @@ function insertUsersData()
 	//, IF(ud.u_login = 'MotoCommunity', 'RA', SUBSTRING_INDEX(ud.u_login, '@',1)) AS u_login
 	let sql = `SELECT 
 		 u.u_id+10 AS u_id
-		, IF(u.u_email = 'roalexey@yandex.ru', 'ra@zero.ru', u.u_email) AS u_mail
+		, IF(u.u_email = 'roalexey@yandex.ru', 'ra@zerotech.ru', u.u_email) AS u_mail
 		, u.u_pass_addition AS u_salt
 		, u.u_pass AS u_pass
 		, UNIX_TIMESTAMP(u.u_date_reg) AS u_date_reg
@@ -63,14 +63,14 @@ function insertUsersData()
 		FROM users AS u
 		JOIN users_private_data AS ud ON (ud.u_id = u.u_id)
 		ORDER BY u.u_id`;
-
+	
 	return DB.conn(null, prodDbConf).s(sql)
 		.then((list)=>
 		{
 			let sVals = `(?,?,?,?,?,?,?,?,?)`;
 			let sqlIns = [];
 			let sqlData = [];
-
+			
 			list.forEach((user)=>
 			{
 				sqlIns.push(sVals);

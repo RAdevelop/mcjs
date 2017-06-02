@@ -36,8 +36,8 @@ class UserGroups extends UserModel
 		let sql = `SELECT ug_id, ug_pid, ug_path, ug_name, ug_desc, ug_level, ug_lk, ug_rk, ug_on_register
 		FROM users_groups 
 		WHERE ug_id = ?`;
-
-		ug_id = parseInt(ug_id, 10);
+		
+		ug_id = parseInt(ug_id, 10)||0;
 		return this.constructor.conn().sRow(sql, [ug_id]);
 	}
 
@@ -102,7 +102,7 @@ class UserGroups extends UserModel
 			.then((res) =>
 			{
 				let ug_id = (res[1][0] && res[1][0]["ug_id"] ? res[1][0]["ug_id"] : 0);
-				ug_id = parseInt(ug_id, 10);
+				ug_id = parseInt(ug_id, 10)||0;
 				if (ug_id == 0)
 					throw new Errors.HttpError(500, 'не удалось создать группу');
 
@@ -137,8 +137,8 @@ class UserGroups extends UserModel
 			${leftJoin} JOIN users_groups_rights AS ugr ON(
 				ugr.ug_id = ? AND ugr.m_id = m.m_id AND ugr.c_id = cm.c_id AND ugr.cm_id = cm.cm_id
 			)`;
-		m_id = parseInt(m_id, 10);
-		ug_id = parseInt(ug_id, 10);
+		m_id = parseInt(m_id, 10)||0;
+		ug_id = parseInt(ug_id, 10)||0;
 		let sqlData = [m_id, ug_id];
 		//console.log(sql, sqlData);
 
@@ -158,7 +158,7 @@ class UserGroups extends UserModel
 	{
 		//удалить все записи по ug_id, m_id, c_id кроме групп админов и рутов
 		//cm_ids - если не пустой, то для каждого метода добавить связи ug_id, m_id, c_id, cm_id
-		ug_id = parseInt(ug_id, 10);
+		ug_id = parseInt(ug_id, 10)||0;
 		return this.getAll([ug_id])
 			.then((ug) =>
 			{
@@ -174,8 +174,8 @@ class UserGroups extends UserModel
 				let sql = `SELECT ug_id, ug_path FROM users_groups 
 				WHERE ug_lk >= ? AND ug_rk <= ?`;
 
-				ug_group['ug_lk'] = parseInt(ug_group['ug_lk'], 10);
-				ug_group['ug_rk'] = parseInt(ug_group['ug_rk'], 10);
+				ug_group['ug_lk'] = parseInt(ug_group['ug_lk'], 10)||0;
+				ug_group['ug_rk'] = parseInt(ug_group['ug_rk'], 10)||0;
 
 				return this.constructor.conn().s(sql, [ug_group['ug_lk'], ug_group['ug_rk']])
 					.then((list) =>
@@ -203,8 +203,8 @@ class UserGroups extends UserModel
 
 				let sqlData = ug_ids_for_del;
 
-				m_id = parseInt(m_id, 10);
-				c_id = parseInt(c_id, 10);
+				m_id = parseInt(m_id, 10)||0;
+				c_id = parseInt(c_id, 10)||0;
 				sqlData.push(m_id, c_id);
 
 				return this.constructor.conn().del(sql, sqlData)
@@ -254,7 +254,7 @@ class UserGroups extends UserModel
 	 */
 	addUserToGroups(u_id, ug_ids = [])
 	{
-		u_id = parseInt(u_id, 10);
+		u_id = parseInt(u_id, 10)||0;
 		if (u_id == 1)//root
 			return Promise.resolve(u_id);
 
@@ -360,7 +360,7 @@ class UserGroups extends UserModel
 	 */
 	getGroupRightsByPathAndMenu(m_id, ug_path)
 	{
-		m_id = parseInt(m_id, 10);
+		m_id = parseInt(m_id, 10)||0;
 		let sqlData = [m_id, ug_path];
 		let sql = `SELECT ug.ug_id, m.m_id, cm.cm_id, cm.cm_method
 		FROM (SELECT NULL) AS z
@@ -414,7 +414,7 @@ class UserGroups extends UserModel
 
 		let sqlData = [].concat(ug_ids);
 
-		m_id = parseInt(m_id, 10);
+		m_id = parseInt(m_id, 10)||0;
 		sqlData.unshift(m_id);
 
 		let sql = `SELECT m.m_id, cm.cm_method
@@ -481,7 +481,11 @@ class UserGroups extends UserModel
 		(SELECT NULL) AS z
 		JOIN users_in_groups AS uing ON(uing.u_id = ?)
 		JOIN users_groups AS ug ON(ug.ug_id = uing.ug_id)`;
-		u_id = parseInt(u_id, 10);
+		u_id = parseInt(u_id, 10)||0;
+		
+		/*console.log(sql);
+		console.log('u_id =', u_id);*/
+		
 		return this.constructor.conn().ps(sql, [u_id]);
 	}
 }

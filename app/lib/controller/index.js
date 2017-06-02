@@ -393,29 +393,29 @@ class Base
 		//this._setBaseUrl(this.getReq(), this.getRes());
 		if (!this.isAction() || !this._parseRoutePaths())
 			throw new Errors.HttpError(404);
-
+		
 		return this._checkAccess()
 			.spread((localAccess, ug_ids) =>
 			{
 				let check_method = this.httpMethod+'_'+this.getActionName();
-
+				
 				if (this.getMenuItem['m_id'] && !localAccess[check_method])
 					throw new Errors.HttpError(403);
-
+				
 				this.setLocalAccess(localAccess);
 				//this._getClasses().setSession(this.getReq().session);
-
+				
 				//this.view = new Template(this.getReq(), this.getRes(), this);
 				this.view = Template.getTemplate(this);
-
+				
 				let keyData = [].concat(ug_ids);
 				keyData.push(this.getMenuItem['m_id']);
-
+				
 				//если авторизованный юзер иначе как гость
-				let сacheSeconds = (!!ug_ids.length ? AppConfig.cache.user_ts : AppConfig.cache.guest_ts);
+				let cacheSeconds = (!!ug_ids.length ? AppConfig.cache.user_ts : AppConfig.cache.guest_ts);
 				
 				this.view.setCacheKeyData(keyData)
-					.setCacheSeconds(сacheSeconds);
+					.setCacheSeconds(cacheSeconds);
 				//console.log('this.view.cacheHtmlKey() = ', this.view.cacheHtmlKey());
 				return this.view.getCacheHtml()
 					.then((cacheData)=>
@@ -558,8 +558,8 @@ class Base
 		/*
 		{ a_id: '1',
 			u_id: '1',
-			ai_id: '21',
-			ai_dir: '/user/photo/0/1/21/4c56ff4ce4aaf9573aa5dff913df997a',
+			f_id: '21',
+			f_dir: '/user/photo/0/1/21/4c56ff4ce4aaf9573aa5dff913df997a',
 			previews:
 			{ '1280_853': '/user/photo/0/1/21/4c56ff4ce4aaf9573aa5dff913df997a/1280_853.jpg',
 				'1024_768': '/user/photo/0/1/21/4c56ff4ce4aaf9573aa5dff913df997a/1024_768.jpg',
@@ -591,16 +591,16 @@ class Base
 			u_login: 'MotoCommunity',
 			u_state: '1' }
 		*/
-
+		
 		if (!u_id)
 			return Promise.resolve({u_id: null});
-
+		
 		if (u_id == this.getUserId())
 			return Promise.resolve(this.getReq()._user);
-
+		
 		return this.getClass('user').getUser(u_id, chack_state);
 	}
-
+	
 	user()
 	{
 		return (this.getReq()._user && !!this.getReq()._user['u_id'] ? this.getReq()._user : {u_id: null});

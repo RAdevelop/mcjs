@@ -86,30 +86,30 @@ class News extends Base
 	getNews(Pages, n_show = null)
 	{
 		return this.model('news').countNews(n_show)
-			.then((cnt) => {
-
+			.then((cnt) => 
+			{
 				Pages.setTotal(cnt);
-
+				
 				if (!cnt)
 					return [null, Pages];
-
+				
 				if (Pages.limitExceeded())
 					return Promise.reject(new FileErrors.HttpError(404));
-
+				
 				return this.model('news').getNews(Pages.getLimit(), Pages.getOffset(), n_show)
-					.then((newsList) => {
-
+					.then((newsList) => 
+					{
 						if (!newsList)
 							return Promise.resolve([null, Pages]);
-
+						
 						let sizeParams = FileUpload.getUploadConfig(News.uploadConfigName).sizeParams;
-						newsList = FileUpload.getPreviews(sizeParams, newsList, "ni_dir")['obj'];
-
+						newsList = FileUpload.getPreviews(sizeParams, newsList, false)['obj'];
+						
 						return Promise.resolve([newsList, Pages]);
 					});
 			});
 	}
-
+	
 	getNewsListByTag(Pages, s_tag)
 	{
 		return this.getClass('keywords').getKeyWordByName(s_tag)
@@ -117,7 +117,7 @@ class News extends Base
 			{
 				if (!kw)
 					return Promise.resolve([0, null]);
-
+				
 				return this.getClass('keywords').countObjByKwId(this, kw['kw_id'])
 					.then((cnt)=>
 					{
@@ -129,34 +129,33 @@ class News extends Base
 				Pages.setTotal(cnt);
 				if (!cnt)
 					return [null, Pages];
-
+				
 				if (Pages.limitExceeded())
 					return Promise.reject(new FileErrors.HttpError(404));
-
-				return this.getClass('keywords')
-					.getObjListByKwId(this, kw_id, Pages.getLimit(), Pages.getOffset())
+				
+				return this.getClass('keywords').getObjListByKwId(this, kw_id, Pages.getLimit(), Pages.getOffset())
 					.then((obj_ids)=>
 					{
 						if (!obj_ids)
 							return Promise.resolve([null, Pages]);
-
+						
 						return this.model('news').getNewsListByIds(obj_ids, 1)
 							.then((newsList) =>
 							{
 								//console.log('newsList = ', newsList);
-
+								
 								if (!newsList)
 									return Promise.resolve([null, Pages]);
-
+								
 								let sizeParams = FileUpload.getUploadConfig(News.uploadConfigName).sizeParams;
-								newsList = FileUpload.getPreviews(sizeParams, newsList, "ni_dir")['obj'];
-
+								newsList = FileUpload.getPreviews(sizeParams, newsList, false)['obj'];
+								
 								return Promise.resolve([newsList, Pages]);
 							});
 					});
 			});
 	}
-
+	
 	/**
 	 * добавляем файл к статье
 	 *
@@ -167,7 +166,7 @@ class News extends Base
 	 */
 	uploadFile(u_id, req, res)
 	{
-		let ni_id, n_id;
+		let f_id, n_id;
 		let ufile = {};
 		
 		const UploadFile = new FileUpload(News.uploadConfigName, req, res);
@@ -180,7 +179,7 @@ class News extends Base
 				
 				return this.get(n_id).then((news) => 
 				{
-					if (news["n_img_cnt"] >= 10)
+					if (news["file_cnt"] >= 10)
 						throw new FileErrors.LimitExceeded('Можно добавить не более 10 файлов.');
 					
 					return Promise.resolve(ufile);
@@ -191,9 +190,9 @@ class News extends Base
 				return this.model('news').addFile(u_id, file)
 					.then((file) =>
 					{
-						ni_id = file.ni_id;
+						f_id = file.f_id;
 						
-						file["moveToDir"] = FileUpload.getImageUri(file.n_id, file.ni_id);
+						file["moveToDir"] = FileUpload.getImageUri(file.n_id, file.f_id);
 						
 						return new Promise((resolve, reject) =>
 						{
@@ -223,11 +222,11 @@ class News extends Base
 				//console.log(__dirname, file);
 				
 				return this.model('news')
-					.updFile(file.n_id, file.ni_id, file.latitude, file.longitude, file.webDirPath, file.name, file.type, true)
+					.updFile(file.n_id, file.f_id, file.latitude, file.longitude, file.webDirPath, file.name, file.type, true)
 					.then(() =>
 					{
 						ufile = null;
-						file["ni_name"] = file.name;
+						file["f_name"] = file.name;
 						return Promise.resolve(file);
 					});
 			})
@@ -235,7 +234,7 @@ class News extends Base
 			{
 				//console.log(ufile);
 				Logger.error(err);
-				return this.delFile(u_id, n_id, ni_id, ufile)
+				return this.delFile(u_id, n_id, f_id, ufile)
 					.catch((delErr) =>
 					{
 						switch (err.name)
@@ -258,19 +257,19 @@ class News extends Base
 	/**
 	 * получаем данные для указанного файла
 	 *
-	 * @param ni_id
+	 * @param f_id
 	 * @returns {Promise}
 	 */
-	getFile(ni_id)
+	getFile(f_id)
 	{
-		return this.model('news').getFile(ni_id)
+		return this.model('news').getFile(f_id)
 			.then((image) =>
 			{
 				if (!image)
-					throw new FileErrors.io.FileNotFoundError("фотография не найдена: News.getFile(ni_id="+ni_id+")");
+					throw new FileErrors.io.FileNotFoundError("фотография не найдена: News.getFile(f_id="+f_id+")");
 				
 				let sizeParams = FileUpload.getUploadConfig(News.uploadConfigName).sizeParams;
-				let previews = FileUpload.getPreviews(sizeParams, image, "ni_dir", true, 'ni_name');
+				let previews = FileUpload.getPreviews(sizeParams, image, false, true);
 				previews['previews'] = null;
 				
 				image = previews['obj'];
@@ -294,7 +293,7 @@ class News extends Base
 					return [[], []];
 				
 				let sizeParams = FileUpload.getUploadConfig(News.uploadConfigName).sizeParams;
-				let previews = FileUpload.getPreviews(sizeParams, file_list, "ni_dir", true, 'ni_name', 'ni_type');
+				let previews = FileUpload.getPreviews(sizeParams, file_list, true, true);
 				
 				file_list = previews['obj'];
 				
@@ -307,18 +306,18 @@ class News extends Base
 	 *
 	 * @param u_id
 	 * @param n_id
-	 * @param ni_id
+	 * @param f_id
 	 * @param file
 	 * @returns {Promise}
 	 */
-	delFile(u_id, n_id, ni_id, file = {})
+	delFile(u_id, n_id, f_id, file = {})
 	{
 		//console.log(file);
 		
 		return FileUpload.deleteFile(file.path || '')
 			.then(() => 
 			{
-				return this.getFile(ni_id);
+				return this.getFile(f_id);
 			})
 			.then((image) => 
 			{
@@ -329,7 +328,7 @@ class News extends Base
 			})
 			.then((image) => 
 			{
-				let dir = (image["ni_dir"] ? image["ni_dir"] : (file["webDirPath"] ? file["webDirPath"] : null));
+				let dir = (image["f_dir"] ? image["f_dir"] : (file["webDirPath"] ? file["webDirPath"] : null));
 				
 				if (!dir)
 					return Promise.reject(new FileErrors.io.DirectoryNotFoundError());
@@ -339,7 +338,7 @@ class News extends Base
 				return FileUpload.deleteDir(dir, true)
 					.then(() => 
 					{
-						return this.model('news').delFile(n_id, ni_id);
+						return this.model('news').delFile(n_id, f_id);
 					})
 					.then(() => 
 					{
@@ -352,7 +351,7 @@ class News extends Base
 				Logger.error(err);
 				console.log('\n');
 				
-				return this.model('news').delFile(n_id, ni_id)
+				return this.model('news').delFile(n_id, f_id)
 					.then(() =>
 					{
 						throw err;
@@ -364,12 +363,12 @@ class News extends Base
 	 * сорхранение позиций фотографий после их сортировке на клиенте
 	 *
 	 * @param n_id
-	 * @param ni_pos
+	 * @param file_pos
 	 * @returns {Promise}
 	 */
-	sortImgUpd(n_id, ni_pos)
+	sortImgUpd(n_id, file_pos)
 	{
-		return this.model('news').updSortImg(n_id, ni_pos);
+		return this.model('news').updSortImg(n_id, file_pos);
 	}
 
 	/**

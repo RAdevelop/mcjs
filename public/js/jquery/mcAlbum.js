@@ -120,7 +120,7 @@
 			var imgSrc = (img["previews"] && img["previews"]["1024_768"] ? img["previews"]["1024_768"] : '/_0.gif');
 			var origSrc = (img["previews"] && img["previews"]["orig"] ? img["previews"]["orig"] : null);
 
-			var ai_text = (img["ai_text"]||'').htmlspecialchars(img["ai_text"]||'');
+			var f_text = (img["f_text"]||'').htmlspecialchars(img["f_text"]||'');
 
 			var htmlDialog = '';
 			htmlDialog += '<div class="modal " id="'+options.id+'" tabindex="-1" role="dialog" aria-labelledby="'+options.id+'">';
@@ -165,11 +165,11 @@
 					htmlDialog += '<h5>'+$albumName.text()+'</h5>';
 			if (options.is_owner)
 			{
-				htmlDialog += '<textarea id="imageText" placeholder="укажите описание фотографии">'+ai_text+'</textarea>';
+				htmlDialog += '<textarea id="imageText" placeholder="укажите описание фотографии">'+f_text+'</textarea>';
 			}
 			else
 			{
-				htmlDialog += '<div>'+img["ai_text"]+'</div>';
+				htmlDialog += '<div>'+img["f_text"]+'</div>';
 			}
 
 				htmlDialog += 'imageModalContentimageModalContent imageModalContent';
@@ -189,8 +189,8 @@
 		{
 			var postData = {
 				"btn_save_album": "upd_img_text"
-				,"t_ai_text": $text.val()
-				,"i_ai_id": imgData["ai_id"]
+				,"t_f_text": $text.val()
+				,"i_f_id": imgData["f_id"]
 				,"i_a_id": imgData["a_id"]
 			};
 
@@ -204,8 +204,8 @@
 				{
 					if (!resData["formError"] || !resData["formError"]["error"])
 					{
-						var text = resData["t_ai_text"];
-						updImg(imgData["ai_id"], {"ai_text": text});
+						var text = resData["t_f_text"];
+						updImg(imgData["f_id"], {"f_text": text});
 						$text.val( text);
 					}
 				})
@@ -233,7 +233,7 @@
 								var  postData = {
 									'btn_save_album': 'del_img',
 									'i_a_id': options.album.a_id,
-									'i_ai_id': img["ai_id"]
+									'i_f_id': img["f_id"]
 								};
 
 								$.ajax({
@@ -254,7 +254,7 @@
 											imgCnt = (!imgCnt ? 0 : imgCnt);
 											$(options.albumName).parent().find('.mediaImgCnt').text(imgCnt);
 
-											updImg(img["ai_id"]);//удалим
+											updImg(img["f_id"]);//удалим
 										}
 									})
 									.fail(function(resData)
@@ -460,12 +460,12 @@
 
 			$modal.find('#btn_img_map').attr('disabled',  true);
 
-			if (img["ai_latitude"] && img["ai_longitude"] && window["McMap"])
+			if (img["f_latitude"] && img["f_longitude"] && window["McMap"])
 			{
 				$modal.find('#btn_img_map').attr('disabled',  false);
 
 				var mapState = {
-					center: [img["ai_latitude"], img["ai_longitude"]]
+					center: [img["f_latitude"], img["f_longitude"]]
 					, controls: ["zoomControl"]
 					, zoom: 16
 				};
@@ -491,13 +491,13 @@
 			//$modal.on('click', 'btn_img_map', function (event){});
 		}
 
-		function getImg(ai_id)
+		function getImg(f_id)
 		{
 			var img = null;
 			var i;
 			for(i in MCJS["albumImages"])
 			{
-				if (MCJS["albumImages"][i].hasOwnProperty("ai_id") && MCJS["albumImages"][i]["ai_id"] == ai_id)
+				if (MCJS["albumImages"][i].hasOwnProperty("f_id") && MCJS["albumImages"][i]["f_id"] == f_id)
 				{
 					img = MCJS["albumImages"][i];
 					break;
@@ -509,20 +509,20 @@
 		/**
 		 * обновялем данные указанной фотки в массиве фоток MCJS["albumImages"]
 		 *
-		 * @param ai_id
+		 * @param f_id
 		 * @param data
 		 * @returns {boolean}
 		 */
-		function updImg(ai_id, data)
+		function updImg(f_id, data)
 		{
 			data = data || {};
 			var i;
 			for(i in MCJS["albumImages"])
 			{
-				if ( !(MCJS["albumImages"][i].hasOwnProperty("ai_id") && MCJS["albumImages"][i]["ai_id"] == ai_id))
+				if ( !(MCJS["albumImages"][i].hasOwnProperty("f_id") && MCJS["albumImages"][i]["f_id"] == f_id))
 					continue;
 
-				if (!data["ai_id"])
+				if (!data["f_id"])
 				{
 					MCJS["albumImages"].splice(i, 1);
 					return true;
@@ -545,7 +545,7 @@
 
 			if (!img) return;
 
-			options.id = '_album_img_dialog_'+img["ai_id"];
+			options.id = '_album_img_dialog_'+img["f_id"];
 
 			$(imageDialog(img, options))
 				.appendTo('body')
@@ -579,7 +579,7 @@
 			{
 				image = filesUploaded[i];
 				imgSrc = (image["previews"] && image["previews"]["512_384"] ? image["previews"]["512_384"] : '/_0.gif');
-				html = '<div class="image"><img src="'+imgSrc+'" alt="'+image["ai_text"]+'" data-img-id="'+image["ai_id"]+'"/></div>';
+				html = '<div class="image"><img src="'+imgSrc+'" alt="'+image["f_text"]+'" data-img-id="'+image["f_id"]+'"/></div>';
 				$albumWrapper.prepend(html);
 
 				var imgCnt = parseInt($(options.albumName).parent().find('.mediaImgCnt').text(), 10);
@@ -589,29 +589,29 @@
 				MCJS["albumImages"].unshift(image);
 			}
 		}
-
+		
 		if (options.sortable)
 		{
 			$albumWrapper.sortable({
 				update: function(event, ui)//event, ui
 				{
 					$( ui.item[0] ).one('click', function(e){ e.stopImmediatePropagation(); } );
-
+					
 					var imgPos = [];
 					$(options.albumImages +' img').each(function (i, item)
 					{
 						imgPos.push($(item).attr("data-img-id"));
 					});
-
+					
 					if (!imgPos.length)
 						return;
-
+					
 					var postData = {
 						"btn_save_album": "sort_img",
 						"i_a_id": options.album.a_id,
-						"ai_pos": imgPos
+						"file_pos": imgPos
 					};
-
+					
 					$.ajax({
 						url: options.uri,
 						method: "POST",

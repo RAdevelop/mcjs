@@ -146,7 +146,7 @@ class Photo extends User
 				return this._updAlbum(u_id, a_type_id, a_id, a_name, a_alias, a_text);
 			});
 	}
-
+	
 	addProfilePhoto(u_id, fileData)
 	{
 		return this.createAlbumProfile(u_id)
@@ -156,10 +156,10 @@ class Photo extends User
 					.then((res) =>
 					{
 						fileData["u_id"] = u_id;
-						fileData["ai_id"] = res['insertId'];
+						fileData["f_id"] = res['insertId'];
 						fileData["a_id"] = a_id;
-						fileData["ai_pos"] = "0";
-
+						fileData["f_pos"] = "0";
+						
 						return Promise.resolve(fileData);
 					});
 			});
@@ -177,8 +177,8 @@ class Photo extends User
 		return this._insImage(fileData["a_id"], u_id)
 		.then((res) => {
 			fileData["u_id"] = u_id;
-			fileData["ai_pos"] = "0";
-			fileData["ai_id"] = res['insertId'];
+			fileData["f_pos"] = "0";
+			fileData["f_id"] = res['insertId'];
 			return Promise.resolve(fileData);
 		});
 	}
@@ -196,78 +196,83 @@ class Photo extends User
 	_insImage(a_id, u_id)
 	{
 		let now_ts = Moment().unix();
-		let sql = `INSERT INTO album_image (a_id, u_id, ai_create_ts, ai_update_ts)
+		let sql = `INSERT INTO album_image (a_id, u_id, f_create_ts, f_update_ts)
 			VALUES (?, ?, ?, ?);`;
-
+		
 		return this.constructor.conn().ins(sql, [a_id, u_id, now_ts, now_ts]);
 	}
-
+	
 	/**
 	 * обновление данных о фото после его загрузки на сервер
 	 *
 	 * @param u_id
 	 * @param a_id
-	 * @param ai_id
-	 * @param ai_latitude
-	 * @param ai_longitude
-	 * @param ai_text
-	 * @param ai_dir
-	 * @param ai_name
+	 * @param f_id
+	 * @param f_latitude
+	 * @param f_longitude
+	 * @param f_text
+	 * @param f_dir
+	 * @param f_name
+	 * @param f_type
 	 * @param posUpd
-	 * @param ai_profile
+	 * @param f_profile
 	 * @returns {Promise}
 	 */
-	updImage(u_id, a_id, ai_id, ai_latitude, ai_longitude, ai_text, ai_dir, ai_name, posUpd = true, ai_profile = 0)
+	updImage(u_id, a_id, f_id, f_latitude, f_longitude, f_text, f_dir, f_name, f_type, posUpd = true, f_profile = 0)
 	{
 		posUpd = (posUpd ? 1 : 0);
-		let sql = `CALL album_image_update(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-		let sqlData = [u_id, a_id, ai_id, ai_latitude, ai_longitude, ai_text, ai_dir, ai_name, ai_profile, posUpd];
-
+		let sql = `CALL album_image_update(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+		let sqlData = [u_id, a_id, f_id, f_latitude, f_longitude, f_text, f_dir, f_name, f_type, f_profile, posUpd];
+		
+		/*console.log(sql);
+		console.log(sqlData);*/
+		
 		return this.constructor.conn().call(sql, sqlData)
 			.then(() => 
 			{
-				return Promise.resolve(ai_id);
+				return Promise.resolve(f_id);
 			});
 	}
-
+	
 	/**
 	 * удаление фото из БД
 	 *
 	 * @param u_id
 	 * @param a_id
-	 * @param ai_id
+	 * @param f_id
 	 * @returns {Promise}
 	 */
-	delImage(u_id, a_id, ai_id)
+	delImage(u_id, a_id, f_id)
 	{
 		let sql = `CALL album_image_delete(?, ?, ?, @is_del);
 		SELECT @is_del AS is_del FROM DUAL;`;
-
-		return this.constructor.conn().multis(sql, [u_id, a_id, ai_id])
-			.then((res) => {
-
+		
+		return this.constructor.conn().multis(sql, [u_id, a_id, f_id])
+			.then((res) => 
+			{
 				let is_del = (res[1] && res[1]["is_del"] ? res[1]["is_del"] : 0);
 				return Promise.resolve(is_del);
 			});
 	}
-
+	
 	/***
 	 * получаем данные для указанной фотографии пользователя
 	 *
 	 * @param u_id
-	 * @param ai_id
+	 * @param f_id
 	 */
-	getImage(u_id, ai_id)
+	getImage(u_id, f_id)
 	{
 		let sql = `SELECT * 
 		FROM album_image AS ai
 		JOIN album AS a ON (a.a_id = ai.a_id AND a.u_id = ?)
 		JOIN album_type AS t ON (t.a_type_id = a.a_type_id)
-		WHERE ai.ai_id = ? AND ai.u_id = ?`;
-
-		u_id = parseInt(u_id, 10);
-		ai_id = parseInt(ai_id, 10);
-		return this.constructor.conn().sRow(sql, [u_id, ai_id, u_id]);
+		WHERE ai.f_id = ? AND ai.u_id = ?`;
+		
+		u_id = parseInt(u_id, 10)||0;
+		f_id = parseInt(f_id, 10)||0;
+		
+		return this.constructor.conn().sRow(sql, [u_id, f_id, u_id]);
 	}
 
 	/**
@@ -296,60 +301,60 @@ class Photo extends User
 	 */
 	getAlbumList(u_id, offset = 0, limit = 10)
 	{
-		offset  = parseInt(offset, 10)  || 0;
-		limit   = parseInt(limit, 10)   || 10;
-		u_id    = parseInt(u_id, 10);
-
-		let sql = `SELECT a.a_id, a.u_id, a.a_type_id, a.a_name, a.a_alias, a.a_text, a.a_img_cnt, 
+		offset	= parseInt(offset, 10)	|| 0;
+		limit	= parseInt(limit, 10)	|| 10;
+		u_id	= parseInt(u_id, 10)	|| 0;
+		
+		let sql = `SELECT a.a_id, a.u_id, a.a_type_id, a.a_name, a.a_alias, a.a_text, a.file_cnt, 
 		a.a_create_ts, a.a_update_ts, t.a_type_alias
 		, FROM_UNIXTIME(a.a_create_ts, "%d-%m-%Y") AS dt_create_ts
 		,IF(t.a_type_alias = ?, 1, 0) AS a_profile
 		,IF(t.a_type_alias = ?, 1, 0) AS a_named
-		,ai.ai_id, ai.ai_latitude, ai.ai_longitude, ai.ai_dir
+		,ai.f_id, ai.f_latitude, ai.f_longitude, ai.f_dir, ai.f_type
 		FROM (SELECT NULL) AS z
 		JOIN album AS a ON (a.u_id = ?)
 		JOIN album_type AS t ON (t.a_type_id = a.a_type_id)
-		LEFT JOIN album_image AS ai ON (ai.a_id = a.a_id AND ai.u_id = a.u_id AND ai.ai_pos = ?)
+		LEFT JOIN album_image AS ai ON (ai.a_id = a.a_id AND ai.u_id = a.u_id AND ai.f_pos = ? AND ai.f_type = 'image')
 		ORDER BY a.a_update_ts DESC
 		LIMIT ${limit} OFFSET ${offset}`;
-
+		
 		//console.log(sql, [this.constructor.albumProfile, this.constructor.albumNamed,u_id, 0]);
-
+		
 		return this.constructor.conn()
 			.s(sql, [this.constructor.albumProfile, this.constructor.albumNamed,u_id, 0]);
 	}
-
+	
 	getAlbumListByIds(a_ids)
 	{
 		//return Promise.resolve(null);
-
-		let sql = `SELECT a.a_id, a.u_id, a.a_type_id, a.a_name, a.a_alias, a.a_text, a.a_img_cnt, 
+		
+		let sql = `SELECT a.a_id, a.u_id, a.a_type_id, a.a_name, a.a_alias, a.a_text, a.file_cnt, 
 		a.a_create_ts, a.a_update_ts, t.a_type_alias
 		, FROM_UNIXTIME(a.a_create_ts, "%d-%m-%Y") AS dt_create_ts
 		,IF(t.a_type_alias = ?, 1, 0) AS a_profile
 		,IF(t.a_type_alias = ?, 1, 0) AS a_named
-		,ai.ai_id, ai.ai_latitude, ai.ai_longitude, ai.ai_dir
+		,ai.f_id, ai.f_latitude, ai.f_longitude, ai.f_dir, ai.f_type
 		FROM (SELECT NULL) AS z
 		JOIN album_type AS t ON (t.a_type_alias = ?)
 		JOIN album AS a ON (a.a_id IN(${this.constructor.placeHoldersForIn(a_ids)}) AND t.a_type_id = a.a_type_id)
-		JOIN album_image AS ai ON (ai.a_id = a.a_id AND ai.u_id = a.u_id AND ai.ai_pos = ?)
+		JOIN album_image AS ai ON (ai.a_id = a.a_id AND ai.u_id = a.u_id AND ai.f_pos = ? AND ai.f_type = 'image')
 		ORDER BY a.a_create_ts DESC`;
-
+		
 		let sqlData = [].concat(a_ids);
+		
 		sqlData.unshift(
 			this.constructor.albumProfile,
 			this.constructor.albumNamed,
 			this.constructor.albumNamed
 		);
 		sqlData.push(0);
-
-
+		
 		/*console.log(sql);
 		console.log(sqlData);*/
-
+		
 		return this.constructor.conn().ps(sql, sqlData);
 	}
-
+	
 	/**
 	 * выбранный альбом пользователя
 	 * @param u_id
@@ -364,7 +369,7 @@ class Photo extends User
 		if (!!u_id === false || !!a_id === false)
 			return Promise.resolve(null);
 
-		let sql = `SELECT a.a_id, a.u_id, a.a_type_id, a.a_name, a.a_alias, a.a_text, a.a_img_cnt, a.a_create_ts
+		let sql = `SELECT a.a_id, a.u_id, a.a_type_id, a.a_name, a.a_alias, a.a_text, a.file_cnt, a.a_create_ts
 		, a.a_update_ts, t.a_type_alias, FROM_UNIXTIME(a.a_create_ts, "%d-%m-%Y") AS dt_create_ts
 		, IF(t.a_type_alias = ?, 1, 0) AS a_profile, IF(t.a_type_alias = ?, 1, 0) AS a_named
 		FROM (SELECT NULL) AS z
@@ -384,7 +389,7 @@ class Photo extends User
 	 */
 	countAlbumImages(u_id, a_id)
 	{
-		let sql = `SELECT COUNT(ai_id) AS cnt FROM album_image WHERE a_id = ? AND u_id = ?;`;
+		let sql = `SELECT COUNT(f_id) AS cnt FROM album_image WHERE a_id = ? AND u_id = ?;`;
 
 		a_id = parseInt(a_id, 10);
 		u_id = parseInt(u_id, 10);
@@ -407,26 +412,26 @@ class Photo extends User
 	{
 		offset  = parseInt(offset, 10) || 0;
 		limit   = parseInt(limit, 10) || 10;
-		u_id    = parseInt(u_id, 10);
-		a_id    = parseInt(a_id, 10);
-
+		u_id    = parseInt(u_id, 10) || 0;
+		a_id    = parseInt(a_id, 10) || 0;
+		
 		/*console.log('limit = ', limit);
 		console.log('offset = ', offset);*/
-
-		let sql = `SELECT a.a_id, a.u_id, ai.ai_id, ai.ai_create_ts, ai.ai_update_ts, ai.ai_name, ai.ai_text
-		, ai.ai_pos, ai.ai_latitude, ai.ai_longitude, ai.ai_dir
+		
+		let sql = `SELECT a.a_id, a.u_id, ai.f_id, ai.f_create_ts, ai.f_update_ts, ai.f_name, ai.f_text
+		, ai.f_pos, ai.f_latitude, ai.f_longitude, ai.f_dir, ai.f_type
 		 FROM (SELECT NULL) AS z
 		 JOIN album AS a ON (a.a_id = ? AND a.u_id = ?)
 		 JOIN album_type AS t ON (t.a_type_id = a.a_type_id)
-		 JOIN album_image AS ai ON (ai.a_id = a.a_id)
-		 ORDER BY ai.ai_pos
+		 JOIN album_image AS ai ON (ai.a_id = a.a_id AND ai.f_type = 'image')
+		 ORDER BY ai.f_pos
 		 LIMIT ${limit} OFFSET ${offset};`;
-
+		
 		//console.log(sql);
 		return this.constructor.conn().s(sql, [a_id, u_id]);
 	}
 
-	albumImageReorder(u_id, a_id)
+	/*albumImageReorder(u_id, a_id)
 	{
 		//return Promise.resolve(true);
 
@@ -437,25 +442,24 @@ class Photo extends User
 			{
 				return Promise.resolve(true);
 			});
-	}
-
+	}*/
 	/**
 	 * обновляем описание фотографии
 	 *
 	 * @param u_id
 	 * @param a_id
-	 * @param ai_id
-	 * @param ai_text
+	 * @param f_id
+	 * @param f_text
 	 */
-	updImgText(u_id, a_id, ai_id, ai_text)
+	updImgText(u_id, a_id, f_id, f_text)
 	{
-		let sql = `UPDATE album_image SET ai_text = ? 
-		WHERE ai_id = ? AND a_id = ? AND u_id = ?`;
+		let sql = `UPDATE album_image SET f_text = ? 
+		WHERE f_id = ? AND a_id = ? AND u_id = ?`;
 
 		u_id = parseInt(u_id, 10);
 		a_id = parseInt(a_id, 10);
-		ai_id = parseInt(ai_id, 10);
-		return this.constructor.conn().upd(sql, [ai_text, ai_id, a_id, u_id]);
+		f_id = parseInt(f_id, 10);
+		return this.constructor.conn().upd(sql, [f_text, f_id, a_id, u_id]);
 	}
 
 	/**
@@ -463,34 +467,39 @@ class Photo extends User
 	 *
 	 * @param u_id
 	 * @param a_id
-	 * @param ai_pos - id фоток
+	 * @param file_pos - id фоток
 	 * @returns {Promise}
 	 */
-	updSortImg(u_id, a_id, ai_pos)
+	updSortImg(u_id, a_id, file_pos)
 	{
-		u_id = parseInt(u_id, 10);
-		a_id = parseInt(a_id, 10);
+		u_id = parseInt(u_id, 10)||0;
+		a_id = parseInt(a_id, 10)||0;
+		
 		return this.countAlbumImages(u_id, a_id)
 			.then((cnt) =>
 			{
-				cnt = parseInt(cnt, 10);
+				cnt = parseInt(cnt, 10)||0;
 				cnt = (!cnt ? 0 : cnt);
-				if (!cnt || !ai_pos.length || cnt < ai_pos.length)
+				if (!cnt || !file_pos.length || cnt < file_pos.length)
 					return Promise.resolve();
-
+				
 				let setOrdi = [];
 				let setData = [];
-
-				ai_pos.forEach((ai_id, i) => {
-					setOrdi.push("IF(ai_id = ?, ? ");
-					setData.push(ai_id, i);
+				
+				file_pos.forEach((f_id, i) => 
+				{
+					setOrdi.push("IF(f_id = ?, ? ");
+					setData.push(f_id, i);
 				});
 
-				let sql = `UPDATE album_image SET ai_pos = ${setOrdi.join(',')}, ai_pos ${')'.repeat(setOrdi.length)}
+				let sql = `UPDATE album_image SET f_pos = ${setOrdi.join(',')}, f_pos ${')'.repeat(setOrdi.length)}
 				 WHERE a_id = ? AND u_id = ?`;
-
+				
 				setData.push(a_id, u_id);
-
+				
+				/*console.log(sql);
+				console.log(setData);*/
+				
 				//return Promise.resolve();
 				return this.constructor.conn().upd(sql, setData);
 			});

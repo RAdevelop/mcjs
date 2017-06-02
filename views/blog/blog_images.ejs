@@ -1,8 +1,22 @@
 <div class="imagesWrapper">
 <div class="imagesContainer">
-<% blogImages.forEach(function (image)
+<% Object.keys(blogImages).forEach(function (fileType)
 {
-	%><div class="imageItem"><img src="<%=image["previews"]["512_384"]%>" class="image" data-img-id="<%=image["bi_id"]%>"/></div><%
+	blogImages[fileType].forEach(function (file)
+	{
+	%><div class="imageItem"><%
+		switch(file['f_type'])
+		{
+		case 'image':
+		%><img src="<%=file["previews"]["512_384"]%>" class="image" data-img-type="image" data-img-id="<%=file["f_id"]%>"/><%
+			break;
+
+		case 'application':
+		%><a target="_blank" href="<%=file["previews"]["orig"]%>" class="image" data-img-type="application" data-img-id="<%=file["f_id"]%>"><%=file["f_name"]%></a><%
+			break;
+		}
+		%></div><%
+	});
 });%>
 </div>
 </div>

@@ -109,12 +109,12 @@
 			hh = (hh.toString().length < 2 ? '0'+hh : hh);
 			mm = (mm.toString().length < 2 ? '0'+mm : mm);
 			ss = (ss.toString().length < 2 ? '0'+ss : ss);
-
+			
 			var dateVal = [dateText, [hh, mm, ss].join(':')];
 			$(this).val(dateVal.join(' '));
 		}
 	});
-
+	
 	var newsTextTinymce = McTinymce(
 			{
 				selector: '#t_n_text'
@@ -173,7 +173,7 @@
 			{
 				image = filesUploaded[i];
 				imgSrc = (image["previews"] && image["previews"]["256_192"] ? image["previews"]["256_192"] : '/_0.gif');
-				var img = '<img src="'+imgSrc+'" alt="" class="image" data-img-id="'+image["ni_id"]+'"/>';
+				var img = '<img src="'+imgSrc+'" alt="" class="image" data-img-id="'+image["f_id"]+'"/>';
 				
 				html = '<div class="imageItem">';
 				html += imgToolsHtml($(img));
@@ -253,7 +253,7 @@
 			var postData = {
 				"btn_save_news": "sort_img",
 				"i_news_id": '<%=news["n_id"]%>',
-				"ni_pos": imgPos
+				"file_pos": imgPos
 			};
 			
 			$.ajax({
@@ -301,7 +301,7 @@
 					var postData = {
 						"btn_save_news": "del_img",
 						"i_news_id": '<%=news["n_id"]%>',
-						"i_ni_id": $this.data('imgId')
+						"i_f_id": $this.data('imgId')
 					};
 					
 					$.ajax({
@@ -314,7 +314,7 @@
 					{
 						$(editor.getBody()).find('img.image[data-img-id="'+$this.data('imgId')+'"]').parent().remove();
 						McTinymce.clearEmptyTags(editor);
-
+						
 						$this.parents('.imageItem').remove();
 					})
 					.fail(function(resData)

@@ -625,15 +625,15 @@ class File
 	 *
 	 * @param sizeParams
 	 * @param obj
-	 * @param obj_dir
 	 * @param spread
-	 * @param obj_key_name
-	 * @param obj_type
 	 * @returns {Object}
 	 */
-	static getPreviews(sizeParams, obj, obj_dir, spread = false, obj_key_name = null, obj_type = null)
+	static getPreviews(sizeParams, obj, split_by_type = true, spread = false)
 	{
 		let previews = [];
+		let obj_dir = 'f_dir';
+		let obj_type = 'f_type';
+		let obj_key_name = 'f_name';
 		//if (!obj["previews"]) obj["previews"] = {};
 		
 		let single = false;
@@ -642,6 +642,8 @@ class File
 			obj = [obj];
 			single = true;
 		}
+		
+		let obj_as_type = {};
 		
 		obj.forEach((item)=>
 		{
@@ -664,24 +666,38 @@ class File
 				}
 				item["previews"]['orig'] = item[obj_dir] + '/orig/' + item[obj_key_name];
 			}
+			
+			if (!single && split_by_type)
+			{
+				if (!!obj_as_type[item[obj_type]] === false)
+				obj_as_type[item[obj_type]] = [];
+				
+				obj_as_type[item[obj_type]].push(item);
+			}
 		});
 		
 		if (single)
+		{
 			obj = obj.shift();
-		
+		}
+		else if (split_by_type)
+		{
+			obj = obj_as_type;
+			obj_as_type = null;
+		}
 		return {obj: obj, previews: previews};
 	}
 	
-	static getAlbumUri(a_id)
+	static getAlbumUri(obj_id)
 	{
-		return Math.floor(Math.abs(a_id)/20000) + '/' + a_id;
-		//return 'part_' + Math.floor(Math.abs(a_id)/20000) + '/' + a_id;
+		return Math.floor(Math.abs(obj_id)/20000) + '/' + obj_id;
+		//return 'part_' + Math.floor(Math.abs(obj_id)/20000) + '/' + obj_id;
 	}
 
-	static getImageUri(a_id, ai_id)
+	static getImageUri(obj_id, f_id)
 	{
-		return File.getAlbumUri(a_id) + '/' + ai_id + '/' + Crypto.createHash('md5').update(a_id+''+ai_id).digest("hex");
-		//return 'part_' + Math.floor(Math.abs(a_id)/20000) + '/' + a_id;
+		return File.getAlbumUri(obj_id) + '/' + f_id + '/' + Crypto.createHash('md5').update(obj_id+''+f_id).digest("hex");
+		//return 'part_' + Math.floor(Math.abs(obj_id)/20000) + '/' + obj_id;
 	}
 
 	static makeDir(dir, mode = 0o755)

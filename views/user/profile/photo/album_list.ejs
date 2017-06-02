@@ -13,7 +13,7 @@ albums.forEach(function (album)
  if (addUsersAva){ let user_owner = album['user']; %><%- include ../../owner.ejs %><% } %>
 	<a class="mediaImg" href="<%=albumHref%>"><%-img%></a>
 	<div class="mediaTools">
-		<span class="badge"><i class="fa fa-fw fa-camera"></i> <%=(album["a_img_cnt"] > 99 ? '99+' : album["a_img_cnt"])%>
+		<span class="badge"><i class="fa fa-fw fa-camera"></i> <%=(album["file_cnt"] > 99 ? '99+' : album["file_cnt"])%>
 		<i class="fa fa-fw fa-calendar"></i> <%=album["dt_create_ts"]%></span>
 	</div>
 	<a class="mediaTitle" href="<%=albumHref%>" title="<%=album["a_name"]%>">

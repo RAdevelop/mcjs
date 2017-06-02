@@ -141,8 +141,8 @@ function updateText()
 function insertFiles()
 {
 	let sql = `SELECT
-	f_id AS ni_id, po_id AS n_id, UNIX_TIMESTAMP(f_date) AS ni_create_ts, UNIX_TIMESTAMP(f_date) AS ni_update_ts
-	, '' AS ni_dir, IF(f_position-1 < 0, 0, f_position-1) AS ni_pos, REPLACE(REPLACE(REPLACE(f_name, ':', ''), ',', ''), '+', ' ') AS ni_name
+	f_id AS f_id, po_id AS n_id, UNIX_TIMESTAMP(f_date) AS f_create_ts, UNIX_TIMESTAMP(f_date) AS f_update_ts
+	, '' AS f_dir, IF(f_position-1 < 0, 0, f_position-1) AS f_pos, REPLACE(REPLACE(REPLACE(f_name, ':', ''), ',', ''), '+', ' ') AS f_name
 	, f_path_original AS file_from
 	FROM news_file
 	WHERE f_type = 'image'`;
@@ -157,22 +157,22 @@ function insertFiles()
 			let dir = '';
 			list.forEach((file)=>
 			{
-				dir = dir_prefix+FileUpload.getImageUri(file['n_id'], file['ni_id']);
+				dir = dir_prefix+FileUpload.getImageUri(file['n_id'], file['f_id']);
 				dir_list.push({
 					dir:                full_path_to_dir+dir+'/orig',
 					fullPathMainDir:    full_path_to_dir+dir,
 					webFilePath:        dir+'/orig',
 					file_from:          old_path_to_dir+file['file_from'],
-					file_to:            full_path_to_dir+dir+'/orig/'+file['ni_name']
+					file_to:            full_path_to_dir+dir+'/orig/'+file['f_name']
 				});
 				sqlIns.push(sVals);
-				sqlData.push(file['ni_id'],file['n_id'],file['ni_create_ts'],file['ni_update_ts'], dir,file['ni_pos'],file['ni_name']);
+				sqlData.push(file['f_id'],file['n_id'],file['f_create_ts'],file['f_update_ts'], dir,file['f_pos'],file['f_name']);
 			});
 
 			sqlIns = sqlIns.join(',');
 
 			let sql = `INSERT INTO news_file
-					(ni_id, n_id, ni_create_ts, ni_update_ts, ni_dir, ni_pos, ni_name) 
+					(f_id, n_id, f_create_ts, f_update_ts, f_dir, f_pos, f_name) 
 					VALUES ${sqlIns}`;
 
 			/*console.log(sql);

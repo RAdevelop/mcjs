@@ -1,5 +1,5 @@
-<h4><span class="label label-default displayInlineBlock"><i class="fa fa-fw fa-camera"></i>&nbsp;<span class="mediaImgCnt"><%=(album["a_img_cnt"] > 99 ? '99+' : album["a_img_cnt"])%></span>&nbsp;<span><i class="fa fa-fw fa-calendar"></i> <%=album["dt_create_ts"]%></span></span>&nbsp;<span id="a_name"><%=album["a_name"]%></span></h4><%
-
+<h4><span class="label label-default displayInlineBlock"><i class="fa fa-fw fa-camera"></i>&nbsp;<span class="mediaImgCnt"><%=(album["file_cnt"] > 99 ? '99+' : album["file_cnt"])%></span>&nbsp;<span><i class="fa fa-fw fa-calendar"></i> <%=album["dt_create_ts"]%></span></span>&nbsp;<span id="a_name"><%=album["a_name"]%></span></h4><%
+	
 if (album['kw_names'].length>0){%>
 <div class="blog-info_about_tags"><i class="fa fa-tags" aria-hidden="true"></i>
 	<%-(album['kw_names'].map(function(kw_name){return `<a rel="tag" class="line" href="${_reqBaseUrl}/tag/${kw_name}/">${kw_name}</a>`;}).join(' '))%>
@@ -9,12 +9,16 @@ if (album["a_text_array"].length)
 	<div id="a_text"><p><%-album["a_text_array"].join(`</p><p>`)%></p></div>
 <%}%>
 <div class="imageList albumImages">
-<% album["images"].forEach(function (image)
+<% Object.keys(album["images"]).forEach(function (fileType)
 {
-	let imgSrc = (image["previews"] && image["previews"]["512_384"] ? image["previews"]["512_384"] : '/_0.gif');
+	album["images"][fileType].forEach(function(file)
+	{
+		let imgSrc = (file["previews"] && file["previews"]["512_384"] ? file["previews"]["512_384"] : '/_0.gif');
+		%>
+	<div class="image">
+		<img src="<%=imgSrc%>" alt="<%=file["f_text"]%>" data-img-id="<%=file["f_id"]%>" data-img-type="image"/>
+	</div><%
+	});
 %>
-<div class="image">
-	<img src="<%=imgSrc%>" alt="<%=image["ai_text"]%>" data-img-id="<%=image["ai_id"]%>"/>
-</div>
 <%})%>
 </div>

@@ -36,7 +36,7 @@ class VideoAlbums extends Base
 						albums.forEach((album) =>
 						{
 							album["va_is_owner"] = (owner_u_id == u_id);
-							//Object.assign(album, FileUpload.getPreviews(sizeParams, album, "ai_dir")["obj"]);
+							//Object.assign(album, FileUpload.getPreviews(sizeParams, album, "f_dir")["obj"]);
 						});
 
 						albums["va_cnt"] = va_cnt;

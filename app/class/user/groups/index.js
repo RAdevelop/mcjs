@@ -122,18 +122,15 @@ class UserGroups extends Base
 	getUsersGroups(u_id)
 	{
 		return this.model('user/groups').getUsersGroups(u_id)
-			.then((g_list) => {
-
+			.then((g_list) => 
+			{
 				let groups = {};
-
-				g_list.forEach((g) => {
-					groups[g.ug_path] = g;
-				});
-
+				
+				g_list.forEach((g) => { groups[g.ug_path] = g; });
 				return Promise.resolve(groups);
 			});
 	}
-
+	
 	isRootAdmin(u_id)
 	{
 		return this.getClass('user/groups').getUsersGroups(u_id)

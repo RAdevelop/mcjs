@@ -15,12 +15,12 @@
 	var news = MCJS["newsData"] || {};
 
 	$('mcImage').mcImage({
-		imgFieldId: "ni_id"//название поля id у картинки в json'e
+		imgFieldId: "f_id"//название поля id у картинки в json'e
 		, albumImages: '.newsData img.image' //селектор для списка картинок
 		, albumImagesMain: '.newsData .newsText img.image'
 		, albumImagesSub: '.newsData .imagesWrapper .imagesContainer img.image'
 		, albumImagesSubWrapper: '.newsData .imagesWrapper'
-		, jsonImageList: news["newsImages"] || {}
+		, jsonImageList: news["newsImages"]['image'] || []
 		, jsPreviewsList: news["newsImagesPreviews"] || []
 	});
 })(jQuery);

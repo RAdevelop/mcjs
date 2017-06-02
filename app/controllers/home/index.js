@@ -28,7 +28,7 @@ class Home extends CtrlMain
 			}
 		};
 	}
-
+	
 	/**
 	 *
 	 * @returns {Promise}
@@ -39,11 +39,11 @@ class Home extends CtrlMain
 		
 		let startDate = new Date();
 		let startDateTs = startDate.getTime()/1000;
-
+		
 		//let endDate = Moment(startDateTs).add(1, 'month').unix();
 		let endDateTs = Moment(startDateTs*1000).add(1, 'month').unix();
 		//let endDateTs = endDate.getTime()/1000;
-
+		
 		return Promise.join(
 			this.getUser(this.getUserId()),
 			this.getClass('events').getEvents(startDateTs, endDateTs),
@@ -63,7 +63,7 @@ class Home extends CtrlMain
 				this.view.setTplData(tplFile, tplData);
 				//this.view.addPartialData("user/left", {user: userData});
 				//this.view.addPartialData("user/right", {title: 'right_col'});
-
+				
 				return Promise.resolve(null);
 			}
 		);

@@ -170,21 +170,21 @@ class Events extends BaseModel
 	getById(e_id)
 	{
 		e_id = parseInt(e_id, 10)||0;
-
+		
 		if (!!e_id === false)
 			return Promise.resolve(null);
-
+		
 		let sql = `SELECT e_id, e_create_ts, e_update_ts, e_start_ts, e_end_ts, e_title, e_alias, 
 		e_notice, e_text, e_address, e_location_id, e_latitude, e_longitude, e_gps_lat, e_gps_lng, e_location_pids, 
-		u_id, e_img_cnt
+		u_id, file_cnt
 		, FROM_UNIXTIME(e_start_ts, "%d-%m-%Y") AS dd_start_ts
 		, FROM_UNIXTIME(e_end_ts, "%d-%m-%Y") AS dd_end_ts
 		FROM events_list
 		WHERE e_id = ?`;
-
+		
 		return this.constructor.conn().sRow(sql, [e_id]);
 	}
-
+	
 	/**
 	 * список локаций, к которым привязаны события (включая родительские районы, города, страны..)
 	 *
@@ -255,11 +255,11 @@ class Events extends BaseModel
 			, FROM_UNIXTIME(e.e_start_ts, "%d-%m-%Y") AS dd_start_ts
 			, FROM_UNIXTIME(e.e_end_ts, "%d-%m-%Y") AS dd_end_ts
 			, e.e_location_id, e.e_latitude, e.e_longitude, e.e_gps_lat, e.e_gps_lng, e.e_location_pids
-			, e.u_id, ei.ei_id, ei.ei_latitude, ei.ei_longitude, ei.ei_dir, ei.ei_pos, ei.ei_name
+			, e.u_id, ei.f_id, ei.f_latitude, ei.f_longitude, ei.f_dir, ei.f_pos, ei.f_name, ei.f_type
 			FROM (SELECT NULL) AS z
 			JOIN events_list AS e ON(e.e_end_ts >= ? AND e.e_start_ts <= ?)
-			LEFT JOIN events_file AS ei ON(ei.e_id = e.e_id AND ei.ei_pos = 0)`;
-
+			LEFT JOIN events_file AS ei ON(ei.e_id = e.e_id AND ei.f_pos = 0 AND ei.f_type = 'image')`;
+		
 		if (l_id > 0)
 		{
 			sql += `
@@ -268,7 +268,7 @@ class Events extends BaseModel
 			l_id = parseInt(l_id, 10);
 			sqlData.push(l_id);
 		}
-
+		
 		sql += `
 		ORDER BY e.e_start_ts DESC`;
 
@@ -276,31 +276,31 @@ class Events extends BaseModel
 		console.log(sql);
 		console.log(sqlData);
 		console.log('\n');*/
-
+		
 		return this.constructor.conn().ps(sql, sqlData);
 	}
-
+	
 	getEventsByIds(e_ids)
 	{
 		if (!!e_ids.length === false)
 			return Promise.resolve(null);
-
+		
 		let sql =
 			`SELECT e.e_id, e.e_create_ts, e.e_update_ts, e.e_start_ts, e.e_end_ts, e.e_title, e.e_alias, 
 			e.e_notice, e.e_address
 			, FROM_UNIXTIME(e.e_start_ts, "%d-%m-%Y") AS dd_start_ts
 			, FROM_UNIXTIME(e.e_end_ts, "%d-%m-%Y") AS dd_end_ts
 			, e.e_location_id, e.e_latitude, e.e_longitude, e.e_gps_lat, e.e_gps_lng, e.e_location_pids
-			, e.u_id, ei.ei_id, ei.ei_latitude, ei.ei_longitude, ei.ei_dir, ei.ei_pos, ei.ei_name
+			, e.u_id, ei.f_id, ei.f_latitude, ei.f_longitude, ei.f_dir, ei.f_pos, ei.f_name, ei.f_type
 			FROM (SELECT NULL) AS z
 			JOIN events_list AS e ON(e.e_id IN(${this.constructor.placeHoldersForIn(e_ids)}))
-			LEFT JOIN events_file AS ei ON(ei.e_id = e.e_id AND ei.ei_pos = 0)
+			LEFT JOIN events_file AS ei ON(ei.e_id = e.e_id AND ei.f_pos = 0 AND ei.f_type = 'image')
 			ORDER BY e.e_start_ts DESC`;
-
+		
 		/*console.log(sql);
 		console.log(e_ids);
 		console.log('\n');*/
-
+		
 		return this.constructor.conn().ps(sql, e_ids);
 	}
 
@@ -349,7 +349,7 @@ class Events extends BaseModel
 	{
 		let now_ts = Moment().unix();
 		let sql =
-			`INSERT INTO events_file (e_id, ei_create_ts, ei_update_ts)
+			`INSERT INTO events_file (e_id, f_create_ts, f_update_ts)
 			VALUES (?, ?, ?);`;
 
 		return this.constructor.conn().ins(sql, [e_id, now_ts, now_ts]);
@@ -367,8 +367,8 @@ class Events extends BaseModel
 		return this._insImage(fileData["e_id"])
 			.then((res) => {
 				fileData["u_id"] = u_id;
-				fileData["ei_pos"] = "0";
-				fileData["ei_id"] = res['insertId'];
+				fileData["f_pos"] = "0";
+				fileData["f_id"] = res['insertId'];
 				return Promise.resolve(fileData);
 			});
 	}
@@ -377,23 +377,24 @@ class Events extends BaseModel
 	 * обновление данных о фото после его загрузки на сервер
 	 *
 	 * @param e_id
-	 * @param ei_id
-	 * @param ei_latitude
-	 * @param ei_longitude
-	 * @param ei_dir
-	 * @param ei_name
+	 * @param f_id
+	 * @param f_latitude
+	 * @param f_longitude
+	 * @param f_dir
+	 * @param f_name
+	 * @param f_type
 	 * @param posUpd
 	 * @returns {Promise}
 	 */
-	updImage(e_id, ei_id, ei_latitude, ei_longitude, ei_dir, ei_name, posUpd = true)
+	updImage(e_id, f_id, f_latitude, f_longitude, f_dir, f_name, f_type, posUpd = true)
 	{
 		posUpd = (posUpd ? 1 : 0);
-		let sql = "CALL events_file_update(?, ?, ?, ?, ?, ?, ?)";
-		let sqlData = [e_id, ei_id, ei_latitude, ei_longitude, ei_dir, ei_name, posUpd];
+		let sql = "CALL events_file_update(?, ?, ?, ?, ?, ?, ?, ?)";
+		let sqlData = [e_id, f_id, f_latitude, f_longitude, f_dir, f_name, f_type, posUpd];
 
 		return this.constructor.conn().call(sql, sqlData)
 			.then(() => {
-				return Promise.resolve(ei_id);
+				return Promise.resolve(f_id);
 			});
 	}
 
@@ -401,14 +402,14 @@ class Events extends BaseModel
 	 * удаление фото из БД
 	 *
 	 * @param e_id
-	 * @param ei_id
+	 * @param f_id
 	 * @returns {Promise}
 	 */
-	delImage(e_id, ei_id)
+	delImage(e_id, f_id)
 	{
 		let sql = "CALL events_file_delete(?, ?, @is_del); SELECT @is_del AS is_del FROM DUAL;";
 
-		return this.constructor.conn().multis(sql, [e_id, ei_id])
+		return this.constructor.conn().multis(sql, [e_id, f_id])
 			.then((res) => {
 				let is_del = (res[1] && res[1]["is_del"] ? res[1]["is_del"] : 0);
 
@@ -419,18 +420,18 @@ class Events extends BaseModel
 	/***
 	 * получаем данные для указанной фотографии
 	 *
-	 * @param ei_id
+	 * @param f_id
 	 */
-	getImage(ei_id)
+	getImage(f_id)
 	{
-		let sql = `SELECT ei.ei_id, ei.e_id, ei.ei_create_ts, ei.ei_update_ts, ei.ei_latitude, ei.ei_longitude, 
-		ei.ei_dir, ei.ei_pos, ei.ei_name
+		let sql = `SELECT ei.f_id, ei.e_id, ei.f_create_ts, ei.f_update_ts, ei.f_latitude, ei.f_longitude, 
+		ei.f_dir, ei.f_pos, ei.f_name, ei.f_type
 		FROM events_file AS ei
-		WHERE ei.ei_id = ?`;
+		WHERE ei.f_id = ?`;
 		
-		ei_id = parseInt(ei_id, 10)||0;
+		f_id = parseInt(f_id, 10)||0;
 		
-		return this.constructor.conn().sRow(sql, [ei_id]);
+		return this.constructor.conn().sRow(sql, [f_id]);
 	}
 
 	/***
@@ -440,14 +441,14 @@ class Events extends BaseModel
 	 */
 	getImageList(e_id)
 	{
-		let sql = `SELECT ei.ei_id, ei.e_id, ei.ei_create_ts, ei.ei_update_ts, ei.ei_latitude, ei.ei_longitude, 
-			ei.ei_dir, ei.ei_pos, ei.ei_name
+		let sql = `SELECT ei.f_id, ei.e_id, ei.f_create_ts, ei.f_update_ts, ei.f_latitude, ei.f_longitude, 
+			ei.f_dir, ei.f_pos, ei.f_name, ei.f_type
 			FROM events_file AS ei
 			WHERE ei.e_id = ?
-			GROUP BY ei.ei_pos
-			ORDER BY ei.ei_pos`;
-
-		e_id = parseInt(e_id, 10);
+			-- GROUP BY ei.f_pos, ei.f_type
+			ORDER BY ei.f_type, ei.f_pos`;
+		
+		e_id = parseInt(e_id, 10)||0;
 		return this.constructor.conn().s(sql, [e_id]);
 	}
 
@@ -459,7 +460,7 @@ class Events extends BaseModel
 	 */
 	countAlbumImages(e_id)
 	{
-		let sql = "SELECT COUNT(ei_id) AS cnt FROM events_file WHERE e_id = ?;";
+		let sql = "SELECT COUNT(f_id) AS cnt FROM events_file WHERE e_id = ?;";
 
 		e_id = parseInt(e_id, 10);
 		return this.constructor.conn().sRow(sql, [e_id])
@@ -472,34 +473,34 @@ class Events extends BaseModel
 	 * сорхранение позиций фотографий после их сортировке на клиенте
 	 *
 	 * @param e_id
-	 * @param ei_pos - id фоток
+	 * @param file_pos - id фоток
 	 * @returns {Promise}
 	 */
-	updSortImg(e_id, ei_pos = [])
+	updSortImg(e_id, file_pos = [])
 	{
 		return this.countAlbumImages(e_id)
 			.then((cnt) => {
-				cnt = parseInt(cnt, 10);
+				cnt = parseInt(cnt, 10)||0;
 				cnt = (!cnt ? 0 : cnt);
-
-				if (!cnt || !ei_pos.length || cnt < ei_pos.length)
+				
+				if (!cnt || !file_pos.length || cnt < file_pos.length)
 					return Promise.resolve(true);
-
+				
 				let setOrdi = [];
 				let setData = [];
-
-				ei_pos.forEach((ei_id, i) =>
+				
+				file_pos.forEach((f_id, i) =>
 				{
-					setOrdi.push("IF(ei_id = ?, ? ");
-					setData.push(ei_id, i);
+					setOrdi.push("IF(f_id = ?, ? ");
+					setData.push(f_id, i);
 				});
-
-				let sql = "UPDATE events_file SET ei_pos = " + setOrdi.join(',') + ', ei_pos' +')'.repeat(setOrdi.length) +
+				
+				let sql = "UPDATE events_file SET f_pos = " + setOrdi.join(',') + ', f_pos' +')'.repeat(setOrdi.length) +
 					" WHERE e_id = ? ";
-
-				e_id = parseInt(e_id, 10);
+				
+				e_id = parseInt(e_id, 10)||0;
 				setData.push(e_id);
-
+				
 				//return Promise.resolve();
 				return this.constructor.conn().upd(sql, setData);
 			});
