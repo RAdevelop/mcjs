@@ -137,16 +137,16 @@ class UploadFile extends File
 	uploadFile(uploadCb)
 	{
 		const self = this;
-
+		
 		const form = new Formidable.IncomingForm();
 		let file = null,
 			fields = {};
-
+		
 		form.keepExtensions = true;
 		form.maxFieldsSize = 4096;//2 * 1024 * 1024;
 		//form.multiples = true;
 		form.multiples = this.getUploadOpts('multiUpload');
-
+		
 		form
 			.on('error', function(err)
 			{

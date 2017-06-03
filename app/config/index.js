@@ -89,6 +89,12 @@ var config = {
 			fileMediaType: '',
 			multiUpload: false,
 			maxFileSize: 0,//Mb
+			checkLimitFile: function(file_cnt, Errors)
+			{
+				let limit = 1; //0 - то без лимита
+				if (limit > 0 && file_cnt >= limit)
+					throw new Errors(`Можно добавить не более ${limit} файлов.`);
+			},
 			tokenFields: ['i_time'],
 			sizeParams: []
 		},
@@ -100,6 +106,12 @@ var config = {
 			fileMediaType: 'application', //deprecated
 			multiUpload: true,
 			maxFileSize: 6,//Mb
+			checkLimitFile: function(file_cnt, Errors)
+			{
+				let limit = 0; //0 - то без лимита
+				if (limit > 0 && file_cnt >= limit)
+					throw new Errors(`Можно добавить не более ${limit} файлов.`);
+			},
 			tokenFields: ['i_time', 'a_id'],
 			sizeParams: [
 				{w: 1280, h: 853},
@@ -118,6 +130,12 @@ var config = {
 			fileMediaType: 'application', //deprecated
 			multiUpload: false,
 			maxFileSize: 6,//Mb
+			checkLimitFile: function(file_cnt, Errors)
+			{
+				let limit = 0; //0 - то без лимита
+				if (limit > 0 && file_cnt >= limit)
+					throw new Errors(`Можно добавить не более ${limit} файлов.`);
+			},
 			tokenFields: ['i_time', 'u_id'],
 			sizeParams: [
 				{w: 1280, h: 853},
@@ -146,6 +164,12 @@ var config = {
 			
 			multiUpload: false,
 			maxFileSize: 2048,//Mb
+			checkLimitFile: function(file_cnt, Errors)
+			{
+				let limit = 10; //0 - то без лимита
+				if (limit > 0 && file_cnt >= limit)
+					throw new Errors(`Можно добавить не более ${limit} файлов.`);
+			},
 			tokenFields: ['i_time', 'u_id'],
 			sizeParams: [
 				{w: 1280, h: 853},
@@ -166,6 +190,12 @@ var config = {
 			
 			multiUpload: false,
 			maxFileSize: 10,//Mb
+			checkLimitFile: function(file_cnt, Errors)
+			{
+				let limit = 20; //0 - то без лимита
+				if (limit > 0 && file_cnt >= limit)
+					throw new Errors(`Можно добавить не более ${limit} файлов.`);
+			},
 			sizeParams: [],
 			tokenFields: ['i_time', 'u_id']
 		},
@@ -182,6 +212,12 @@ var config = {
 			fileMediaType: 'application', //deprecated
 			multiUpload: true,
 			maxFileSize: 6,//Mb
+			checkLimitFile: function(file_cnt, Errors)
+			{
+				let limit = 20; //0 - то без лимита
+				if (limit > 0 && file_cnt >= limit)
+					throw new Errors(`Можно добавить не более ${limit} файлов.`);
+			},
 			tokenFields: ['i_time','b_id', 'u_id'],
 			sizeParams: [
 				{w: 1280, h: 853},
@@ -207,6 +243,12 @@ var config = {
 			
 			multiUpload: true,
 			maxFileSize: 6,//Mb
+			checkLimitFile: function(file_cnt, Errors)
+			{
+				let limit = 10; //0 - то без лимита
+				if (limit > 0 && file_cnt >= limit)
+					throw new Errors(`Можно добавить не более ${limit} файлов.`);
+			},
 			tokenFields: ['i_time','e_id'],
 			sizeParams: [
 				{w: 1280, h: 853},
@@ -230,6 +272,12 @@ var config = {
 			fileMediaType: 'application', //deprecated
 			multiUpload: true,
 			maxFileSize: 6,//Mb
+			checkLimitFile: function(file_cnt, Errors)
+			{
+				let limit = 10; //0 - то без лимита
+				if (limit > 0 && file_cnt >= limit)
+					throw new Errors(`Можно добавить не более ${limit} файлов.`);
+			},
 			tokenFields: ['i_time','n_id'],
 			sizeParams: [
 				{w: 1280, h: 853},

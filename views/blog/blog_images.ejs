@@ -1,22 +1,21 @@
-<div class="imagesWrapper">
-<div class="imagesContainer">
-<% Object.keys(blogImages).forEach(function (fileType)
+<div class="imagesWrapper js-images-wrapper"><%
+Object.keys(blogImages).forEach(function (fileType)
 {
-	blogImages[fileType].forEach(function (file)
-	{
+%><div class="imagesContainer js-<%=fileType%>"><%
+blogImages[fileType].forEach(function (file)
+{
 	%><div class="imageItem"><%
-		switch(file['f_type'])
-		{
+	switch(file['f_type'])
+	{
 		case 'image':
 		%><img src="<%=file["previews"]["512_384"]%>" class="image" data-img-type="image" data-img-id="<%=file["f_id"]%>"/><%
-			break;
-
+		break;
+		
 		case 'application':
 		%><a target="_blank" href="<%=file["previews"]["orig"]%>" class="image" data-img-type="application" data-img-id="<%=file["f_id"]%>"><%=file["f_name"]%></a><%
-			break;
-		}
-		%></div><%
-	});
-});%>
-</div>
-</div>
+		break;
+	}
+	%></div><%
+});
+%></div><%
+});%></div>

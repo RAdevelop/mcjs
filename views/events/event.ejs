@@ -40,9 +40,9 @@ let hasImages = (!!eventImages['image'] && !!eventImages['image'].length);
 	
 	$('mcImage').mcImage({
 		imgFieldId: "f_id"//название поля id у картинки в json'e
-		, albumImages: '.eventData img.image' //селектор для списка картинок
-		, albumImagesMain: '.eventData .eventText img.image'
-		, albumImagesSub: '.eventData .imagesWrapper .imagesContainer img.image'
+		, albumImages: '.eventData .image' //селектор для списка картинок
+		, albumImagesMain: '.eventData .eventText .image'
+		, albumImagesSub: '.eventData .imagesWrapper .imagesContainer .image'
 		, albumImagesSubWrapper: '.eventData .imagesWrapper'
 		, jsonImageList: event["eventImages"]['image'] || []
 		, jsPreviewsList: event["eventImagesPreviews"] || []

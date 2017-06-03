@@ -30,14 +30,14 @@ let user_owner = blog['user'];
 (function($)
 {
 	var blog = MCJS["blogData"] || {};
-
+	
 	$('mcImageBlog').mcImage({
 		imgFieldId: "f_id"//название поля id у картинки в json'e
-		, albumImages: '.blogData img.image' //селектор для списка картинок
-		, albumImagesMain: '.blogData .blogText img.image'
-		, albumImagesSub: '.blogData .imagesWrapper .imagesContainer img.image'
+		, albumImages: '.blogData .image' //селектор для списка картинок
+		, albumImagesMain: '.blogData .blogText .image'
+		, albumImagesSub: '.blogData .imagesWrapper .imagesContainer .image'
 		, albumImagesSubWrapper: '.blogData .imagesWrapper'
-		, jsonImageList: blog["blogImages"] || {}
+		, jsonImageList: blog["blogImages"]['image'] || {}
 		, jsPreviewsList: blog["blogImagesPreviews"] || []
 	});
 })(jQuery);

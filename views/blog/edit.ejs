@@ -96,11 +96,11 @@
 (function($)
 {
 	var blogData = MCJS["blogData"] || null;
-	var images = MCJS["images"] || [];
+	var fileList = MCJS["images"] || [];
 	var imagesPreviews = MCJS["imagesPreviews"] || [];
-
+	
 	var $imagesWrapper = $('.imagesWrapper');
-
+	
 	if(imagesPreviews.length)
 		preloadImages(imagesPreviews);
 
@@ -151,45 +151,64 @@
 
 	if (blogUploadOpts)
 	{
-		function prependImgToEvent(filesUploaded, $imagesContainer)
+		function afterFileUpload(filesUploaded, $imagesWrapper)
 		{
 			if (!filesUploaded || !filesUploaded.length)
 				return;
-
-			var i, image, html, imgSrc;
-
+			
+			var i, file, html, imgSrc, htmlFile;
 			for(i = 0; i < filesUploaded.length; i++)
 			{
-				image = filesUploaded[i];
-				imgSrc = (image["previews"] && image["previews"]["256_192"] ? image["previews"]["256_192"] : '/_0.gif');
-
-				var img = '<img src="'+imgSrc+'" alt="" class="image" data-img-id="'+image["f_id"]+'"/>';
-
+				file = filesUploaded[i];
+				
 				html = '<div class="imageItem">';
-				html += imgToolsHtml($(img));
-				html += img;
+				
+				switch(file['f_type'])
+				{
+					case 'image':
+						imgSrc = (file["previews"] && file["previews"]["256_192"] ? file["previews"]["256_192"] : '/_0.gif');
+						htmlFile = '<img src="'+imgSrc+'" alt="" class="image" data-img-type="'+file["f_type"]+'" data-img-id="'+file["f_id"]+'"/>';
+						break;
+					
+					case 'application':
+						htmlFile = '<a target="_blank" href="'+file["previews"]["orig"]+'" class="image" data-img-type="application" data-img-id="'+file["f_id"]+'">'+file["f_name"]+'</a>';
+						break;
+				}
+				
+				html += imgToolsHtml($(htmlFile));
+				html += htmlFile;
 				html += '</div>';
-
-				$imagesContainer.prepend(html);
-				images.unshift(image);
+				
+				var $fileContainer = $imagesWrapper.find('.js-'+file['f_type']);
+				
+				if (!$fileContainer.length)
+				{
+					$imagesWrapper.prepend('<div class="imagesContainer js-'+file['f_type']+'"></div>');
+					$fileContainer = $imagesWrapper.find('.js-'+file['f_type']);
+				}
+				
+				$imagesWrapper.find('.js-'+file['f_type']).prepend(html);
+				
+				if (!fileList[file['f_type']])
+					fileList[file['f_type']] = [];
+				
+				fileList[file['f_type']].unshift(file);
 			}
 		}
-
+		
 		blogUploadOpts.onEnd = function()
 		{
 			var filesUploaded = ($(this).data('uploadFileData') ? $(this).data('uploadFileData') : null);
-
+			
 			$(this).parents('.modal').find('.modal-footer').show();
-
-			prependImgToEvent(filesUploaded, $imagesWrapper.find('.imagesContainer'));
-
+			afterFileUpload(filesUploaded, $imagesWrapper);
 		};
-
+		
 		blogUploadOpts.onStart = function()
 		{
 			$(this).parents('.modal').find('.modal-footer').hide();
 		};
-
+		
 		var formBlogUpload = '<form class="form-horizontal text-center" action="<%=menuItem['m_path']%>/upload" enctype="multipart/form-data" method="post" target="null_frame" id="formBlogUpload"><input type="hidden" name="btn_save_blog" value="blog_image_upload"/><input type="hidden" name="s_token" value="<%=blog['s_token']%>"/><input type="hidden" name="i_time" value="<%=blog['i_time']%>"/><input type="hidden" name="b_id" value="<%=blog['b_id']%>"/><input type="hidden" name="u_id" value="<%=blog['u_id']%>"/><div class="form-group uploadWrapper"><input type="file" name="blog_image_upload" id="blog_image_upload" style="display: none;"/></div></form>';
 
 		$(document).on('click', '#uploadimages', function(event)
@@ -263,7 +282,7 @@
 			});
 		}
 	});
-
+	
 	function imgToolsHtml($img)
 	{
 		var html = '<div class="imageTools">'
@@ -271,14 +290,14 @@
 		html += '</div>';
 		return html;
 	}
-
+	
 	function imgTools(editor)
 	{
-		$imagesWrapper.find('.imageItem img').each(function(i, img)
+		$imagesWrapper.find('.imageItem .image').each(function(i, img)
 		{
 			$(this).parent().prepend(imgToolsHtml($(img)));
 		});
-
+		
 		$(document).on('click','.imagesWrapper .imagesContainer .imageTools a', function (event)
 		{
 			event.preventDefault();

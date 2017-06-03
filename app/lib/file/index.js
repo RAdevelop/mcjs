@@ -240,9 +240,10 @@ class File
 		{
 			return this.resizeImage(file, size.w, size.h);
 		});
-
-		file["previews"] = {};
-
+		
+		if (!file.hasOwnProperty('previews'))
+		file['previews'] = {};
+		
 		return Promise.all(images.map(function(promise)
 		{
 			return promise.reflect();
@@ -650,7 +651,7 @@ class File
 			if (!item["previews"])
 			item["previews"] = {};
 			
-			if (item[obj_dir])
+			if (item[obj_dir] || item['webFilePath'])
 			{
 				if (item[obj_type] == File.TYPE_IMAGE)
 				{
@@ -664,7 +665,10 @@ class File
 						}
 					});
 				}
+				if (item[obj_dir])
 				item["previews"]['orig'] = item[obj_dir] + '/orig/' + item[obj_key_name];
+				else if (item['webFilePath'])
+				item["previews"]['orig'] = item['webFilePath'];
 			}
 			
 			if (!single && split_by_type)

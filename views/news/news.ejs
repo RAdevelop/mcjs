@@ -16,9 +16,9 @@
 
 	$('mcImage').mcImage({
 		imgFieldId: "f_id"//название поля id у картинки в json'e
-		, albumImages: '.newsData img.image' //селектор для списка картинок
-		, albumImagesMain: '.newsData .newsText img.image'
-		, albumImagesSub: '.newsData .imagesWrapper .imagesContainer img.image'
+		, albumImages: '.newsData .image' //селектор для списка картинок
+		, albumImagesMain: '.newsData .newsText .image'
+		, albumImagesSub: '.newsData .imagesWrapper .imagesContainer .image'
 		, albumImagesSubWrapper: '.newsData .imagesWrapper'
 		, jsonImageList: news["newsImages"]['image'] || []
 		, jsPreviewsList: news["newsImagesPreviews"] || []

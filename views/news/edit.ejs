@@ -89,31 +89,15 @@
 (function($)
 {
 	var newsData = MCJS["newsData"] || null;
-	var images = MCJS["images"] || [];
-	var imagesPreviews = MCJS["imagesPreviews"] || [];
+	var fileList = MCJS["newsImages"] || [];
+	var imagesPreviews = MCJS["newsImagesPreviews"] || [];
 
 	var $imagesWrapper = $('.imagesWrapper');
 
 	if(imagesPreviews.length)
 		preloadImages(imagesPreviews);
 
-	$("#dt_show_ts").datepicker({
-		dateFormat: 'dd-mm-yy',
-		onSelect: function (dateText)
-		{
-			var now = new Date();
-			var hh = now.getHours();
-			var mm = now.getMinutes();
-			var ss = now.getSeconds();
-
-			hh = (hh.toString().length < 2 ? '0'+hh : hh);
-			mm = (mm.toString().length < 2 ? '0'+mm : mm);
-			ss = (ss.toString().length < 2 ? '0'+ss : ss);
-			
-			var dateVal = [dateText, [hh, mm, ss].join(':')];
-			$(this).val(dateVal.join(' '));
-		}
-	});
+	mcDatepicker('#dt_show_ts', true);
 	
 	var newsTextTinymce = McTinymce(
 			{
@@ -143,8 +127,8 @@
 			{
 				return new Promise(function(resolve, reject)
 				{
-					McTinymce.save(editor, function(editor){
-
+					McTinymce.save(editor, function(editor)
+					{
 						return resolve(true);
 					});
 				});
@@ -152,8 +136,9 @@
 		},
 		onSuccess: function($dialog, respData)
 		{
-			if (respData["i_news_id"]) window.location.href = '<%=menuItem.m_path%>/edit/' +respData["i_news_id"] +'/';
-
+			if (respData["i_news_id"]) 
+				window.location.href = '<%=menuItem.m_path%>/edit/' +respData["i_news_id"] +'/';
+			
 			return false;
 		}
 	});
@@ -162,44 +147,62 @@
 
 	if (newsUploadOpts)
 	{
-		function prependImgToEvent(filesUploaded, $imagesContainer)
+		function afterFileUpload(filesUploaded, $imagesWrapper)
 		{
 			if (!filesUploaded || !filesUploaded.length)
 				return;
-
-			var i, image, html, imgSrc;
 			
+			var i, file, html, imgSrc, htmlFile;
 			for(i = 0; i < filesUploaded.length; i++)
 			{
-				image = filesUploaded[i];
-				imgSrc = (image["previews"] && image["previews"]["256_192"] ? image["previews"]["256_192"] : '/_0.gif');
-				var img = '<img src="'+imgSrc+'" alt="" class="image" data-img-id="'+image["f_id"]+'"/>';
+				file = filesUploaded[i];
 				
 				html = '<div class="imageItem">';
-				html += imgToolsHtml($(img));
-				html += img;
+				
+				switch(file['f_type'])
+				{
+					case 'image':
+						imgSrc = (file["previews"] && file["previews"]["256_192"] ? file["previews"]["256_192"] : '/_0.gif');
+						htmlFile = '<img src="'+imgSrc+'" alt="" class="image" data-img-type="'+file["f_type"]+'" data-img-id="'+file["f_id"]+'"/>';
+						break;
+					
+					case 'application':
+						htmlFile = '<a target="_blank" href="'+file["previews"]["orig"]+'" class="image" data-img-type="application" data-img-id="'+file["f_id"]+'">'+file["f_name"]+'</a>';
+						break;
+				}
+				
+				html += imgToolsHtml($(htmlFile));
+				html += htmlFile;
 				html += '</div>';
 				
-				$imagesContainer.prepend(html);
-				images.unshift(image);
+				var $fileContainer = $imagesWrapper.find('.js-'+file['f_type']);
+				
+				if (!$fileContainer.length)
+				{
+					$imagesWrapper.prepend('<div class="imagesContainer js-'+file['f_type']+'"></div>');
+					$fileContainer = $imagesWrapper.find('.js-'+file['f_type']);
+				}
+				
+				$imagesWrapper.find('.js-'+file['f_type']).prepend(html);
+				if (!fileList[file['f_type']])
+					fileList[file['f_type']] = [];
+				
+				fileList[file['f_type']].unshift(file);
 			}
 		}
 		
 		newsUploadOpts.onEnd = function()
 		{
 			var filesUploaded = ($(this).data('uploadFileData') ? $(this).data('uploadFileData') : null);
-
 			$(this).parents('.modal').find('.modal-footer').show();
-
-			prependImgToEvent(filesUploaded, $imagesWrapper.find('.imagesContainer'));
-
+			afterFileUpload(filesUploaded, $imagesWrapper);
 		};
-
+		
 		newsUploadOpts.onStart = function()
 		{
 			$(this).parents('.modal').find('.modal-footer').hide();
 		};
-
+		
 		var formNewsUpload = '<form class="form-horizontal text-center" action="<%=menuItem.m_path%>/upload" enctype="multipart/form-data" method="post" target="null_frame" id="formNewsUpload"><input type="hidden" name="btn_save_news" value="news_image_upload"/><input type="hidden" name="s_token" value="<%=news.s_token%>"/><input type="hidden" name="i_time" value="<%=news.i_time%>"/><input type="hidden" name="n_id" value="<%=news.n_id%>"/><div class="form-group uploadWrapper"><input type="file" name="news_image_upload" id="news_image_upload" style="display: none;"/></div></form>';
 
 		$(document).on('click', '#uploadimages', function(event)
@@ -329,9 +332,9 @@
 			return false;
 		});
 	}
-
+	
 	$('#s_tags').mcAutoComplete({tags: MCJS['keyWords']||[], key_name:'kw_name'});
-
+	
 })(jQuery);
 //-->
 </script>

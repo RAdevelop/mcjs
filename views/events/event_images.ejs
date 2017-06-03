@@ -1,7 +1,7 @@
-<div class="imagesWrapper">
-<div class="imagesContainer">
+<div class="imagesWrapper js-images-wrapper">
 <% Object.keys(eventImages).forEach(function (fileType)
 {
+%><div class="imagesContainer js-<%=fileType%>"><%
 	eventImages[fileType].forEach(function (file)
 	{
 	%><div class="imageItem"><%
@@ -17,6 +17,6 @@
 		}
 		%></div><%
 	});
+%></div><%
 });%>
-</div>
 </div>

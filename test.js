@@ -98,14 +98,18 @@ Promise.mapSeries(locationArr, function (s_location)
 		});
 });*/
 "use strict";
+require('app-module-path').addPath(__dirname);
 
-let data = ['', 0, '0', null, 1, '1', 'stroka', 'абв'];
-data.forEach((d)=>
-{
-	d = parseInt(d, 10);
-	//console.log(d, !!d);
-});
+const VK = require('app/lib/vk/index.js');
+//console.log(VK.video.get);
+//VK.video.get();
+//VK.video.users();
 
-let d = parseInt('0', 10);
-console.log(d, !!d);
-console.log((d ? 'true' : 'false'));
+let val = '';
+val = NaN;
+val = parseInt(' s2')||0;
+
+console.log(val);
+console.log(!!val);
+console.log(isNaN(val));
+console.log(Number.isNaN(val));

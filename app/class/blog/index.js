@@ -185,7 +185,8 @@ class Blog extends Base
 		let ufile = {};
 
 		const UploadFile = new FileUpload(Blog.uploadConfigName, req, res);
-
+		let uploadConfig = FileUpload.getUploadConfig(Blog.uploadConfigName);
+		
 		return UploadFile.upload()
 			.then((file) =>
 			{
@@ -195,9 +196,8 @@ class Blog extends Base
 				return this.getBlogById(b_id)
 					.then((blog) =>
 					{
-						if (blog["file_cnt"] >= 10)
-							throw new FileErrors.LimitExceeded('Можно добавить не более 10 файлов.');
-
+						uploadConfig.checkLimitFile(blog["file_cnt"], FileErrors.LimitExceeded);
+						
 						return Promise.resolve(ufile);
 					});
 			})
@@ -224,7 +224,10 @@ class Blog extends Base
 			.then((file) =>
 			{
 				if (file.type != FileUpload.TYPE_IMAGE)
+				{
+					file = FileUpload.getPreviews([], file, false, true)['obj'];
 					return Promise.resolve(file);
+				}
 				
 				return UploadFile.setImageGeo(file)
 					.then((file) =>
@@ -237,7 +240,10 @@ class Blog extends Base
 				//console.log(file);
 				
 				return this.model('blog')
-					.updImage(file.b_id, file.f_id, file.latitude, file.longitude, file.webDirPath, file.name, file.type, true)
+					.updImage(
+						file.b_id, file.f_id, file.latitude, file.longitude, 
+						file.webDirPath, file.name, file.type, true
+					)
 					.then(() =>
 					{
 						ufile = null;
@@ -277,6 +283,11 @@ class Blog extends Base
 	 */
 	getImage(f_id)
 	{
+		f_id = parseInt(f_id, 10)||0;
+		
+		if (!f_id)
+			return Promise.resolve(null);
+		
 		return this.model('blog').getImage(f_id)
 			.then((image) =>
 			{
@@ -326,7 +337,7 @@ class Blog extends Base
 	delImage(u_id, b_id, f_id, file = {})
 	{
 		//console.log(file);
-
+		
 		return FileUpload.deleteFile(file.path || '')
 			.then(() =>
 			{

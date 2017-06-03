@@ -3,6 +3,30 @@
  * разные функции помошники
  */
 
+function mcDatepicker(inputSelector, andTime = false)
+{
+	$(inputSelector).datepicker({
+		dateFormat: 'dd-mm-yy',
+		onSelect: function (dateText)
+		{
+			if (!andTime)
+				return;
+			
+			var now = new Date();
+			var hh = now.getHours();
+			var mm = now.getMinutes();
+			var ss = now.getSeconds();
+			
+			hh = (hh.toString().length < 2 ? '0'+hh : hh);
+			mm = (mm.toString().length < 2 ? '0'+mm : mm);
+			ss = (ss.toString().length < 2 ? '0'+ss : ss);
+			
+			var dateVal = [dateText, [hh, mm, ss].join(':')];
+			$(this).val(dateVal.join(' '));
+		}
+	});
+}
+
 //https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent
 function fixedEncodeURIComponent(str)
 {

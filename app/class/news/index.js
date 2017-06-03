@@ -171,6 +171,7 @@ class News extends Base
 		
 		const UploadFile = new FileUpload(News.uploadConfigName, req, res);
 		
+		let uploadConfig = FileUpload.getUploadConfig(News.uploadConfigName);
 		return UploadFile.upload()
 			.then((file) =>
 			{
@@ -179,8 +180,7 @@ class News extends Base
 				
 				return this.get(n_id).then((news) => 
 				{
-					if (news["file_cnt"] >= 10)
-						throw new FileErrors.LimitExceeded('Можно добавить не более 10 файлов.');
+					uploadConfig.checkLimitFile(news["file_cnt"], FileErrors.LimitExceeded);
 					
 					return Promise.resolve(ufile);
 				});
@@ -209,7 +209,10 @@ class News extends Base
 			.then((file) =>
 			{
 				if (file.type != FileUpload.TYPE_IMAGE)
+				{
+					file = FileUpload.getPreviews([], file, false, true)['obj'];
 					return Promise.resolve(file);
+				}
 				
 				return UploadFile.setImageGeo(file)
 					.then((file) =>
@@ -222,7 +225,10 @@ class News extends Base
 				//console.log(__dirname, file);
 				
 				return this.model('news')
-					.updFile(file.n_id, file.f_id, file.latitude, file.longitude, file.webDirPath, file.name, file.type, true)
+					.updFile(
+						file.n_id, file.f_id, file.latitude, file.longitude, 
+						file.webDirPath, file.name, file.type, true
+					)
 					.then(() =>
 					{
 						ufile = null;
@@ -262,6 +268,11 @@ class News extends Base
 	 */
 	getFile(f_id)
 	{
+		f_id = parseInt(f_id, 10)||0;
+		
+		if (!f_id)
+		return Promise.resolve(null);
+		
 		return this.model('news').getFile(f_id)
 			.then((image) =>
 			{

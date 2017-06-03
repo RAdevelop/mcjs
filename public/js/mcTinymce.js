@@ -400,7 +400,7 @@
 
 	function addImageToTinymce(editor)
 	{
-		$(document).on('click','.imagesWrapper .imagesContainer img', function (event)
+		$(document).on('click','.js-images-wrapper .js-image img', function (event)
 		{
 			event.stopPropagation();
 

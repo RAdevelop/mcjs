@@ -238,7 +238,10 @@ class UserPhoto extends User
 			.then((file) =>
 			{
 				if (file.type != FileUpload.TYPE_IMAGE)
+				{
+					file = FileUpload.getPreviews([], file, false, true)['obj'];
 					return Promise.resolve(file);
+				}
 				
 				return UploadFile.setImageGeo(file)
 					.then((file) =>
@@ -251,7 +254,10 @@ class UserPhoto extends User
 				//console.log(file);
 
 				return this.model('user/photo')
-					.updImage(u_id, file.a_id, file.f_id, file.latitude, file.longitude, '', file.webDirPath, file.name, file.type, true)
+					.updImage(
+						u_id, file.a_id, file.f_id, file.latitude, file.longitude, '', 
+						file.webDirPath, file.name, file.type, true
+					)
 					.then(() => 
 					{
 						ufile = null;

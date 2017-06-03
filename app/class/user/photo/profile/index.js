@@ -53,7 +53,10 @@ class UserPhotoProfile extends UserPhoto
 			.then((file) =>
 			{
 				if (file.type != FileUpload.TYPE_IMAGE)
+				{
+					file = FileUpload.getPreviews([], file, false, true)['obj'];
 					return Promise.resolve(file);
+				}
 				
 				return UploadFile.setImageGeo(file)
 					.then((file) =>

@@ -1,10 +1,5 @@
 <%  if(!_isXHR){%><%- layout('layout/default') %><% } -%>
-<div class="alert alert-danger" role="alert"> <strong>Oh snap!</strong> Change a few things up and try submitting again. </div>
-
-<div class="alert alert-danger alert-dismissible" role="alert">
-	<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-	<strong>Warning!</strong> Better check yourself, you're not looking too good.
-</div><%
+<%
  if (eventList.length) {%>
 	<div class="row eventListContainer home">
 		<div class="col-xs-12">

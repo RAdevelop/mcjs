@@ -1,199 +1,199 @@
 <%  if(!_isXHR){%><%- layout('layout/user/index') %><% }%>
 <ul class="nav nav-pills nav-justified" role="tablist">
-    <li role="presentation" class="active"><a href="#ava" aria-controls="ava" role="tab" data-toggle="tab"><span class="fa fa-photo"></span> Аватар</a></li>
-    <li role="presentation"><a href="#base" aria-controls="base" role="tab" data-toggle="tab"><span class="fa fa-cog"></span> Основное</a></li>
-    <li role="presentation"><a href="#contacts" aria-controls="contacts" role="tab" data-toggle="tab"><span class="fa fa-map-marker "></span> Контакты</a></li>
-    <li role="presentation"><a href="#bike" aria-controls="bike" role="tab" data-toggle="tab"><span class="fa fa-motorcycle"></span> Мотоцикл</a></li>
-    <li role="presentation"><a href="#interests" aria-controls="interests" role="tab" data-toggle="tab"><span class="fa fa-cogs"></span> Интересы</a></li>
+	<li role="presentation" class="active"><a href="#ava" aria-controls="ava" role="tab" data-toggle="tab"><span class="fa fa-photo"></span> Аватар</a></li>
+	<li role="presentation"><a href="#base" aria-controls="base" role="tab" data-toggle="tab"><span class="fa fa-cog"></span> Основное</a></li>
+	<li role="presentation"><a href="#contacts" aria-controls="contacts" role="tab" data-toggle="tab"><span class="fa fa-map-marker "></span> Контакты</a></li>
+	<li role="presentation"><a href="#bike" aria-controls="bike" role="tab" data-toggle="tab"><span class="fa fa-motorcycle"></span> Мотоцикл</a></li>
+	<li role="presentation"><a href="#interests" aria-controls="interests" role="tab" data-toggle="tab"><span class="fa fa-cogs"></span> Интересы</a></li>
 </ul>
 <!-- Tab panes -->
 <div class="panel panel-default">
-    <div class="panel-body tab-content">
-        <div role="tabpanel" class="tab-pane active" id="ava">
-            <div class="row">
-                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                    <form class="form-horizontal text-center" action="<%=menuItem.m_path%>/ava/"  enctype="multipart/form-data" method="post" target="null_frame" id="formAva">
-                        <input type="hidden" name="btn_save_profile" value="ava_upload"/>
-                        <input type="hidden" name="u_id" value="<%= _user.u_id%>"/>
-                        <input type="hidden" name="s_token" value="<%=s_token%>"/>
-                        <input type="hidden" name="i_time" value="<%=i_time%>"/>
-                        <div class="form-group uploadWrapper">
-                            <input type="file" name="ava_upload" id="ava_upload" style="display: none;"/>
-                        </div>
-                        <!-- div class="form-group">
+	<div class="panel-body tab-content">
+		<div role="tabpanel" class="tab-pane active" id="ava">
+			<div class="row">
+				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+					<form class="form-horizontal text-center" action="<%=menuItem.m_path%>/ava/"  enctype="multipart/form-data" method="post" target="null_frame" id="formAva">
+						<input type="hidden" name="btn_save_profile" value="ava_upload"/>
+						<input type="hidden" name="u_id" value="<%= _user.u_id%>"/>
+						<input type="hidden" name="s_token" value="<%=s_token%>"/>
+						<input type="hidden" name="i_time" value="<%=i_time%>"/>
+						<div class="form-group uploadWrapper">
+							<input type="file" name="ava_upload" id="ava_upload" style="display: none;"/>
+						</div>
+						<!-- div class="form-group">
 
-                            <!-- button onclick="$('#ava_upload').uploadify('upload');return false;" type="button" class="btn btn-primary" id="btn_ava_upload" name="btn_ava_upload" value="1" data-loading-text="загружаю..." autocomplete="off">загрузить</button --
-                            <button type="button" class="btn btn-primary" id="btn_ava_upload" name="btn_ava_upload" value="1" data-loading-text="загружаю..." autocomplete="off">загрузить</button>
-                         </div -->
-                    </form>
-                </div>
-                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" id="ava_crop_container">
-                    <form class="form text-center" action="<%=_reqBaseUrl%>"  enctype="multipart/form-data" method="post" target="null_frame" id="formAvaCrop">
-                        <% let cropImage = (previews["1024_768"] ? previews["1024_768"] : '/_0.gif');%>
-                        <div class="form-group col-xs-12 col-sm-12 col-md-6">
-                            <div class="image-crop-container">
-                                <img src="<%=cropImage%>" class="img-thumbnail" id="ava_crop_base" />
-                            </div>
-                        </div>
-                        <div class="form-group col-xs-12 col-sm-12 col-md-4 col-lg-4">
-                            <div class="img-preview ava-preview-lg">
-                                <img src="<%=cropImage%>" />
-                            </div>
-                            <div class="img-preview ava-preview-md">
-                                <img src="<%=cropImage%>" />
-                            </div>
-                            <div class="img-preview ava-preview-sm">
-                                <img src="<%=cropImage%>" />
-                            </div>
-                        </div>
-                        <div class="form-group col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            <input type="hidden" name="i_u_id" id="i_u_id" value="<%= _user.u_id%>" />
-                            <input type="hidden" name="i_file_id" id="i_file_id" value="<%= f_id%>" />
-                            <input type="hidden" name="i_crop_x" id="i_crop_x" value="" />
-                            <input type="hidden" name="i_crop_y" id="i_crop_y" value="" />
-                            <input type="hidden" name="i_crop_width" id="i_crop_width" value="" />
-                            <input type="hidden" name="i_crop_height" id="i_crop_height" value="" />
-                            <input type="hidden" name="btn_save_profile" value="crop_ava"/>
-                            <button type="button" id="btn_crop_ava" class="btn btn-primary" data-loading-text="сохраняю...">сохранить</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <div role="tabpanel" class="tab-pane " id="base">
-            <form class="form-horizontal" action="<%=_reqBaseUrl%>" method="post" id="formLogin">
-                <input type="hidden" name="i_u_id" value="<%=(_user && _user.u_id ? _user.u_id :'')%>"/>
-                <div class="form-group s_login">
-                    <label for="s_login" class="col-sm-2 control-label">Логин *</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="s_login" name="s_login" value="<%=(_user && _user.u_login ? _user.u_login : '')%>" placeholder="Логин" maxlength="20" required />
-                        <span class="help-block">от 5 до 20 символов. допустмы латинские буквы и цифры, знаки "_", "-".</span>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-xs-offset-4 col-sm-offset-5 ">
-                        <input type="hidden" name="btn_save_profile" value="login"/>
-                        <button type="submit" class="btn btn-primary" id="btn_save_login" value="1" data-loading-text="сохраняю..." autocomplete="off">сохранить</button>
-                    </div>
-                </div>
-            </form>
-            <form class="form-horizontal" action="<%=_reqBaseUrl%>" method="post" id="formPassword">
-                <input type="hidden" name="i_u_id" value="<%=(_user && _user.u_id ? _user.u_id :'')%>"/>
-                <div class="form-group s_password">
-                    <label for="s_password" class="col-sm-2 control-label">пароль *</label>
-                    <div class="col-sm-10">
-                        <input type="password" class="form-control" id="s_password" name="s_password" value="" placeholder="пароль" required />
-                    </div>
-                </div>
-                <div class="form-group s_password">
-                    <label for="s_password2" class="col-sm-2 control-label">повторите пароль *</label>
-                    <div class="col-sm-10">
-                        <input type="password" class="form-control" id="s_password2" name="s_password2" value="" placeholder="повторите пароль" required />
-                        <span class="text-center help-block">не менее 6 символов</span>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-xs-offset-4 col-sm-offset-5 ">
-                        <input type="hidden" name="btn_save_profile" value="password"/>
-                        <button type="submit" class="btn btn-primary" id="btn_change_password" value="1" data-loading-text="сохраняю..." autocomplete="off">сохранить</button>
-                    </div>
-                </div>
-            </form>
-            <form class="form-horizontal" action="<%=_reqBaseUrl%>" method="post" id="formBase">
-                <input type="hidden" name="i_u_id" value="<%=(_user && _user.u_id ? _user.u_id :'')%>"/>
-                <div class="form-group s_name">
-                    <label for="s_name" class="col-sm-2 control-label">Имя</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="s_name" name="s_name" value="<%=(u_name?u_name:'')%>" placeholder="Имя" />
-                    </div>
-                </div>
-                <div class="form-group s_surname">
-                    <label for="s_surname" class="col-sm-2 control-label">Фамилия</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="s_surname" name="s_surname" value="<%=(u_surname ? u_surname :'')%>" placeholder="Фамилия" />
-                    </div>
-                </div>
-                <div class="form-group i_sex">
-                    <label for="i_sex" class="col-sm-2 control-label">Пол</label>
-                    <div class="col-sm-10">
-                        <div class="radio">
-                            <label><input type="radio" id="i_sex_1" name="i_sex" value="1" <%=(u_sex == 1 ? "checked" : "")%> />мужской</label>&nbsp;&nbsp;&nbsp;
-                            <label class=""><input type="radio" id="i_sex_0" name="i_sex" value="0" <%=(u_sex == 0 ? "checked" : "")%> />женский</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group bd_birthday">
-                    <label for="s_birthday" class="col-sm-2 control-label">День рождения</label>
-                    <div class="col-sm-2">
-                        <input type="text" class="form-control" id="bd_birthday" name="bd_birthday" value="<%=(bd_birthday ? bd_birthday :'')%>" placeholder="День рождения" maxlength="10" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-xs-offset-4 col-sm-offset-5 ">
-                        <input type="hidden" name="btn_save_profile" value="base"/>
-                        <button type="submit" class="btn btn-primary" id="btn_save_base" value="1" data-loading-text="сохраняю..." autocomplete="off">сохранить</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-        <div role="tabpanel" class="tab-pane" id="contacts">
-            <form class="form-horizontal" action="<%=_reqBaseUrl%>" method="post" id="formChangeEmail">
-                <input type="hidden" name="i_u_id" value="<%=(_user && _user.u_id ? _user.u_id :'')%>"/>
-                <div class="form-group m_mail">
-                    <label for="m_mail" class="col-sm-2 control-label">E-mail</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="m_mail" name="m_mail" value="<%=(_user && _user.u_mail ? _user.u_mail : '')%>" placeholder="E-mail" maxlength="100" required />
-                        <span class="help-block">Для смены e-mail необходимо перейти по ссылке, отправленной на новый e-mail.</span>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-xs-offset-4 col-sm-offset-5 ">
-                        <input type="hidden" name="btn_save_profile" value="email"/>
-                        <button type="submit" class="btn btn-primary" id="btn_change_email" name="btn_change_email" value="1" data-loading-text="сохраняю..." autocomplete="off">сохранить</button>
-                    </div>
-                </div>
-            </form>
-            <form class="form-horizontal" action="<%=_reqBaseUrl%>" method="post" id="formLocation">
-                <input type="hidden" name="i_u_id" value="<%=(_user && _user.u_id ? _user.u_id :'')%>"/>
-                <div class="form-group u_location">
-                    <label for="s_location" class="col-sm-2 control-label">Расположение</label>
-                    <div class="col-sm-10">
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="s_location" name="s_location" value="<%=(l_full_name?l_full_name:'')%>" placeholder="Расположение" maxlength="255" required="required" readonly="readonly" data-toggle="tooltip" data-container="body" data-placement="auto" title="<%=(l_full_name?l_full_name:'')%>"/>
-                                    <input type="hidden" id="f_lat" name="f_lat" value="<%=(u_latitude?u_latitude:'')%>"  readonly="readonly" maxlength="20" required />
-                                    <input type="hidden" id="f_lng" name="f_lng" value="<%=(u_longitude?u_longitude:'')%>"  readonly="readonly" maxlength="20" required />
-                                    <div class="input-group-btn">
-                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="caret"></span></button>
-                                        <ul class="dropdown-menu dropdown-menu-right">
-                                            <li><a href="#">Action</a></li>
-                                            <li><a href="#">Another action</a></li>
-                                            <li><a href="#">Something else here</a></li>
-                                            <li role="separator" class="divider"></li>
-                                            <li><a href="#">Separated link</a></li>
-                                        </ul>
-                                    </div><!-- /btn-group -->
-                                </div>
-                            </div>
-                        </div>
-                        <span class="help-block">Если место было определено неправильно, просто кликните на карте по вашему населенному пункту. Сохраняются даные только по населенному пункту.</span>
-                        <div class="row">
-                            <div class="col-sm-12" id="yaMap" style="height: 400px;"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-xs-offset-4 col-sm-offset-5 ">
-                        <input type="hidden" name="btn_save_profile" value="location"/>
-                        <button type="submit" class="btn btn-primary" id="btn_location" name="btn_location" value="1" data-loading-text="сохраняю..." autocomplete="off">сохранить</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-        <div role="tabpanel" class="tab-pane" id="bike">bike</div>
-        <div role="tabpanel" class="tab-pane" id="interests">interests</div>
-    </div>
+							<!-- button onclick="$('#ava_upload').uploadify('upload');return false;" type="button" class="btn btn-primary" id="btn_ava_upload" name="btn_ava_upload" value="1" data-loading-text="загружаю..." autocomplete="off">загрузить</button --
+							<button type="button" class="btn btn-primary" id="btn_ava_upload" name="btn_ava_upload" value="1" data-loading-text="загружаю..." autocomplete="off">загрузить</button>
+						 </div -->
+					</form>
+				</div>
+				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" id="ava_crop_container">
+					<form class="form text-center" action="<%=_reqBaseUrl%>"  enctype="multipart/form-data" method="post" target="null_frame" id="formAvaCrop">
+						<% let cropImage = (previews["1024_768"] ? previews["1024_768"] : '/_0.gif');%>
+						<div class="form-group col-xs-12 col-sm-12 col-md-6">
+							<div class="image-crop-container">
+								<img src="<%=cropImage%>" class="img-thumbnail" id="ava_crop_base" />
+							</div>
+						</div>
+						<div class="form-group col-xs-12 col-sm-12 col-md-4 col-lg-4">
+							<div class="img-preview ava-preview-lg">
+								<img src="<%=cropImage%>" />
+							</div>
+							<div class="img-preview ava-preview-md">
+								<img src="<%=cropImage%>" />
+							</div>
+							<div class="img-preview ava-preview-sm">
+								<img src="<%=cropImage%>" />
+							</div>
+						</div>
+						<div class="form-group col-xs-12 col-sm-12 col-md-12 col-lg-12">
+							<input type="hidden" name="i_u_id" id="i_u_id" value="<%= _user.u_id%>" />
+							<input type="hidden" name="i_file_id" id="i_file_id" value="<%= f_id%>" />
+							<input type="hidden" name="i_crop_x" id="i_crop_x" value="" />
+							<input type="hidden" name="i_crop_y" id="i_crop_y" value="" />
+							<input type="hidden" name="i_crop_width" id="i_crop_width" value="" />
+							<input type="hidden" name="i_crop_height" id="i_crop_height" value="" />
+							<input type="hidden" name="btn_save_profile" value="crop_ava"/>
+							<button type="button" id="btn_crop_ava" class="btn btn-primary" data-loading-text="сохраняю...">сохранить</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div role="tabpanel" class="tab-pane " id="base">
+			<form class="form-horizontal" action="<%=_reqBaseUrl%>" method="post" id="formLogin">
+				<input type="hidden" name="i_u_id" value="<%=(_user && _user.u_id ? _user.u_id :'')%>"/>
+				<div class="form-group s_login">
+					<label for="s_login" class="col-sm-2 control-label">Логин *</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="s_login" name="s_login" value="<%=(_user && _user.u_login ? _user.u_login : '')%>" placeholder="Логин" maxlength="20" required />
+						<span class="help-block">от 5 до 20 символов. допустмы латинские буквы и цифры, знаки "_", "-".</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-xs-offset-4 col-sm-offset-5 ">
+						<input type="hidden" name="btn_save_profile" value="login"/>
+						<button type="submit" class="btn btn-primary" id="btn_save_login" value="1" data-loading-text="сохраняю..." autocomplete="off">сохранить</button>
+					</div>
+				</div>
+			</form>
+			<form class="form-horizontal" action="<%=_reqBaseUrl%>" method="post" id="formPassword">
+				<input type="hidden" name="i_u_id" value="<%=(_user && _user.u_id ? _user.u_id :'')%>"/>
+				<div class="form-group s_password">
+					<label for="s_password" class="col-sm-2 control-label">пароль *</label>
+					<div class="col-sm-10">
+						<input type="password" class="form-control" id="s_password" name="s_password" value="" placeholder="пароль" required />
+					</div>
+				</div>
+				<div class="form-group s_password">
+					<label for="s_password2" class="col-sm-2 control-label">повторите пароль *</label>
+					<div class="col-sm-10">
+						<input type="password" class="form-control" id="s_password2" name="s_password2" value="" placeholder="повторите пароль" required />
+						<span class="text-center help-block">не менее 6 символов</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-xs-offset-4 col-sm-offset-5 ">
+						<input type="hidden" name="btn_save_profile" value="password"/>
+						<button type="submit" class="btn btn-primary" id="btn_change_password" value="1" data-loading-text="сохраняю..." autocomplete="off">сохранить</button>
+					</div>
+				</div>
+			</form>
+			<form class="form-horizontal" action="<%=_reqBaseUrl%>" method="post" id="formBase">
+				<input type="hidden" name="i_u_id" value="<%=(_user && _user.u_id ? _user.u_id :'')%>"/>
+				<div class="form-group s_name">
+					<label for="s_name" class="col-sm-2 control-label">Имя</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="s_name" name="s_name" value="<%=(u_name?u_name:'')%>" placeholder="Имя" />
+					</div>
+				</div>
+				<div class="form-group s_surname">
+					<label for="s_surname" class="col-sm-2 control-label">Фамилия</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="s_surname" name="s_surname" value="<%=(u_surname ? u_surname :'')%>" placeholder="Фамилия" />
+					</div>
+				</div>
+				<div class="form-group i_sex">
+					<label for="i_sex" class="col-sm-2 control-label">Пол</label>
+					<div class="col-sm-10">
+						<div class="radio">
+							<label><input type="radio" id="i_sex_1" name="i_sex" value="1" <%=(u_sex == 1 ? "checked" : "")%> />мужской</label>&nbsp;&nbsp;&nbsp;
+							<label class=""><input type="radio" id="i_sex_0" name="i_sex" value="0" <%=(u_sex == 0 ? "checked" : "")%> />женский</label>
+						</div>
+					</div>
+				</div>
+				<div class="form-group bd_birthday">
+					<label for="s_birthday" class="col-sm-2 control-label">День рождения</label>
+					<div class="col-sm-2">
+						<input type="text" class="form-control" id="bd_birthday" name="bd_birthday" value="<%=(bd_birthday ? bd_birthday :'')%>" placeholder="День рождения" maxlength="10" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-xs-offset-4 col-sm-offset-5 ">
+						<input type="hidden" name="btn_save_profile" value="base"/>
+						<button type="submit" class="btn btn-primary" id="btn_save_base" value="1" data-loading-text="сохраняю..." autocomplete="off">сохранить</button>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div role="tabpanel" class="tab-pane" id="contacts">
+			<form class="form-horizontal" action="<%=_reqBaseUrl%>" method="post" id="formChangeEmail">
+				<input type="hidden" name="i_u_id" value="<%=(_user && _user.u_id ? _user.u_id :'')%>"/>
+				<div class="form-group m_mail">
+					<label for="m_mail" class="col-sm-2 control-label">E-mail</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="m_mail" name="m_mail" value="<%=(_user && _user.u_mail ? _user.u_mail : '')%>" placeholder="E-mail" maxlength="100" required />
+						<span class="help-block">Для смены e-mail необходимо перейти по ссылке, отправленной на новый e-mail.</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-xs-offset-4 col-sm-offset-5 ">
+						<input type="hidden" name="btn_save_profile" value="email"/>
+						<button type="submit" class="btn btn-primary" id="btn_change_email" name="btn_change_email" value="1" data-loading-text="сохраняю..." autocomplete="off">сохранить</button>
+					</div>
+				</div>
+			</form>
+			<form class="form-horizontal" action="<%=_reqBaseUrl%>" method="post" id="formLocation">
+				<input type="hidden" name="i_u_id" value="<%=(_user && _user.u_id ? _user.u_id :'')%>"/>
+				<div class="form-group u_location">
+					<label for="s_location" class="col-sm-2 control-label">Расположение</label>
+					<div class="col-sm-10">
+						<div class="row">
+							<div class="col-sm-12">
+								<div class="input-group">
+									<input type="text" class="form-control" id="s_location" name="s_location" value="<%=(l_full_name?l_full_name:'')%>" placeholder="Расположение" maxlength="255" required="required" readonly="readonly" data-toggle="tooltip" data-container="body" data-placement="auto" title="<%=(l_full_name?l_full_name:'')%>"/>
+									<input type="hidden" id="f_lat" name="f_lat" value="<%=(u_latitude?u_latitude:'')%>"  readonly="readonly" maxlength="20" required />
+									<input type="hidden" id="f_lng" name="f_lng" value="<%=(u_longitude?u_longitude:'')%>"  readonly="readonly" maxlength="20" required />
+									<div class="input-group-btn">
+										<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="caret"></span></button>
+										<ul class="dropdown-menu dropdown-menu-right">
+											<li><a href="#">Action</a></li>
+											<li><a href="#">Another action</a></li>
+											<li><a href="#">Something else here</a></li>
+											<li role="separator" class="divider"></li>
+											<li><a href="#">Separated link</a></li>
+										</ul>
+									</div><!-- /btn-group -->
+								</div>
+							</div>
+						</div>
+						<span class="help-block">Если место было определено неправильно, просто кликните на карте по вашему населенному пункту. Сохраняются даные только по населенному пункту.</span>
+						<div class="row">
+							<div class="col-sm-12" id="yaMap" style="height: 400px;"></div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-xs-offset-4 col-sm-offset-5 ">
+						<input type="hidden" name="btn_save_profile" value="location"/>
+						<button type="submit" class="btn btn-primary" id="btn_location" name="btn_location" value="1" data-loading-text="сохраняю..." autocomplete="off">сохранить</button>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div role="tabpanel" class="tab-pane" id="bike">bike</div>
+		<div role="tabpanel" class="tab-pane" id="interests">interests</div>
+	</div>
 </div>
 <script src="/js/mcMap.js" type="text/javascript"></script>
 <script src="/js/uploadify/jquery.uploadify.min.js" type="text/javascript" ></script>
@@ -204,249 +204,248 @@
 //<!--
 $(function()
 {
-    var userEmptyName = !!MCJS["userEmptyName"];
+	var userEmptyName = !!MCJS["userEmptyName"];
 
-    if (userEmptyName)
-    {
-        $('_userEmptyName_').mcDialog({
-            title: 'Необходимо заполнить данные'
-            , body: 'Укажиет логин или имя'
-            , postRes: false
-        });
-    }
+	if (userEmptyName)
+	{
+		$('_userEmptyName_').mcDialog({
+			title: 'Необходимо заполнить данные'
+			, body: 'Укажиет логин или имя'
+			, postRes: false
+		});
+	}
 
-    var avaUploadOpts = MCJS["avaUploadOpts"];
-    var $avaCropContainer = $('#ava_crop_container');
-    var $formAvaCrop = $('#formAvaCrop');
+	var avaUploadOpts = MCJS["avaUploadOpts"];
+	var $avaCropContainer = $('#ava_crop_container');
+	var $formAvaCrop = $('#formAvaCrop');
 
-    var $avaProfileCrop = $('#ava_crop_base').mcCropper({
-        previewsSelector: '#ava_crop_container .img-preview'
-        ,formCropSelector: $formAvaCrop.selector
-    });
+	var $avaProfileCrop = $('#ava_crop_base').mcCropper({
+		previewsSelector: '#ava_crop_container .img-preview'
+		,formCropSelector: $formAvaCrop.selector
+	});
 
-    avaUploadOpts.onStart = function()
-    {
-        $avaCropContainer.hide();
-    };
+	avaUploadOpts.onStart = function()
+	{
+		$avaCropContainer.hide();
+	};
 
-    avaUploadOpts.onEnd = function()
-    {
-        var uploadFileData = ($(this).data('uploadFileData') && $(this).data('uploadFileData')[0] ? $(this).data('uploadFileData')[0] : null);
-        console.log('uploadFileData');
-        console.log(uploadFileData);
+	avaUploadOpts.onEnd = function()
+	{
+		var uploadFileData = ($(this).data('uploadFileData') && $(this).data('uploadFileData')[0] ? $(this).data('uploadFileData')[0] : null);
+		console.log('uploadFileData');
+		console.log(uploadFileData);
 
-        if (uploadFileData)
-        {
-            $formAvaCrop.find('input#i_file_id').val(uploadFileData["f_id"]);
-            var previews = uploadFileData["previews"];
+		if (uploadFileData)
+		{
+			$formAvaCrop.find('input#i_file_id').val(uploadFileData["f_id"]);
+			var previews = uploadFileData["previews"];
 
-            preloadImages(previews);
-            updAvaProfileSrc($('#profile-ava a'), previews["180_180"]);
-            updAvaProfileSrc($('#navbarFixedTop .userProfileTop'), previews["50_50"]);
+			preloadImages(previews);
+			updAvaProfileSrc($('#profile-ava a'), previews["180_180"]);
+			updAvaProfileSrc($('#navbarFixedTop .userProfileTop'), previews["50_50"]);
 
-            $avaProfileCrop.replaceSrc(previews["1024_768"]);
-        }
-        $avaCropContainer.show();
-    };
+			$avaProfileCrop.replaceSrc(previews["1024_768"]);
+		}
+		$avaCropContainer.show();
+	};
+	
+    $('form#formAva #ava_upload').fileUpload(avaUploadOpts, '#btn_ava_upload');
+    mcDatepicker('#bd_birthday');
     
-	$('form#formAva #ava_upload').fileUpload(avaUploadOpts, '#btn_ava_upload');
+	$formAvaCrop.postRes({btnId: 'btn_crop_ava',
+		onSuccess: function($dialog)
+		{
+			updAvaProfileSrc($('#profile-ava a'));
+			updAvaProfileSrc($('#navbarFixedTop .userProfileTop'));
+			//показать диалог
+			return true;
+		}
+	});
 
-    $("#bd_birthday").datepicker({ dateFormat: 'dd-mm-yy' });
+	$('#formLogin').postRes({btnId: 'btn_save_login'});
+	$('#formBase').postRes({btnId: 'btn_save_base'});
+	$('#formChangeEmail').postRes({btnId: 'btn_change_email'});
+	$('#formContacts').postRes({btnId: 'btn_save_contacts'});
+	
+	$('#formLocation').postRes({btnId: 'btn_location'});
 
-    $formAvaCrop.postRes({btnId: 'btn_crop_ava',
-        onSuccess: function($dialog)
-        {
-            updAvaProfileSrc($('#profile-ava a'));
-            updAvaProfileSrc($('#navbarFixedTop .userProfileTop'));
-            //показать диалог
-            return true;
-        }
-    });
+	var $formPassword = $('#formPassword');
+	$formPassword.postRes({btnId: 'btn_change_password',
+		onSuccess: function($dialog)
+		{
+			$formPassword.find("#s_password").val('');
+			$formPassword.find("#s_password2").val('');
+			//показать диалог
+			return true;
+		},
+		onFail: function($dialog)
+		{
+			//показать диалог
+			return true;
+		}}
+	);
 
-    $('#formLogin').postRes({btnId: 'btn_save_login'});
-    $('#formBase').postRes({btnId: 'btn_save_base'});
-    $('#formChangeEmail').postRes({btnId: 'btn_change_email'});
-    $('#formContacts').postRes({btnId: 'btn_save_contacts'});
-    
-    $('#formLocation').postRes({btnId: 'btn_location'});
+	var mapState = {
+		controls: ["zoomControl", "searchControl", "typeSelector"]
+		, zoom: 10
+	};
+	var mapOptions = {};
+	var UserMcMap = new McMap('yaMap', {state: mapState, options: mapOptions});
+	var uPlacemark;
+	UserMcMap.init()
+			.then(function (UserMap)
+			{
+				UserMap.behaviors.disable('multiTouch');
+				//UserMap.behaviors.disable('scrollZoom');
 
-    var $formPassword = $('#formPassword');
-    $formPassword.postRes({btnId: 'btn_change_password',
-        onSuccess: function($dialog)
-        {
-            $formPassword.find("#s_password").val('');
-            $formPassword.find("#s_password2").val('');
-            //показать диалог
-            return true;
-        },
-        onFail: function($dialog)
-        {
-            //показать диалог
-            return true;
-        }}
-    );
+				UserMap.geoObjects.removeAll();
 
-    var mapState = {
-        controls: ["zoomControl", "searchControl", "typeSelector"]
-        , zoom: 10
-    };
-    var mapOptions = {};
-    var UserMcMap = new McMap('yaMap', {state: mapState, options: mapOptions});
-    var uPlacemark;
-    UserMcMap.init()
-            .then(function (UserMap)
-            {
-                UserMap.behaviors.disable('multiTouch');
-                //UserMap.behaviors.disable('scrollZoom');
+				var searchControl = UserMap.controls.get("searchControl");
+				searchControl.events.add('resultselect', function (res)
+				{
+					/*res.stopPropagation();
+					 res.preventDefault();
+					 res.stopImmediatePropagation();
+					 */
+					searchControl.hideResult();
+					searchControl.getResult(res.get('index'))
+							.then(function (result)
+							{
+								//console.log('result = ', result);
+								//console.log('result.geometry.getCoordinates() = ', result.geometry.getCoordinates());
+								//console.log("result.properties.get('name') = ", result.properties.get('name'));
+								//console.log("result.properties.get('text') = ", result.properties.get('text'));
+								console.log("result.properties = ", result.properties.getAll());
 
-                UserMap.geoObjects.removeAll();
-
-                var searchControl = UserMap.controls.get("searchControl");
-                searchControl.events.add('resultselect', function (res)
-                {
-                    /*res.stopPropagation();
-                     res.preventDefault();
-                     res.stopImmediatePropagation();
-                     */
-                    searchControl.hideResult();
-                    searchControl.getResult(res.get('index'))
-                            .then(function (result)
-                            {
-                                //console.log('result = ', result);
-                                //console.log('result.geometry.getCoordinates() = ', result.geometry.getCoordinates());
-                                //console.log("result.properties.get('name') = ", result.properties.get('name'));
-                                //console.log("result.properties.get('text') = ", result.properties.get('text'));
-                                console.log("result.properties = ", result.properties.getAll());
-
-                                var coords = result.geometry.getCoordinates();
-                                searchControl.getMap().geoObjects.removeAll();
-                                searchControl.getMap().geoObjects.add(new ymaps.Placemark(coords));
+								var coords = result.geometry.getCoordinates();
+								searchControl.getMap().geoObjects.removeAll();
+								searchControl.getMap().geoObjects.add(new ymaps.Placemark(coords));
 
 
-                                var text = result.properties.get('text') || result.properties.get('geocoderMetaData.text');
+								var text = result.properties.get('text') || result.properties.get('geocoderMetaData.text');
 
-                                setLocationOnForm(text, coords[0], coords[1]);
-                            })
-                            .fail(function (err)
-                            {
-                                console.log(err);
-                                setLocationOnForm('', '', '');
-                            });
-                }, this);
+								setLocationOnForm(text, coords[0], coords[1]);
+							})
+							.fail(function (err)
+							{
+								console.log(err);
+								setLocationOnForm('', '', '');
+							});
+				}, this);
 
-                UserMap.events.add('click', function (event)
-                {
-                    //return McMap.locationByLatLng(event.get('coords'), {kind:"locality"})
-                    return McMap.locationByLatLng(event.get('coords'))
-                            .then(function(location)
-                            {
-                                uPlacemark.geometry.setCoordinates(location.coords);
+				UserMap.events.add('click', function (event)
+				{
+					//return McMap.locationByLatLng(event.get('coords'), {kind:"locality"})
+					return McMap.locationByLatLng(event.get('coords'))
+							.then(function(location)
+							{
+								uPlacemark.geometry.setCoordinates(location.coords);
 
-                                setLocationOnForm(location.text, location.lat, location.lng);
-                            })
-                            .fail(function(err)
-                            {
-                                setLocationOnForm('', '', '');
-                            });
-                });
+								setLocationOnForm(location.text, location.lat, location.lng);
+							})
+							.fail(function(err)
+							{
+								setLocationOnForm('', '', '');
+							});
+				});
 
-                uPlacemark = new ymaps.Placemark(
-                        UserMap.getCenter()
-                        ,	{}
-                        ,   {
-                            /* Опции*/
-                            //preset: 'islands#blueStretchyIcon' /* иконка растягивается под контент */
-                            //preset: 'islands#blueBicycle2Icon
-                            preset: 'islands#blueDotIconWithCaption'
-                            ,	draggable: true
-                        });
-                /* когда двигаем метку */
-                uPlacemark.events.add('dragend', function (e)
-                {
-                    var thisPlacemark = e.get('target');
-                    var coords = thisPlacemark.geometry.getCoordinates();
+				uPlacemark = new ymaps.Placemark(
+						UserMap.getCenter()
+						,	{}
+						,   {
+							/* Опции*/
+							//preset: 'islands#blueStretchyIcon' /* иконка растягивается под контент */
+							//preset: 'islands#blueBicycle2Icon
+							preset: 'islands#blueDotIconWithCaption'
+							,	draggable: true
+						});
+				/* когда двигаем метку */
+				uPlacemark.events.add('dragend', function (e)
+				{
+					var thisPlacemark = e.get('target');
+					var coords = thisPlacemark.geometry.getCoordinates();
 
-                    return McMap.locationByLatLng(coords, {kind:"locality"})
-                            .then(function (location)
-                            {
-                                setLocationOnForm(location.text, location.coords[0], location.coords[1])
-                            })
-                            .fail(function(err)
-                            {
-                                setLocationOnForm('', '', '');
-                            });
-                });
-                UserMap.geoObjects.add(uPlacemark);
+					return McMap.locationByLatLng(coords, {kind:"locality"})
+							.then(function (location)
+							{
+								setLocationOnForm(location.text, location.coords[0], location.coords[1])
+							})
+							.fail(function(err)
+							{
+								setLocationOnForm('', '', '');
+							});
+				});
+				UserMap.geoObjects.add(uPlacemark);
 
-                return ymaps.vow.resolve(UserMap);
-            })
-            .then(function (UserMap)
-            {
-                if (MCJS["userLocation"] && MCJS["userLocation"]["u_latitude"] && MCJS["userLocation"]["u_longitude"])
-                {
-                    var location = {
-                        coords: [ MCJS["userLocation"]["u_latitude"], MCJS["userLocation"]["u_longitude"] ],
-                        lat: MCJS["userLocation"]["u_latitude"],
-                        lng:  MCJS["userLocation"]["u_longitude"],
-                        text: MCJS["userLocation"]["l_full_name"],
-                        names: MCJS["userLocation"]["l_full_name"].split(',')
-                    };
+				return ymaps.vow.resolve(UserMap);
+			})
+			.then(function (UserMap)
+			{
+				if (MCJS["userLocation"] && MCJS["userLocation"]["u_latitude"] && MCJS["userLocation"]["u_longitude"])
+				{
+					var location = {
+						coords: [ MCJS["userLocation"]["u_latitude"], MCJS["userLocation"]["u_longitude"] ],
+						lat: MCJS["userLocation"]["u_latitude"],
+						lng:  MCJS["userLocation"]["u_longitude"],
+						text: MCJS["userLocation"]["l_full_name"],
+						names: MCJS["userLocation"]["l_full_name"].split(',')
+					};
 
-                    return ymaps.vow.resolve([UserMap, location, false]);
-                }
+					return ymaps.vow.resolve([UserMap, location, false]);
+				}
 
-                return ymaps.vow.resolve([UserMap, {}, true]);
-            })
-            .spread(function (UserMap, location, autoSave)
-            {
-                if (!autoSave)
-                    return ymaps.vow.resolve([UserMap, location]);
+				return ymaps.vow.resolve([UserMap, {}, true]);
+			})
+			.spread(function (UserMap, location, autoSave)
+			{
+				if (!autoSave)
+					return ymaps.vow.resolve([UserMap, location]);
 
-                return McMap.userLocation()
-                        .then(function (location)
-                        {
-                            var $formLocation = $('#formLocation');
-                            $.ajax({
-                                url: $formLocation.attr('action'),
-                                method: "POST",
-                                data: $formLocation.serialize(),
-                                dataType: "json"
-                            })
-                            .done(function(data)
-                            {
-                                //console.log( data );
-                            })
-                            .fail(function(err)
-                            {
-                                setLocationOnForm('', '', '');
-                            });
+				return McMap.userLocation()
+						.then(function (location)
+						{
+							var $formLocation = $('#formLocation');
+							$.ajax({
+								url: $formLocation.attr('action'),
+								method: "POST",
+								data: $formLocation.serialize(),
+								dataType: "json"
+							})
+							.done(function(data)
+							{
+								//console.log( data );
+							})
+							.fail(function(err)
+							{
+								setLocationOnForm('', '', '');
+							});
 
-                            return ymaps.vow.resolve([UserMap, location]);
-                        });
-            })
-            .spread(function (UserMap, location)
-            {
-                setLocationOnForm(location.text, location.lat, location.lng);
+							return ymaps.vow.resolve([UserMap, location]);
+						});
+			})
+			.spread(function (UserMap, location)
+			{
+				setLocationOnForm(location.text, location.lat, location.lng);
 
-                UserMap.setCenter(location.coords);
-                uPlacemark.geometry.setCoordinates(location.coords);
+				UserMap.setCenter(location.coords);
+				uPlacemark.geometry.setCoordinates(location.coords);
 
-                return ymaps.vow.resolve(true);
-            })
-            .fail(function(err)
-            {
-                console.log("не удалось определить координаты");
-                console.log(err);
-                setLocationOnForm('', '', '');
-            });
+				return ymaps.vow.resolve(true);
+			})
+			.fail(function(err)
+			{
+				console.log("не удалось определить координаты");
+				console.log(err);
+				setLocationOnForm('', '', '');
+			});
 
-    function setLocationOnForm(text, lat, lgn)
-    {
-        var $s_location = $('#s_location').val(text);
-        $s_location.attr('data-original-title', text);
-        $('#f_lat').val(lat);
-        $('#f_lng').val(lgn);
-    }
+	function setLocationOnForm(text, lat, lgn)
+	{
+		var $s_location = $('#s_location').val(text);
+		$s_location.attr('data-original-title', text);
+		$('#f_lat').val(lat);
+		$('#f_lng').val(lgn);
+	}
 });
 //-->
 </script>

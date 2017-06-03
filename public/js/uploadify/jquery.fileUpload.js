@@ -54,7 +54,7 @@
 
 			return formData;
 		}
-
+		
 		function getFileTypes(types, type)
 		{
 			var type_list = Object.keys(types);
@@ -66,7 +66,9 @@
 				//types = types.map(function(item){return type+'\/'+item;});
 				 type_list.forEach(function(f_type){
 					 types[f_type].forEach(function(item){
-						 res_types.push(f_type+'\/'+item); 
+						 res_types.push(f_type+'\/'+item);
+						 
+						 settings._fileExtsList.push(item);
 					 });
 				});
 			}
@@ -77,6 +79,7 @@
 				type_list.forEach(function(f_type){
 					types[f_type].forEach(function(item){
 						res_types.push('*.'+item);
+						settings._fileExtsList.push(item);
 					});
 				});
 				
@@ -91,20 +94,21 @@
 		function onFileTooBig(file)
 		{
 			if (!file) return;
-
+			
 			file["reason"] = 'Объем файла '+(file["name"] ? file["name"]+' ' : '')+'превышает допустимые ' +settings.maxFileSize +'Mb';
-
+			
 			saveNotUploadedFile(file);
 			removeFileFromQueueData(file);
 		}
-
 		function onForbiddenFileType(file)
 		{
 			if (!file) return;
-
-			var types =  (winFileReader() ? settings.fileType : settings.fileTypeExts);
+			
+			settings.fileTypes
+			
+			//var types =  (winFileReader() ? settings.fileType : settings.fileTypeExts);
 			file["reason"] = 'Тип файла '+(file["name"] ? file["name"]+' ' : '')+'запрещен для загрузки.<br/> ' +
-				'Разрешенные типы файлов: ' + types;
+				'Разрешенные типы файлов: ' + settings._fileExtsList.join(', ');
 
 			saveNotUploadedFile(file);
 			removeFileFromQueueData(file);
@@ -288,7 +292,9 @@
 		settings.queueSizeLimit = (settings.multi ? 5 : 1);
 		settings.uploadLimit    = 999;
 		settings.successTimeout = 120; //sec
-
+		
+		settings._fileExtsList = [];
+		
 		if (winFileReader())//uploadifive
 		{
 			settings.uploadScript = $fileUpload.parents('form').attr('action');

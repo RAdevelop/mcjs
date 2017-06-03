@@ -222,6 +222,7 @@ class Events extends Base
 		let ufile = {};
 		
 		const UploadFile = new FileUpload(Events.uploadConfigName, req, res);
+		let uploadConfig = FileUpload.getUploadConfig(Events.uploadConfigName);
 		
 		return UploadFile.upload()
 			.then((file) =>
@@ -232,8 +233,7 @@ class Events extends Base
 				return this.get(e_id)
 					.then((event) => 
 					{
-						if (event["file_cnt"] >= 5)
-							throw new FileErrors.LimitExceeded('Можно добавить не более 5 файлов.');
+						uploadConfig.checkLimitFile(event["file_cnt"], FileErrors.LimitExceeded);
 						
 						return Promise.resolve(ufile);
 					});
@@ -261,7 +261,10 @@ class Events extends Base
 			.then((file) =>
 			{
 				if (file.type != FileUpload.TYPE_IMAGE)
+				{
+					file = FileUpload.getPreviews([], file, false, true)['obj'];
 					return Promise.resolve(file);
+				}
 				
 				return UploadFile.setImageGeo(file)
 					.then((file) => 
@@ -273,7 +276,10 @@ class Events extends Base
 			{
 				//console.log(file);
 				return this.model('events')
-					.updImage(file.e_id, file.f_id, file.latitude, file.longitude, file.webDirPath, file.name, file.type, true)
+					.updImage(
+						file.e_id, file.f_id, file.latitude, file.longitude, 
+						file.webDirPath, file.name, file.type, true
+					)
 					.then(() => 
 					{
 						ufile = null;
@@ -313,6 +319,11 @@ class Events extends Base
 	 */
 	getImage(f_id)
 	{
+		f_id = parseInt(f_id, 10)||0;
+		
+		if (!f_id)
+			return Promise.resolve(null);
+		
 		return this.model('events').getImage(f_id)
 			.then((image) => 
 			{
@@ -362,18 +373,19 @@ class Events extends Base
 	delImage(u_id, e_id, f_id, file = {})
 	{
 		return FileUpload.deleteFile(file.path || '')
-			.then(() => {
+			.then(() => 
+			{
 				return this.getImage(f_id);
 			})
-			.then((image) => {
-
+			.then((image) => 
+			{
 				if (!image || image["e_id"] != e_id)
 					throw new FileErrors.io.FileNotFoundError();
-
+				
 				return Promise.resolve(image);
 			})
-			.then((image) => {
-
+			.then((image) => 
+			{
 				let dir = (image["f_dir"] ? image["f_dir"] : (file["webDirPath"] ? file["webDirPath"] : null));
 
 				if (!dir)
