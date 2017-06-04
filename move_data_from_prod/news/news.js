@@ -49,8 +49,9 @@ function insertNews()
 	, n.n_notice AS n_notice
 	, n.n_text AS n_text
 	, 11 AS u_id
-	, COUNT(nf.f_id) AS n_img_cnt
+	, COUNT(nf.f_id) AS file_cnt
 	, n.n_active AS n_show
+	, 'image' AS f_type
 	FROM (SELECT NULL) AS z
 	JOIN news AS n ON(n.n_active = 1)
 	LEFT JOIN news_file AS nf ON(nf.po_id = n.n_id AND nf.f_type = 'image')
@@ -65,13 +66,13 @@ function insertNews()
 			list.forEach((news)=>
 			{
 				sqlIns.push(sVals);
-				sqlData.push(news['n_id'],news['n_create_ts'],news['n_update_ts'],news['n_show_ts'],news['n_title'],news['n_alias'],news['n_notice'],news['n_text'],news['u_id'],news['n_img_cnt'],news['n_show']);
+				sqlData.push(news['n_id'],news['n_create_ts'],news['n_update_ts'],news['n_show_ts'],news['n_title'],news['n_alias'],news['n_notice'],news['n_text'],news['u_id'],news['file_cnt'],news['n_show']);
 			});
 
 			sqlIns = sqlIns.join(',');
 
 			let sql = `INSERT INTO news_list
-					(n_id, n_create_ts,n_update_ts,n_show_ts,n_title,n_alias,n_notice,n_text,u_id,n_img_cnt, n_show) 
+					(n_id, n_create_ts,n_update_ts,n_show_ts,n_title,n_alias,n_notice,n_text,u_id,file_cnt, n_show) 
 					VALUES ${sqlIns}`;
 
 			/*console.log(sql);
@@ -141,16 +142,20 @@ function updateText()
 function insertFiles()
 {
 	let sql = `SELECT
-	f_id AS f_id, po_id AS n_id, UNIX_TIMESTAMP(f_date) AS f_create_ts, UNIX_TIMESTAMP(f_date) AS f_update_ts
-	, '' AS f_dir, IF(f_position-1 < 0, 0, f_position-1) AS f_pos, REPLACE(REPLACE(REPLACE(f_name, ':', ''), ',', ''), '+', ' ') AS f_name
+	f_id AS f_id, po_id AS n_id
+	, UNIX_TIMESTAMP(f_date) AS f_create_ts
+	, UNIX_TIMESTAMP(f_date) AS f_update_ts
+	, '' AS f_dir, IF(f_position-1 < 0, 0, f_position-1) AS f_pos
+	, REPLACE(REPLACE(REPLACE(f_name, ':', ''), ',', ''), '+', ' ') AS f_name
 	, f_path_original AS file_from
+	, 'image' AS f_type
 	FROM news_file
 	WHERE f_type = 'image'`;
 
 	return DB.conn(null, prodDbConf).s(sql)
 		.then((list)=>
 		{
-			let sVals = `(?,?,?,?,?,?,?)`;
+			let sVals = `(?,?,?,?,?,?,?,?)`;
 			let sqlIns = [];
 			let sqlData = [];
 			let dir_list = [];
@@ -166,13 +171,16 @@ function insertFiles()
 					file_to:            full_path_to_dir+dir+'/orig/'+file['f_name']
 				});
 				sqlIns.push(sVals);
-				sqlData.push(file['f_id'],file['n_id'],file['f_create_ts'],file['f_update_ts'], dir,file['f_pos'],file['f_name']);
+				sqlData.push(
+					file['f_id'],file['n_id'],file['f_create_ts'],file['f_update_ts'], dir
+					,file['f_pos'],file['f_name'],file['f_type']
+				);
 			});
 
 			sqlIns = sqlIns.join(',');
 
 			let sql = `INSERT INTO news_file
-					(f_id, n_id, f_create_ts, f_update_ts, f_dir, f_pos, f_name) 
+					(f_id, n_id, f_create_ts, f_update_ts, f_dir, f_pos, f_name, f_type) 
 					VALUES ${sqlIns}`;
 
 			/*console.log(sql);

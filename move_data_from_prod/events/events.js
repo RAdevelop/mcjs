@@ -252,16 +252,20 @@ function updateText()
 function insertFiles()
 {
 	let sql = `SELECT
-	f_id AS f_id, po_id AS e_id, UNIX_TIMESTAMP(f_date) AS f_create_ts, UNIX_TIMESTAMP(f_date) AS f_update_ts
-	, '' AS f_dir, IF(f_position-1 < 0, 0, f_position-1) AS f_pos, REPLACE(REPLACE(REPLACE(f_name, ':', ''), ',', ''), '+', ' ') AS f_name
+	f_id AS f_id, po_id AS e_id
+	, UNIX_TIMESTAMP(f_date) AS f_create_ts
+	, UNIX_TIMESTAMP(f_date) AS f_update_ts
+	, '' AS f_dir, IF(f_position-1 < 0, 0, f_position-1) AS f_pos
+	, REPLACE(REPLACE(REPLACE(f_name, ':', ''), ',', ''), '+', ' ') AS f_name
 	, f_path_original AS file_from
+	, 'image' AS f_type
 	FROM events_file
 	WHERE f_type = 'image'`;
 
 	return DB.conn(null, prodDbConf).s(sql)
 		.then((list)=>
 		{
-			let sVals = `(?,?,?,?,?,?,?)`;
+			let sVals = `(?,?,?,?,?,?,?,?)`;
 			let sqlIns = [];
 			let sqlData = [];
 			let dir_list = [];
@@ -277,13 +281,16 @@ function insertFiles()
 					file_to:            full_path_to_dir+dir+'/orig/'+file['f_name']
 				});
 				sqlIns.push(sVals);
-				sqlData.push(file['f_id'],file['e_id'],file['f_create_ts'],file['f_update_ts'], dir,file['f_pos'],file['f_name']);
+				sqlData.push(
+					file['f_id'],file['e_id'],file['f_create_ts'],file['f_update_ts'], dir
+					,file['f_pos'],file['f_name'], file['f_type']
+				);
 			});
 
-			sqlIns = sqlIns.join(',')
+			sqlIns = sqlIns.join(',');
 
 			let sql = `INSERT INTO events_file
-					(f_id, e_id, f_create_ts, f_update_ts, f_dir, f_pos, f_name) 
+					(f_id, e_id, f_create_ts, f_update_ts, f_dir, f_pos, f_name, f_type) 
 					VALUES ${sqlIns}`;
 
 			return DB.conn().ins(sql, sqlData)

@@ -81,6 +81,7 @@ function createProfileAlbum()
 	, TRIM(REPLACE(REPLACE(REPLACE(f_name, ':', ''), ',', ''), '+', ' ')) AS f_name
 	, f_path_original AS file_from
 	, 1 AS f_profile
+	, 'image' AS f_type
 	, IF(LOCATE('empty-avatar.png', f_path_original) > 0, 0, 1) AS ava_exists
 	FROM users_avatar
 	GROUP BY f_id
@@ -109,7 +110,7 @@ function createProfileAlbum()
 					//console.log(list);
 					promiseFiles = null;
 
-					let sVals = `(?,?,?,?,?,?,?,?)`;
+					let sVals = `(?,?,?,?,?,?,?,?,?)`;
 					let sqlIns = [];
 					let sqlData = [];
 					let dir_list = [];
@@ -130,13 +131,16 @@ function createProfileAlbum()
 							file_to:            full_path_to_dir+dir+'/orig/'+file['f_name']
 						});
 						sqlIns.push(sVals);
-						sqlData.push(file['a_id'],file['u_id'],file['f_create_ts'],file['f_update_ts'], dir,file['f_pos'],file['f_name'],file['f_profile']);
+						sqlData.push(
+							file['a_id'],file['u_id'],file['f_create_ts'],file['f_update_ts'], dir
+							,file['f_pos'],file['f_name'],file['f_profile'],file['f_type']
+						);
 					});
 
 					sqlIns = sqlIns.join(',');
 
 					let sql = `INSERT INTO album_image
-					(a_id, u_id, f_create_ts, f_update_ts, f_dir, f_pos, f_name, f_profile) 
+					(a_id, u_id, f_create_ts, f_update_ts, f_dir, f_pos, f_name, f_profile, f_type) 
 					VALUES ${sqlIns}`;
 
 					return DB.conn().ins(sql, sqlData)
@@ -245,6 +249,7 @@ function insertFiles()
 	, IF(af.f_position-1 < 0, 0, af.f_position-1) AS f_pos
 	, TRIM(REPLACE(REPLACE(REPLACE(af.f_name, ':', ''), ',', ''), '+', ' ')) AS f_name
 	, af.f_path_original AS file_from
+	, 'image' AS f_type
 	FROM user_photo_album_file AS af
 	JOIN user_photo_album AS a ON(a.upa_id = af.po_id)
 	WHERE af.f_type = 'image'`;
@@ -252,7 +257,7 @@ function insertFiles()
 	return DB.conn(null, prodDbConf).s(sql)
 		.then((list)=>
 		{
-			let sVals = `(?,?,?,?,?,?,?)`;
+			let sVals = `(?,?,?,?,?,?,?,?)`;
 			let sqlIns = [];
 			let sqlData = [];
 
@@ -267,13 +272,16 @@ function insertFiles()
 
 				sqlIns.push(sVals);
 				//sqlData.push(file['f_id'],file['a_id'],file['f_create_ts'],file['f_update_ts'], dir,file['f_pos'],file['f_name']);
-				sqlData.push(file['a_id'],file['u_id'],file['f_create_ts'],file['f_update_ts'], file['f_pos'],file['f_name'],file['f_text']);
+				sqlData.push(
+					file['a_id'],file['u_id'],file['f_create_ts'],file['f_update_ts'], 
+					file['f_pos'],file['f_name'],file['f_text'],file['f_type']
+				);
 			});
 
 			sqlIns = sqlIns.join(',');
 
 			let sql = `INSERT INTO album_image
-					(a_id,u_id, f_create_ts, f_update_ts, f_pos, f_name, f_text) 
+					(a_id,u_id, f_create_ts, f_update_ts, f_pos, f_name, f_text, f_type) 
 					VALUES ${sqlIns}`;
 
 			return DB.conn().ins(sql, sqlData);
