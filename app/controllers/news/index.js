@@ -66,10 +66,7 @@ class News extends CtrlMain
 			return this._news(tplData, i_news_id, s_news_alias);
 		
 		if (b_tag)
-		{
-			s_tag = decodeURIComponent(s_tag);
 			return this._tagNewsList(tplData, s_tag);
-		}
 		
 		return this._newsList(tplData);
 	}
@@ -82,32 +79,32 @@ class News extends CtrlMain
 			.spread((newsList, Pages) =>
 			{
 				tplData['newsList'] = newsList;
-
+				
 				let baseUrl = [this.getBaseUrl(), 'tag', s_tag];
-
+				
 				baseUrl = baseUrl.join('/');
 				Pages.setLinksUri(baseUrl);
-
+				
 				tplData['pages'] = Pages.pages();
-
+				
 				let isAjax = this.getReq().xhr;
 				let tplFile = (isAjax ? 'news/list.ejs':'news');
-
+				
 				this.view.setTplData(tplFile, tplData, isAjax);
-
+				
 				if (!isAjax)
 				{
 					this.getRes().expose(newsList, 'newsList');
 					this.getRes().expose(tplData['pages'], 'pages');
-
+					
 					//this.view.addPartialData("user/left", {user: userData});
 					//this.view.addPartialData("user/right", {title: 'right_col'});
 				}
-
+				
 				return Promise.resolve(isAjax);
 			});
 	}
-
+	
 	/**
 	 * выбранная новость
 	 *
@@ -174,7 +171,7 @@ class News extends CtrlMain
 				});
 			});
 	}
-
+	
 	/**
 	 * список новостей
 	 *

@@ -13,7 +13,7 @@ class Blog extends Base
 	{
 		return `user_blog`;
 	}
-
+	
 	/**
 	 * добавляем контент в блог
 	 *
@@ -161,10 +161,10 @@ class Blog extends Base
 							{
 								if (!blogList)
 									return Promise.resolve([null, Pages]);
-
+								
 								let sizeParams = FileUpload.getUploadConfig(Blog.uploadConfigName).sizeParams;
-								blogList = FileUpload.getPreviews(sizeParams, blogList)["obj"];
-
+								blogList = FileUpload.getPreviews(sizeParams, blogList, false)["obj"];
+								
 								return Promise.resolve([blogList, Pages]);
 							});
 					});

@@ -8,18 +8,19 @@ class KeyWords extends Base
 {
 	getObjName(objClass)
 	{
+		let objName = null;
 		if (objClass instanceof this.getClass('events').constructor)
-			return 'events_list';
+			objName = 'events_list';
 		if (objClass instanceof this.getClass('news').constructor)
-			return 'news_list';
+			objName = 'news_list';
 		if (objClass instanceof this.getClass('blog').constructor)
-			return 'blog_list';
+			objName = 'blog_list';
 		if (objClass instanceof this.getClass('user').constructor)
-			return 'user_photo';
-
+			objName = 'user_photo';
+		
 		objClass = null;
 		
-		return null;
+		return objName;
 	}
 
 	/**

@@ -115,7 +115,7 @@ class Events extends Base
 			{
 				if (!kw)
 					return Promise.resolve([0, null]);
-
+				
 				return this.getClass('keywords').countObjByKwId(this, kw['kw_id'])
 					.then((cnt)=>
 					{
@@ -127,26 +127,26 @@ class Events extends Base
 				Pages.setTotal(cnt);
 				if (!cnt)
 					return [null, Pages];
-
+				
 				if (Pages.limitExceeded())
 					throw new FileErrors.HttpError(404);
-
+				
 				return this.getClass('keywords')
 					.getObjListByKwId(this, kw_id, Pages.getLimit(), Pages.getOffset())
 					.then((obj_ids)=>
 					{
 						if (!obj_ids)
 							return Promise.resolve([null, Pages]);
-
+						
 						return this.model('events').getEventsByIds(obj_ids)
 							.then((eventList) =>
 							{
 								if (!eventList)
 									return Promise.resolve([null, Pages]);
-
+								
 								let sizeParams = FileUpload.getUploadConfig(Events.uploadConfigName).sizeParams;
-								eventList = FileUpload.getPreviews(sizeParams, eventList)["obj"];
-
+								eventList = FileUpload.getPreviews(sizeParams, eventList, false)["obj"];
+								
 								return Promise.resolve([eventList, Pages]);
 							});
 					});

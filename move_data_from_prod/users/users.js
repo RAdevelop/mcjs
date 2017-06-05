@@ -43,7 +43,10 @@ let prodDbConf = {
 
 function truncateTables()
 {
-	let sql = `DELETE FROM  users where u_id != 1;DELETE FROM  users_data where u_id != 1; DELETE FROM  users_in_groups where u_id != 1;`;
+	let sql = `DELETE FROM  users where u_id != 1;
+	DELETE FROM  users_in_groups where u_id != 1;
+	truncate users_data;
+	truncate users_locations;`;
 	return DB.conn().multis(sql);
 }
 
@@ -115,8 +118,16 @@ function insertUsersData()
 							let sqlIns = [];
 							let sqlData = [];
 							let sVals = `(?,?,?,?,?)`;
+							
+							let reg_u_surname = /[;&]+$/;
 							list.forEach((user)=>
 							{
+								if (reg_u_surname.test(user['u_surname']))
+									user['u_surname'] = '';
+								
+								if (reg_u_surname.test(user['u_name']))
+									user['u_name'] = '';
+								
 								sqlIns.push(sVals);
 								sqlData.push(
 									user['u_id'],

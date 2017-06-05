@@ -348,14 +348,15 @@ class Base
 			{
 				if (routePaths[actionName][routers[i]] && routePaths[actionName][routers[i]].length)
 				{
-					routePaths[actionName][routers[i]].forEach((varName, i) => {
-
+					routePaths[actionName][routers[i]].forEach((varName, i) => 
+					{
 						if (varName)
 						{
-							tmpArgs[varName] = args[i];
+							//tmpArgs[varName] = args[i];
+							tmpArgs[varName] = decodeURIComponent(args[i]);
 						}
 					});
-
+					
 					//this.routeArgs = Helpers.varsValidate(tmpArgs);
 					this.routeArgs = tmpArgs;
 				}

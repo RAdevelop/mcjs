@@ -88,17 +88,16 @@ class Events extends CtrlMain
 				obj: {}
 			}
 		};
-
+		
 		let {i_event_id=null, s_event_alias=null, i_yy=null, i_mm=null, i_dd=null
 			, b_tag=null, s_tag=null
 		} = this.routeArgs;
-
+		
 		b_tag = !!b_tag;
-
+		
 		if (i_event_id)
 			return this._event(tplData, i_event_id, s_event_alias);
-
-
+		
 		if (!i_yy && !i_mm && !i_dd)
 		{
 			let date = new Date();
@@ -119,13 +118,10 @@ class Events extends CtrlMain
 		this._setSelectedDateObj({i_yy:i_yy, i_mm:i_mm, i_dd:i_dd});
 
 		tplData['selectedDate']['obj'] = this._getSelectedDateObj();
-
+		
 		if (b_tag)
-		{
-			s_tag = decodeURIComponent(s_tag);
-			return this._tagEventList(tplData, s_tag);
-		}
-
+		return this._tagEventList(tplData, s_tag);
+		
 		if (!!i_dd)
 		{
 			if (!Moment([i_yy,i_mm,i_dd].join('-'), 'YYYY-MM-DD').isValid())
@@ -256,20 +252,19 @@ class Events extends CtrlMain
 				return Promise.resolve(null);
 			});
 	}
-
-
+	
 	_tagEventList(tplData, s_tag)
 	{
 		let {i_page=1} = this.routeArgs;
-
+		
 		return this.getClass('events').getEventsByTag(new Pages(i_page, limit_per_page), s_tag)
 			.spread((eventList, Pages) =>
 			{
 				if (!eventList || !eventList.length)
 					throw new Errors.HttpError(404);
-
+				
 				tplData['eventList'] = eventList;
-
+				
 				let isAjax = this.getReq().xhr;
 				let baseUrl = [this.getBaseUrl(), 'tag', s_tag];
 				baseUrl = baseUrl.join('/');

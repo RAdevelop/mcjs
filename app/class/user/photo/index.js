@@ -119,7 +119,7 @@ class UserPhoto extends User
 					{
 						if (!a_ids)
 							return Promise.resolve([null, Pages]);
-
+						
 						return this.model('user/photo').getAlbumListByIds(a_ids)
 							.then((albumList) =>
 							{
@@ -127,16 +127,16 @@ class UserPhoto extends User
 								{
 									return Promise.resolve([null, Pages]);
 								}
-
+								
 								let sizeParams = FileUpload.getUploadConfig(User.uploadPhotoConfigName).sizeParams;
-								albumList = FileUpload.getPreviews(sizeParams, albumList)["obj"];
-
+								albumList = FileUpload.getPreviews(sizeParams, albumList, false)["obj"];
+								
 								return Promise.resolve([albumList, Pages]);
 							});
 					});
 			});
 	}
-
+	
 	/**
 	 * выбранный альбом пользователя
 	 *

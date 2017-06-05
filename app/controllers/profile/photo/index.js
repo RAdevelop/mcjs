@@ -63,7 +63,6 @@ class ProfilePhoto extends CtrlMain
 				if (b_tag)
 				{
 					tplData['addUsersAva'] = true;
-					s_tag = decodeURIComponent(s_tag);
 					return this._tagAlbumList(tplData, s_tag);
 				}
 				

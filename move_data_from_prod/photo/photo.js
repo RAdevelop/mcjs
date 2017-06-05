@@ -21,6 +21,12 @@ const UploadFile = new FileUpload(uploadConf);
 
 let full_path_to_dir = Path.join(__dirname+'/../../', 'public');
 let old_path_to_dir = Path.join(__dirname+'/../../../', 'motocom_prod','htdocs');
+
+//кол-во пользователей, которые реально загрузили аватарку
+/*SELECT * FROM wwwmotocommunity.users_avatar
+where f_path NOt like '%/empty-avatar.png'
+;*/
+let upa_id_increase = 35;
 /*
 
 console.log(dir_prefix);
@@ -177,7 +183,7 @@ function insertAlbums()
 {
 	console.log('start insertAlbums');
 	let sql = `SELECT 
-		a.upa_id+33 AS a_id
+		a.upa_id+${upa_id_increase} AS a_id
 		, a.u_id+10 AS u_id
 		, 3 AS a_type_id
 		, a.upa_name AS a_name
@@ -241,7 +247,7 @@ function insertAlbums()
 function insertFiles()
 {
 	let sql = `SELECT
-	af.po_id+33 AS a_id
+	af.po_id+${upa_id_increase} AS a_id
 	, a.u_id+10 AS u_id
 	, UNIX_TIMESTAMP(af.f_date) AS f_create_ts
 	, UNIX_TIMESTAMP(af.f_date) AS f_update_ts
