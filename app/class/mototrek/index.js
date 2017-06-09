@@ -48,18 +48,18 @@ class Mototrek extends Base
 
 		return this.model('mototrek').edit(i_mtt_id, s_mtt_name, t_mtt_descrip, s_mtt_website, m_mtt_email, s_mtt_phones, s_mtt_address, f_mtt_lat, f_mtt_lng, location_id, gps_lat, gps_lng);
 	}
-
+	
 	/**
 	 * данные трека по его id
 	 *
 	 * @param mtt_id
 	 * @returns {Promise}
 	 */
-	get(mtt_id)
+	getMototrek(mtt_id)
 	{
 		return this.model('mototrek').getById(mtt_id);
 	}
-
+	
 	/**
 	 * список всех треков
 	 *
@@ -69,7 +69,7 @@ class Mototrek extends Base
 	{
 		return this.model('mototrek').getAll();
 	}
-
+	
 	/**
 	 * список локаций, к которым привязан трек (включая родительские районы, города, страны..)
 	 *

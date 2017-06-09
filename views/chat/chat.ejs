@@ -1,6 +1,6 @@
-<%  if(!_isXHR){%><%- layout('layout/index') %><% } -%>
+<% if(!_isXHR){%><%- layout('layout/index') %><% } -%>
 <div class="page-header">
-    <h1><%= h1 %></h1>
+	<h1><%= h1 %></h1>
 </div>
 <div id="chat">
 	<div id="messages_wrapper">
@@ -32,7 +32,7 @@ $(function(){
 		"reconnectionDelayMax" : 60000,             //1 minute maximum delay between connections
 		"reconnectionAttempts": "Infinity",         //to prevent dead clients, having the user to having to manually reconnect after a server restart.
 		"timeout" : 10000                           //before connect_error and connect_timeout are emitted.
-			,"transports" : ['polling', 'websocket']                //forces the transport to be only websocket. Server needs to be setup as well/
+		,"transports" : ['polling', 'websocket']                //forces the transport to be only websocket. Server needs to be setup as well/
 	};
 	
 	
@@ -143,9 +143,9 @@ $(function(){
 		$messagesWrapper.scrollTop($messagesWrapper.height());
 	});
 	
-	chat.on('chat:msg:get', function(data)
+	chat.on('message', function(data)
 	{
-		console.log('on chat:msg:get');
+		console.log('on message');
 		console.log(data);
 
 		//var ava = !!(data['from']['user']['previews']['50_50']);

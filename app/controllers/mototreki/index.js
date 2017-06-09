@@ -42,22 +42,22 @@ class Mototreki extends CtrlMain
 		let {i_mtt_id} = this.routeArgs;
 
 		return Promise.props({
-			trekData: this.trekData(i_mtt_id),
+			trekData: this._trekData(i_mtt_id),
 			userData: this.getUser(this.getUserId())
 		})
 			.then((props) =>
 			{
 				//trek, trekList
 				let tplData = {};
-
+				
 				tplData.trek = props.trekData[0] || null;
 				tplData.trekList = props.trekData[1] || null;
-
+				
 				let tplFile = "mototreki";
 				if (props.trekData[0])
 				{
 					this.getRes().expose(props.trekData[0], 'trek');
-
+					
 					this.view.setPageTitle(props.trekData[0]["mtt_name"]);
 					this.view.setPageH1(props.trekData[0]["mtt_name"]);
 					this.view.setPageDescription(CtrlMain.cheerio(props.trekData[0]["mtt_descrip"]).text());
@@ -67,29 +67,29 @@ class Mototreki extends CtrlMain
 					this.getRes().expose(props.trekData[1], 'trekList');
 					//this.getRes().expose(trekLocations, 'trekLocations');
 				}
-
+				
 				this.view.setTplData(tplFile, tplData);
 				this.view.addPartialData("user/left", {user: props.userData});
 				//this.view.addPartialData("user/right", {title: 'right_col'});
-
+				
 				return Promise.resolve(null);
 			});
 	}
-
+	
 	/**
 	 * что показывать - указанный трек, или список треков...
 	 * 
 	 * @param i_mtt_id
 	 * @returns {Promise}
 	 */
-	trekData(i_mtt_id)
+	_trekData(i_mtt_id)
 	{
 		if (i_mtt_id)
-			return this.trek(i_mtt_id);
-
-		return this.trekList();
+			return this._trek(i_mtt_id);
+		
+		return this._trekList();
 	}
-
+	
 	/**
 	 * выбранный трек
 	 *
@@ -97,24 +97,24 @@ class Mototreki extends CtrlMain
 	 * @returns Promise spread data [trek, trekList]
 	 * @throws Errors.HttpStatusError
 	 */
-	trek(i_mtt_id)
+	_trek(i_mtt_id)
 	{
-		return this.getClass('mototrek').get(i_mtt_id)
+		return this.getClass('mototrek').getMototrek(i_mtt_id)
 			.then((trek) =>
 			{
 				if (!trek)
 					throw new Errors.HttpError(404);
-
+				
 				return Promise.resolve([trek, null]);
 			});
 	}
-
+	
 	/**
 	 * список треков
 	 *
 	 * @returns Promise spread data [trek, trekList]
 	 */
-	trekList()
+	_trekList()
 	{
 		return Promise.props({
 			trekList: this.getClass("mototrek").getAll(),
@@ -324,7 +324,7 @@ class Mototreki extends CtrlMain
 		if (!i_mtt_id)
 			throw new Errors.HttpError(404);
 
-		return this.getClass('mototrek').get(i_mtt_id)
+		return this.getClass('mototrek').getMototrek(i_mtt_id)
 			.then((trek) =>
 			{
 				if (!trek)
@@ -359,7 +359,7 @@ class Mototreki extends CtrlMain
 		if (!tplData["i_mtt_id"])
 			throw new Errors.HttpError(404);
 
-		return this.getClass('mototrek').get(tplData["i_mtt_id"])
+		return this.getClass('mototrek').getMototrek(tplData["i_mtt_id"])
 			.then((trek) =>
 			{
 				if (!trek)

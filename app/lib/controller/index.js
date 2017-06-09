@@ -308,7 +308,7 @@ class Base
 	_parseRoutePaths()
 	{
 		/*
-
+		
 		//в методах классов контроллеров надо прописывать все роуты:
 		и для загрузки файлов. в общем все, по которым идет обращение по GET
 		POST тоже, см html формы...
@@ -327,47 +327,47 @@ class Base
 		 //пока не удалять!!
 		if (this.httpMethod != 'get')
 			return true;*/
-
+		
 		let actionName = this.getActionName();
-
+		
 		let routePaths = this.constructor.routePaths();
 		let reqPath = this.getPath();
-
+		
 		if (!routePaths[actionName])
 			return false;
-
+		
 		let routers = Object.keys(routePaths[actionName]);
 		let args = this.getArgs();
-
+		
 		let regExp, tmpArgs = {};
 		for(let i in routers)
 		{
 			regExp = new RegExp(routers[i], 'ig');
-
-			if (reqPath.search(regExp) != -1)
+			
+			if (reqPath.search(regExp) < 0)
+				continue;
+			
+			if (routePaths[actionName][routers[i]] && routePaths[actionName][routers[i]].length)
 			{
-				if (routePaths[actionName][routers[i]] && routePaths[actionName][routers[i]].length)
+				routePaths[actionName][routers[i]].forEach((varName, i) =>
 				{
-					routePaths[actionName][routers[i]].forEach((varName, i) => 
+					if (varName)
 					{
-						if (varName)
-						{
-							//tmpArgs[varName] = args[i];
-							tmpArgs[varName] = decodeURIComponent(args[i]);
-						}
-					});
-					
-					//this.routeArgs = Helpers.varsValidate(tmpArgs);
-					this.routeArgs = tmpArgs;
-				}
-				console.log("this.routeArgs = ", this.routeArgs);
-				console.log('\n');
-				return true;
+						//tmpArgs[varName] = args[i];
+						tmpArgs[varName] = (args[i] ? decodeURIComponent(args[i]) : args[i]);
+					}
+				});
+				
+				//this.routeArgs = Helpers.varsValidate(tmpArgs);
+				this.routeArgs = tmpArgs;
 			}
+			console.log("this.routeArgs = ", this.routeArgs);
+			console.log('\n');
+			return true;
 		}
 		return false;
 	}
-
+	
 	set routeArgs(args)
 	{
 		this._routeArgs = args;
@@ -377,7 +377,7 @@ class Base
 	{
 		return this._routeArgs;
 	}
-
+	
 	setLocalAccess(localAccess)
 	{
 		this._localAccess = localAccess;
@@ -387,7 +387,7 @@ class Base
 	{
 		return this._localAccess;
 	}
-
+	
 	callAction()
 	{
 		//this._setAction();
@@ -422,10 +422,10 @@ class Base
 					.then((cacheData)=>
 					{
 						//return Promise.resolve([this[this.getAction()](), null]);
-
+						
 						if (!this.getReq().xhr && !!cacheData)
 							return [this.getReq().xhr, cacheData];
-
+						
 						return [this[this.getAction()](), null];
 					})
 					.spread((json, cacheData)=>
@@ -434,7 +434,7 @@ class Base
 					});
 			});
 	}
-
+	
 	/**
 	 * проверяем права доступа пользователя
 	 *

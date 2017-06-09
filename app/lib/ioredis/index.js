@@ -15,7 +15,6 @@ Rediska.getClient = function (options)
 	{
 		//console.log(' -= SET ', options.connectionName);
 		this._clients.set(options, IORedis(Config.redis.port, Config.redis.host, options));
-
 		this._clients.get(options).on('error', (err)=>
 		{
 			//console.log(".clients.get(options).on('error'");

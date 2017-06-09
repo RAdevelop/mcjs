@@ -178,7 +178,7 @@ class Mototrek extends BaseModel
 		FROM moto_track
 		WHERE mtt_id = ?`;
 		
-		mtt_id = parseInt(mtt_id, 10);
+		mtt_id = parseInt(mtt_id, 10)||0;
 		return this.constructor.conn().sRow(sql, [mtt_id]);
 	}
 

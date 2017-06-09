@@ -9,10 +9,7 @@ const _ = require("lodash");
 
 const IORedis = require('app/lib/ioredis');
 const Config = require('app/config');
-
-let opt = {connectionName : 'Template'};
-opt = Object.assign({}, Config.redis, opt);
-const Redis = IORedis(opt);
+const Redis = IORedis(Config.redis);
 
 function Template(req, res, Controller = null)
 {
