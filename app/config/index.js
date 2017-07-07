@@ -17,7 +17,7 @@ var config = {
 	session:	{
 		name: 'sessionId',
 		saveUninitialized: true, // saved new sessions
-		resave           : true, // false do not automatically write to the session store
+		resave           : false, // false do not automatically write to the session store
 		secret           : 'varRy Sicret str0ka',
 		store            : null,
 		cookie           : {

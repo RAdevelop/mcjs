@@ -225,7 +225,6 @@ jQuery(document).ready(function ()
 		}
 	};
 	Helpers.sharingSocNet.init();
-
-
+	
 	window["Helpers"] = Helpers;
 });

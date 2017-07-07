@@ -8,308 +8,209 @@ const Promise = require("bluebird");
 const Session = require('app/middlewares/session');
 const Logger = require('app/lib/logger');
 const Errors = require('app/lib/errors');
+const SioRedis = require('socket.io-redis');
+const CookieParser = require('cookie-parser'); //AppConfig.session.secret
+const Cookie = require('cookie'); //AppConfig.session.secret
 
 //TODO проверить работу StringDecoder https://nodejs.org/dist/latest-v4.x/docs/api/string_decoder.html
 const msgpack = require('msgpack-js');
-//const msgpack = require("msgpack-lite");
 
-//const StringDecoder = require('string_decoder').StringDecoder;
-//const decoder = new StringDecoder('utf8');
 
-const SocketIO = require('socket.io');
 const IORedis = require('app/lib/ioredis');
 
-const Rediska = IORedis(AppConfig.redis); //для операций, не связанныхс pub/sub
+//для операций, не связанныхс pub/sub
+const Rediska = IORedis(AppConfig.redis);
 Rediska.on('error', (err)=>
 {
 	Logger.error(err);
 });
 
-let opts =  {
-	//"origins": "localhost:3000",
-	"origins": "*:*",
-	"force new connection" : true,
-	"reconnection": true,
-	"reconnectionDelay": 2000,                  //starts with 2 secs delay, then 4, 6, 8, until 60 where it stays forever until it reconnects
-	"reconnectionDelayMax" : 60000,             //1 minute maximum delay between connections
-	"reconnectionAttempts": "Infinity",         //to prevent dead clients, having the user to having to manually reconnect after a server restart.
-	"timeout" : 10000                         //before connect_error and connect_timeout are emitted.
-	,"transports" : ['polling', 'websocket']                //forces the transport to be only websocket. Server needs to be setup as well/
-};
 
-let tmp_chanel = 'chats';
-tmp_chanel = '';
+/*
+ https://socket.io/docs/emit-cheatsheet/
+ */
 
-class Messenger extends SocketIO
+//TODO
+//let chanel = 'rooms';
+let chanel = 'chats';
+chanel = '';
+
+//TODO список комнат/чатов потом перенести в БД и редис
+let rooms = [
+	{
+		id: 1,
+		name: `room1`,
+		user_count: 0
+	},
+	{
+		id: 2,
+		name: `room2`,
+		user_count: 0
+	},
+	{
+		id: 3,
+		name: `room3`,
+		user_count: 0
+	}
+];
+
+function loadSession(socket, cb)
 {
-	constructor(server, app)
+	//console.log(socket);
+	
+	//console.log('socket.handshake.session:');
+	//Logger.debug(socket.handshake.session);
+	//console.log('END socket.handshake.session:');
+	
+	//TODO сделать проверку, что пользователь разлогинился. см видео Илья Контор!
+	/*Session(socket.handshake, {}, function(err, data)
 	{
-		super(server, opts);
+		Logger.debug({});
+		Logger.info({data: data});
 		
-		this._rw = new WeakMap();
-		
-		this.of('/'+tmp_chanel, (socket)=>
-		{
-			console.log('----------------');
-			console.log('on connect! socket.id = ', socket.id);
-		})
-		.on('error', (err)=>
-		{
-			console.log('io on error');
-			Logger.error(err);
-		})
-		.use((socket, next)=>
-		{
-			Session(socket.handshake, {}, next);
-		})
-		.use((socket, next)=>
-		{
-			//console.log(socket);
-			
-			if(!socket.handshake.session.rtid || !socket.handshake.session.hasOwnProperty('user') || !socket.handshake.session['user']['u_id'])
-			{
-				//let error = new Error('error:authentication');
-				let error = new Error('error:authentication');
-				
-				return next(error);
-			}
-			socket._user = socket.handshake.session['user'];
-			//console.log(socket._user);
-			return next();
-		});
+		cb && cb();
+	});*/
+	if(!socket.handshake.session.rtid || !socket.handshake.session.hasOwnProperty('user') || !socket.handshake.session['user']['u_id'])
+	{
+		return cb(new Errors.HttpError(401));
 	}
 	
-	getRW(user)
-	{
-		if (!this._rw.has(user))
-		{
-			let writerRedisOpts = {keyPrefix:"chat", connectionName: `writer:u:${user['u_id']}`};
-			writerRedisOpts = Object.assign({}, AppConfig.redis, writerRedisOpts);
-			
-			let readerRedisOts = {keyPrefix:"chat", return_buffers: true, connectionName: `reader:u:${user['u_id']}`};
-			readerRedisOts = Object.assign({}, AppConfig.redis, readerRedisOts);
-			
-			//Logger.info('if (!this._rw.has(user)) ' + user['u_id']);
-			
-			this._rw.set(user, {reader: IORedis(readerRedisOts), writer: IORedis(writerRedisOpts)});
-			this._rw.get(user).reader
-			.on('error', (err)=>
-			{
-				Logger.debug('on error this._rw.get(user).reader');
-				Logger.error(err);
-			});
-			this._rw.get(user).reader.addListener('messageBuffer', this._messageBuffer.bind(this));
-			
-			this._rw.get(user).writer
-			.on('error', (err)=>
-			{
-				Logger.debug('on error this._rw.get(user).writer');
-				Logger.error(err);
-			});
-		}
-		
-		return this._rw.get(user);
-	}
-	
-	setSocket(socket)
-	{
-		socket.on('error', function _socketOnError(err)
-		{
-			//if (err) socket.emit('error', err);
-			
-			console.log("setSocket socket.on('error', function _socketOnError(err)");
-			Logger.error(err);
-			console.log("END setSocket socket.on('error', function _socketOnError(err)");
-		});
-		
-		this._socket = socket;
-		return this;
-	}
-	
-	getSocket()
-	{
-		return this._socket;
-	}
-	
-	get reader()
-	{
-		//Logger.info('reader this._socket ', this._socket._user);
-		return this.getRW(this.user).reader;
-	}
-	get writer()
-	{
-		//Logger.info('writer this._socket ', this._socket._user);
-		return this.getRW(this.user).writer;
-	}
-	
-	get rediska()
-	{
-		return Rediska;
-	}
-	
-	emitEvent(eventName, eventData)
-	{
-		Logger.info('emitEvent(eventName, eventData): ', eventName);
-		this.getSocket().emit(eventName, eventData);
-		
-		//Logger.info('this.getSocket() = ', this.getSocket());
-		
-		return this;
-	}
-	
-	get user()
-	{
-		
-		//а в вызовы .publish добавить передачу u_id. и на клиенте тоже - надо с клюента сюда передавать u_id
-		//return this._socket.handshake.session['user'];
-		//TODO переделать, брать не из socket._user, а из хранилища (Редис или БД по u_id)
-		
-		return this.getSocket()._user;
-	}
-	
-	_msgData(str)
-	{
-		//TODO u: this.user - сократить передаваемые данные до минимума
-		return {m:str, u: {id: this.user['u_id'], n: this.user['u_display_name']}};
-	}
-	
-	/**
-	 *
-	 * @param string chanel
-	 * @param string msg
-	 * @returns int the number of clients that received the message
-	 * @private
-	 */
-	_sendTo(chanel, msg)
-	{
-		return this.writer.publish(chanel, msgpack.encode(this._msgData(msg)));
-	}
-	
-	/**
-	 *
-	 * @param data - данные, полученные от "клиента"
-	 * @param cb - колбэк ф-ция. если указана, то вызывается - работает на строне клиента
-	 */
-	join(data, cb)
-	{
-		//console.log(this);
-		console.log('someone join to: ', data);
-		//console.log('this.user: ', this.user);
-		//this.emit('join', this.user);
-		
-		tmp_chanel = data['chanel']
-		return this.reader.subscribe(tmp_chanel)
-		.then((count)=>
-		{
-			console.log('subscribe count = ', count);
-			
-			//this.emit('join', this.user);
-			
-			//return this._sendTo(data['chanel'], 'data[\'chanel\'] connected to '+ data['chanel']);
-			return this._sendTo(tmp_chanel, 'data[\'chanel\'] connected to '+ data['chanel']);
-		})
-		.then((cnt_receivers)=>
-		{
-			console.log('cnt_receivers ', cnt_receivers);
-			/*
-			 если на клиенте указана ф-ция вот так:
-			 chat.emit('join', sendData, function cb(respData){//do something});
-			 */
-			let msg = `сообщение поличили: ${cnt_receivers} юзеров`;
-			cb && cb(msg); //msg - вернется на клиентскую часть
-		})
-		.catch((err)=>
-		{
-			console.log('error on return readerRedis.subscribe(chanel)');
-			this.emitEvent('error', err);
-			//Logger.error(err);
-		});
-	}
-	
-	disconnect(msg)
-	{
-		console.log('server: socket on disconnect');
-		console.log('msg = ', msg);
-		console.log('1) socket.id = ', this.getSocket().id);
-		
-		return this.reader.unsubscribe()
-		.then(()=>
-		{
-			//delete
-			this.reader.removeListener('messageBuffer', this._messageBuffer); //?  .unbind(this)
-			this.reader.quit();
-			this.writer.quit();
-			
-			if (this._rw.has(this.user))
-			{
-				this._rw.delete(this.user);
-			}
-		})
-		.catch((err)=>
-		{
-			Logger.debug('on disconnect error');
-			Logger.error(err);
-		});
-		
-		/*io.of('/').adapter.remoteDisconnect(socket.id, true, (err)=>
-		 {
-		 console.log('2) socket.id = ', socket.id);
-		 
-		 if (err)
-		 {
-		 Logger.error(err);
-		 }
-		 // success
-		 });*/
-	}
-	
-	_messageBuffer(channel, message)
-	{
-		channel = channel.toString();
-		message = msgpack.decode(message);
-		
-		console.log('_messageBuffer channel = ', channel);
-		console.log('_messageBuffer message = ', message);
-		
-		
-		//return;
-		//переслали сообщение в чат (канал) через редис потом на клиента
-		
-		this.emitEvent('message', message);
-	}
+	socket._user = socket.handshake.session['user'];
+	Logger.info(socket.handshake.session);
+	return cb();
 }
 
-
-module.exports = function(server, app)
+module.exports = function(httpServer, app)
 {
-	const io = new Messenger(server);
-	//console.log(io);
+	let opts =  {
+		//"force new connection" : true,
+		'forceNew': false,
+		'reconnection': true,
+		'reconnectionDelay': 2000,                  //starts with 2 secs delay, then 4, 6, 8, until 60 where it stays forever until it reconnects
+		'reconnectionDelayMax' : 60000,             //1 minute maximum delay between connections
+		'reconnectionAttempts': 'Infinity',         //to prevent dead clients, having the user to having to manually reconnect after a server restart.
+		'timeout' : 10000                           //before connect_error and connect_timeout are emitted.
+		,'transports' : ['polling', 'websocket']                //forces the transport to be only websocket. Server needs to be setup as well/
+	};
 	
-	/*
-	 как-то надо отслежвать кол-во "комант", в которым подключился юзер
-	 и отмечать, какая из них активная в данный момент. чтобы в активную комнату "показывать" сообщения,
-	 а в остальных, например, увеличивать счетчик новых сообщений...
-	 */
+	let writerRedisOpts = {keyPrefix:"chat", connectionName: `writer`};
+	writerRedisOpts = Object.assign({}, AppConfig.redis, writerRedisOpts);
 	
-	io.on('connection', (socket)=>
+	let readerRedisOts = {keyPrefix:"chat", return_buffers: true, connectionName: `reader`};
+	readerRedisOts = Object.assign({}, AppConfig.redis, readerRedisOts);
+	
+	const io = require('socket.io')(httpServer);
+	
+	io.adapter(SioRedis({
+		host: AppConfig.redis.host
+		, port: AppConfig.redis.port
+		, pubClient: IORedis(readerRedisOts)
+		, subClient: IORedis(writerRedisOpts)
+	}))
+	.origins('*:*', opts)
+	/*.of('/', (socket)=>
 	{
-		console.log('on connection');
-		io.setSocket(socket);
-		
-		//Logger.info('socket._user = ', socket._user);
-		//console.log(this);
-		//console.log(this.server instanceof Messenger); //Messenger
-		//console.log('io.getUser = ', io.user );
-		//console.log(socket);
-		
-		io.getSocket().on('join', io.join.bind(io));
-		io.getSocket().on('disconnect', io.disconnect.bind(io));
+		console.log('---------------- .of /, socket');
+		console.log('on connect! socket.id = ', socket.id);
+	})*/
+	.use(function(socket, next)
+	{
+		Session(socket.handshake, {}, next);
 	})
-	.on('error', (err)=>
+	.use(function(socket, next)
 	{
-		Logger.debug(".on('error'");
+		if(!socket.handshake.session || !socket.handshake.session.hasOwnProperty('rtid') || !socket.handshake.session.hasOwnProperty('user') || !socket.handshake.session['user']['u_id'])
+		{
+			//если тут вызвать:
+			//socket.disconnect();
+			// то будет сообщение на клиентской части "failed: WebSocket is closed before the connection is established"
+			return next(new Errors.HttpError(401));
+		}
+		
+		socket._user = socket.handshake.session['user'];
+		//Logger.info(socket._user);
+		Logger.info({'socket.handshake.session.id':socket.handshake.session.id});
+		return next();
+	})
+	.on('error', function(err)
+	{
+		console.log('io on error');
+		Logger.error(err);
+	})
+	.on('connect', onConnect)
+	.on('connection', onConnection)
+	;
+	
+	io.of('/').adapter.on('error', function onErrorIoOf_Adapter()
+	{
+		console.log('onErrorIoOf_Adapter on error');
 		Logger.error(err);
 	});
+	
+	io.engine.generateId = (req) => 
+	{
+		//Logger.info('---------------- io.engine.generateId');
+		
+		let rtid = Cookie.parse(req.headers.cookie)['rtid']||0;
+		//rtid = ''; //для тестов
+		return rtid; // custom id must be unique
+	};
+	
+	function onConnect(socket)
+	{
+		Logger.info('---------------- onConnect');
+		Logger.info('on connect! socket.id = ', socket.id);
+		
+		socket.on('disconnect', function onDisconnect()
+		{
+			Logger.info('---------------- onDisconnect socket');
+			Logger.info(arguments);
+		});
+		
+		socket.on('error', function _socketOnError(err)
+		{
+			Logger.error(err);
+			
+			io.to(socket.id).emit('error', err);
+			//socket.disconnect();
+		});
+		
+		let rtid = CookieParser.signedCookie(socket.id, AppConfig.session.secret);
+		
+		//Logger.info({'rtid': rtid});
+		
+		if (!rtid)
+			socket.emit('error', new Errors.HttpError(401));
+	}
+	
+	function onConnection(socket)
+	{
+		Logger.info('---------------- onConnection');
+		
+		// sending to the client
+		socket.emit('message', 'can you hear me?', 1, 2, 'abc');
+		
+		//sending to all clients except sender
+		//socket.broadcast.emit('broadcast', 'hello friends!');
+		
+		
+		//это просто для теринировки
+		socket.emit(`room:list`, rooms);
+		
+		//socket.join();
+		
+		/*socket.on('logout', function onLogout(args)
+		{
+			Logger.info('socket.on logout');
+			Logger.info(arguments);
+		});*/
+		
+		/*socket.on('disconnect', function onDisconnect()
+		{
+			Logger.info('socket.on disconnect');
+			Logger.info(arguments);
+		});*/
+	}
 	
 	return io;
 };

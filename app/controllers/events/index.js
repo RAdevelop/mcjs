@@ -156,8 +156,8 @@ class Events extends CtrlMain
 			.then( (event) =>
 			{
 				if (!event || event['e_alias'] != s_alias)
-					throw new Errors.HttpStatusError(404, "Not found");
-
+					throw new Errors.HttpError(404);
+				
 				return Promise.all([
 					this.getClass('events').getImageList(event.e_id),
 					this.getClass('events').getLocations(event['e_start_ts'], parseInt(event['e_end_ts'],10)+3600, event['e_location_id'])
@@ -217,7 +217,7 @@ class Events extends CtrlMain
 			{
 				if (!eventList || !eventList.length)
 					throw new Errors.HttpError(404);
-
+				
 				return this.getClass('events').getLocations(startDateTs, endDateTs, l_id)
 					.then((eventLocations) =>
 					{
@@ -226,11 +226,11 @@ class Events extends CtrlMain
 			})
 			.spread((eventList, eventLocations) =>
 			{
-				let tplFile = "events";
-
+				let tplFile = 'events';
+				
 				tplData['eventList']        = eventList;
 				tplData['eventLocations']   = eventLocations;
-
+				
 				let title = [this._getSelectedDateTs().getDate()];
 				title.push(Calendar.monthName(this._getSelectedDateTs().getMonth()));
 				title.push(this._getSelectedDateTs().getFullYear());
@@ -520,14 +520,14 @@ class Events extends CtrlMain
 									link_to: [this.getMenuItem['m_path'],'edit',i_event_id].join('/')
 								}
 							};
-
+							
 							Mailer.send(sendParams,  (err) => 
 							{
 								if(err)
 									Logger.error(new Errors.AppMailError('Ошибка при отправке письма', err));
 							});
 						});
-
+						
 						tplData['i_event_id'] = i_event_id;
 						this.view.setTplData(tplFile, tplData);
 						return Promise.resolve(true);
@@ -537,7 +537,7 @@ class Events extends CtrlMain
 			{
 				//такие ошибки не уводят со страницы.
 				this.view.setTplData(tplFile, err.data);
-
+				
 				return Promise.resolve(true);
 			});
 	}

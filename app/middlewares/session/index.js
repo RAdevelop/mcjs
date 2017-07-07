@@ -41,12 +41,10 @@ const Session = (function()
         }
         return _instance;
     }
-
-
+    
     // Конструктор
     function Singleton()
     {
-        //const redisClient = new IORedis({connectionName : 'session'});
         let opt = {connectionName : 'session'};
         opt = Object.assign({}, Config.redis, opt);
         

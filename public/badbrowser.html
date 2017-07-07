@@ -6,14 +6,13 @@
 		<title>Устаревшая вресия браузера</title>
 		
 		<style type="text/css">
-		.body
+		body
 		{
-		    font: 80% Arial, Tahoma, Verdana, sans-serif;
+			font: 80% Arial, Tahoma, Verdana, sans-serif;
 			background: #FFFFFF;
 		}
-
-		p.noscript
-		,.browser
+		p.noscript,
+		.browser
 		{
 			text-align: center;
 		}
@@ -29,7 +28,7 @@
 			height: 48px;
 			border: 1px solid;
 			text-decoration: none;
-			background: url('http://www.enable-javascript.com/img/browsers.png') 0 0;
+			background: url('//www.enable-javascript.com/img/browsers.png') 0 0;
 		}
 		.browser a.ie {
 			background-position: 0 0;
@@ -55,29 +54,28 @@
 		{
 		  try
 		  {
-		    if (new XMLHttpRequest())
+			if (new XMLHttpRequest())
 			{
-		      location.replace('/');
-		    }
+			  location.replace('/');
+			}
 		  }
 		  catch(e)
 		  {
-		    try
+			try
 			{
-		      if (new ActiveXObject('Msxml2.XMLHTTP'))
-			  {
-		        location.replace('/');
-		      }
-		    }
+				if (new ActiveXObject('Msxml2.XMLHTTP'))
+				{
+				location.replace('/');
+				}
+			}
 			catch(e) {}
-
-			  try
+			
+			try
 			{
-		      if (new ActiveXObject('Microsoft.XMLHTTP')) {
-		        location.replace('/');
-		      }
-		    }
-			  catch(e) {}
+			  if (new ActiveXObject('Microsoft.XMLHTTP'))
+				location.replace('/');
+			}
+			catch(e) {}
 		  }
 		}
 		//-->
@@ -88,14 +86,12 @@
 <p class="noscript">Используемый Вами браузер устарел, либо не поддерживает сценарии JavaScript, либо JavaScript отключен</p>
 <p class="noscript">Для корректной работы с сайтом обновите Ващ браузер до более новой версии, или включите JavaScript.</p>
 <p class="noscript"><a href="http://www.enable-javascript.com/ru/" target="_blank">Инструкции, как включить JavaScript в вашем браузере</a>.</p>
-
 <div class="browser">
-    <a href="http://www.enable-javascript.com/ru/#ie" class="ie" target="_blank" title="Internet Explorer">&nbsp;</a>
-    <a href="http://www.enable-javascript.com/ru/#firefox" class="firefox" target="_blank" title="Mozilla Firefox">&nbsp;</a>
-    <a href="http://www.enable-javascript.com/ru/#chrome" class="chrome" target="_blank" title="Google Chrome">&nbsp;</a>
-    <a href="http://www.enable-javascript.com/ru/#safari" class="safari" target="_blank" title="Apple Safari">&nbsp;</a>
-    <a href="http://www.enable-javascript.com/ru/#opera" class="opera" target="_blank" title="Opera">&nbsp;</a>
+	<a href="http://www.enable-javascript.com/ru/#ie" class="ie" target="_blank" title="Internet Explorer">&nbsp;</a>
+	<a href="http://www.enable-javascript.com/ru/#firefox" class="firefox" target="_blank" title="Mozilla Firefox">&nbsp;</a>
+	<a href="http://www.enable-javascript.com/ru/#chrome" class="chrome" target="_blank" title="Google Chrome">&nbsp;</a>
+	<a href="http://www.enable-javascript.com/ru/#safari" class="safari" target="_blank" title="Apple Safari">&nbsp;</a>
+	<a href="http://www.enable-javascript.com/ru/#opera" class="opera" target="_blank" title="Opera">&nbsp;</a>
 </div>
-
 </body>
 </html>

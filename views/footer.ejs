@@ -1,35 +1,117 @@
 </div>
 <footer class="footer marginTop15">
-    <div class="container-fluid content">
-        <p style="display: none;">_reqBaseUrl :<%= _reqBaseUrl %> _reqOriginalUrl: <%= _reqOriginalUrl %> _reqPath: <%= _reqPath %></p>
-        <div>© 2011-<%= (new Date()).getFullYear() %> «MotoCommunity»</div>
-        <div>И разве имя мое здесь важно? Ведь кто-то чувствует этот мир так же. Мы все разные - бесценен каждый! (© Каста)</div>
-        <div>При копировании или цитировании материалов обязательна ссылка на&nbsp;<a href="http://www.MotoCommunity.ru" title="Мотосообщество: мотоциклы, мопеды, квадроциклы" class="line" style="color: #f4f4f4;">www.MotoCommunity.ru</a></div>
-    </div>
+	<div class="container-fluid content">
+		<p style="display: none;">_reqBaseUrl :<%= _reqBaseUrl %> _reqOriginalUrl: <%= _reqOriginalUrl %> _reqPath: <%= _reqPath %></p>
+		<div>© 2011-<%= (new Date()).getFullYear() %> «MotoCommunity»</div>
+		<div>И разве имя мое здесь важно? Ведь кто-то чувствует этот мир так же. Мы все разные - бесценен каждый! (© Каста)</div>
+		<div>При копировании или цитировании материалов обязательна ссылка на&nbsp;<a href="http://www.MotoCommunity.ru" title="Мотосообщество: мотоциклы, мопеды, квадроциклы" class="line" style="color: #f4f4f4;">www.MotoCommunity.ru</a></div>
+	</div>
 </footer>
 <i class="fa fa-arrow-up goto-up" aria-hidden="true"></i>
-<script src="/bootstrap/dist/js/ie10-viewport-bug-workaround.js"></script>
-<script src="/js/helpers.js"></script>
-<script src="/js/jquery/topTools.js"></script>
+<script type="text/javascript" src="/bootstrap/dist/js/ie10-viewport-bug-workaround.js"></script>
+<script type="text/javascript" src="/js/helpers.js"></script>
+<script type="text/javascript" src="/js/jquery/topTools.js"></script>
 <script type="text/javascript">
+	//<!--
+	var _reqBaseUrl = '<%=_reqBaseUrl%>';
+	$('.navbar-user-top .top-tools').topTools({
+		u_id: "<%= (_user && _user.u_id? _user.u_id : '')%>"
+	});
+
+	var userEmptyName = <%=(_user && _user['u_display_name'] == '')%>;
+	if (userEmptyName)
+	{
+		var url = _reqBaseUrl.split('/');
+		url.forEach(function(item, i){
+			if (item == '') url.splice(i, 1);
+		});
+
+		if (false == (url.length == 2 && url[0] == 'profile' && url[1] == 'edit'))
+			window.location = '/profile/edit/?empty_name#base';
+	}
+	//-->
+</script>
+<% if(_user && _user.u_id ){ %>
+<script type="text/javascript" src="/js/localforage/localforage.js"></script>
+<script type="text/javascript" src="/js/localforage/localforage-sessionstoragewrapper.js"></script>
+<script type="text/javascript" src="/js/mcMessenger.js"></script>
+<script type="text/javascript" type="text/javascript">
 //<!--
-var _reqBaseUrl = '<%=_reqBaseUrl%>';
-$('.navbar-user-top .top-tools').topTools({
-    u_id: "<%= (_user && _user.u_id? _user.u_id : '')%>"
+var Messenger = new MessengerEmitter();
+
+//список чатов
+var $chatRoomList = $('.js-chat-room-list');
+//спсок сообщений
+var $chatMessageList = $('.js-chat-message-list');
+//текст сообщения в текстовом поле
+var $chatMessageText = $('.js-chat-message-text');
+//кнопка отправки сообщений
+var $btnMessageSend = $('#btn_message_send');
+
+$(document).on('click', '#btn_message_send', function _onMessageSend(event)
+{
+	event.preventDefault();
+	event.stopImmediatePropagation();
+	event.stopPropagation();
+	console.log('form _onMessageSend ');
+	
+	var t_message = $.trim($chatMessageText.val());
+	
+	if (!t_message)
+		return false;
+	
+	var mHtml = tMessageHtml(t_message);
+	
+	$chatMessageList.append(mHtml);
+	$chatMessageText.val('');
+	
+	var data = {
+		room_id: '123',
+		m: t_message,
+		u: 'user data'
+	};
+	
+	Messenger.emit('room_message', data);
+	
+	return false;
 });
 
-var userEmptyName = <%=(_user && _user['u_display_name'] == '')%>;
-if (userEmptyName)
+function tMessageHtml(t_message)
 {
-    var url = _reqBaseUrl.split('/');
-    url.forEach(function(item, i){
-        if (item == '') url.splice(i, 1);
-    });
-
-    if (false == (url.length == 2 && url[0] == 'profile' && url[1] == 'edit'))
-    window.location = '/profile/edit/?empty_name#base';
+	t_message = nl2br(t_message);
+	var html = '';
+	html += '<div class="media">';
+	//TODO тут еще должны быть данные пользователя
+	html += '<div class="media-left"><a href="#"><img alt="64x64" class="media-object" src="" data-holder-rendered="true" style="width: 64px; height: 64px;"></a></div>';
+	html += '<div class="media-body">'+t_message+'</div>';
+	html += '</div>';
+	
+	return html;
 }
+
+Messenger.on('room_message', function _onRoomMessage(data)
+{
+	console.log('_onRoomMessage data ', data);
+	
+	/*
+	TODO отправка сообщения:
+	if i'm master tab then send to server -> if success -> then send to localStorage -> on storage event handle this message for add to chat
+	
+	только в другой вкладке пользователь может быть в другом чате... :)
+	надо еще отслеживать и такую ситуацию - вкладка должна хранить информацию о чате, в котором пользователь в этой вкладке
+	sessionStorage
+	если пришедшее сообщение по событию storage room_id == session_storage_room_id, то добавить сообщение в список на страницу
+	иначе не добавлять (увеличивать счетчик какой-нибудь?)
+	*/
+});
+
+/*setTimeout(function()
+{
+	Messenger.sendPostMessage({"RA":"AD"});
+}, 1000);
+*/
 //-->
 </script>
+<% } %>
 </body>
 </html>

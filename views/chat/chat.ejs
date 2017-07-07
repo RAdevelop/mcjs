@@ -1,165 +1,55 @@
-<% if(!_isXHR){%><%- layout('layout/index') %><% } -%>
+<% if(!_isXHR){%><%- layout('layout/default') %><% } -%>
 <div class="page-header">
-	<h1><%= h1 %></h1>
+	<h1><%= _pageH1 %></h1>
 </div>
-<div id="chat">
-	<div id="messages_wrapper">
-		<ul id="messages"></ul>
-	</div>
-	<form method="post" action="/chat" id="formSendMessage">
-		<textarea id="msg"></textarea>
-		<input type="submit" name="btnSendMessage" id="btnSendMessage" value="отправить" />
-	</form>
+<style>
+	.chat {
+		border: 1px solid green;
+	}
+	.chat .form-message-send {
+		vertical-align: top;
+	}
+	.chat .form-message-send .chat-message-text {
+		width: 100%;
+		height: 50px;
+	}
+	.chat .form-message-send .input-group-btn {
+		vertical-align: bottom;
+	}
+	.chat .chat-room-list-wrapper {
+		/*float: left;*/
+		border: 1px solid red;
+	}
+	.chat .chat-message-list-wrapper {
+		/*float: left;*/
+		border: 1px solid red;
+	}
+	.chat .chat-message-list-wrapper .chat-message-list  {
+		/*float: left;*/
+		border: 1px solid red;
+		min-height: 100px;
+		overflow-y: auto;
+	}
+</style>
+<div class="chat js-chat row">
+	<fieldset class="chat-room-list-wrapper js-chat-room-list-wrapper col-sm-3">
+		<legend>спиоск названий чатов</legend>
+		<ul class="chat-room-list js-chat-room-list"></ul>
+	</fieldset>
+	<fieldset class="chat-message-list-wrapper js-chat-message-list-wrapper col-sm-6">
+		<legend>сообщения</legend>
+		<div class="chat-message-list js-chat-message-list"></div>
+		<form method="post" action="/chat" id="form_message_send" class="form-horizontal form-message-send">
+			<div class="input-group t_message">
+				<textarea class="form-control chat-message-text js-chat-message-text" id="t_message" name="t_message" placeholder="текст сообщения"></textarea>
+				<div class="input-group-btn">
+					<button type="button" class="btn btn-primary" id="btn_message_send" value="1" autocomplete="off">отправить</button>
+				</div>
+			</div>
+		</form>
+	</fieldset>
+	<fieldset class="chat-room-list-wrapper js-chat-room-list-wrapper col-sm-3">
+		<legend>спиоск пользователей</legend>
+		<ul class="js-chat-room-list"></ul>
+	</fieldset>
 </div>
-<script type="text/javascript">
-$(function(){
-	var $chatArea = $('#chat');
-	var $messagesWrapper = $('#messages_wrapper');
-	var $messages = $('#messages');
-	var $formSendMessage = $('#formSendMessage');
-	var $msg = $('#msg');
-	var $btnSendMessage = $('#btnSendMessage');
-
-	//TODO добавить ip или домен сайта
-	//var chat = io('//192.168.0.91:5003/rooms');
-	//var chat = io('//'+window.location.host+'/rooms');
-	
-	
-	var opts =  {
-		"force new connection" : true,
-		"reconnection": true,
-		"reconnectionDelay": 2000,                  //starts with 2 secs delay, then 4, 6, 8, until 60 where it stays forever until it reconnects
-		"reconnectionDelayMax" : 60000,             //1 minute maximum delay between connections
-		"reconnectionAttempts": "Infinity",         //to prevent dead clients, having the user to having to manually reconnect after a server restart.
-		"timeout" : 10000                           //before connect_error and connect_timeout are emitted.
-		,"transports" : ['polling', 'websocket']                //forces the transport to be only websocket. Server needs to be setup as well/
-	};
-	
-	
-	//var chat = io('//'+window.location.host+'/chats', opts);
-	var chat = io('//'+window.location.host+'/', opts);
-	
-	chat.on('connect', function(data)
-	{
-		console.log('on connection event data=' ,data);
-		//при подключении попробовать передать набор namespace'ов
-		var sendData = {
-			//'userName': navigator.userAgent
-			'chanel': 'ad'
-		};
-		
-		chat.emit('join', sendData, function(respData)
-		{
-			console.log('cb join respData = ', respData);
-		});
-	})
-	.on('connecting', function (connecting)
-	{
-		console.log('connecting ', connecting)
-	})
-	.on('reconnect', function (data)
-	{
-		console.log('reconnected data = ', data);
-	})
-	.on('reconnecting', function (data)
-	{
-		console.log('reconnecting data = ', data);
-	})
-	.on('reconnect_error', function(err)
-	{
-		console.log('on reconnect_error event');
-		console.log(err);
-
-	})
-	.on('reconnect_failed', function(err)
-	{
-		console.log('on reconnect_failed event');
-		console.log(err);
-
-	})
-	.on('error', function(err)
-	{
-		console.log('on error event');
-		console.log(err);
-
-		if(err == 'error:authentication')
-		{
-			chat.emit('chat:error:auth', {}, function(data)
-			{
-				console.log('chat:error:auth');
-			});
-
-			/*var s = 5;
-			$chatArea.html('<div>Вы не авторизованы. Через <span id="timer">'+s+'</span> секунд перенаправим Вас на страницу авторизации.</div>');
-
-			var $timer = $chatArea.find('#timer');
-
-			var t = setInterval(function(){
-				s--;
-				if(s == 1)
-				{
-					clearInterval(t);
-					window.location.href = '/login';
-				}
-				$timer.text(s);
-
-			}, 1000);*/
-		}
-	});
-
-	$formSendMessage.submit(function(event)
-	{
-		event.preventDefault();
-
-		var msg = $.trim($msg.val());
-
-		if(msg != '')
-		{
-			$msg.val('');
-
-			chat.emit('chat:msg:send', msg, function(data)
-			{
-				//if(data) console.log('сообщение получено сервером');
-			});
-		}
-		return false;
-	});
-	
-	chat.on('join', function(data)
-	{
-		console.log('on join');
-		console.log(data);
-		
-		//var ava = !!(data['from']['user']['previews']['50_50']);
-		var ava = '';
-		var avaSrc = (ava ? data['from']['user']['previews']['50_50'] : '/_0.gif');
-
-		var html = '<li>';
-			html += '<div><img src="'+avaSrc+'"/></div>';
-			html += '<div>'+nl2br(data['u_login'])+'</div>';
-			html += '</li>';
-		
-		$messages.append(html);
-		$messagesWrapper.scrollTop($messagesWrapper.height());
-	});
-	
-	chat.on('message', function(data)
-	{
-		console.log('on message');
-		console.log(data);
-
-		//var ava = !!(data['from']['user']['previews']['50_50']);
-		var ava = '';
-		var avaSrc = (ava ? data['from']['user']['previews']['50_50'] : '/_0.gif');
-
-		var html = '<li>';
-			html += '<div><img src="'+avaSrc+'"/></div>';
-			html += '<div>'+nl2br(data['u_login'])+'</div>';
-			html += '</li>';
-
-		$messages.append(html);
-		$messagesWrapper.scrollTop($messagesWrapper.height());
-	});
-
-});
-</script>

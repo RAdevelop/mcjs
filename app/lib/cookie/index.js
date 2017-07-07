@@ -9,7 +9,6 @@ module.exports = Cookie;
 
 function Cookie(){}
 
-
 Cookie.clearCookie = function(req, res, name)
 {
 	if(req.signedCookies[name])
@@ -19,16 +18,18 @@ Cookie.clearCookie = function(req, res, name)
 
 Cookie.setCookie = function(res, name, value, maxAge)
 {
-	res.cookie(name, value, {httpOnly: AppConfig.session.cookie.httpOnly, maxAge: maxAge, path: '/'
+	res.cookie(name, value, {
+		httpOnly: AppConfig.session.cookie.httpOnly
+		, maxAge: maxAge
+		, path: '/'
 		, signed: true
 		, secure: AppConfig.session.cookie.secure //только для https
 	});
 };
 
-
 Cookie.setUserId = function(res, value)
 {
-	Cookie.setCookie(res, 'rtid', value, AppConfig.userCookieExpires);	
+	Cookie.setCookie(res, 'rtid', value, AppConfig.userCookieExpires);
 };
 
 Cookie.clearUserId = function(req, res)

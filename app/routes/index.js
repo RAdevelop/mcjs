@@ -20,14 +20,10 @@ module.exports = function(Classes, Control)
 	 });
 	
 	 */
-
 	//router.use(require('app/middlewares/_reqbody'));
 	router.use(require('app/middlewares/user/load.js')(Classes));
 	
 	router.use(require('app/middlewares/menu/site.js')(Classes));
-
-	
-	router.use('/chat', require('app/routes/chat'));
 	
 	/*****************************************************/
 	

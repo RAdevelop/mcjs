@@ -6,9 +6,6 @@ const Logger = require('app/lib/logger');
 
 const Class = (function()
 {
-	let _instance;
-	//let loadedClass = 0;
-	
 	function init()
 	{
 		if (!_instance)
@@ -25,15 +22,71 @@ const Class = (function()
 	{
 		/*loadedClass = loadedClass + 1;
 		console.log("loadedClass = " + loadedClass);*/
-		this._session = null;
-
 		// Публичные свойства
+		this._session = null;
+		
 		load(__dirname, 0, '/');
 	}
 	
-	// Приватные методы и свойства
-	// ...	
+	/*************************		Публичные методы			***************************************/
+	Singleton.prototype.getClass = function(className)
+	{
+		//console.log("_require = ", _require.keys());
+		className = className.toString().toLowerCase();
+		
+		if (!_require.has(className))
+			_require.set(className, require('app/class/'+className));
+		
+		if (!_classes.has(_require.get(className)))
+			_classes.set(_require.get(className), new (_require.get(className))(this) );
+		
+		return _classes.get(_require.get(className));
+		
+		/*let cn = {[className]:className};
+		 if (!_classes.has(cn))
+		 {
+		 if (!_require.has(className))
+		 {
+		 _require.set(className, require('app/class/'+className));
+		 }
+		 
+		 _classes.set(cn, new (_require.get(className))(this) );
+		 }
+		 
+		 return _classes.get(cn);*/
+	};
 	
+	Singleton.prototype.model = function(modelName)
+	{
+		return Models.model(modelName);
+	};
+	
+	Singleton.prototype.setSession = function(Session)
+	{
+		this._session = Session;
+		return this;
+	};
+	
+	Singleton.prototype.getSession = function()
+	{
+		return this._session;
+	};
+	
+	Singleton.prototype.getRequire = function()
+	{
+		return _require;
+	};
+	
+	/*Singleton.prototype.models = function()
+	 {
+	 return Models;
+	 };*/
+	/*************************		END OF Публичные методы			***************************************/
+	
+	/*************************		приватные статичные методы и свойства			***************************/
+	
+	let _instance;
+	//let loadedClass = 0;
 	
 	//храним экземпляры объектов new ClassName()
 	let _classes = new WeakMap();
@@ -94,61 +147,7 @@ const Class = (function()
 			throw new Error(err);
 		}
 	}
-	
-	/****************************************************************/
-	// Публичные методы
-	Singleton.prototype.getClass = function(className)
-	{
-		//console.log("_require = ", _require.keys());
-		className = className.toString().toLowerCase();
-
-		if (!_require.has(className))
-			_require.set(className, require('app/class/'+className));
-
-		if (!_classes.has(_require.get(className)))
-			_classes.set(_require.get(className), new (_require.get(className))(this) );
-
-		return _classes.get(_require.get(className));
-
-		/*let cn = {[className]:className};
-		if (!_classes.has(cn))
-		{
-			if (!_require.has(className))
-			{
-				_require.set(className, require('app/class/'+className));
-			}
-
-			_classes.set(cn, new (_require.get(className))(this) );
-		}
-		
-		return _classes.get(cn);*/
-	};
-	
-	Singleton.prototype.model = function(modelName)
-	{
-		return Models.model(modelName);
-	};
-
-	Singleton.prototype.setSession = function(Session)
-	{
-		this._session = Session;
-		return this;
-	};
-
-	Singleton.prototype.getSession = function()
-	{
-		return this._session;
-	};
-
-	Singleton.prototype.getRequire = function()
-	{
-		return _require;
-	};
-
-	/*Singleton.prototype.models = function()
-	{
-		return Models;
-	};*/
+	/*************************		END OF приватные статичные методы и свойства			***************************/
 	
 	return init();
 })();

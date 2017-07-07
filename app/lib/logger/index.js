@@ -41,47 +41,52 @@ const Logger = (function()
 {
 	let _instance;
 	//let loadedClass = 0;
-
+	
 	function init()
 	{
 		if (!_instance)
 		{
-			//_instance = new Singleton();
-			_instance = Singleton();
+			_instance = Singleton(process.env);
 			//console.log(_require);
 		}
 		return _instance;
 	}
-
-
+	
 	// Конструктор
 	function Singleton()
 	{
-		return new (winston.Logger)({
-			transports: [
+		let is_prod = (process.env.NODE_ENV === 'prod' || process.env.NODE_ENV === 'production');
+		let transports = [
+			new (winston.transports.File)({
+				name: 'app-error',
+				level: 0,
+				filename: path.join( pathToLogDir,  'app-error.log'),
+				maxsize: 1048576, //1Mb
+				handleExceptions: true,
+				humanReadableUnhandledException: true
+			})
+		];
+		
+		if (!is_prod)
+			transports.push(
 				new (winston.transports.Console)({
-					colorize: true
-					,prettyPrint: true
-					,handleExceptions: true
+						colorize: true
+						,prettyPrint: true
+						,handleExceptions: true
 					//,json: false
 					//stringify: true
-				}),
-				new (winston.transports.File)({
-					name: 'app-error',
-					level: 0,
-					filename: path.join( pathToLogDir,  'app-error.log'),
-					maxsize: 1048576, //1Mb
-					handleExceptions: true,
-					humanReadableUnhandledException: true
 				})
-			],
+			);
+		
+		return new (winston.Logger)({
+			transports: transports,
 			levels: config.levels,
 			colors: config.colors
 		});
 		// Публичные свойства
-
+		
 	}
-
+	
 	// Приватные методы и свойства
 	// ...
 

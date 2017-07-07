@@ -3,8 +3,21 @@
  * разные функции помошники
  */
 
-function mcDatepicker(inputSelector, andTime = false)
+$.cachedScriptLoad = function( url, options )
 {
+	// Allow user to set any option except for dataType, cache, and url
+	options = $.extend( options || {}, {
+		dataType: "script",
+		cache: true,
+		url: url
+	});
+	
+	return $.ajax( options );
+};
+
+function mcDatepicker(inputSelector, andTime)
+{
+	andTime = andTime || false;
 	$(inputSelector).datepicker({
 		dateFormat: 'dd-mm-yy',
 		onSelect: function (dateText)
@@ -567,3 +580,21 @@ if (md5('hello') != '5d41402abc4b2a76b9719d911017c592') {
 	}
 }
 //============================== JS MD5
+
+(function()
+{
+	if (window['BrowserDetector'])
+		return;
+	
+	window['BrowserDetector'] = {
+		ie		: !!((/*@cc_on!@*/false) || (document.documentMode)),// Internet Explorer 6-11
+		edge	: !!(!(document.documentMode) && window.StyleMedia),// Edge 20+
+		opera	: !!((window.opr && opr.addons) || window.opera || (navigator.userAgent.indexOf(' OPR/') >= 0)),// Opera 8.0+
+		firefox	: !!(typeof InstallTrigger !== 'undefined'),
+		// At least Safari 3+: "[object HTMLElementConstructor]"
+		safari	: !!(Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0),
+		chrome	: !!(window.chrome && window.chrome.webstore) //Chrome 1+
+	};
+	
+	window['BrowserDetector']['ie_or_edge'] = (window['BrowserDetector']['ie'] || window['BrowserDetector']['edge']);
+})();

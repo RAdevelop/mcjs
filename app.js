@@ -100,6 +100,17 @@ app.use(Session);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));//true - работает с html input name="name[]", false - надо будет извращаться
 
+app.use(function(req, res, next)
+{
+	let port = (req.app.settings.port == 80 ? '' : ':'+req.app.settings.port);
+	res.header(`Access-Control-Allow-Origin`, `${req.protocol}://${req.hostname}${port}`);
+	
+	res.header('Access-Control-Allow-Methods', 'GET,POST');//GET,PUT,POST,DELETE
+	res.header('Access-Control-Allow-Headers', 'Content-Type');
+	
+	next();
+});
+
 //************ routes ****************
 //используетя для экспорта данных в JavaScript в браузер
 let expstate = require('express-state');
@@ -116,24 +127,14 @@ catch 404 and forward to error handler
 работает как миддл варе по умолчанию для всех адресов, если не сработал путь в роутерах
 поэтому первым аргументом Error не передается
  */
-app.use(function(req, res, next) {
+app.use(function(req, res, next)
+{
 	next(new Errors.HttpError(404));
 });
-
-//после роутеров
-//app.use(Errors.middleware.errorHandler);
 
 // error handlers
 // development error handler
 // will print stacktrace
-
-//app.use(require('app/middlewares/error')(app, Class));
 app.use(require('app/middlewares/error')(app));
 
-
-//app.use(Errors.middleware.crashProtector(require('app/middlewares/error')(app, Class)));
-
-//после роутеров
-//app.use(Errors.middleware.errorHandler);
-//module.exports = app;
 module.exports = app;

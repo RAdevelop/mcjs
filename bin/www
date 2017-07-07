@@ -7,6 +7,8 @@
 const app = require('../app');
 const config = require('../app/config');
 //const debug = require('debug')('mcjs.lo:server');
+
+//const Logger = require('app/lib/logger');
 const debug = require('debug')('localhost:server');
 const fs = require('fs');
 const path = require('path');
@@ -51,11 +53,6 @@ let server_opt = {
 const server = https.createServer(server_opt, app);
 //const server = http.createServer(app);
 
-const io = require('../app/lib/chat');
-io(server, app);
-
-//console.log(app);
-
 /**
  * Listen on provided port, on all network interfaces.
  */
@@ -66,33 +63,38 @@ server.on('listening', onListening);
 server.listen(port);
 
 
+const io = require('../app/lib/chat');
+//TODO надо еще тестировать!
+const Messenger = io(server, app);
+app.set('messenger', Messenger);
+
 
 /**
  * Event listener for HTTP server "error" event.
  */
 
-function onError(error) {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
+function onError(error)
+{
+	if (error.syscall !== 'listen') 
+		throw error;
 
-  let bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
+	let bind = typeof port === 'string'
+	? 'Pipe ' + port
+	: 'Port ' + port;
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
-    case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
-      process.exit(1);
-      break;
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
-      process.exit(1);
-      break;
-    default:
-      throw error;
-  }
+	case 'EACCES':
+		console.error(bind + ' requires elevated privileges');
+		process.exit(1);
+		break;
+	case 'EADDRINUSE':
+		console.error(bind + ' is already in use');
+		process.exit(1);
+		break;
+	default:
+		throw error;
+	}
 }
 
 /**
@@ -101,10 +103,10 @@ function onError(error) {
 
 function onListening()
 {
-  let addr = server.address();
-  let bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
+	let addr = server.address();
+	let bind = typeof addr === 'string'
+	? 'pipe ' + addr
+	: 'port ' + addr.port;
 	//TODO удалить или закомментировать
   debug('Listening on ' + bind);
 }
@@ -120,7 +122,7 @@ function _shutdownService(sigName)
 		console.log("Closed out remaining connections.");
 		process.exit()
 	});
-
+	
 	setTimeout(function ()
 	{
 		console.error("Could not close connections in time, forcefully shutting down");
@@ -150,7 +152,7 @@ function printMem()
 	let mem = process.memoryUsage();
 	
 	for (let p in mem)
-    {
+	{
 		// convert to MB
 		mem[p] = mem[p] / 1000000;
 	}
