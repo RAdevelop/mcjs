@@ -1,9 +1,9 @@
 /**
- * @require localforage.js
  * @require bluebird.js
  * @require jQuery
+ * @require BrowserDetector
  */
-(function($)
+;(function($)
 {
 	if (window['MessengerEmitter'])
 		return;
@@ -12,20 +12,7 @@
 	{
 		var EventEmitter = (function()
 		{
-			function EventEmitter()
-			{
-				this.on		= this.addListener;
-				this.once	= this.addListenerOnce;
-				this.off	= this.removeListener;
-				this.on('error', function _onError(err)
-				{
-					console.log(err);
-					/*console.log(err.name);
-					 console.log(err.message);
-					 
-					 console.log(err.stack);*/
-				});
-			}
+			function EventEmitter(){}
 			
 			//**************** публичные методы и свойства
 			
@@ -33,7 +20,8 @@
 				
 				constructor: EventEmitter,
 				
-				addListener: function(type, fn, context)
+				//addListener
+				on: function(type, fn, context)
 				{
 					try
 					{
@@ -44,8 +32,8 @@
 						return this.emit('error', err);
 					}
 				},
-				
-				addListenerOnce: function(type, fn, context)
+				//addListenerOnce
+				once: function(type, fn, context)
 				{
 					try
 					{
@@ -57,7 +45,8 @@
 					}
 				},
 				
-				removeListener: function(type, fn, context)
+				//removeListener
+				off: function(type, fn, context)
 				{
 					if (_hasListeners(type))
 					{
@@ -86,9 +75,10 @@
 					return this;
 				},
 				
-				emit: function(type, args)
+				emit: function(type)//, args
 				{
 					var self = this;
+					var args = [].slice.call(arguments, 1);
 					return _emit(type, args)
 					.catch(function(err)
 					{
@@ -104,9 +94,9 @@
 			
 			//********************* приватные статичные методы и свойства
 			var _listeners = {};
-			function _emit(type, args)
+			function _emit(type, args)//, args
 			{
-				args = [].slice.call(arguments, 1);
+				//args = [].slice.call(arguments, 1);
 				return new Promise(function(resolve)
 				{
 					if (_hasListeners(type))
@@ -145,6 +135,7 @@
 					{
 						return reject(new TypeError('fn must be function'));
 					}
+					
 					context = context || self;
 					
 					if (!_hasListeners(type))
@@ -188,50 +179,157 @@
 			return EventEmitter;
 		})();
 		
+		var WebStorage = (function()
+		{
+			function WebStorage(storageType, conf)
+			{
+				console.log('------------ localStorage');
+				if (!window[storageType])
+					throw new Error('Неизвестный тип хранилища');
+				
+				var _storageConf = {
+					name: 'db_storage',
+					storeName: 'table',
+					size: 1024 * 2.5
+				};
+				
+				Object.assign(_storageConf, conf);
+				
+				/*console.log('------------');
+				console.log('_storageConf = ', _storageConf);
+				console.log('------------');*/
+				
+				/**
+				 * DB name
+				 * @type {string}
+				 * @private
+				 */
+				this._name = _storageConf.name;
+				
+				/**
+				 * tabel name in DB
+				 * @type {string}
+				 * @private
+				 */
+				this._storeName	= _storageConf.storeName;
+				this._table		= [this._name, this._storeName].join('/');
+				
+				/**
+				 * @type {Object} WebStorage (local|session)
+				 * @private
+				 */
+				var _storage = window[storageType];
+				this._storage = function()
+				{
+					return _storage;
+				};
+			}
+			
+			WebStorage.prototype = {
+				
+				constructor: WebStorage,
+				
+				setItem: function(key, value)
+				{
+					if (value === null)
+						value = undefined;
+					
+					key = [this._table, key].join('/');
+					
+					this._storage().setItem.call(this._storage(), key, (value ? JSON.stringify(value) : value));
+				},
+				getItem: function(key)
+				{
+					key = [this._table, key].join('/');
+					var value = this._storage().getItem.call(this._storage(), key);
+					
+					if (value === undefined)
+						value = null;
+					
+					return (value ? JSON.parse(value) : value);
+				},
+				removeItem: function(key)
+				{
+					key = [this._table, key].join('/');
+					this._storage().removeItem.call(this._storage(), key);
+				},
+				clear: function()
+				{
+					this._storage().clear.call(this._storage());
+				},
+				clearTable: function()
+				{
+					var k = '', table = this._table +'/';
+					var removedKeys = [];
+					
+					for (var i = 0; i < storage.length; i++)
+					{
+						k = this._storage().key(i);
+						if (k.toLowerCase().indexOf(table) === 0)
+						{
+							this._storage().removeItem(k);
+							i--;
+							removedKeys.push(k);
+						}
+					}
+					return removedKeys;
+				},
+				key: function(index)
+				{
+					return this._storage().removeItem.call(this._storage(), index);
+				}
+			};
+			
+			return WebStorage;
+		})();
 		
-		
-		var MessengerEmitter = (function(EventEmitter)
+		var MessengerEmitter = (function()
 		{
 			function MessengerEmitter(options)
 			{
 				EventEmitter.apply(this);
-				
-				options = options || {};
-				
-				if (!!options.storage === false || typeof options.storage !== 'object')
+				this.on('error', function _onError(err)
 				{
-					options.storage = {
-						name:		_storageConf.name,
-						storeName:	_storageConf.storeName,
-						size:		_storageConf.size
-					};
-				}
+					console.log(err);
+				});
 				
-				Object.assign(_storageConf, options.storage);
+				options = options || {storage: _storageConf};
+				
+				options.storage.name		= options.storage.name		|| _storageConf.name;
+				options.storage.storeName	= options.storage.storeName	|| _storageConf.storeName;
+				options.storage.size		= options.storage.size		|| _storageConf.size;
+				
+				var ls = new WebStorage('localStorage', options.storage);
+				var ss = new WebStorage('sessionStorage', options.storage);
+				Object.defineProperties(MessengerEmitter.prototype, {
+					
+					ls: {
+						value: ls,
+						enumerable: true, configurable: false, writable : false
+					},
+					ss: {
+						value: ss,
+						enumerable: true, configurable: false, writable : false
+					}
+				});
 				
 				this.init();
 			}
-			
 			MessengerEmitter.prototype = Object.create(EventEmitter.prototype);
 			MessengerEmitter.prototype.constructor = MessengerEmitter;
 			
+			
 			MessengerEmitter.prototype.on = function(type, fn)
 			{
-				var args = [].slice.call(arguments, 0);
-				args.push(this);
-				return EventEmitter.prototype.addListener.apply(this, args);
+				return EventEmitter.prototype.on.call(this, type, fn, this);
 			};
 			MessengerEmitter.prototype.once = function(type, fn)
 			{
-				var args = [].slice.call(arguments, 0);
-				args.push(this);
-				return EventEmitter.prototype.addListenerOnce.apply(this, args);
+				return EventEmitter.prototype.once.call(this, type, fn, this);
 			};
 			MessengerEmitter.prototype.off = function(type, fn)
 			{
-				var args = [].slice.call(arguments, 0);
-				args.push(this);
-				return EventEmitter.prototype.removeListener.apply(this, args);
+				return EventEmitter.prototype.off.call(this, type, fn, this);
 			};
 			
 			MessengerEmitter.prototype.init = function()
@@ -259,7 +357,7 @@
 					//FIXME после отладки заменить на beforeunload
 					//window.addEventListener("unload",			_onFrameUnload, false);
 					
-					window.addEventListener("beforeunload",	_onFrameUnload, false);
+					//window.addEventListener("beforeunload",	_onFrameUnload, false);
 					
 					window.addEventListener("storage", _onStorage, false);
 				}
@@ -313,7 +411,7 @@
 				//
 			};
 			
-			MessengerEmitter.prototype.getIO = function()
+			MessengerEmitter.prototype.socketIo = function()
 			{
 				return _io;
 			};
@@ -325,7 +423,7 @@
 				if (!ready)
 					_io = null;
 				
-				this.ls().setItem(KEY_SOCKET_IO, ready);
+				this.ls.setItem(KEY_SOCKET_IO, ready);
 				
 				return ready;
 			};
@@ -333,7 +431,7 @@
 			
 			MessengerEmitter.prototype.getSocketReady = function()
 			{
-				return parseInt(this.ls().getItem(KEY_SOCKET_IO), 10)||0;
+				return parseInt(this.ls.getItem(KEY_SOCKET_IO), 10)||0;
 			};
 			
 			MessengerEmitter.prototype.ioConnect = function()
@@ -346,25 +444,22 @@
 				*/
 				var self = this;
 				
-				//FIXME для тестов
-				//return Promise.resolve(true);
-				
 				return Promise.resolve(self.getSocketReady())
 				.then(function(loaded)
 				{
 					console.log('loaded = ', loaded);
 					
 					if (loaded)
-						return Promise.resolve(true);
+						return Promise.resolve(_io);
 					
 					console.log('start _ioLoad');
-					return self.ioLoad()
-					.then(function()
-					{
-						console.log('start ioInit');
-						return self.ioInit();
-					})
-					;
+					return self.ioLoad();
+				})
+				.then(function()
+				{
+					console.log('start ioInit');
+					//console.log('_io ', _io);
+					return self.ioInit();
 				})
 				;
 			};
@@ -373,12 +468,13 @@
 			{
 				return new Promise(function(resolve, reject)
 				{
-					if (window['io'])
+					if (window['io'] || _io !== null)
 						return resolve(true);
 					
 					$.cachedScriptLoad(_socketJsFile)
-					.done(function(script, textStatus)
+					.done(function()//<- script, textStatus
 					{
+						//console.log('script ', script);
 						return resolve(true);
 					})
 					.fail(function(jqxhr, settings, exception)
@@ -390,36 +486,17 @@
 			
 			MessengerEmitter.prototype.ioInit = function()
 			{
-				//if (this.getSocketReady())
-				//	return Promise.resolve(true);
-				
 				this.setSocketReady(1);
+				if (_io === null)
+				_io = _SocketIo(_socketOpts, this);
 				
-				_io = io('//'+window.location.host+'/', _socketOpts);
-				
-				return Promise.resolve(true);
+				return Promise.resolve(_io);
 			};
-			
-			MessengerEmitter.prototype.ls = function()
-			{
-				if (!this._ls)
-					this._ls = _storage('localStorage', _storageConf);
-				
-				return this._ls;
-			};
-			
-			MessengerEmitter.prototype.ss = function()
-			{
-				if (!this._ss)
-					this._ss = _storage('sessionStorage', _storageConf);
-				
-				return this._ss;
-			};
-			
 			
 			MessengerEmitter.prototype.getTab = function()
 			{
-				return  this.ss().getItem(KEY_TAB);
+				//console.log('this in delTab -> getTab', this);
+				return this.ss.getItem(KEY_TAB);
 			};
 			
 			MessengerEmitter.prototype.updTab = function(tabList)
@@ -439,7 +516,7 @@
 				if (isMe)
 				{
 					tab['mts_upd'] = (new Date()).getTime();
-					this.ss().setItem(KEY_TAB, tab);
+					this.ss.setItem(KEY_TAB, tab);
 					
 					if (this.isTabMaster(tab) && !this.getSocketReady())
 					{
@@ -447,7 +524,7 @@
 					}
 				}
 				else
-					this.ss().removeItem(KEY_TAB);
+					this.ss.removeItem(KEY_TAB);
 				
 				return tab;
 				
@@ -455,7 +532,7 @@
 			
 			MessengerEmitter.prototype.setTab = function()
 			{
-				var tab = this.ss().getItem(KEY_TAB);
+				var tab = this.ss.getItem(KEY_TAB);
 				
 				if (tab)
 					return tab;
@@ -477,7 +554,7 @@
 				
 				tabIndex++;
 				tabData['name'] += tabIndex;
-				this.ss().setItem(KEY_TAB, tabData);
+				this.ss.setItem(KEY_TAB, tabData);
 				
 				tabList.push(tabData);
 				this.updTabList(tabList);
@@ -487,18 +564,16 @@
 			
 			MessengerEmitter.prototype.delTab = function()
 			{
-				var self = this;
-				
-				var tab  = self.getTab();
+				var tab  = this.getTab();
 				
 				if (!tab)
 					return tab;
 				
-				var isTabMaster = self.isTabMaster(tab);
+				var isTabMaster = this.isTabMaster(tab);
 				
-				self.ss().removeItem(KEY_TAB);
+				this.ss.removeItem(KEY_TAB);
 				
-				var tabList = self.getTabList();
+				var tabList = this.getTabList();
 				
 				var tLength = tabList.length;
 				for (var i = 0; i < tLength; i++)
@@ -510,16 +585,14 @@
 					}
 				}
 				
-				if (isTabMaster && tabList.length)
+				if (isTabMaster)
 				{
-					tabList[0]['master'] = true;
-				}
-				
-				self.updTabList(tabList);
-				
-				if (isTabMaster)//&& !tabList.length
-				{
-					self.setSocketReady(0);
+					if (tabList.length)
+						tabList[0]['master'] = true;
+					
+						this.updTabList(tabList);
+					
+					this.setSocketReady(0);
 				}
 				
 				return tab;
@@ -527,21 +600,19 @@
 			
 			MessengerEmitter.prototype.isTabMaster = function(tab)
 			{
+				tab = tab || this.getTab();
 				return (tab.hasOwnProperty('master') ? tab['master'] : false);
 			};
 			
 			MessengerEmitter.prototype.getTabList = function()
 			{
-				var self = this;
-				
 				/*
 				 TODO добавить проверку времени последнего обновления всех вкладок.
 				 если они есть, и "давно" не обновлялись, то очистить хранилища local и storage
 				 !!! НО ТОЛЬКО ДЛЯ СВОИХ КЛЮЧЕЙ!!!
 				 */
 				
-				var tabList = self.ls().getItem(KEY_TAB_LIST) || [];
-				return tabList;
+				return this.ls.getItem(KEY_TAB_LIST) || [];
 			};
 			
 			MessengerEmitter.prototype.updTabList = function(tabList)
@@ -549,7 +620,7 @@
 				var self = this;
 				tabList = tabList || [];
 				
-				self.ls().setItem(KEY_TAB_LIST, tabList);
+				self.ls.setItem(KEY_TAB_LIST, tabList);
 				return tabList;
 			};
 			
@@ -557,11 +628,16 @@
 			{
 				var self = this;
 				
-				return new Promise(function(resolve)
+				return Promise.resolve(self.setTab())
+				.then(function(tab)
 				{
-					self.setTab();
-					
-					return resolve(true);
+					console.log('self.getSocketReady() ', self.getSocketReady());
+					//Для всех кроме IE! TODO проверить для Edge!
+					if (self.isTabMaster(tab) && !self.getSocketReady() )// && !self.getSocketReady() && !BrowserDetector.ie
+					{
+						return self.ioConnect();
+					}
+					return self.socketIo();
 				});
 			};
 			
@@ -581,20 +657,6 @@
 			
 			//********************* приватные статичные методы и свойства (одинаковые для все инстансов!)
 			
-			
-			var _io = null;
-			var _socketJsFile = '/socket.io/socket.io.js';
-			var _socketOpts =  {
-				//"force new connection" : true,
-				'forceNew': false,
-				'reconnection': true,
-				'reconnectionDelay': 2000,               //starts with 2 secs delay, then 4, 6, 8, until 60 where it stays forever until it reconnects
-				'reconnectionDelayMax' : 60000,          //1 minute maximum delay between connections
-				'reconnectionAttempts': 'Infinity',      //to prevent dead clients, having the user to having to manually reconnect after a server restart.
-				'timeout' : 10000                        //before connect_error and connect_timeout are emitted.
-				,'transports' : ['polling', 'websocket'] //forces the transport to be only websocket. Server needs to be setup as well/
-			};
-			
 			var _iFrame = null;
 			var _isFrame = (window !== window.top);
 			
@@ -606,12 +668,12 @@
 			var _storageConf = {
 				name: 'mc',
 				storeName: 'messenger',
-				size: 1024 * 2.5, //2.5Mb ограничения в мобильных браузерах
-				localStorageDriver: [
+				size: 1024 * 2.5 //2.5Mb ограничения в мобильных браузерах
+				/*, localStorageDriver: [
 					//localforage.WEBSQL,
 					//localforage.INDEXEDDB,
 					localforage.LOCALSTORAGE
-				]
+				]*/
 			};
 			
 			/**
@@ -639,54 +701,7 @@
 			
 			//*********** END OF localforage (localStorage|sessionStorage etc.)
 			
-			function _storage(storageType, conf)
-			{
-				if (!window[storageType])
-					throw new Error('Неизвестный тип хранилища');
-				
-				var storage = window[storageType];
-				var _storageConf = {
-						name: 'db_storage',
-						storeName: 'table'
-					};
-				
-				Object.assign(_storageConf, conf);
-				return {
-					table: [_storageConf.name, _storageConf.storeName].join('/'), 
-					setItem: function(key, value)
-					{
-						if (value === null)
-							value = undefined;
-						
-						key = [this.table, key].join('/');
-						
-						storage.setItem.call(storage, key, (value ? JSON.stringify(value) : value));
-					},
-					getItem: function(key)
-					{
-						key = [this.table, key].join('/');
-						var value = storage.getItem.call(storage, key);
-						
-						if (value === undefined)
-							value = null;
-						
-						return (value ? JSON.parse(value) : value);
-					},
-					removeItem: function(key)
-					{
-						key = [this.table, key].join('/');
-						storage.removeItem.call(storage, key);
-					},
-					clear: function()
-					{
-						storage.clear.call(storage);
-					},
-					key: function(keyNum)
-					{
-						return storage.removeItem.call(storage, keyNum);
-					}
-				}
-			}
+			
 			
 			//allowed domains
 			var _originAllowed= [window.location.origin];
@@ -719,35 +734,39 @@
 				return false;
 			}
 			
-			function _onFrameUnload(event)
+			/*function _onFrameUnload(event)
 			{
 				
 				//TODO работа с localStorage sessionStorage
-				/*localStorage.clear();
+				/!*localStorage.clear();
 				sessionStorage.clear();
 				return;
-				*/
-				/*
+				*!/
+				/!*
 				 this - здесь это окно фрейма
-				 */
+				 *!/
 				console.log('onFrameUnload');
 				event.stopImmediatePropagation();
 				event.stopPropagation();
 				//event.preventDefault();
+				
+				//FIXME для тестов
 				//var msg = 'RA';
 				//event.returnValue = msg;
 				
 				_iFrameReady = false;
 				
+				//пример вызовов методов класса self.sendPostMessage.apply(self, ['AD', eData.source]);
 				var self = MessengerEmitter.prototype;
-				//привер вызовов методов класса self.sendPostMessage.apply(self, ['AD', eData.source]);
 				self.delTab.apply(self);
 				
 				//------------
-				//self = null;
+				//FIXME для тестов
 				//return msg;
+				
+				
 				return;
-			}
+			}*/
 			
 			function _onStorage(event)
 			{
@@ -758,12 +777,6 @@
 				//event.stopImmediatePropagation();
 				//event.stopPropagation();
 				//event.preventDefault();
-				
-				//TODO обработка события и данных
-				
-				
-				
-				//пример вызовов методов класса self.sendPostMessage.apply(self, ['AD', eData.source]);
 				
 				//TODO пример, как общаеться с родительским окном без postMessage
 				//console.log('this.parent.Messenger ', this.parent.Messenger);
@@ -778,13 +791,13 @@
 				 этого события...
 				 */
 				
-				console.log('event.storageArea === window.sessionStorage = ', event.storageArea === window.sessionStorage);
+				console.log('event.storageArea === window.sessionStorage = ', event['storageArea'] === window.sessionStorage);
 				console.log("event['newValue'] === event['oldValue'] = ", event['newValue'] === event['oldValue']);
 				console.log('event.key ', event.key);
 				console.log("event['oldValue'] = ", event['oldValue']);
 				console.log("event['newValue'] = ", event['newValue']);
 				if (
-				//	event.storageArea === window.sessionStorage
+				//	event['storageArea'] === window.sessionStorage
 				//||
 					event['newValue'] === event['oldValue']
 				)
@@ -798,7 +811,7 @@
 				if (storeKey)
 				{
 					var self = MessengerEmitter.prototype;
-					self.emit.apply(self, [storeKey, event]);
+					self.emit.call(self, storeKey, event);
 				}
 				
 				//------------
@@ -877,11 +890,98 @@
 				return false;
 			}
 			
+			var _io = null;
+			var _socketJsFile = '/socket.io/socket.io.js';
+			var _socketOpts =  {
+				//"force new connection" : true,
+				'forceNew': false,
+				'reconnection': true,
+				'reconnectionDelay': 2000,               //starts with 2 secs delay, then 4, 6, 8, until 60 where it stays forever until it reconnects
+				'reconnectionDelayMax' : 60000,          //1 minute maximum delay between connections
+				'reconnectionAttempts': 'Infinity',      //to prevent dead clients, having the user to having to manually reconnect after a server restart.
+				'timeout' : 10000                        //before connect_error and connect_timeout are emitted.
+				,'transports' : ['polling', 'websocket'] //forces the transport to be only websocket. Server needs to be setup as well/
+			};
+			
+			function _SocketIo(opts, Messenger)
+			{
+				var chat = io('//'+window.location.host+'/', opts);
+				
+				chat.on('connect', function(data)
+				{
+					console.log('on connect event data=' ,data);
+					//при подключении попробовать передать набор namespace'ов
+					var sendData = {
+						//'userName': navigator.userAgent
+						'chanel': 'ad'
+					};
+					
+					chat.emit('join', sendData, function(respData)
+					{
+						console.log('cb join respData = ', respData);
+					});
+				})
+				.on('connecting', function (connecting)
+				{
+					console.log('connecting ', connecting)
+				})
+				.on('reconnect', function (data)
+				{
+					console.log('reconnected data = ', data);
+				})
+				.on('reconnecting', function (data)
+				{
+					console.log('reconnecting data = ', data);
+				})
+				.on('reconnect_error', function(err)
+				{
+					console.log('on reconnect_error event');
+					console.log(err);
+					
+				})
+				.on('reconnect_failed', function(err)
+				{
+					console.log('on reconnect_failed event');
+					console.log(err);
+					
+				})
+				.on('error', function(err)
+				{
+					console.log('on error event');
+					console.log(err);
+					
+					if(err == 'error:authentication')
+					{
+						chat.emit('chat:error:auth', {}, function(data)
+						{
+							console.log('chat:error:auth');
+						});
+						
+						/*var s = 5;
+						 $chatArea.html('<div>Вы не авторизованы. Через <span id="timer">'+s+'</span> секунд перенаправим Вас на страницу авторизации.</div>');
+						 
+						 var $timer = $chatArea.find('#timer');
+						 
+						 var t = setInterval(function(){
+						 s--;
+						 if(s == 1)
+						 {
+						 clearInterval(t);
+						 window.location.href = '/login';
+						 }
+						 $timer.text(s);
+						 
+						 }, 1000);*/
+					}
+				});
+				
+				return chat;
+			}
+			
 			//********************* END OF приватные статичные методы и свойства
 			
-			
 			return MessengerEmitter;
-		})(EventEmitter);
+		})();
 		
 		return MessengerEmitter;
 	})();

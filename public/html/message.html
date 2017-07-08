@@ -39,51 +39,74 @@
 		{
 			return;
 			
-			
-			console.log('_onKeySocketIo');
-			console.log(data);
-			
-			//data['oldValue']
-			if (!parseInt(data['newValue'], 10))
-			return;
-			
-			//FIXME
-			//return;
-			
-			return Messenger.ioConnect()
-			.then(function()
-			{
-				console.log('Messenger.getIO() ', Messenger.getIO());
-			});
 		});
 		
+		Messenger.on('ra', function _onChatMessage(data)
+		{
+			console.log('_onChatMessage');
+			console.log(data);
+			
+			//send data to IO if only i'am is master tab ... this.socketIo().emit(...);
+		});
 		Messenger.on(Messenger.keyTabList(), function _onKeyTabList(data)
 		{
-			//return;
-			
 			console.log('_onKeyTabList');
 			console.log(data);
 			var tabList = (!!data['newValue'] ? JSON.parse(data['newValue']) : []);
-			Messenger.updTab(tabList);
+			this.updTab(tabList);
 		});
 		
 		//вызов в "глвном" окне
 		//window.parent.MessengerEmitter.prototype;
 		
 		Messenger.initTab()
-		.then(function()
+		.then(function(io)
 		{
-			console.log('tabCache ', Messenger.getTab());
-			console.log('tabListCache = ', Messenger.getTabList());
+			//console.log('tabCache ', Messenger.getTab());
+			//console.log('tabListCache = ', Messenger.getTabList());
+			console.log('io = ', io);
 			
-			
-			//return ;
+			return ;
 		})
 		.catch(function(err)
 		{
 			Messenger.emitErr(err);
 		})
 		;
+		
+		window.addEventListener("beforeunload",	_onFrameUnload, false);
+		
+		function _onFrameUnload(event)
+		{
+			
+			//TODO работа с localStorage sessionStorage
+			/*localStorage.clear();
+			 sessionStorage.clear();
+			 return;
+			 */
+			/*
+			 this - здесь это окно фрейма
+			 */
+			console.log('onFrameUnload');
+			event.stopImmediatePropagation();
+			event.stopPropagation();
+			//event.preventDefault();
+			
+			//FIXME для тестов
+			//var msg = 'RA';
+			//event.returnValue = msg;
+			
+			//_iFrameReady = false;
+			
+			Messenger.delTab();
+			
+			//------------
+			//FIXME для тестов
+			//return msg;
+			
+			
+			return;
+		}
 	});
 //-->
 </script>

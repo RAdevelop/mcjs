@@ -68,10 +68,11 @@ $(document).on('click', '#btn_message_send', function _onMessageSend(event)
 	var data = {
 		room_id: '123',
 		m: t_message,
-		u: 'user data'
+		u: 'user data',
+		t: (new Date()).getTime()/1000
 	};
 	
-	Messenger.emit('room_message', data);
+	Messenger.emit('room_message', data, "data2");
 	
 	return false;
 });
@@ -89,9 +90,11 @@ function tMessageHtml(t_message)
 	return html;
 }
 
-Messenger.on('room_message', function _onRoomMessage(data)
+Messenger.on('room_message', function _onRoomMessage(data, data2)
 {
+	//this is Messenger
 	console.log('_onRoomMessage data ', data);
+	this.ls().setItem('ra', data)
 	
 	/*
 	TODO отправка сообщения:

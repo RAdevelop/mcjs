@@ -59,20 +59,20 @@
 			center: [55.76, 37.64],
 			zoom: 10,
 			locationAddress: ''
-		};
-
+		}
+		
 		var defaultsOptions = {};
-
+		
 		var state = $.extend({}, defaultsState, this.state);
 		var options = $.extend({}, defaultsOptions, this.options);
 		var self = this;
-
+		
 		$('#'+self.mapId).html(McMap.loadingInfo);
-
+		
 		function init()
 		{
 			$('#'+self.mapId).attr('data-map-init', 'true').html('');
-
+			
 			if (state.center[0] && state.center[1])
 				self.map = new ymaps.Map(self.mapId, state, options);
 		}
@@ -83,7 +83,8 @@
 				if (is_ymaps)
 					return Promise.resolve(true);
 
-				//загружаем api-maps.yandex.ru
+				//загружаем
+				// api-maps.yandex.ru
 				return new Promise(function(resolve, reject)
 				{
 					$.cachedScriptLoad("\/\/api-maps.yandex.ru\/2.1\/?lang=ru_RU")

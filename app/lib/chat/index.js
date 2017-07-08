@@ -147,6 +147,8 @@ module.exports = function(httpServer, app)
 		Logger.error(err);
 	});
 	
+	/*
+	 TODO пока закрою - одно соединение контролирую на клиенте
 	io.engine.generateId = (req) => 
 	{
 		//Logger.info('---------------- io.engine.generateId');
@@ -154,7 +156,7 @@ module.exports = function(httpServer, app)
 		let rtid = Cookie.parse(req.headers.cookie)['rtid']||0;
 		//rtid = ''; //для тестов
 		return rtid; // custom id must be unique
-	};
+	};*/
 	
 	function onConnect(socket)
 	{
@@ -165,6 +167,7 @@ module.exports = function(httpServer, app)
 		{
 			Logger.info('---------------- onDisconnect socket');
 			Logger.info(arguments);
+			Logger.info('socket.id = ', socket.id);
 		});
 		
 		socket.on('error', function _socketOnError(err)
@@ -175,12 +178,14 @@ module.exports = function(httpServer, app)
 			//socket.disconnect();
 		});
 		
+		/*
+		TODO пока закрою - одно соединение контролирую на клиенте
 		let rtid = CookieParser.signedCookie(socket.id, AppConfig.session.secret);
 		
 		//Logger.info({'rtid': rtid});
 		
 		if (!rtid)
-			socket.emit('error', new Errors.HttpError(401));
+			socket.emit('error', new Errors.HttpError(401));*/
 	}
 	
 	function onConnection(socket)
