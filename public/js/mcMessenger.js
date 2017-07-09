@@ -2,13 +2,14 @@
  * @require bluebird.js
  * @require jQuery
  * @require BrowserDetector
+ * @require staff.js CunstomError
  */
 ;(function($)
 {
 	if (window['MessengerEmitter'])
 		return;
 	
-	window['MessengerEmitter'] = (function()
+	window['MessengerSocket'] = (function()
 	{
 		var EventEmitter = (function()
 		{
@@ -25,6 +26,7 @@
 				{
 					try
 					{
+						context = context || this;
 						return _addListener(type, fn, context, false);
 					}
 					catch (err)
@@ -37,6 +39,7 @@
 				{
 					try
 					{
+						context = context || this;
 						return _addListener(type, fn, context, true);
 					}
 					catch (err)
@@ -48,11 +51,13 @@
 				//removeListener
 				off: function(type, fn, context)
 				{
+					context = context || this;
+					
 					if (_hasListeners(type))
 					{
 						for (; ; )
 						{
-							var index = _indexOfListener(type, fn, context);
+							var index = _listenerExists(type, fn, context);
 							if (index < 0)
 							{
 								break;
@@ -127,16 +132,12 @@
 			
 			function _addListener(type, fn, context, once)
 			{
-				//var self = this;
-				var self = EventEmitter.prototype;
 				return new Promise(function(resolve, reject)
 				{
 					if (typeof fn !== 'function')
 					{
 						return reject(new TypeError('fn must be function'));
 					}
-					
-					context = context || self;
 					
 					if (!_hasListeners(type))
 					{
@@ -154,10 +155,8 @@
 				});
 			}
 			
-			function _indexOfListener(type, fn, context)
+			function _listenerExists(type, fn, context)
 			{
-				context = context || this;
-				//var listeners = this._listeners[type];
 				var listeners = _listeners[type];
 				var length = listeners.length;
 				for (var i = 0; i < length; ++i)
@@ -183,54 +182,84 @@
 		{
 			function WebStorage(storageType, conf)
 			{
-				console.log('------------ localStorage');
-				if (!window[storageType])
-					throw new Error('Неизвестный тип хранилища');
-				
 				var _storageConf = {
 					name: 'db_storage',
 					storeName: 'table',
 					size: 1024 * 2.5
 				};
 				
-				Object.assign(_storageConf, conf);
-				
-				/*console.log('------------');
-				console.log('_storageConf = ', _storageConf);
-				console.log('------------');*/
+				var opts = Object.assign({}, _storageConf, conf);
 				
 				/**
 				 * DB name
 				 * @type {string}
 				 * @private
 				 */
-				this._name = _storageConf.name;
+				this._name = opts.name;
 				
 				/**
-				 * tabel name in DB
+				 * table name in DB
 				 * @type {string}
 				 * @private
 				 */
-				this._storeName	= _storageConf.storeName;
+				this._storeName	= opts.storeName;
 				this._table		= [this._name, this._storeName].join('/');
 				
 				/**
 				 * @type {Object} WebStorage (local|session)
 				 * @private
 				 */
-				var _storage = window[storageType];
+				var _storage = window[storageType] || null;
 				this._storage = function()
 				{
 					return _storage;
 				};
+				
+				this._setStorage = function(storage)
+				{
+					_storage = storage;
+				};
+				this.check();
 			}
 			
 			WebStorage.prototype = {
 				
 				constructor: WebStorage,
-				
+				check: function()
+				{
+					try
+					{
+						if (!this._storage())
+							throw new Error('Неизвестный тип хранилища');
+						
+						/*
+						 если включен приватный режим в браузере, то размер хранилища там = 0
+						 поэтому сработает исключение при пропытке записать данные
+						 */
+						this.setItem("testKey", 1);
+						this.removeItem("testKey");
+						return true;
+					}
+					catch (err)
+					{
+						switch (err)
+						{
+							case 'QuotaExceededError':
+							case 'NS_ERROR_DOM_QUOTA_REACHED': //FF
+								//TODO реализовать логику очистки данных?
+								break;
+						}
+						console.log(err);
+						
+						this._setStorage(null);
+						return false;
+					}
+				},
 				setItem: function(key, value)
 				{
+					if (!this._storage())
+						return;
+					
 					if (value === null)
 						value = undefined;
 					
@@ -240,6 +269,9 @@
 				},
 				getItem: function(key)
 				{
+					if (!this._storage())
+						return;
+					
 					key = [this._table, key].join('/');
 					var value = this._storage().getItem.call(this._storage(), key);
 					
@@ -250,19 +282,28 @@
 				},
 				removeItem: function(key)
 				{
+					if (!this._storage())
+						return;
+					
 					key = [this._table, key].join('/');
 					this._storage().removeItem.call(this._storage(), key);
 				},
 				clear: function()
 				{
+					if (!this._storage())
+						return;
+					
 					this._storage().clear.call(this._storage());
 				},
 				clearTable: function()
 				{
+					if (!this._storage())
+						return;
+					
 					var k = '', table = this._table +'/';
 					var removedKeys = [];
 					
-					for (var i = 0; i < storage.length; i++)
+					for (var i = 0; i < this._storage().length; i++)
 					{
 						k = this._storage().key(i);
 						if (k.toLowerCase().indexOf(table) === 0)
@@ -276,6 +317,9 @@
 				},
 				key: function(index)
 				{
+					if (!this._storage())
+						return;
+					
 					return this._storage().removeItem.call(this._storage(), index);
 				}
 			};
@@ -283,37 +327,48 @@
 			return WebStorage;
 		})();
 		
+		var MessengerEmitterError = {
+			MyError: (function()
+			{
+				// Класс MyError
+				function MyError(message)
+				{
+					this.message = message;
+					CustomError.call(this, this.message);
+				}
+				MyError.prototype = Object.create(CustomError.prototype);
+				MyError.prototype.constructor = MyError;
+				MyError.prototype.name = "MyError";
+				return MyError;
+			})()
+		};
+		
 		var MessengerEmitter = (function()
 		{
 			function MessengerEmitter(options)
 			{
 				EventEmitter.apply(this);
+				
 				this.on('error', function _onError(err)
 				{
-					console.log(err);
-				});
-				
-				options = options || {storage: _storageConf};
-				
-				options.storage.name		= options.storage.name		|| _storageConf.name;
-				options.storage.storeName	= options.storage.storeName	|| _storageConf.storeName;
-				options.storage.size		= options.storage.size		|| _storageConf.size;
-				
-				var ls = new WebStorage('localStorage', options.storage);
-				var ss = new WebStorage('sessionStorage', options.storage);
-				Object.defineProperties(MessengerEmitter.prototype, {
+					console.log('err instanceof CustomError = ', err instanceof CustomError);
+					console.log('err instanceof Error = ', err instanceof Error);
+					console.log('err.name = ', err.name);
+					console.log('err.message = ', err.message);
+					console.log('err.stack = ', err.stack);
 					
-					ls: {
-						value: ls,
-						enumerable: true, configurable: false, writable : false
-					},
-					ss: {
-						value: ss,
-						enumerable: true, configurable: false, writable : false
-					}
+					//console.log(err);
 				});
 				
-				this.init();
+				options = options || {storage: {}};
+				
+				Object.assign(this, MessengerEmitterError);
+				
+				var _ls = new WebStorage('localStorage', options.storage);
+				var _ss = new WebStorage('sessionStorage', options.storage);
+				
+				this.ls = function(){return _ls; };
+				this.ss = function(){return _ss; };
 			}
 			MessengerEmitter.prototype = Object.create(EventEmitter.prototype);
 			MessengerEmitter.prototype.constructor = MessengerEmitter;
@@ -330,48 +385,6 @@
 			MessengerEmitter.prototype.off = function(type, fn)
 			{
 				return EventEmitter.prototype.off.call(this, type, fn, this);
-			};
-			
-			MessengerEmitter.prototype.init = function()
-			{
-				console.log('this._isFrame ', _isFrame);
-				if (!_iFrame && !_isFrame)
-				{
-					if (!_iFrameSrc )
-						throw new Error("Bad iframe.src.");
-					
-					_iFrame = document.createElement("iframe");
-					_iFrame.setAttribute('charset', 'utf-8');
-					_iFrame.setAttribute('name', 'msg_frame');
-					_iFrame.setAttribute('id', 'msg_frame');
-					_iFrame.style.cssText = "display:none;visibility:hidden;height:0; width:0;position:absolute;left:-9999px;";
-					
-					document.body.insertBefore(_iFrame, document.body.firstChild);
-					window.addEventListener("load", _onFrameLoad, false);
-				}
-				
-				if (_isFrame)
-				{
-					//FIXME window.addEventListener("message", _onMessageInFrame, false);
-					
-					//FIXME после отладки заменить на beforeunload
-					//window.addEventListener("unload",			_onFrameUnload, false);
-					
-					//window.addEventListener("beforeunload",	_onFrameUnload, false);
-					
-					window.addEventListener("storage", _onStorage, false);
-				}
-				else
-				{
-					_iFrame.src = _iFrameSrc;
-					//FIXME window.addEventListener("message", _onMessageInParent, false);
-				}
-			};
-			
-			MessengerEmitter.prototype.win = function()
-			{
-				//если вызов во фремйме, то window - это фрейм 
-				return (_isFrame ? window : _iFrame);
 			};
 			
 			MessengerEmitter.prototype.sendPostMessage = function(data, win)
@@ -411,98 +424,28 @@
 				//
 			};
 			
-			MessengerEmitter.prototype.socketIo = function()
+			var _tabCache = null;
+			MessengerEmitter.prototype.tabCache = function(tab)
 			{
-				return _io;
-			};
-			
-			MessengerEmitter.prototype.setSocketReady = function(ready)
-			{
-				ready = parseInt(ready, 10) || 0;
+				if (arguments.length == 1)
+					_tabCache = tab;
 				
-				if (!ready)
-					_io = null;
-				
-				this.ls.setItem(KEY_SOCKET_IO, ready);
-				
-				return ready;
-			};
-			
-			
-			MessengerEmitter.prototype.getSocketReady = function()
-			{
-				return parseInt(this.ls.getItem(KEY_SOCKET_IO), 10)||0;
-			};
-			
-			MessengerEmitter.prototype.ioConnect = function()
-			{
-				
-				/*
-				надо проверять локал сторадж - есть ли там флаг, что socket_io
-				если да, еще раз загружать либу io не надо
-				иначе - загрузить
-				*/
-				var self = this;
-				
-				return Promise.resolve(self.getSocketReady())
-				.then(function(loaded)
-				{
-					console.log('loaded = ', loaded);
-					
-					if (loaded)
-						return Promise.resolve(_io);
-					
-					console.log('start _ioLoad');
-					return self.ioLoad();
-				})
-				.then(function()
-				{
-					console.log('start ioInit');
-					//console.log('_io ', _io);
-					return self.ioInit();
-				})
-				;
-			};
-			
-			MessengerEmitter.prototype.ioLoad = function()
-			{
-				return new Promise(function(resolve, reject)
-				{
-					if (window['io'] || _io !== null)
-						return resolve(true);
-					
-					$.cachedScriptLoad(_socketJsFile)
-					.done(function()//<- script, textStatus
-					{
-						//console.log('script ', script);
-						return resolve(true);
-					})
-					.fail(function(jqxhr, settings, exception)
-					{
-						return reject(exception);
-					});
-				});
-			};
-			
-			MessengerEmitter.prototype.ioInit = function()
-			{
-				this.setSocketReady(1);
-				if (_io === null)
-				_io = _SocketIo(_socketOpts, this);
-				
-				return Promise.resolve(_io);
+				return _tabCache;
 			};
 			
 			MessengerEmitter.prototype.getTab = function()
 			{
-				//console.log('this in delTab -> getTab', this);
-				return this.ss.getItem(KEY_TAB);
+				return this.tabCache(this.ss().getItem(KEY_TAB));
 			};
 			
 			MessengerEmitter.prototype.updTab = function(tabList)
 			{
 				var tab = this.getTab();
 				var isMe = false;
+				
+				if (!tab)
+					return {tab: tab, isMe: isMe};
+				
 				for(var i = 0; i < tabList.length; i++)
 				{
 					if (tabList[i]['name'] === tab['name'])
@@ -513,26 +456,21 @@
 					}
 				}
 				
-				if (isMe)
+				if (isMe && this.isTabMaster(tab))
 				{
 					tab['mts_upd'] = (new Date()).getTime();
-					this.ss.setItem(KEY_TAB, tab);
-					
-					if (this.isTabMaster(tab) && !this.getSocketReady())
-					{
-						this.ioConnect();
-					}
+					this.tabCache(tab);
+					this.ss().setItem(this.keyTab(), tab);
 				}
-				else
-					this.ss.removeItem(KEY_TAB);
+				//else this.ss().removeItem(KEY_TAB);
 				
-				return tab;
+				return {tab: tab, isMe: isMe};
 				
 			};
 			
 			MessengerEmitter.prototype.setTab = function()
 			{
-				var tab = this.ss.getItem(KEY_TAB);
+				var tab = this.getTab();
 				
 				if (tab)
 					return tab;
@@ -554,24 +492,23 @@
 				
 				tabIndex++;
 				tabData['name'] += tabIndex;
-				this.ss.setItem(KEY_TAB, tabData);
+				
+				this.tabCache(tabData);
+				this.ss().setItem(KEY_TAB, tabData);
 				
 				tabList.push(tabData);
 				this.updTabList(tabList);
 				
-				return tabData;
+				return [tabData, tabList];
 			};
 			
-			MessengerEmitter.prototype.delTab = function()
+			MessengerEmitter.prototype.delTab = function(tab)
 			{
-				var tab  = this.getTab();
-				
 				if (!tab)
 					return tab;
 				
-				var isTabMaster = this.isTabMaster(tab);
-				
-				this.ss.removeItem(KEY_TAB);
+				this.tabCache(null);
+				this.ss().removeItem(KEY_TAB);
 				
 				var tabList = this.getTabList();
 				
@@ -585,60 +522,40 @@
 					}
 				}
 				
-				if (isTabMaster)
-				{
-					if (tabList.length)
-						tabList[0]['master'] = true;
-					
-						this.updTabList(tabList);
-					
-					this.setSocketReady(0);
-				}
+				if (this.isTabMaster(tab) && tabList.length)
+					tabList[0]['master'] = true;
+				
+				this.updTabList(tabList);
 				
 				return tab;
 			};
 			
 			MessengerEmitter.prototype.isTabMaster = function(tab)
 			{
-				tab = tab || this.getTab();
+				tab = tab || this.tabCache();
 				return (tab.hasOwnProperty('master') ? tab['master'] : false);
 			};
 			
 			MessengerEmitter.prototype.getTabList = function()
 			{
-				/*
-				 TODO добавить проверку времени последнего обновления всех вкладок.
-				 если они есть, и "давно" не обновлялись, то очистить хранилища local и storage
-				 !!! НО ТОЛЬКО ДЛЯ СВОИХ КЛЮЧЕЙ!!!
-				 */
-				
-				return this.ls.getItem(KEY_TAB_LIST) || [];
+				return this.ls().getItem(KEY_TAB_LIST) || [];
 			};
 			
 			MessengerEmitter.prototype.updTabList = function(tabList)
 			{
-				var self = this;
 				tabList = tabList || [];
 				
-				self.ls.setItem(KEY_TAB_LIST, tabList);
-				return tabList;
-			};
-			
-			MessengerEmitter.prototype.initTab = function()
-			{
-				var self = this;
-				
-				return Promise.resolve(self.setTab())
-				.then(function(tab)
+				if (!tabList.length)
 				{
-					console.log('self.getSocketReady() ', self.getSocketReady());
-					//Для всех кроме IE! TODO проверить для Edge!
-					if (self.isTabMaster(tab) && !self.getSocketReady() )// && !self.getSocketReady() && !BrowserDetector.ie
-					{
-						return self.ioConnect();
-					}
-					return self.socketIo();
-				});
+					this.tabCache(null);
+					this.ls().clearTable();
+					this.ss().clearTable();
+				}
+				else
+				{
+					this.ls().setItem(KEY_TAB_LIST, tabList);
+				}
+				return tabList;
 			};
 			
 			MessengerEmitter.prototype.keyTab = function()
@@ -650,31 +567,9 @@
 				return KEY_TAB_LIST;
 			};
 			
-			MessengerEmitter.prototype.keySocketIo = function()
-			{
-				return KEY_SOCKET_IO;
-			};
-			
 			//********************* приватные статичные методы и свойства (одинаковые для все инстансов!)
 			
-			var _iFrame = null;
-			var _isFrame = (window !== window.top);
-			
-			var _iFrameSrc = '/html/message.html';
-			var _iFrameReady = false;
-			
-			
-			//*********** localforage (localStorage|sessionStorage etc.)
-			var _storageConf = {
-				name: 'mc',
-				storeName: 'messenger',
-				size: 1024 * 2.5 //2.5Mb ограничения в мобильных браузерах
-				/*, localStorageDriver: [
-					//localforage.WEBSQL,
-					//localforage.INDEXEDDB,
-					localforage.LOCALSTORAGE
-				]*/
-			};
+			//*********** (localStorage|sessionStorage etc.)
 			
 			/**
 			 * префикс для имен вкладкок барузера
@@ -697,11 +592,7 @@
 			 */
 			var KEY_TAB_LIST = 'tabs';
 			
-			var KEY_SOCKET_IO = 'socket_io';
-			
-			//*********** END OF localforage (localStorage|sessionStorage etc.)
-			
-			
+			//*********** END OF (localStorage|sessionStorage etc.)
 			
 			//allowed domains
 			var _originAllowed= [window.location.origin];
@@ -709,113 +600,6 @@
 			function _isOriginAllowed(origin)
 			{
 				return (_originAllowed.indexOf(origin)>=0);
-			}
-			
-			function _onFrameLoad(event)
-			{
-				/*
-				 this - здесь это окно фрейма
-				 */
-				console.log('onFrameLoad');
-				event.stopPropagation();
-				//event.preventDefault();
-				//console.log(event);
-				
-				_iFrameReady = true;
-				
-				var self = MessengerEmitter.prototype;
-				//пример вызовов методов класса self.sendPostMessage.apply(self, ['AD', eData.source]);
-				
-				
-				//TODO обработка события и данных
-				
-				//------------
-				self = null;
-				return false;
-			}
-			
-			/*function _onFrameUnload(event)
-			{
-				
-				//TODO работа с localStorage sessionStorage
-				/!*localStorage.clear();
-				sessionStorage.clear();
-				return;
-				*!/
-				/!*
-				 this - здесь это окно фрейма
-				 *!/
-				console.log('onFrameUnload');
-				event.stopImmediatePropagation();
-				event.stopPropagation();
-				//event.preventDefault();
-				
-				//FIXME для тестов
-				//var msg = 'RA';
-				//event.returnValue = msg;
-				
-				_iFrameReady = false;
-				
-				//пример вызовов методов класса self.sendPostMessage.apply(self, ['AD', eData.source]);
-				var self = MessengerEmitter.prototype;
-				self.delTab.apply(self);
-				
-				//------------
-				//FIXME для тестов
-				//return msg;
-				
-				
-				return;
-			}*/
-			
-			function _onStorage(event)
-			{
-				/*
-				 this - здесь это окно фрейма
-				 */
-				console.log('_onStorage');
-				//event.stopImmediatePropagation();
-				//event.stopPropagation();
-				//event.preventDefault();
-				
-				//TODO пример, как общаеться с родительским окном без postMessage
-				//console.log('this.parent.Messenger ', this.parent.Messenger);
-				//this.parent.Messenger.testMethod(item);//jQuery меняет главное окно
-				//self.testMethod(item); //jQuery меняет фрейм
-				
-				/*
-				 Для IE, так как он вызывает событие при изменениях sessionStorage и localStorage
-				 другие бразуеры только при изменениях localStorage
-				 
-				 а вот если событие sotrage отслеживать через iframe, то в ИЕ не происходит зацикливания обработаки
-				 этого события...
-				 */
-				
-				console.log('event.storageArea === window.sessionStorage = ', event['storageArea'] === window.sessionStorage);
-				console.log("event['newValue'] === event['oldValue'] = ", event['newValue'] === event['oldValue']);
-				console.log('event.key ', event.key);
-				console.log("event['oldValue'] = ", event['oldValue']);
-				console.log("event['newValue'] = ", event['newValue']);
-				if (
-				//	event['storageArea'] === window.sessionStorage
-				//||
-					event['newValue'] === event['oldValue']
-				)
-				{
-					return;
-				}
-					
-				var storeKey = (event.key || '').split('/');
-				storeKey = (storeKey.length ? storeKey[storeKey.length-1] : null);
-				
-				if (storeKey)
-				{
-					var self = MessengerEmitter.prototype;
-					self.emit.call(self, storeKey, event);
-				}
-				
-				//------------
-				return;
 			}
 			
 			/**
@@ -890,6 +674,176 @@
 				return false;
 			}
 			
+			//********************* END OF приватные статичные методы и свойства
+			
+			return MessengerEmitter;
+		})();
+		
+		
+		var MessengerSocket = (function()
+		{
+			function MessengerSocket(options)
+			{
+				MessengerEmitter.call(this, options);
+			}
+			MessengerSocket.prototype = Object.create(MessengerEmitter.prototype);
+			MessengerSocket.prototype.constructor = MessengerSocket;
+			
+			MessengerSocket.prototype.init = function()
+			{
+				var self = this;
+				
+				return Promise.resolve(self.setTab())
+				.spread(function _setTabEnd(tab, tabList)
+				{
+					//Для всех кроме IE<=11! так как они реагируют на событие storage при одной открытой вкладке
+					var go = (BrowserDetector.ie && tabList.length > 1 || !BrowserDetector.ie);
+					
+					if (self.isTabMaster(tab) && !self.getSocketReady() && go)
+					{
+						return self.ioConnect();
+					}
+					
+					return Promise.resolve(true);
+				});
+			};
+			
+			MessengerSocket.prototype.updTab = function(tabList)
+			{
+				var res = MessengerEmitter.prototype.updTab.call(this, tabList);
+				
+				if (res.isMe && this.isTabMaster(res.tab) && !this.getSocketReady())
+					this.ioConnect();
+				
+				return {tab: res.tab, isMe: res.isMe};
+			};
+			
+			MessengerSocket.prototype.delTab = function()
+			{
+				var tab = this.getTab();
+				if (this.isTabMaster(tab))
+					this.setSocketReady(0);
+				
+				tab = MessengerEmitter.prototype.delTab.call(this, tab);
+				
+				return tab;
+			};
+			
+			MessengerSocket.prototype.socketIo = function()
+			{
+				if (!_io && this.isTabMaster(this.tabCache()))
+					_io = _socketIo(_socketOpts, this);
+				
+				return _io;
+			};
+			
+			MessengerSocket.prototype.setSocketReady = function(ready)
+			{
+				ready = parseInt(ready, 10) || 0;
+				
+				if (!ready)
+					_io = null;
+				
+				this.ls().setItem(this.keySocketIo(), ready);
+				
+				return ready;
+			};
+			
+			MessengerSocket.prototype.getSocketReady = function()
+			{
+				return parseInt(this.ls().getItem(KEY_SOCKET_IO), 10)||0;
+			};
+			
+			MessengerSocket.prototype.ioConnect = function()
+			{
+				var self = this;
+				
+				return Promise.resolve(self.getSocketReady())
+				.then(function _getSocketReadyEnd(loaded)
+				{
+					if (loaded)
+						return Promise.resolve(true);
+					
+					return self.ioLoad();
+				})
+				.then(function _ioLoadEnd()
+				{
+					return self.ioInit();
+				})
+				;
+			};
+			
+			MessengerSocket.prototype.ioLoad = function()
+			{
+				return new Promise(function(resolve, reject)
+				{
+					if (window['io'])
+						return resolve(true);
+					
+					$.cachedScriptLoad(_socketJsFile)
+					.done(function()//<- script, textStatus
+					{
+						//console.log('script ', script);
+						return resolve(true);
+					})
+					.fail(function(jqxhr, settings, exception)
+					{
+						return reject(exception);
+					});
+				});
+			};
+			
+			MessengerSocket.prototype.ioInit = function()
+			{
+				this.setSocketReady(1);
+				
+				return Promise.resolve(this.socketIo());
+			};
+			
+			MessengerSocket.prototype.keySocketIo = function()
+			{
+				return KEY_SOCKET_IO;
+			};
+			MessengerSocket.prototype.keyRoomMessage = function()
+			{
+				return KEY_ROOM_MESSAGE;
+			};
+			
+			MessengerSocket.prototype.sendMessage = function(msgData, onStorageEvent)
+			{
+				onStorageEvent = onStorageEvent || false;
+				
+				if (!onStorageEvent)
+					this.ls().setItem(this.keyRoomMessage(), msgData);
+				
+				var go = (!onStorageEvent && !BrowserDetector.ie || onStorageEvent);
+				if (!go) 
+					return;
+				
+				/*
+				 TODO скорее всего надо сделать отдельный класс для рендеринга сообщений
+				 так как сообщения могут быть системные (общие по сайту) - не выводить в чат
+				 так и чатовые - выводить в чат
+				 */
+				messageRender(msgData);
+				
+				var sendToServer = (this.isTabMaster() && this.socketIo());
+				
+				if (!sendToServer)
+					return;
+				
+				this.socketIo().emit('roomMessage', msgData, function _roomMessageOk(done)
+				{
+					//TODO взможно тут надо будет сдедать что-то с сообщением на клиенте? тогда надо var self = this
+					console.log('message was send to server: ', done);
+				});
+			};
+			
+			//********************* приватные статичные методы и свойства
+			
+			var KEY_SOCKET_IO = 'socket_io';
+			var KEY_ROOM_MESSAGE = 'ls:RoomMessage';
+			
 			var _io = null;
 			var _socketJsFile = '/socket.io/socket.io.js';
 			var _socketOpts =  {
@@ -898,16 +852,19 @@
 				'reconnection': true,
 				'reconnectionDelay': 2000,               //starts with 2 secs delay, then 4, 6, 8, until 60 where it stays forever until it reconnects
 				'reconnectionDelayMax' : 60000,          //1 minute maximum delay between connections
-				'reconnectionAttempts': 'Infinity',      //to prevent dead clients, having the user to having to manually reconnect after a server restart.
+				//'reconnectionAttempts': 'Infinity',      //to prevent dead clients, having the user to having to manually reconnect after a server restart.
 				'timeout' : 10000                        //before connect_error and connect_timeout are emitted.
 				,'transports' : ['polling', 'websocket'] //forces the transport to be only websocket. Server needs to be setup as well/
 			};
 			
-			function _SocketIo(opts, Messenger)
+			function _socketIo(opts, Messenger)
 			{
-				var chat = io('//'+window.location.host+'/', opts);
+				if (!window['io'])
+					return;
 				
-				chat.on('connect', function(data)
+				var _io = io('//'+window.location.host+'/', opts);
+				
+				_io.on('connect', function(data)
 				{
 					console.log('on connect event data=' ,data);
 					//при подключении попробовать передать набор namespace'ов
@@ -916,7 +873,7 @@
 						'chanel': 'ad'
 					};
 					
-					chat.emit('join', sendData, function(respData)
+					_io.emit('join', sendData, function(respData)
 					{
 						console.log('cb join respData = ', respData);
 					});
@@ -952,7 +909,7 @@
 					
 					if(err == 'error:authentication')
 					{
-						chat.emit('chat:error:auth', {}, function(data)
+						_io.emit('chat:error:auth', {}, function(data)
 						{
 							console.log('chat:error:auth');
 						});
@@ -975,17 +932,223 @@
 					}
 				});
 				
-				return chat;
+				return _io;
 			}
+			
+			function messageRender(msgData)
+			{
+				var message = nl2br(msgData["m"]);
+				var htmlId = [msgData["u"]["id"], msgData["mts"]].join('_');
+				
+				var ava = msgData["u"]["ava"] || '/_0.gif';
+				var htmlAva = '<a href="#"><img class="media-object img-circle img-responsive '+(msgData["u"]["ava"] ? '' :' hidden ')+'" src="'+ava+'" data-holder-rendered="true"/>';
+				htmlAva += '<i class="media-object fa fa-user '+(msgData["u"]["ava"] ? ' hidden ':'')+'"></i></a>';
+				
+				var html = '';
+				html += '<div class="media" id="'+htmlId+'">';
+				html += '<div class="media-left" style="width: 50px; height: 50px;">';
+				html += htmlAva;
+				html += '<span>'+msgData["u"]["name"]+'</span>';
+				html += '</div>';
+				html += '<div class="media-body" style="background-color: #EEE;">'+message+'</div>';
+				html += '</div>';
+				
+				$chatMessageList.append(html);
+			}
+			
 			
 			//********************* END OF приватные статичные методы и свойства
 			
-			return MessengerEmitter;
+			var _MessengerSocket = null;
+			function single(opts)
+			{
+				if (_MessengerSocket === null)
+				{
+					_MessengerSocket = new MessengerSocket(opts);
+				}
+				
+				return _MessengerSocket;
+			}
+			return single;
 		})();
 		
-		return MessengerEmitter;
+		return MessengerSocket;
 	})();
 	
-	//var Messenger = new MessengerEmitter();
+	var Messenger = new MessengerSocket({storage: {
+		name		: 'mc',
+		storeName	: 'messenger'
+	}
+	});
+	Messenger.on(Messenger.keyTabList(), function _onKeyTabList(data)
+	{
+		console.log('_onKeyTabList ', data);
+		var tabList = (!!data['newValue'] ? JSON.parse(data['newValue']) : []);
+		this.updTab(tabList);
+	});
+	Messenger.on(Messenger.keySocketIo(), function _onKeySocketIo(data)
+	{
+		return;
+	});
 	
+	
+	Messenger.init()
+	.then(function _initEnd()
+	{
+		console.log('Messenger.socketIo() = ', Messenger.socketIo());
+		//throw new Messenger.MyError('custom error');
+		
+		//Messenger.ls().removeItem('');
+		
+		return ;
+		
+		Messenger.ls().clearTable();
+		Messenger.ss().clearTable();
+		
+		return ;
+	})
+	.catch(function _catchErr(err)
+	{
+		Messenger.emitErr(err);
+	})
+	;
+	
+	//список чатов
+	var $chatRoomList = $('.js-chat-room-list');
+	//спсок сообщений
+	var $chatMessageList = $('.js-chat-message-list');
+	//текст сообщения в текстовом поле
+	var $chatMessageText = $('.js-chat-message-text');
+	//кнопка отправки сообщений
+	var $btnMessageSend = $('#btn_message_send');
+	
+	$(document).on('click', '#btn_message_send', function _onMessageSend(event)
+	{
+		event.preventDefault();
+		event.stopImmediatePropagation();
+		event.stopPropagation();
+		console.log('form _onMessageSend ');
+		
+		var msg = $.trim($chatMessageText.val());
+		
+		if (!msg || !!MCJS["user"]["u_id"] === false)
+			return false;
+		
+		$chatMessageText.val('');
+		
+		var msgData = {
+			room_id: 123,
+			m: msg,
+			mts: (new Date()).getTime(),//TODO правильнее дату сообщения получать от сервера!
+			u: {
+				name: MCJS["user"]["u_display_name"] || 'N/A',
+				ava	: MCJS["user"]["previews"]["50_50"] || null,
+				id	: MCJS["user"]["u_id"] || 0
+			}
+		};
+		
+		Messenger.sendMessage(msgData, false);
+		
+		return false;
+	});
+	
+	
+	/**
+	 * обработчик получения сообщения из localStorage
+	 */
+	Messenger.on(Messenger.keyRoomMessage(), function _onRoomMessage(data)
+	{
+		//this is Messenger
+		console.log('_onRoomMessage data ', data);
+		
+		var msgData = data['newValue'] && JSON.parse(data['newValue']);
+		if (!!msgData === false)
+			return;
+		/*
+		 TODO отправка сообщения:
+		 if i'm master tab then send to server -> if success -> then send to localStorage -> on storage event handle this message for add to chat
+		 
+		 только в другой вкладке пользователь может быть в другом чате... :)
+		 надо еще отслеживать и такую ситуацию - вкладка должна хранить информацию о чате, в котором пользователь в этой вкладке
+		 sessionStorage
+		 если пришедшее сообщение по событию storage room_id == session_storage_room_id, то добавить сообщение в список на страницу
+		 иначе не добавлять (увеличивать счетчик какой-нибудь?)
+		 */
+		
+		Messenger.sendMessage(msgData, true);
+	});
+	
+	
+	window.addEventListener("beforeunload",	_onFrameUnload, false);
+	function _onFrameUnload(event)
+	{
+		console.log('-');
+		console.log('---------- onFrameUnload start');
+		
+		event.stopImmediatePropagation();
+		event.stopPropagation();
+		//event.preventDefault();
+		
+		//FIXME для тестов
+		//var msg = 'RA';
+		//event.returnValue = msg;
+		
+		//_iFrameReady = false;
+		
+		Messenger.delTab();
+		
+		//------------
+		console.log('---------- onFrameUnload END');
+		console.log('-');
+		
+		//FIXME для тестов
+		//return msg;
+		
+		return;
+	}
+	
+	window.addEventListener("storage", _onStorage, false);
+	function _onStorage(event)
+	{
+		console.log('-');
+		console.log('---------- _onStorage start');
+		//event.stopImmediatePropagation();
+		//event.stopPropagation();
+		//event.preventDefault();
+		
+		console.log('event.storageArea === window.sessionStorage = ', event['storageArea'] === window.sessionStorage);
+		console.log("event['newValue'] === event['oldValue'] = ", event['newValue'] === event['oldValue']);
+		console.log('event.key ', event.key);
+		console.log("event['oldValue'] = ", event['oldValue']);
+		console.log("event['newValue'] = ", event['newValue']);
+		
+		/*
+		 Для IE, так как он вызывает событие при изменениях sessionStorage и localStorage
+		 другие бразуеры только при изменениях localStorage
+		 
+		 а вот если событие sotrage отслеживать через iframe, то в ИЕ не происходит зацикливания обработаки
+		 этого события...
+		 */
+		if (
+			//	event['storageArea'] === window.sessionStorage ||
+		event['newValue'] === event['oldValue']
+		)
+		{
+			return;
+		}
+		
+		var storeKey = (event.key || '').split('/');
+		storeKey = (storeKey.length ? storeKey[storeKey.length-1] : null);
+		
+		if (storeKey)
+		{
+			//var self = MessengerEmitter.prototype;
+			//self.emit.call(self, storeKey, event);
+			Messenger.emit(storeKey, event);
+		}
+		console.log('---------- _onStorage END');
+		console.log('-');
+		//------------
+		return;
+	}
 })(jQuery);

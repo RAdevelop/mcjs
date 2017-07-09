@@ -215,15 +215,15 @@
 		{
 			//if (!res.metaData.geocoder.found)
 			//	throw new ErrorMcMapGetLocation();
-
+			
 			if (!res.hasOwnProperty('geoObjects') || !res.geoObjects.get(0))
 				throw new ErrorMcMapGetLocation();
-
+			
 			var info = res.geoObjects.get(0).properties.get('metaDataProperty')["GeocoderMetaData"];
 			var coords = res.geoObjects.position;
 			//console.log( info );
 			//console.log( coords );
-
+			
 			var location = {
 				coords: coords,
 				lat: coords[0],
@@ -231,11 +231,10 @@
 				text: info["text"],
 				names: info["text"].split(',').map(function(str){ return str.trim();})
 			};
-
 			return ymaps.vow.resolve(location);
 		});
 	};
-
+	
 	/**
 	 * переводим координаты в градусы минуты секунды...
 	 *
@@ -246,33 +245,31 @@
 	{
 		var lat = coords[0];
 		var lng = coords[1];
-
+		
 		var latG, latMin, latSec, lngG, lngMin, lngSec;
-
+		
 		var latArr = lat.toString().split('.');
-
+		
 		latG = latArr[0];
 		latArr = (getDecimal(lat)*60);
-
+		
 		latSec = Math.round(getDecimal(latArr)*60);
 		latMin = latArr.toString().split('.')[0];
-
-
+		
 		var lngArr = lng.toString().split('.');
-
+		
 		lngG = lngArr[0];
 		lngArr = (getDecimal(lng)*60);
-
+		
 		lngSec = Math.round(getDecimal(lngArr)*60);
 		lngMin = lngArr.toString().split('.')[0];
-
+		
 		var NS = (latG < 0 ? 'S' : 'N');
 		var EW = (latG < 0 ? 'W' : 'E');
-
+		
 		return {lat: Math.abs(latG) + '&deg; '+ latMin + '&prime;' + latSec + '&Prime;'+NS, lng: Math.abs(lngG) + '&deg; '+ lngMin + '&prime;' + lngSec + '&Prime;'+EW};
 	};
-
-
+	
 	/**
 	 * список ошибок, которые потом можно обработать
 	 *
@@ -287,7 +284,7 @@
 	}
 	$.extend( ErrorMcMap, Error);
 	ErrorMcMap.prototype.name = "ErrorMcMap";
-
+	
 	/**
 	 *
 	 * @param message
@@ -301,7 +298,7 @@
 	}
 	$.extend(ErrorMcMapGetLocation, ErrorMcMap);
 	ErrorMcMap.prototype.name = "ErrorMcMap";
-
+	
 	window.McMap = McMap;
-
+	
 })(jQuery);

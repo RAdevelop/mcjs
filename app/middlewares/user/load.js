@@ -24,24 +24,16 @@ module.exports = function(Classes)
 				{
 					if (!rtid)
 						return asyncCb(null, null);
-
+					
 					if (req.session.user && req.session.user.u_id)
 						return asyncCb(null, req.session.user);
-
+					
 					return Classes.getClass("user").getUser(rtid, true)
 						.then((userData)=>
 						{
-							/*if (req.session.rtid)
-							{
-								if (req.signedCookies.rtid)
-									Cookie.setUserId(res, userData.u_id);
-
-								return asyncCb(null, userData);
-							}*/
-
 							if (!userData || !userData.u_id)
 								return asyncCb(null, null);
-
+							
 							//если пришли/авторизовались с кукой
 							//console.log('если пришли/авторизовались с кукой');
 							req.session.regenerate((err)=>
@@ -52,18 +44,18 @@ module.exports = function(Classes)
 									{
 										delete req.session;
 									});
-
+									
 									if (req.signedCookies.rtid)
 										Cookie.clearUserId(req, res);
-
+									
 									return asyncCb(err, null);
 								}
-
+								
 								req.session.rtid = userData.u_id;
 								req.session.user = userData;
-
+								
 								Cookie.setUserId(res, userData.u_id);
-
+								
 								return asyncCb(null, userData);
 							});
 						})
@@ -82,32 +74,6 @@ module.exports = function(Classes)
 									{
 										delete req.session;
 									});
-
-									if (req.signedCookies.rtid)
-										Cookie.clearUserId(req, res);
-
-									return asyncCb(null, null);
-									break;
-							}
-						});
-					
-					
-					/*Classes.model('user').getById(rtid, function (err, userData)
-					{
-						if (err)
-						{
-							switch (err.name)
-							{
-								default:
-									return asyncCb(err, null);
-									break;
-								case 'NotFoundError':
-								case 'TypeError':
-									
-									req.session.destroy(function (err)
-									{
-										delete req.session;
-									});
 									
 									if (req.signedCookies.rtid)
 										Cookie.clearUserId(req, res);
@@ -115,40 +81,7 @@ module.exports = function(Classes)
 									return asyncCb(null, null);
 									break;
 							}
-						}
-						
-						if (req.session.rtid)
-						{
-							if (req.signedCookies.rtid)
-								Cookie.setUserId(res, userData.u_id);
-							
-							return asyncCb(null, userData);
-						}
-						
-						//если пришли/авторизовались с кукой
-						//console.log('если пришли/авторизовались с кукой');
-						req.session.regenerate(function (err)
-						{
-							if (err)
-							{
-								req.session.destroy(function (err)
-								{
-									delete req.session;
-								});
-								
-								if (req.signedCookies.rtid)
-									Cookie.clearUserId(req, res);
-								
-								return asyncCb(err, null);
-							}
-							
-							req.session.rtid = userData.u_id;
-							
-							Cookie.setUserId(res, userData.u_id)
-							
-							return asyncCb(null, userData);
 						});
-					});*/
 				},
 				function (userData, asyncCb)//обновим время посещения...
 				{
@@ -159,7 +92,7 @@ module.exports = function(Classes)
 					{
 						if (err)
 							return asyncCb(err, null);
-
+						
 						userData['u_date_visit'] = ts;
 						if (req.session.user && req.session.user.u_id)
 							req.session.user.u_date_visit = ts;
@@ -173,12 +106,14 @@ module.exports = function(Classes)
 				req._user = res.locals._user = null;
 				
 				if (err) return next(err);
-
+				
 				req._user = res.locals._user = userData;
-
+				
+				res.expose((userData ? userData : {u_id: null}), 'user');
+				
 				//if (userData)
 				//	req.session.touch();
-
+				
 				next();
 			});
 	};

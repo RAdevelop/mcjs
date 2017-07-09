@@ -23,8 +23,6 @@
 		<script type="text/javascript" src="/js/jquery/2.2.4/jquery-2.2.4.min.js"></script>
 		<!--<![endif]-->
 		<script type="text/javascript" src="/js/bluebird/bluebird.js" type="text/javascript"></script>
-		<script type="text/javascript" src="/js/localforage/localforage.js"></script>
-		<script type="text/javascript" src="/js/localforage/localforage-sessionstoragewrapper.js"></script>
 		<script type="text/javascript" src="/js/staff.js"></script>
 		<script type="text/javascript" src="/js/mcMessenger.js"></script>
 	</head>
@@ -33,12 +31,17 @@
 //<!--
 	$(function()
 	{
-		var Messenger = new MessengerEmitter();
+		var Messenger = new MessengerEmitter({storage: {
+				name		: 'mc',
+				storeName	: 'messenger'
+			}
+		});
 		
 		Messenger.on(Messenger.keySocketIo(), function _onKeySocketIo(data)
 		{
+			console.log('_onKeySocketIo');
+			console.log(data);
 			return;
-			
 		});
 		
 		Messenger.on('ra', function _onChatMessage(data)
@@ -59,7 +62,7 @@
 		//вызов в "глвном" окне
 		//window.parent.MessengerEmitter.prototype;
 		
-		Messenger.initTab()
+		Messenger.init()
 		.then(function(io)
 		{
 			//console.log('tabCache ', Messenger.getTab());
@@ -75,19 +78,18 @@
 		;
 		
 		window.addEventListener("beforeunload",	_onFrameUnload, false);
+		window.addEventListener("storage", _onStorage, false);
 		
 		function _onFrameUnload(event)
 		{
-			
+			console.log('');
+			console.log('---------- onFrameUnload start');
 			//TODO работа с localStorage sessionStorage
 			/*localStorage.clear();
 			 sessionStorage.clear();
 			 return;
 			 */
-			/*
-			 this - здесь это окно фрейма
-			 */
-			console.log('onFrameUnload');
+			
 			event.stopImmediatePropagation();
 			event.stopPropagation();
 			//event.preventDefault();
@@ -104,7 +106,51 @@
 			//FIXME для тестов
 			//return msg;
 			
+			console.log('---------- onFrameUnload END');
+			console.log('');
+			return;
+		}
+		
+		function _onStorage(event)
+		{
+			console.log('');
+			console.log('---------- _onStorage start');
+			//event.stopImmediatePropagation();
+			//event.stopPropagation();
+			//event.preventDefault();
 			
+			
+			console.log('event.storageArea === window.sessionStorage = ', event['storageArea'] === window.sessionStorage);
+			console.log("event['newValue'] === event['oldValue'] = ", event['newValue'] === event['oldValue']);
+			console.log('event.key ', event.key);
+			console.log("event['oldValue'] = ", event['oldValue']);
+			console.log("event['newValue'] = ", event['newValue']);
+			
+			/*
+			 Для IE, так как он вызывает событие при изменениях sessionStorage и localStorage
+			 другие бразуеры только при изменениях localStorage
+			 
+			 а вот если событие sotrage отслеживать через iframe, то в ИЕ не происходит зацикливания обработаки
+			 этого события...
+			 */
+			if (
+			//	event['storageArea'] === window.sessionStorage ||
+			event['newValue'] === event['oldValue']
+			)
+			{
+				return;
+			}
+			
+			var storeKey = (event.key || '').split('/');
+			storeKey = (storeKey.length ? storeKey[storeKey.length-1] : null);
+			
+			if (storeKey)
+			{
+				Messenger.emit(storeKey, event);
+			}
+			console.log('---------- _onStorage END');
+			console.log('');
+			//------------
 			return;
 		}
 	});

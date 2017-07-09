@@ -579,7 +579,7 @@ if (md5('hello') != '5d41402abc4b2a76b9719d911017c592') {
 		return (msw << 16) | (lsw & 0xFFFF);
 	}
 }
-//============================== JS MD5
+//============================== END JS MD5
 
 (function()
 {
@@ -598,3 +598,62 @@ if (md5('hello') != '5d41402abc4b2a76b9719d911017c592') {
 	
 	window['BrowserDetector']['ie_or_edge'] = (window['BrowserDetector']['ie'] || window['BrowserDetector']['edge']);
 })();
+//*************************** CustomError  
+// Эмуляция Error.captureStackTrace для IE10+ и Firefox
+if (!Error.captureStackTrace) {
+	Error.captureStackTrace = function(thisError, func) {
+		try {
+			throw new Error;
+		} catch (err) {
+			// если IE9-
+			if (!err.stack) return;
+			
+			// Превращаем текст, записанный в err.stack, в массив строк
+			var arrStack = err.stack.split('\n');
+			
+			// Находим позицию вызова конструктора ошибки, начиная поиск с вершины стека
+			var posFuncInStack = 0;
+			for ( var i = 1; i < arrStack.length; i++ ) {
+				var isMatch = arrStack[i].match(new RegExp('\\b' + thisError.name + '\\b' , 'i' ));
+				if (isMatch) {
+					posFuncInStack = i;
+					break;
+				}
+			}
+			
+			// И оставляем в стеке всё, что находится ниже этой позиции                    
+			arrStack = arrStack.slice(posFuncInStack+1);
+			
+			// Записываем результат в stack нашего объекта ошибки
+			thisError.stack = thisError.name + ': ' + thisError.message + '\n' + arrStack.join('\n');
+		}
+	}
+}
+// Класс CustomError  
+function CustomError(message)
+{
+	this.message = message;
+	
+	if (Error.captureStackTrace)
+		Error.captureStackTrace(this, this.constructor);
+	else
+		this.stack = (new Error()).stack;
+}
+CustomError.prototype = Object.create(Error.prototype);
+CustomError.prototype.constructor = CustomError;
+CustomError.prototype.name = "CustomError";
+/*
+Пример наследования:
+// Класс MyError
+function MyError(message)
+{
+	this.message = message;
+	CustomError.call(this, this.message);
+}
+MyError.prototype = Object.create(CustomError.prototype);
+MyError.prototype.constructor = MyError;
+MyError.prototype.name = "MyError";
+*/
+
+
+//*************************** CustomError

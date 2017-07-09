@@ -88,7 +88,7 @@ module.exports = function(httpServer, app)
 		'reconnection': true,
 		'reconnectionDelay': 2000,                  //starts with 2 secs delay, then 4, 6, 8, until 60 where it stays forever until it reconnects
 		'reconnectionDelayMax' : 60000,             //1 minute maximum delay between connections
-		'reconnectionAttempts': 'Infinity',         //to prevent dead clients, having the user to having to manually reconnect after a server restart.
+		//'reconnectionAttempts': 'Infinity',         //to prevent dead clients, having the user to having to manually reconnect after a server restart.
 		'timeout' : 10000                           //before connect_error and connect_timeout are emitted.
 		,'transports' : ['polling', 'websocket']                //forces the transport to be only websocket. Server needs to be setup as well/
 	};
@@ -203,6 +203,12 @@ module.exports = function(httpServer, app)
 		socket.emit(`room:list`, rooms);
 		
 		//socket.join();
+		
+		socket.on('roomMessage', function _onRoomMessage(data, cb)
+		{
+			Logger.info('socket.on roomMessage, ', data);
+			cb && cb(true);
+		});
 		
 		/*socket.on('logout', function onLogout(args)
 		{
