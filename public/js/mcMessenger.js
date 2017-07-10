@@ -9,7 +9,7 @@
 	if (window['MessengerEmitter'])
 		return;
 	
-	window['MessengerSocket'] = (function()
+	(function()
 	{
 		var EventEmitter = (function()
 		{
@@ -219,6 +219,7 @@
 				{
 					_storage = storage;
 				};
+				
 				this.check();
 			}
 			
@@ -229,6 +230,9 @@
 				{
 					try
 					{
+						if (_checked)
+							return true;
+						
 						if (!this._storage())
 							throw new Error('Неизвестный тип хранилища');
 						
@@ -238,6 +242,7 @@
 						 */
 						this.setItem("testKey", 1);
 						this.removeItem("testKey");
+						_checked = true;
 						return true;
 					}
 					catch (err)
@@ -247,6 +252,7 @@
 							case 'QuotaExceededError':
 							case 'NS_ERROR_DOM_QUOTA_REACHED': //FF
 								//TODO реализовать логику очистки данных?
+								//this.clearTable();
 								break;
 						}
 						console.log(err);
@@ -324,6 +330,11 @@
 				}
 			};
 			
+			//********************* приватные статичные методы и свойства
+			
+			var _checked = false;
+			//********************* END OF приватные статичные методы и свойства
+			
 			return WebStorage;
 		})();
 		
@@ -367,8 +378,8 @@
 				var _ls = new WebStorage('localStorage', options.storage);
 				var _ss = new WebStorage('sessionStorage', options.storage);
 				
-				this.ls = function(){return _ls; };
-				this.ss = function(){return _ss; };
+				this.ls = function(){return _ls;};
+				this.ss = function(){return _ss;};
 			}
 			MessengerEmitter.prototype = Object.create(EventEmitter.prototype);
 			MessengerEmitter.prototype.constructor = MessengerEmitter;
@@ -444,7 +455,12 @@
 				var isMe = false;
 				
 				if (!tab)
+				{
 					return {tab: tab, isMe: isMe};
+					/*var res = this.setTab();
+					tab = res[0];
+					tabList = res[1];*/
+				}
 				
 				for(var i = 0; i < tabList.length; i++)
 				{
@@ -472,16 +488,17 @@
 			{
 				var tab = this.getTab();
 				
-				if (tab)
-					return tab;
-				
 				var tabList = this.getTabList();
 				
+				if (tab)
+					return [tab, tabList];
+				
+				var mts = (new Date()).getTime();
 				var tabData = {
 					'name': TAB_PREFIX,
-					'mts_add': (new Date()).getTime(),
-					'mts_upd': (new Date()).getTime(),
-					'master': ((tabList.length ? false : true))// && !socketReady
+					'mts_add': mts,
+					'mts_upd': mts,
+					'master': ((tabList.length ? false : true))
 				};
 				
 				var tabIndex = 0;
@@ -548,16 +565,42 @@
 				if (!tabList.length)
 				{
 					this.tabCache(null);
-					this.ls().clearTable();
-					this.ss().clearTable();
+					this.clearData();
 				}
 				else
 				{
 					this.ls().setItem(KEY_TAB_LIST, tabList);
+					this.setLastTsUpd();
 				}
 				return tabList;
 			};
 			
+			MessengerEmitter.prototype.clearData = function()
+			{
+				this.ls().clearTable();
+				this.ss().clearTable();
+				return this;
+			};
+			MessengerEmitter.prototype.setLastTsUpd = function()
+			{
+				this.ls().setItem(this.keyLastTsUpd(), (new Date).getTime()/1000);
+				return this;
+			};
+			MessengerEmitter.prototype.getLastTsUpd = function()
+			{
+				
+				var tsUpd = parseInt(this.ls().getItem(this.keyLastTsUpd()), 10);
+				
+				if (tsUpd)
+					return tsUpd;
+					
+				return (new Date()).getTime()/1000;
+			};
+			
+			MessengerEmitter.prototype.keyLastTsUpd = function()
+			{
+				return KEY_LAST_TS_UPD;
+			};
 			MessengerEmitter.prototype.keyTab = function()
 			{
 				return KEY_TAB;
@@ -570,6 +613,8 @@
 			//********************* приватные статичные методы и свойства (одинаковые для все инстансов!)
 			
 			//*********** (localStorage|sessionStorage etc.)
+			
+			var KEY_LAST_TS_UPD = 'last_ts_upd';
 			
 			/**
 			 * префикс для имен вкладкок барузера
@@ -685,9 +730,30 @@
 			function MessengerSocket(options)
 			{
 				MessengerEmitter.call(this, options);
+				
+				var _render = new MessageRender(this);
+				this.render = function()
+				{
+					return _render;
+				};
 			}
 			MessengerSocket.prototype = Object.create(MessengerEmitter.prototype);
 			MessengerSocket.prototype.constructor = MessengerSocket;
+			
+			MessengerSocket.prototype.user = function()
+			{
+				var _u = null;
+				if (typeof MCJS["user"] !== 'undefined' && !!MCJS["user"]["u_id"])
+				{
+					_u = {
+						name: MCJS["user"]["u_display_name"] || 'N/A',
+						ava	: MCJS["user"]["previews"]["50_50"] || null,
+						u_id: MCJS["user"]["u_id"] || 0
+					};
+				}
+				
+				return _u;
+			};
 			
 			MessengerSocket.prototype.init = function()
 			{
@@ -773,6 +839,10 @@
 				;
 			};
 			
+			/**
+			 * 
+			 * @returns {Promise}
+			 */
 			MessengerSocket.prototype.ioLoad = function()
 			{
 				return new Promise(function(resolve, reject)
@@ -793,6 +863,10 @@
 				});
 			};
 			
+			/**
+			 * 
+			 * @returns {Promise.<T>}
+			 */
 			MessengerSocket.prototype.ioInit = function()
 			{
 				this.setSocketReady(1);
@@ -809,23 +883,30 @@
 				return KEY_ROOM_MESSAGE;
 			};
 			
-			MessengerSocket.prototype.sendMessage = function(msgData, onStorageEvent)
+			MessengerSocket.prototype.msgTypeSystem = function()
+			{
+				return 'system';
+			};
+			MessengerSocket.prototype.msgTypeUser = function()
+			{
+				return 'user';
+			};
+			
+			MessengerSocket.prototype.msgSend = function(msgData, onStorageEvent)
 			{
 				onStorageEvent = onStorageEvent || false;
 				
 				if (!onStorageEvent)
+				{
+					this.setLastTsUpd();
 					this.ls().setItem(this.keyRoomMessage(), msgData);
+				}
 				
 				var go = (!onStorageEvent && !BrowserDetector.ie || onStorageEvent);
 				if (!go) 
 					return;
 				
-				/*
-				 TODO скорее всего надо сделать отдельный класс для рендеринга сообщений
-				 так как сообщения могут быть системные (общие по сайту) - не выводить в чат
-				 так и чатовые - выводить в чат
-				 */
-				messageRender(msgData);
+				this.render().render(msgData);
 				
 				var sendToServer = (this.isTabMaster() && this.socketIo());
 				
@@ -839,10 +920,12 @@
 				});
 			};
 			
+			
 			//********************* приватные статичные методы и свойства
 			
+			
 			var KEY_SOCKET_IO = 'socket_io';
-			var KEY_ROOM_MESSAGE = 'ls:RoomMessage';
+			var KEY_ROOM_MESSAGE = 'ls_room_msg';
 			
 			var _io = null;
 			var _socketJsFile = '/socket.io/socket.io.js';
@@ -935,28 +1018,6 @@
 				return _io;
 			}
 			
-			function messageRender(msgData)
-			{
-				var message = nl2br(msgData["m"]);
-				var htmlId = [msgData["u"]["id"], msgData["mts"]].join('_');
-				
-				var ava = msgData["u"]["ava"] || '/_0.gif';
-				var htmlAva = '<a href="#"><img class="media-object img-circle img-responsive '+(msgData["u"]["ava"] ? '' :' hidden ')+'" src="'+ava+'" data-holder-rendered="true"/>';
-				htmlAva += '<i class="media-object fa fa-user '+(msgData["u"]["ava"] ? ' hidden ':'')+'"></i></a>';
-				
-				var html = '';
-				html += '<div class="media" id="'+htmlId+'">';
-				html += '<div class="media-left" style="width: 50px; height: 50px;">';
-				html += htmlAva;
-				html += '<span>'+msgData["u"]["name"]+'</span>';
-				html += '</div>';
-				html += '<div class="media-body" style="background-color: #EEE;">'+message+'</div>';
-				html += '</div>';
-				
-				$chatMessageList.append(html);
-			}
-			
-			
 			//********************* END OF приватные статичные методы и свойства
 			
 			var _MessengerSocket = null;
@@ -972,14 +1033,164 @@
 			return single;
 		})();
 		
-		return MessengerSocket;
+		var MessageRender = (function()
+		{
+			function MessageRender(Messenger)
+			{
+				//TODO какие-то настройки нужны будут?
+				
+				
+				
+				var _Messenger = Messenger;
+				this.messenger = function()
+				{
+					return _Messenger;
+				};
+				
+				this.init();
+			}
+			
+			MessageRender.prototype.init = function()
+			{
+				//спсок сообщений
+				this.$roomMsgList = $('.js-room-message-list');
+				//текст сообщения в текстовом поле
+				this.$roomMsgText = $('.js-room-message-text');
+				//кнопка отправки сообщений
+				this.$btnMesgUserSend = $('#btn_message_send');
+				//список чатов
+				this.$roomList = $('.js-room-list');
+				
+				this.msgFormInitSubmitEvent();
+			};
+			
+			MessageRender.prototype.render = function(msgData)
+			{
+				//msgData['type'] = system or user
+				//
+				
+				var msgType = msgData['type'] || null;
+				
+				switch (msgType)
+				{
+					case this.messenger().msgTypeSystem():
+						return this.systemRender(msgData);
+						break;
+					
+					case this.messenger().msgTypeUser():
+						return this.userRender(msgData);
+						break;
+					
+					default:
+						return;
+						break;
+				}
+			};
+			
+			MessageRender.prototype.systemRender = function(msgData)
+			{
+				var tpl = this.tplMsgTypeSystem(msgData);
+				
+				return tpl;
+			};
+			
+			
+			MessageRender.prototype.tplMsgTypeSystem = function(msgData)
+			{
+				//TODO
+			};
+			MessageRender.prototype.tplMsgTypeUser = function(msgData)
+			{
+				var message = nl2br(msgData["m"]);
+				var htmlId = [msgData["u"]["u_id"], msgData["mts"]].join('_');
+				
+				var hasAva	= !!msgData["u"]["ava"];
+				var ava		= (hasAva ? msgData["u"]["ava"] : '/_0.gif');
+				
+				var htmlAva = '<a href="/profile/'+msgData["u"]["u_id"]+'/"><img class="media-object img-circle img-responsive '+(hasAva ? '' :' hidden ')+'" src="'+ava+'" data-holder-rendered="true"/>';
+				htmlAva += '<i class="media-object fa fa-user '+(hasAva ? ' hidden ':'')+'"></i></a>';
+				
+				var html = '';
+				html += '<div class="media" id="'+htmlId+'">';
+				html += '<div class="media-left" style="width: 50px; height: 50px;">';
+				html += htmlAva;
+				html += '<span>'+msgData["u"]["name"]+'</span>';
+				html += '</div>';
+				html += '<div class="media-body" style="background-color: #EEE;">'+message+'</div>';
+				html += '</div>';
+				
+				return html;
+			};
+			MessageRender.prototype.userRender = function(msgData)
+			{
+				var tpl = this.tplMsgTypeUser(msgData);
+				this.$roomMsgList.append(tpl);
+				
+				return tpl;
+			};
+			
+			MessageRender.prototype.msgFormInitSubmitEvent = function()
+			{
+				var self = this;
+				var mts = (new Date()).getTime();
+				$(document).on('click', this.$btnMesgUserSend.selector, function _onMessageSend(event)
+				{
+					console.log('form _onMessageSend ');
+					
+					event.preventDefault();
+					event.stopImmediatePropagation();
+					event.stopPropagation();
+					
+					var clickMts = (new Date()).getTime();
+					if (clickMts - mts <= 1000)
+						return;
+					else
+						mts = clickMts;
+					
+					var msg = $.trim(self.$roomMsgText.val());
+					
+					if (!msg || !self.messenger().user())
+						return false;
+					
+					self.$roomMsgText.val('');
+					
+					var msgData = {
+						type: self.messenger().msgTypeUser(),
+						room_id: 123,
+						m: msg,
+						mts: (new Date()).getTime(),//TODO правильнее дату сообщения получать от сервера!
+						u: self.messenger().user()
+					};
+					
+					self.messenger().msgSend(msgData, false);
+					
+					return false;
+				});
+			};
+			
+			
+			//********************* приватные статичные методы и свойства
+			
+			
+			//********************* END OF приватные статичные методы и свойства
+			
+			return MessageRender;
+		})();
+		
+		window['MessengerSocket'] = MessengerSocket;
 	})();
 	
 	var Messenger = new MessengerSocket({storage: {
-		name		: 'mc',
-		storeName	: 'messenger'
-	}
+			name		: 'mc',
+			storeName	: 'messenger'
+		}
 	});
+	
+	/*
+	TODO добавить событие на logout:
+	при разлогинивании попробовать получить сообщение о сервера -> транислировать на клиента во вкладки
+	-> перезагрузить страницы...
+	*/
 	Messenger.on(Messenger.keyTabList(), function _onKeyTabList(data)
 	{
 		console.log('_onKeyTabList ', data);
@@ -995,15 +1206,36 @@
 	Messenger.init()
 	.then(function _initEnd()
 	{
-		console.log('Messenger.socketIo() = ', Messenger.socketIo());
-		//throw new Messenger.MyError('custom error');
+		/**
+		 * обработчик получения сообщения из localStorage
+		 */
+		Messenger.on(Messenger.keyRoomMessage(), function _onRoomMessage(data)
+		{
+			//this is Messenger
+			console.log('_onRoomMessage data ', data);
+			
+			var msgData = data['newValue'] && JSON.parse(data['newValue']);
+			if (!!msgData === false)
+				return;
+			/*
+			 TODO отправка сообщения:
+			 if i'm master tab then send to server -> if success -> on storage event handle this message for add to chat
+			 
+			 только в другой вкладке пользователь может быть в другом чате... :)
+			 
+			 TODO надо еще отслеживать и такую ситуацию - вкладка должна хранить информацию о чате, в котором пользователь в этой вкладке
+			 sessionStorage -> key room
+			 если пришедшее сообщение по событию storage room_id == session_storage_room_id, то добавить сообщение в список на страницу
+			 иначе не добавлять (увеличивать счетчик какой-нибудь?)
+			 */
+			
+			Messenger.msgSend(msgData, true);
+		});
 		
-		//Messenger.ls().removeItem('');
+		return Promise.resolve(true);
 		
-		return ;
-		
-		Messenger.ls().clearTable();
-		Messenger.ss().clearTable();
+		//FIXME для текстов (потом удалить)
+		Messenger.clearData();
 		
 		return ;
 	})
@@ -1013,70 +1245,6 @@
 	})
 	;
 	
-	//список чатов
-	var $chatRoomList = $('.js-chat-room-list');
-	//спсок сообщений
-	var $chatMessageList = $('.js-chat-message-list');
-	//текст сообщения в текстовом поле
-	var $chatMessageText = $('.js-chat-message-text');
-	//кнопка отправки сообщений
-	var $btnMessageSend = $('#btn_message_send');
-	
-	$(document).on('click', '#btn_message_send', function _onMessageSend(event)
-	{
-		event.preventDefault();
-		event.stopImmediatePropagation();
-		event.stopPropagation();
-		console.log('form _onMessageSend ');
-		
-		var msg = $.trim($chatMessageText.val());
-		
-		if (!msg || !!MCJS["user"]["u_id"] === false)
-			return false;
-		
-		$chatMessageText.val('');
-		
-		var msgData = {
-			room_id: 123,
-			m: msg,
-			mts: (new Date()).getTime(),//TODO правильнее дату сообщения получать от сервера!
-			u: {
-				name: MCJS["user"]["u_display_name"] || 'N/A',
-				ava	: MCJS["user"]["previews"]["50_50"] || null,
-				id	: MCJS["user"]["u_id"] || 0
-			}
-		};
-		
-		Messenger.sendMessage(msgData, false);
-		
-		return false;
-	});
-	
-	
-	/**
-	 * обработчик получения сообщения из localStorage
-	 */
-	Messenger.on(Messenger.keyRoomMessage(), function _onRoomMessage(data)
-	{
-		//this is Messenger
-		console.log('_onRoomMessage data ', data);
-		
-		var msgData = data['newValue'] && JSON.parse(data['newValue']);
-		if (!!msgData === false)
-			return;
-		/*
-		 TODO отправка сообщения:
-		 if i'm master tab then send to server -> if success -> then send to localStorage -> on storage event handle this message for add to chat
-		 
-		 только в другой вкладке пользователь может быть в другом чате... :)
-		 надо еще отслеживать и такую ситуацию - вкладка должна хранить информацию о чате, в котором пользователь в этой вкладке
-		 sessionStorage
-		 если пришедшее сообщение по событию storage room_id == session_storage_room_id, то добавить сообщение в список на страницу
-		 иначе не добавлять (увеличивать счетчик какой-нибудь?)
-		 */
-		
-		Messenger.sendMessage(msgData, true);
-	});
 	
 	
 	window.addEventListener("beforeunload",	_onFrameUnload, false);

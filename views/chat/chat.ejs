@@ -9,22 +9,22 @@
 	.chat .form-message-send {
 		vertical-align: top;
 	}
-	.chat .form-message-send .chat-message-text {
+	.chat .form-message-send .room-message-text {
 		width: 100%;
 		height: 50px;
 	}
 	.chat .form-message-send .input-group-btn {
 		vertical-align: bottom;
 	}
-	.chat .chat-room-list-wrapper {
+	.chat .room-list-wrapper {
 		/*float: left;*/
 		border: 1px solid red;
 	}
-	.chat .chat-message-list-wrapper {
+	.chat .room-message-list-wrapper {
 		/*float: left;*/
 		border: 1px solid red;
 	}
-	.chat .chat-message-list-wrapper .chat-message-list  {
+	.chat .room-message-list-wrapper .room-message-list {
 		/*float: left;*/
 		border: 1px solid red;
 		min-height: 100px;
@@ -32,24 +32,24 @@
 	}
 </style>
 <div class="chat js-chat row">
-	<fieldset class="chat-room-list-wrapper js-chat-room-list-wrapper col-sm-3">
+	<fieldset class="room-list-wrapper js-room-list-wrapper col-sm-3">
 		<legend>спиоск названий чатов</legend>
-		<ul class="chat-room-list js-chat-room-list"></ul>
+		<ul class="room-list js-room-list"></ul>
 	</fieldset>
-	<fieldset class="chat-message-list-wrapper js-chat-message-list-wrapper col-sm-6">
+	<fieldset class="room-message-list-wrapper js-room-message-list-wrapper col-sm-6">
 		<legend>сообщения</legend>
-		<div class="chat-message-list js-chat-message-list"></div>
+		<div class="room-message-list js-room-message-list"></div>
 		<form method="post" action="/chat" id="form_message_send" class="form-horizontal form-message-send">
 			<div class="input-group t_message">
-				<textarea class="form-control chat-message-text js-chat-message-text" id="t_message" name="t_message" placeholder="текст сообщения"></textarea>
+				<textarea class="form-control room-message-text js-room-message-text" id="t_message" name="t_message" placeholder="текст сообщения"></textarea>
 				<div class="input-group-btn">
 					<button type="button" class="btn btn-primary" id="btn_message_send" value="1" autocomplete="off">отправить</button>
 				</div>
 			</div>
 		</form>
 	</fieldset>
-	<fieldset class="chat-room-list-wrapper js-chat-room-list-wrapper col-sm-3">
+	<fieldset class="chat-room-user-list-wrapper js-chat-room-user-list-wrapper col-sm-3">
 		<legend>спиоск пользователей</legend>
-		<ul class="js-chat-room-list"></ul>
+		<ul class="chat-room-user-list js-chat-room-user-list"></ul>
 	</fieldset>
 </div>
