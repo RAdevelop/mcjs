@@ -455,12 +455,7 @@
 				var isMe = false;
 				
 				if (!tab)
-				{
 					return {tab: tab, isMe: isMe};
-					/*var res = this.setTab();
-					tab = res[0];
-					tabList = res[1];*/
-				}
 				
 				for(var i = 0; i < tabList.length; i++)
 				{
@@ -550,7 +545,7 @@
 			MessengerEmitter.prototype.isTabMaster = function(tab)
 			{
 				tab = tab || this.tabCache();
-				return (tab.hasOwnProperty('master') ? tab['master'] : false);
+				return (tab && tab.hasOwnProperty('master') ? tab['master'] : false);
 			};
 			
 			MessengerEmitter.prototype.getTabList = function()
@@ -746,9 +741,9 @@
 				if (typeof MCJS["user"] !== 'undefined' && !!MCJS["user"]["u_id"])
 				{
 					_u = {
-						name: MCJS["user"]["u_display_name"] || 'N/A',
-						ava	: MCJS["user"]["previews"]["50_50"] || null,
-						u_id: MCJS["user"]["u_id"] || 0
+						name: MCJS["user"]["u_display_name"]	|| 'N/A',
+						ava	: MCJS["user"]["previews"]["50_50"]	|| null,
+						u_id: MCJS["user"]["u_id"]				|| 0
 					};
 				}
 				
@@ -920,12 +915,26 @@
 				});
 			};
 			
+			MessengerSocket.prototype.keyAppLogout = function()
+			{
+				return KEY_APP_LOGOUT;
+			};
+			
+			MessengerSocket.prototype.appLogout = function(logout)
+			{
+				if (typeof logout === 'undefined')
+				return parseInt(this.ls().getItem(this.keyAppLogout()), 10);
+				
+				logout = parseInt(logout, 10);
+				this.ls().setItem(this.keyAppLogout(), logout);
+				return logout;
+			};
 			
 			//********************* приватные статичные методы и свойства
 			
-			
-			var KEY_SOCKET_IO = 'socket_io';
-			var KEY_ROOM_MESSAGE = 'ls_room_msg';
+			var KEY_SOCKET_IO		= 'socket_io';
+			var KEY_ROOM_MESSAGE	= 'ls_room_msg';
+			var KEY_APP_LOGOUT		= 'app_logout';
 			
 			var _io = null;
 			var _socketJsFile = '/socket.io/socket.io.js';
@@ -947,56 +956,52 @@
 				
 				var _io = io('//'+window.location.host+'/', opts);
 				
-				_io.on('connect', function(data)
+				_io.on('connect', function _onSocketConnect()
 				{
-					console.log('on connect event data=' ,data);
+					console.log('_onSocketConnect');
 					//при подключении попробовать передать набор namespace'ов
 					var sendData = {
 						//'userName': navigator.userAgent
 						'chanel': 'ad'
 					};
 					
-					_io.emit('join', sendData, function(respData)
+					_io.emit('join', sendData, function _onSocketJoin(respData)
 					{
-						console.log('cb join respData = ', respData);
+						console.log('cb _onSocketJoin respData = ', respData);
 					});
 				})
-				.on('connecting', function (connecting)
+				.on('connecting', function _onSocketConnecting(data)
 				{
-					console.log('connecting ', connecting)
+					console.log('_onSocketConnecting ', data);
 				})
-				.on('reconnect', function (data)
+				.on('reconnect', function _onSocketReconnect(data)
 				{
-					console.log('reconnected data = ', data);
+					console.log('_onSocketReconnect = ', data);
 				})
-				.on('reconnecting', function (data)
+				.on('reconnecting', function _onSocketReconnecting(data)
 				{
-					console.log('reconnecting data = ', data);
+					console.log('_onSocketReconnecting = ', data);
 				})
-				.on('reconnect_error', function(err)
+				.on('reconnect_error', function _onSocketReconnectError(err)
 				{
-					console.log('on reconnect_error event');
+					console.log('_onSocketReconnectError');
 					console.log(err);
 					
 				})
-				.on('reconnect_failed', function(err)
+				.on('reconnect_failed', function _onSocketReconnectFailed(err)
 				{
-					console.log('on reconnect_failed event');
+					console.log('_onSocketReconnectFailed');
 					console.log(err);
 					
 				})
-				.on('error', function(err)
+				.on('error', function _onSocketError(err)
 				{
-					console.log('on error event');
+					console.log('_onSocketError');
 					console.log(err);
 					
+					//TODO
 					if(err == 'error:authentication')
 					{
-						_io.emit('chat:error:auth', {}, function(data)
-						{
-							console.log('chat:error:auth');
-						});
-						
 						/*var s = 5;
 						 $chatArea.html('<div>Вы не авторизованы. Через <span id="timer">'+s+'</span> секунд перенаправим Вас на страницу авторизации.</div>');
 						 
@@ -1013,6 +1018,11 @@
 						 
 						 }, 1000);*/
 					}
+				});
+				
+				_io.on(Messenger.keyAppLogout(), function _onSocketLogout(data)
+				{
+					Messenger.appLogout(1);
 				});
 				
 				return _io;
@@ -1186,11 +1196,6 @@
 		}
 	});
 	
-	/*
-	TODO добавить событие на logout:
-	при разлогинивании попробовать получить сообщение о сервера -> транислировать на клиента во вкладки
-	-> перезагрузить страницы...
-	*/
 	Messenger.on(Messenger.keyTabList(), function _onKeyTabList(data)
 	{
 		console.log('_onKeyTabList ', data);
@@ -1200,6 +1205,18 @@
 	Messenger.on(Messenger.keySocketIo(), function _onKeySocketIo(data)
 	{
 		return;
+	});
+	
+	Messenger.on(Messenger.keyAppLogout(), function _onKeyAppLogout(data)
+	{
+		var logout = parseInt(data['newValue'], 10);
+		//console.log('_onKeyAppLogout ', logout);
+		
+		if (logout)
+		{
+			this.appLogout(0);
+			document.location.reload(true);
+		}
 	});
 	
 	
@@ -1261,13 +1278,10 @@
 		//var msg = 'RA';
 		//event.returnValue = msg;
 		
-		//_iFrameReady = false;
-		
 		Messenger.delTab();
 		
 		//------------
 		console.log('---------- onFrameUnload END');
-		console.log('-');
 		
 		//FIXME для тестов
 		//return msg;
@@ -1315,7 +1329,6 @@
 			Messenger.emit(storeKey, event);
 		}
 		console.log('---------- _onStorage END');
-		console.log('-');
 		//------------
 		return;
 	}

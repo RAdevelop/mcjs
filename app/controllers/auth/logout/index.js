@@ -45,12 +45,12 @@ class Logout extends CtrlMain
 		//TODO надо тестировать!!!
 		process.nextTick(()=>
 		{
-			let Messenger = this.getReq().app.get('messenger');
+			let SocketIO = this.getReq().app.get('messenger');
 			
 			let socketId= [];
-			for (let i in Messenger.sockets.sockets)
+			for (let i in SocketIO.sockets.sockets)
 			{
-				if (Messenger.sockets.sockets[i].handshake.sessionID != sid)
+				if (SocketIO.sockets.sockets[i].handshake.sessionID != sid)
 					continue;
 				
 				socketId.push(i);
@@ -63,8 +63,8 @@ class Logout extends CtrlMain
 			//потому что при открытии в новой вкладке создается новое подключение - новоый сокет ид
 			socketId.forEach((id)=>
 			{
-				Logger.info('socketId = ', id);
-				Messenger.to(id).emit('logout', {caller: 'Messenger.to().emit()'});
+				//Logger.info( `in ${__filename}: socketId =`, id);
+				SocketIO.to(id).emit('app_logout');
 			});
 		});
 	}

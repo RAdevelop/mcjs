@@ -199,7 +199,7 @@ module.exports = function(httpServer, app)
 		//socket.broadcast.emit('broadcast', 'hello friends!');
 		
 		
-		//это просто для теринировки
+		//это просто для треинировки
 		socket.emit(`room:list`, rooms);
 		
 		//socket.join();
