@@ -56,7 +56,7 @@ class Logout extends CtrlMain
 				socketId.push(i);
 			}
 			
-			Logger.info({'socketId': socketId});
+			//Logger.info({'socketId': socketId});
 			if (!socketId.length)
 				return;
 			

@@ -33,16 +33,8 @@ class Registration extends CtrlMain
 	 */
 	indexActionGet()
 	{
-		/*if (this.getUserId())
-			return this.getRes().redirect('back');*/
-
 		if(this.getUserId())
-		{
-			return Promise.resolve()
-				.then(() => {
-					return this.getRes().redirect('/');
-				});
-		}
+			return this.getRes().redirect('/');
 		
 		let tplData = {
 			m_email: '',

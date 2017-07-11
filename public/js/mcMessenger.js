@@ -1022,7 +1022,11 @@
 				
 				_io.on(Messenger.keyAppLogout(), function _onSocketLogout(data)
 				{
+					console.log('*************** _onSocketLogout');
 					Messenger.appLogout(1);
+					
+					if (Messenger.isTabMaster() && !BrowserDetector.ie)
+						document.location.reload(true);
 				});
 				
 				return _io;
@@ -1210,11 +1214,11 @@
 	Messenger.on(Messenger.keyAppLogout(), function _onKeyAppLogout(data)
 	{
 		var logout = parseInt(data['newValue'], 10);
-		//console.log('_onKeyAppLogout ', logout);
+		console.log('_onKeyAppLogout ', logout);
 		
 		if (logout)
 		{
-			this.appLogout(0);
+			//this.appLogout(0);
 			document.location.reload(true);
 		}
 	});

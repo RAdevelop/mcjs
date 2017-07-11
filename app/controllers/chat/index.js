@@ -25,6 +25,9 @@ class Chat extends CtrlMain
 	 */
 	indexActionGet()
 	{
+		if(!this.getUserId())
+			return this.getRes().redirect('/login');
+		
 		this.view.useCache(false);
 		
 		let tplData = {};
