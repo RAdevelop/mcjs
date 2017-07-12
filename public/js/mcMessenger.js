@@ -1028,6 +1028,15 @@
 					if (Messenger.isTabMaster() && !BrowserDetector.ie)
 						document.location.reload(true);
 				});
+				_io.on('appShutdown', function _onSocketAppShutdown(_onSocketAppShutdown)
+				{
+					console.log('*************** _onSocketAppShutdown ', _onSocketAppShutdown);
+					var msgData = {
+						"type": Messenger.msgTypeSystem(),
+						"m": "сервер недоступен"
+					};
+					Messenger.render().render(msgData);
+				});
 				
 				return _io;
 			}
@@ -1052,8 +1061,6 @@
 			function MessageRender(Messenger)
 			{
 				//TODO какие-то настройки нужны будут?
-				
-				
 				
 				var _Messenger = Messenger;
 				this.messenger = function()
@@ -1103,15 +1110,36 @@
 			
 			MessageRender.prototype.systemRender = function(msgData)
 			{
+				//TODO scss style
 				var tpl = this.tplMsgTypeSystem(msgData);
+				var $wrapper = $('.js-system-msg-list');
+				if (!$wrapper.length)
+				{
+					$wrapper = $('<div class="system-msg-list js-system-msg-list" style="position: fixed; bottom: 0; left: 15px; z-index: 10000; overflow: hidden; max-width: 250px;"></div>');
+					
+					$wrapper.hide();
+					$('body').append($wrapper);
+				}
 				
+				var $tpl = $(tpl);
+				$wrapper.append($tpl);
+				$tpl.animate({opacity: 1});
+				$wrapper.show();
 				return tpl;
 			};
 			
 			
 			MessageRender.prototype.tplMsgTypeSystem = function(msgData)
 			{
-				//TODO
+				var message = nl2br(msgData["m"]);
+				//TODO scss style
+				var tpl = '';
+				tpl += '<div style="opacity: 0;" class="alert alert-danger alert-dismissible" role="alert">';
+				tpl += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+				tpl += '<strong><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></strong> ' + message;
+				tpl += '</div>';
+				
+				return tpl;
 			};
 			MessageRender.prototype.tplMsgTypeUser = function(msgData)
 			{

@@ -46,26 +46,7 @@ class Logout extends CtrlMain
 		process.nextTick(()=>
 		{
 			let SocketIO = this.getReq().app.get('messenger');
-			
-			let socketId= [];
-			for (let i in SocketIO.sockets.sockets)
-			{
-				if (SocketIO.sockets.sockets[i].handshake.sessionID != sid)
-					continue;
-				
-				socketId.push(i);
-			}
-			
-			//Logger.info({'socketId': socketId});
-			if (!socketId.length)
-				return;
-			
-			//потому что при открытии в новой вкладке создается новое подключение - новоый сокет ид
-			socketId.forEach((id)=>
-			{
-				//Logger.info( `in ${__filename}: socketId =`, id);
-				SocketIO.to(id).emit('app_logout');
-			});
+			SocketIO.appLogout(sid);
 		});
 	}
 }

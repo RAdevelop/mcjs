@@ -63,7 +63,7 @@ server.on('listening', onListening);
 server.listen(port);
 
 
-const io = require('../app/lib/chat');
+const io = require('../app/lib/messenger');
 //TODO надо еще тестировать!
 const Messenger = io(server, app);
 app.set('messenger', Messenger);
@@ -117,10 +117,13 @@ function _shutdownService(sigName)
 {
 	console.log("Received kill signal ("+sigName+"), shutting down gracefully.");
 	app.set(config.server_closing, true);
+	
+	Messenger.of('/').emit('appShutdown', {"sigName":sigName});
+	
 	server.close(function _onServerClose()
 	{
 		console.log("Closed out remaining connections.");
-		process.exit()
+		process.exit();
 	});
 	
 	setTimeout(function ()

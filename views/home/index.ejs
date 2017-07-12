@@ -1,10 +1,10 @@
-<%  if(!_isXHR){%><%- layout('layout/default') %><% } -%>
-<%
- if (eventList.length) {%>
+<%  if(!_isXHR){%><%- layout('layout/default') %><% } -%><%
+
+if (eventList.length) {%>
 	<div class="row eventListContainer home">
 		<div class="col-xs-12">
-		<h2><a href="/events/">МотоСобытия</a></h2>
-		<%
+		<h2><a href="/events/">МотоСобытия</a></h2><%
+		
 		eventList.forEach(function (eItem)
 		{
 			let hasImg = (!!eItem["previews"]["512_384"]);
