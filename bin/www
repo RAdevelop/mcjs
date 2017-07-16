@@ -2,6 +2,7 @@
 "use strict";
 /**
  * Module dependencies.
+ * PORT=5000 ENV=dev node --optimize_for_size --max_old_space_size=460 --nouse-idle-notification --expose-gc --gc_interval=100 bin/www
  */
 
 const app = require('../app');
@@ -12,6 +13,8 @@ const config = require('../app/config');
 const debug = require('debug')('localhost:server');
 const fs = require('fs');
 const path = require('path');
+
+//console.log(process.env);
 
 /**
  * Get port from environment and store in Express.
@@ -65,7 +68,7 @@ server.listen(port);
 
 const io = require('../app/lib/messenger');
 //TODO надо еще тестировать!
-const Messenger = io(server, app);
+const Messenger = io(server);
 app.set('messenger', Messenger);
 
 
@@ -118,7 +121,7 @@ function _shutdownService(sigName)
 	console.log("Received kill signal ("+sigName+"), shutting down gracefully.");
 	app.set(config.server_closing, true);
 	
-	Messenger.of('/').emit('appShutdown', {"sigName":sigName});
+	Messenger.emit('appShutdown');
 	
 	server.close(function _onServerClose()
 	{

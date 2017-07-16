@@ -45,8 +45,7 @@ class Logout extends CtrlMain
 		//TODO надо тестировать!!!
 		process.nextTick(()=>
 		{
-			let SocketIO = this.getReq().app.get('messenger');
-			SocketIO.appLogout(sid);
+			(this.getReq().app.get('messenger')).appLogout(sid);
 		});
 	}
 }

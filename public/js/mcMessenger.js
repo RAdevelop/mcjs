@@ -873,20 +873,67 @@
 			{
 				return KEY_SOCKET_IO;
 			};
-			MessengerSocket.prototype.keyRoomMessage = function()
+			MessengerSocket.prototype.keyRoomMessageOut = function()
 			{
-				return KEY_ROOM_MESSAGE;
+				return KEY_ROOM_MESSAGE_OUT;
+			};
+			MessengerSocket.prototype.keyRoomMessageIn = function()
+			{
+				return KEY_ROOM_MESSAGE_IN;
 			};
 			
-			MessengerSocket.prototype.msgTypeSystem = function()
+			MessengerSocket.prototype.msgSenderSystem = function()
 			{
 				return 'system';
 			};
-			MessengerSocket.prototype.msgTypeUser = function()
+			MessengerSocket.prototype.msgSenderUser = function()
 			{
 				return 'user';
 			};
 			
+			MessengerSocket.prototype.msgTypeWarning = function()
+			{
+				return 'warning';
+			};
+			MessengerSocket.prototype.msgWarning = function(msgData)
+			{
+				msgData['type'] = this.msgTypeWarning();
+				return msgData;
+			};
+			MessengerSocket.prototype.msgTypeSuccess = function()
+			{
+				return 'success';
+			};
+			MessengerSocket.prototype.msgSuccess = function(msgData)
+			{
+				msgData['type'] = this.msgTypeSuccess();
+				return msgData;
+			};
+			MessengerSocket.prototype.msgTypeInfo = function()
+			{
+				return 'info';
+			};
+			MessengerSocket.prototype.msgInfo = function(msgData)
+			{
+				msgData['type'] = this.msgTypeInfo();
+				return msgData;
+			};
+			MessengerSocket.prototype.msgTypeDanger = function()
+			{
+				return 'danger';
+			};
+			MessengerSocket.prototype.msgDanger = function(msgData)
+			{
+				msgData['type'] = this.msgTypeDanger();
+				return msgData;
+			};
+			
+			MessengerSocket.prototype.msgReceived = function(msgData)
+			{
+				this.setLastTsUpd();
+				this.ls().setItem(this.keyRoomMessageIn(), msgData);
+				this.render().render(msgData);
+			};
 			MessengerSocket.prototype.msgSend = function(msgData, onStorageEvent)
 			{
 				onStorageEvent = onStorageEvent || false;
@@ -894,10 +941,10 @@
 				if (!onStorageEvent)
 				{
 					this.setLastTsUpd();
-					this.ls().setItem(this.keyRoomMessage(), msgData);
+					this.ls().setItem(this.keyRoomMessageOut(), msgData);
 				}
 				
-				var go = (!onStorageEvent && !BrowserDetector.ie || onStorageEvent);
+				var go = ((!onStorageEvent && !BrowserDetector.ie) || onStorageEvent);
 				if (!go) 
 					return;
 				
@@ -908,7 +955,7 @@
 				if (!sendToServer)
 					return;
 				
-				this.socketIo().emit('roomMessage', msgData, function _roomMessageOk(done)
+				this.socketIo().emit('userMessage', msgData, function _roomMessageOk(done)
 				{
 					//TODO взможно тут надо будет сдедать что-то с сообщением на клиенте? тогда надо var self = this
 					console.log('message was send to server: ', done);
@@ -933,14 +980,15 @@
 			//********************* приватные статичные методы и свойства
 			
 			var KEY_SOCKET_IO		= 'socket_io';
-			var KEY_ROOM_MESSAGE	= 'ls_room_msg';
+			var KEY_ROOM_MESSAGE_OUT= 'ls_room_msg_out';//исходящие
+			var KEY_ROOM_MESSAGE_IN	= 'ls_room_msg_in';//входящие
 			var KEY_APP_LOGOUT		= 'app_logout';
 			
 			var _io = null;
 			var _socketJsFile = '/socket.io/socket.io.js';
 			var _socketOpts =  {
 				//"force new connection" : true,
-				'forceNew': false,
+				'forceNew': false, //will create one for all connections§
 				'reconnection': true,
 				'reconnectionDelay': 2000,               //starts with 2 secs delay, then 4, 6, 8, until 60 where it stays forever until it reconnects
 				'reconnectionDelayMax' : 60000,          //1 minute maximum delay between connections
@@ -1028,14 +1076,23 @@
 					if (Messenger.isTabMaster() && !BrowserDetector.ie)
 						document.location.reload(true);
 				});
-				_io.on('appShutdown', function _onSocketAppShutdown(_onSocketAppShutdown)
+				_io.on('appShutdown', function _onSocketAppShutdown(data)
 				{
-					console.log('*************** _onSocketAppShutdown ', _onSocketAppShutdown);
+					console.log('*************** _onSocketAppShutdown ', data);
 					var msgData = {
-						"type": Messenger.msgTypeSystem(),
+						"sender": Messenger.msgSenderSystem(),
+						"type": Messenger.msgTypeDanger(),
 						"m": "сервер недоступен"
 					};
+					
+					Messenger.msgTypeDanger(msgData);
 					Messenger.render().render(msgData);
+				});
+				
+				_io.on('userMessage', function _onSocketUserMessage(msgData)
+				{
+					console.log('*************** _onSocketUserMessage ', msgData);
+					Messenger.msgReceived(msgData);
 				});
 				
 				return _io;
@@ -1063,11 +1120,7 @@
 				//TODO какие-то настройки нужны будут?
 				
 				var _Messenger = Messenger;
-				this.messenger = function()
-				{
-					return _Messenger;
-				};
-				
+				this.messenger = function(){return _Messenger; };
 				this.init();
 			}
 			
@@ -1087,18 +1140,15 @@
 			
 			MessageRender.prototype.render = function(msgData)
 			{
-				//msgData['type'] = system or user
-				//
-				
-				var msgType = msgData['type'] || null;
-				
-				switch (msgType)
+				var sender = (msgData && msgData['sender']) || null;
+				console.log('render', msgData);
+				switch (sender)
 				{
-					case this.messenger().msgTypeSystem():
+					case this.messenger().msgSenderSystem():
 						return this.systemRender(msgData);
 						break;
 					
-					case this.messenger().msgTypeUser():
+					case this.messenger().msgSenderUser():
 						return this.userRender(msgData);
 						break;
 					
@@ -1111,7 +1161,9 @@
 			MessageRender.prototype.systemRender = function(msgData)
 			{
 				//TODO scss style
-				var tpl = this.tplMsgTypeSystem(msgData);
+				var tpl = this.tplMsgSystem(msgData);
+				var $tpl = $(tpl);
+				
 				var $wrapper = $('.js-system-msg-list');
 				if (!$wrapper.length)
 				{
@@ -1120,28 +1172,54 @@
 					$wrapper.hide();
 					$('body').append($wrapper);
 				}
+				var $wrapperChildren = $wrapper.children();
 				
-				var $tpl = $(tpl);
-				$wrapper.append($tpl);
+				console.log($wrapperChildren);
+				console.log($wrapperChildren.length);
+				
+				if ($wrapperChildren.length > 2)
+				{
+					$wrapperChildren.last().animate({opacity: 0}).remove();
+				}
+				
+				$wrapper.prepend($tpl);
 				$tpl.animate({opacity: 1});
 				$wrapper.show();
 				return tpl;
 			};
 			
 			
-			MessageRender.prototype.tplMsgTypeSystem = function(msgData)
+			MessageRender.prototype.tplMsgSystem = function(msgData)
 			{
 				var message = nl2br(msgData["m"]);
+				var type = msgData['type'] || this.messenger().msgTypeInfo();
+				
+				var msgIco;
+				switch (type)
+				{
+					default:
+					case this.messenger().msgTypeInfo():
+					case this.messenger().msgTypeSuccess():
+						msgIco = 'fa fa-info-circle';
+						break;
+					
+					case this.messenger().msgTypeDanger():
+					case this.messenger().msgTypeWarning():
+						msgIco = ' fa-exclamation-triangle ';
+						break;
+				}
+				
+				
 				//TODO scss style
 				var tpl = '';
-				tpl += '<div style="opacity: 0;" class="alert alert-danger alert-dismissible" role="alert">';
+				tpl += '<div style="opacity: 0;" class="alert alert-'+type+' alert-dismissible" role="alert">';
 				tpl += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
-				tpl += '<strong><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></strong> ' + message;
+				tpl += '<strong><i class="fa '+msgIco+'" aria-hidden="true"></i></strong> ' + message;
 				tpl += '</div>';
 				
 				return tpl;
 			};
-			MessageRender.prototype.tplMsgTypeUser = function(msgData)
+			MessageRender.prototype.tplMsgUser = function(msgData)
 			{
 				var message = nl2br(msgData["m"]);
 				var htmlId = [msgData["u"]["u_id"], msgData["mts"]].join('_');
@@ -1149,23 +1227,28 @@
 				var hasAva	= !!msgData["u"]["ava"];
 				var ava		= (hasAva ? msgData["u"]["ava"] : '/_0.gif');
 				
-				var htmlAva = '<a href="/profile/'+msgData["u"]["u_id"]+'/"><img class="media-object img-circle img-responsive '+(hasAva ? '' :' hidden ')+'" src="'+ava+'" data-holder-rendered="true"/>';
-				htmlAva += '<i class="media-object fa fa-user '+(hasAva ? ' hidden ':'')+'"></i></a>';
-				
 				var html = '';
-				html += '<div class="media" id="'+htmlId+'">';
-				html += '<div class="media-left" style="width: 50px; height: 50px;">';
-				html += htmlAva;
-				html += '<span>'+msgData["u"]["name"]+'</span>';
-				html += '</div>';
-				html += '<div class="media-body" style="background-color: #EEE;">'+message+'</div>';
+				
+				html += '<div id="'+htmlId+'" class="room-message" style="display: table; border: 1px solid;width: 100%;margin-bottom: 3px;">';
+					html += '<div class="room-message-info" style="display: table-cell; width: 120px; border: 1px solid;text-align: center;">';
+						html += '<div class="user-ava" style="display: inline-block;">';
+							html += '<a href="/profile/'+msgData["u"]["u_id"]+'/" style="">';
+							html += '<img class="img-circle '+(hasAva ? '' :' hidden ')+'" src="'+ava+'" data-holder-rendered="true" />';
+							html += '<i class="fa fa-user '+(hasAva ? ' hidden ' :'')+'" style="font-size: 45px;"></i>';
+							html += '</a>';
+						html += '</div>';
+						html += '<div class="user-name" style="display: inline-block; width: 100%;">RA</div>';
+					html += '</div>';
+					html += '<div class="room-message-body" style="display: table-cell; vertical-align: top; padding: 3px;">';
+					html += message;
+					html += '</div>';
 				html += '</div>';
 				
 				return html;
 			};
 			MessageRender.prototype.userRender = function(msgData)
 			{
-				var tpl = this.tplMsgTypeUser(msgData);
+				var tpl = this.tplMsgUser(msgData);
 				this.$roomMsgList.append(tpl);
 				
 				return tpl;
@@ -1197,7 +1280,7 @@
 					self.$roomMsgText.val('');
 					
 					var msgData = {
-						type: self.messenger().msgTypeUser(),
+						sender: self.messenger().msgSenderUser(),
 						room_id: 123,
 						m: msg,
 						mts: (new Date()).getTime(),//TODO правильнее дату сообщения получать от сервера!
@@ -1234,10 +1317,10 @@
 		var tabList = (!!data['newValue'] ? JSON.parse(data['newValue']) : []);
 		this.updTab(tabList);
 	});
-	Messenger.on(Messenger.keySocketIo(), function _onKeySocketIo(data)
+	/*Messenger.on(Messenger.keySocketIo(), function _onKeySocketIo(data)
 	{
 		return;
-	});
+	});*/
 	
 	Messenger.on(Messenger.keyAppLogout(), function _onKeyAppLogout(data)
 	{
@@ -1256,12 +1339,12 @@
 	.then(function _initEnd()
 	{
 		/**
-		 * обработчик получения сообщения из localStorage
+		 * обработчик получения сообщения из localStorage (чат -> сервер)
 		 */
-		Messenger.on(Messenger.keyRoomMessage(), function _onRoomMessage(data)
+		Messenger.on(Messenger.keyRoomMessageOut(), function _onRoomMessageOut(data)
 		{
 			//this is Messenger
-			console.log('_onRoomMessage data ', data);
+			console.log('_onRoomMessageOut data ', data);
 			
 			var msgData = data['newValue'] && JSON.parse(data['newValue']);
 			if (!!msgData === false)
@@ -1281,6 +1364,34 @@
 			Messenger.msgSend(msgData, true);
 		});
 		
+		/**
+		 * обработчик получения сообщения из localStorage (сервер -> чат)
+		 */
+		Messenger.on(Messenger.keyRoomMessageIn(), function _onRoomMessageIn(data)
+		{
+			//this is Messenger
+			console.log('_onRoomMessageIn data ', data);
+			
+			var msgData = data['newValue'] && JSON.parse(data['newValue']);
+			if (!!msgData === false)
+				return;
+			/*
+			 TODO отправка сообщения:
+			 if i'm master tab then send to server -> if success -> on storage event handle this message for add to chat
+			 
+			 только в другой вкладке пользователь может быть в другом чате... :)
+			 
+			 TODO надо еще отслеживать и такую ситуацию - вкладка должна хранить информацию о чате, в котором пользователь в этой вкладке
+			 sessionStorage -> key room
+			 если пришедшее сообщение по событию storage room_id == session_storage_room_id, то добавить сообщение в список на страницу
+			 иначе не добавлять (увеличивать счетчик какой-нибудь?)
+			 */
+			
+			Messenger.render().render(msgData);
+		});
+		
+		console.log(Messenger.socketIo());
+		
 		return Promise.resolve(true);
 		
 		//FIXME для текстов (потом удалить)
@@ -1293,8 +1404,6 @@
 		Messenger.emitErr(err);
 	})
 	;
-	
-	
 	
 	window.addEventListener("beforeunload",	_onFrameUnload, false);
 	function _onFrameUnload(event)

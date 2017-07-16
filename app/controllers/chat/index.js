@@ -30,12 +30,36 @@ class Chat extends CtrlMain
 		
 		this.view.useCache(false);
 		
-		let tplData = {};
+		//TODO список комнат/чатов потом перенести в БД и редис
+		let namespace_list = [
+			{
+				id: 1,
+				name: `room1`,
+				user_count: 0
+			},
+			{
+				id: 2,
+				name: `room2`,
+				user_count: 0
+			},
+			{
+				id: 3,
+				name: `room3`,
+				user_count: 0
+			}
+		];
+		
+		//TODO нужно ли?
+		let tplData = {
+			namespace_list: namespace_list
+		};
 		
 		let tplFile = 'chat/chat.ejs';
 		this.view.setTplData(tplFile, tplData);
 		//this.view.addPartialData("user/left", {user: userData});
 		//this.view.addPartialData("user/right", {title: 'right_col'});
+		
+		this.getRes().expose(namespace_list, 'namespace_list');
 		
 		return Promise.resolve(null);
 	}

@@ -1,7 +1,5 @@
 <% if(!_isXHR){%><%- layout('layout/default') %><% } -%>
-<div class="page-header">
-	<h1><%= _pageH1 %></h1>
-</div>
+<h1><%= _pageH1 %></h1>
 <style>
 	.chat {
 		border: 1px solid green;
@@ -33,12 +31,31 @@
 </style>
 <div class="chat js-chat row">
 	<fieldset class="room-list-wrapper js-room-list-wrapper col-sm-3">
-		<legend>спиоск названий чатов</legend>
-		<ul class="room-list js-room-list"></ul>
+		<legend>список чатов</legend>
+		<ul class="room-list js-room-list"><%
+			namespace_list.forEach(function(chanel)
+			{
+			%><li><a href="<%=chanel['id']%>"><%=chanel['name']%></a></li><%
+			});
+		%></ul>
 	</fieldset>
 	<fieldset class="room-message-list-wrapper js-room-message-list-wrapper col-sm-6">
 		<legend>сообщения</legend>
-		<div class="room-message-list js-room-message-list"></div>
+		<div class="room-message-list js-room-message-list">
+			
+			<div class="room-message" style="display: table; border: 1px solid;width: 100%;">
+				<div class="room-message-info" style="display: table-cell; width: 120px; border: 1px solid;text-align: center;">
+					<div class="user-ava" style="display: inline-block;">
+						<a href="/profile/11/" style=""><img class="img-circle" src="/files/user/photo/0/5/1/2838023a778dfaecdc212708f721b788/50_50.jpg" data-holder-rendered="true"><i class="media-object fa fa-user  hidden "></i></a>
+					</div>
+					<div class="user-name" style="display: inline-block; width: 100%;">RA</div>
+				</div>
+				<div class="room-message-body" style="display: table-cell; vertical-align: top; padding: 3px;">
+					text
+				</div>
+			</div>
+			
+		</div>
 		<form method="post" action="/chat" id="form_message_send" class="form-horizontal form-message-send">
 			<div class="input-group t_message">
 				<textarea class="form-control room-message-text js-room-message-text" id="t_message" name="t_message" placeholder="текст сообщения"></textarea>

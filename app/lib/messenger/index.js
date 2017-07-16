@@ -97,15 +97,29 @@ class Messenger extends SocketIO
 		//sending to all clients except sender
 		//socket.broadcast.emit('broadcast', 'hello friends!');
 		
-		//это просто для треинировки
+		//FIXME это просто для треинировки
 		socket.emit(`room:list`, rooms);
 		
 		//socket.join();
 		
-		socket.on('roomMessage', (data, cb)=>
+		/**
+		 * получам сообщение от клиента
+		 * отправляем остальным
+		 * 
+		 * TODO надо делать или на комантах или на неймспейсах + комнаты
+		 */
+		socket.on('userMessage', (data, cb)=>
 		{
-			Logger.info('socket.on roomMessage, ', data);
+			Logger.info('socket.on userMessage, ', data);
 			cb && cb(true);
+			
+			//отправили сообщение всем в NSP ('/') кроме отправителя
+			socket.broadcast.emit('userMessage', data);
+		});
+		
+		this.of('/').adapter.clients((err, clients) =>
+		{
+			console.log('adapter.clients: ', clients); // an array containing all connected socket ids
 		});
 	}
 	appLogout(sid)
@@ -132,11 +146,11 @@ class Messenger extends SocketIO
 	}
 };
 
-module.exports = function(httpServer, app)
+module.exports = function(httpServer)
 {
 	let opts =  {
 		//"force new connection" : true,
-		'forceNew': false,
+		'forceNew': false, //will create one for all connections
 		'reconnection': true,
 		'reconnectionDelay': 2000,                  //starts with 2 secs delay, then 4, 6, 8, until 60 where it stays forever until it reconnects
 		'reconnectionDelayMax' : 60000,             //1 minute maximum delay between connections
@@ -189,8 +203,8 @@ module.exports = function(httpServer, app)
 		console.log('io on error');
 		Logger.error(err);
 	})
-	.on('connect', Msgr.onConnect)
-	.on('connection', Msgr.onConnection)
+	.on('connect', Msgr.onConnect.bind(Msgr))
+	.on('connection', Msgr.onConnection.bind(Msgr))
 	;
 	
 	/*Msgr.of('/').adapter.on('error', function onErrorIoOf_Adapter()
