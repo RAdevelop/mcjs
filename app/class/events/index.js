@@ -74,6 +74,9 @@ class Events extends Base
 		return this.model('events').getById(e_id)
 			.then((eventData)=>
 			{
+				if (!eventData)
+					return Promise.resolve(eventData);
+				
 				return this.getClass('keywords').getObjKeyWords(this, eventData, 'e_id')
 					.then((eventData)=>
 					{
