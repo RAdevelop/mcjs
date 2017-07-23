@@ -94,7 +94,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 	}
 }));*/
 app.use(cookieParser(config.session.secret));
-//app.use(Errors.middleware.crashProtector());
 app.use(Session);
 
 app.use(bodyParser.json());

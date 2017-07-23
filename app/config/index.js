@@ -11,6 +11,7 @@ let document_root = Path.join(__dirname, '../../public');
  * @type {*}
  */
 var config = {
+	https: false, //FIXME
 	port: 3000,
 	server_closing: 'server_closing', //название переменной для app.set(name, value) при выключении или перезагрузки сервера
 	document_root: document_root,
@@ -21,8 +22,8 @@ var config = {
 		secret           : 'varRy Sicret str0ka',
 		store            : null,
 		cookie           : {
-			secure: true//true
-			,httpOnly: true//true
+			secure: this.https//true
+			,httpOnly: this.https//true
 			,path: '/'
 			//,maxAge: 86400000 //in milliseconds
 		}

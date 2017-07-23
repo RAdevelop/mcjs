@@ -1237,7 +1237,7 @@
 							html += '<i class="fa fa-user '+(hasAva ? ' hidden ' :'')+'" style="font-size: 45px;"></i>';
 							html += '</a>';
 						html += '</div>';
-						html += '<div class="user-name" style="display: inline-block; width: 100%;">RA</div>';
+						html += '<div class="user-name" style="display: inline-block; width: 100%;">'+msgData["u"]["name"]+'</div>';
 					html += '</div>';
 					html += '<div class="room-message-body" style="display: table-cell; vertical-align: top; padding: 3px;">';
 					html += message;
@@ -1250,6 +1250,8 @@
 			{
 				var tpl = this.tplMsgUser(msgData);
 				this.$roomMsgList.append(tpl);
+				
+				this.$roomMsgList.scrollTop( this.$roomMsgList.height() + 1000000);
 				
 				return tpl;
 			};

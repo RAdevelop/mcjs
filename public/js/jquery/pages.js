@@ -143,10 +143,10 @@
 								axis:'y', interrupt: true, limit: false,
 								onAfter: function()
 								{
-									$items.each(function (i, item)
+									/*$items.each(function (i, item)
 									{
 										$(item).css('height', 'auto');
-									});
+									});*/
 								}
 							});
 					}

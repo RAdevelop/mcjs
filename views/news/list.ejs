@@ -1,14 +1,13 @@
 <div class="row">
-	<div class="newsListContainer col-xs-12 col-sm-12 col-md-12"><%
+	<div class="notice-container"><%
 newsList.forEach(function (nItem)
 {
 	let hasImg = (!!nItem["previews"]["512_384"]);
 	let imgSrc = (hasImg ? nItem["previews"]["512_384"] : '/_0.gif');
-	%><div class="newsListItem">
-			<a  class="newsListItemInfo" href="<%=[_reqBaseUrl, nItem["n_id"], nItem["n_alias"]].join('/')%>/">
-				<img src="<%=imgSrc%>" alt="<%=nItem["n_title"]%>"/>
-				<div class="newsListItemInfoDate"><i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;<%=nItem["dt_show_ts"]%></div>
-				<div class="newsListItemInfoNotice"><p><%=nItem["n_title"]%></p><p><%-nItem["n_notice"]%></p></div>
+	%><div class="notice-item" style="background-image: url('<%=imgSrc%>');">
+			<a class="notice-item-info" href="<%=[_reqBaseUrl, nItem["n_id"], nItem["n_alias"]].join('/')%>/">
+				<div class="notice-item-info-date"><i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;<%=nItem["dt_show_ts"]%></div>
+				<div class="notice-item-info-text"><p><%=nItem["n_title"]%></p><p><%-nItem["n_notice"]%></p></div>
 			</a>
 	</div><%
 }); %></div>
@@ -20,7 +19,7 @@ if (MCJS['pages'] && Pagination)
 {
 	MCJS['pages']['ajaxDataSrc'] = ['newsList'];
 	MCJS['pages']['ajaxDataTarget'] = 'newsList';
-	MCJS['pages']['jQuerySelector'] = '.newsListContainer .newsListItem';
+	MCJS['pages']['jQuerySelector'] = '.notice-container .notice-item';
 	
 	Pagination.init();
 }

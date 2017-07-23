@@ -43,176 +43,37 @@
   max-width: 150px;
 }
 
-.newsListContainer
+.notice-container.home
 {
-
-}
-.newsListContainer .newsListItem
-{
-  float: left;
-  margin:  0px  10px  10px  0px;
-  width: auto;
-}
-
-.newsListContainer .newsListItem .newsListItemInfo
-{
-  display: block;
-  position: relative;
-  border: none;
-  color: #fff;
-  max-width: 384px;
-  max-height: 288px;
-  min-width: 384px;
-  min-height: 288px;
-  overflow: hidden;
-}
-
-.newsListContainer .newsListItem .newsListItemInfo img
-{
-  @include mix-width-calc(100%);
-  @include mix-opacity(0.5);
-}
-
-.newsListContainer .newsListItem .newsListItemInfo div
-{
-  position: absolute;
-  width: 100%;
-}
-
-.newsListContainer .newsListItem .newsListItemInfo .newsListItemInfoDate
-{
-  top: 0;
-  padding: 3px;
-  text-align: center;
-  background-color: rgba(0, 0, 0, 0.7);
-}
-
-.newsListContainer .newsListItem .newsListItemInfo .newsListItemInfoNotice
-{
-  background-color: rgba(0, 0, 0, 0.7);
-  //top: 245px;
-  top: 26px;
-  padding: 0px 3px 3px 3px;
-  bottom: 0;
-  //@include mix-transition(top, 0.5s, ease-out, 0.1s);
-}
-
-.newsListContainer .newsListItem .newsListItemInfo:hover .newsListItemInfoNotice
-{
-  //top: 26px;
-}
-.newsListContainer .newsListItem .newsListItemInfo .newsListItemInfoNotice p:first-child
-{
-  text-align: center;
-  font-weight: bold;
-}
-
-.newsListContainer .newsListItem .newsListItemInfo .newsListItemInfoNotice p:last-child
-{
-  border-top: 1px dotted;
-}
-
-
-@media (min-width: 992px) and (max-width: 1200px)
-{
-
-}
-@media (max-width: 1024px)
-{
-
-}
-@media (min-width: 768px) and (max-width: 992px)
-{
-
-}
-
-@media (min-width: 768px) and (max-width: 1024px)
-{
-  .newsListContainer .newsListItem .newsListItemInfo
+  margin: 0 0 0 -15px;
+  
+  h2
   {
-    max-width: 359px;
-    max-height: 269px;
-
-    min-width: 359px;
-    min-height: 269px;
+    margin-left: 15px;
   }
-}
-
-@media (max-width: 768px) and (orientation : landscape)
-{
-  .newsListContainer .newsListItem .newsListItemInfo
+  .notice-item
   {
-    max-width: 100%;
-    max-height: 257px;
-
-    min-width: 100%;
-    min-height: 257px;
-  }
-
-  .newsListContainer .newsListItem .newsListItemInfo .newsListItemInfoNotice
-  {
-    top: 26px;
-    background-color: rgba(0, 0, 0, 0.7);
-  }
-}
-
-@media (max-width: 640px)
-{
-  .newsListContainer .newsListItem .newsListItemInfo
-  {
-    max-width: 100%;
-    width: 100%;
-    height: calc(75% - 10px);
-  }
-  .newsListContainer .newsListItem .newsListItemInfo .newsListItemInfoNotice
-  {
-    top: 26px;
-    background-color: rgba(0, 0, 0, 0.7);
-  }
-}
-
-@media (max-width: 568px)
-{
-  .newsListContainer .newsListItem .newsListItemInfo
-  {
-    @include mix-max-width-calc(100%);
-    @include mix-min-width-calc(100%);
-
-    /*max-height: 258px;*/
-  }
-  .newsListContainer .newsListItem .newsListItemInfo .newsListItemInfoNotice
-  {
-    top: 26px;
-    background-color: rgba(0, 0, 0, 0.7);
-  }
-}
-
-@media (min-width: 320px) and (max-width: 480px)
-{
-
-}
-
-.home .newsListItem {
-  @media (min-width: $screen-md-max) {
-    & {
-      width: 24%;
-    }
-  }
-
-  & .newsListItemInfo {
-
-    @media (max-width: $screen-xs-max) {
-      & {
-        width: 100%;
-        @include mix-min-width-calc(100%);
+    margin: 0 0 15px 15px;
+    @media (min-width: $screen-md )
+    {
+      &
+      {
+        width: calc(25% - 15px);
       }
     }
-
-    @media (min-width: $screen-md-max) {
-      & {
-        width: auto;
-        @include mix-min-width-calc(100%);
-        @include mix-max-width-calc(100%);
+    @media (min-width: $screen-xxs ) and (max-width: $screen-xs )
+    {
+      &
+      {
+        margin-right: 0;
+        
+      }
+    }
+    @media (max-width: $screen-xxs )
+    {
+      &
+      {
+        margin-right: 0;
       }
     }
   }

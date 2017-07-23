@@ -31,11 +31,6 @@ Rediska.on('error', (err)=>
  https://socket.io/docs/emit-cheatsheet/
  */
 
-//TODO
-//let chanel = 'rooms';
-let chanel = 'chats';
-chanel = '';
-
 //TODO список комнат/чатов потом перенести в БД и редис
 let rooms = [
 	{
@@ -144,7 +139,7 @@ class Messenger extends SocketIO
 			this.to(id).emit('app_logout');
 		});
 	}
-};
+}
 
 module.exports = function(httpServer)
 {

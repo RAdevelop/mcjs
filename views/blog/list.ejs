@@ -1,28 +1,23 @@
 <div class="row">
-	<div class="blogListContainer col-xs-12 col-sm-12 col-md-12"><%
+	<div class="notice-container blog-container"><%
 blogList.forEach(function (bItem)
 {
 	let hasImg = (!!bItem["previews"]["512_384"]);
 	let imgSrc = (hasImg ? bItem["previews"]["512_384"] : '/_0.gif');
-
-	let ava = (!!bItem['user']['previews'] && bItem['user']['previews']['50_50']);
-	let avaSrc = (ava ? bItem['user']['previews']['50_50'] : '/_0.gif');
-
 	let blogHref = [_reqBaseUrl];
 	if (user && user['u_id'])
 		blogHref.push(user['u_id']);
-
+	
 	blogHref.push(bItem["b_id"], bItem["b_alias"]);
-
-%><div class="blogListItem">
-<% let  user_owner = bItem['user']; %><%- include ../user/owner.ejs %>
-	<a class="blogListItemInfo" href="<%=blogHref.join('/')%>/" title="<%=bItem["b_title"]%>">
-		<img src="<%=imgSrc%>" alt="<%=bItem["b_title"]%>"/>
-		<div class="subject">Тема: <%=bItem["bs_name"]%></div>
-		<div class="blogListItemInfoDate">
+	
+%><div class="notice-item blog-item" style="background-image: url('<%=imgSrc%>');">
+<% let user_owner = bItem['user']; %><%- include ../user/owner.ejs %>
+	<div class="blog-item-subject"><a href="<%=['subj', bItem["bs_id"], bItem["bs_alias"]].join('/')%>/"><%=bItem["bs_name"]%></a></div>
+	<a class="notice-item-info blog-item-info" href="<%=blogHref.join('/')%>/" title="<%=bItem["b_title"]%>">
+		<div class="notice-item-info-date">
 			<i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;<%=bItem["dt_create_ts"]%>
 		</div>
-		<div class="blogListItemInfoNotice"><p><%=bItem["b_title"]%></p><p><%-bItem["b_notice"]%></p></div>
+		<div class="notice-item-info-text"><p><%=bItem["b_title"]%></p><p><%-bItem["b_notice"]%></p></div>
 	</a>
 </div><%
 }); %></div>
@@ -34,8 +29,7 @@ if (MCJS['pages'] && Pagination)
 {
 	MCJS['pages']['ajaxDataSrc'] = ['blogList'];
 	MCJS['pages']['ajaxDataTarget'] = 'blogList';
-	MCJS['pages']['jQuerySelector'] = '.blogListContainer .blogListItem';
-
+	MCJS['pages']['jQuerySelector'] = '.notice-container .notice-item';
 	Pagination.init();
 }
 //-->

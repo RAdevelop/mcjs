@@ -1,15 +1,14 @@
 <div class="row">
-	<div class="eventListContainer col-xs-12 col-sm-12 col-md-12"><%
+	<div class="notice-container"><%
 eventList.forEach(function (eItem)
 {
 	let hasImg = (!!eItem["previews"]["512_384"]);
 	let imgSrc = (hasImg ? eItem["previews"]["512_384"] : '/_0.gif');
-			let eDate = (eItem["dd_start_ts"] == eItem["dd_end_ts"] ? [eItem["dd_start_ts"]] : [eItem["dd_start_ts"], eItem["dd_end_ts"]]).join(' &mdash; ');
-	%><div class="eventListItem">
-			<a  class="eventListItemInfo" href="<%=[_reqBaseUrl, eItem["e_id"], eItem["e_alias"]].join('/')%>/">
-				<img src="<%=imgSrc%>" alt="<%=eItem["e_title"]%>"/>
-			<div class="eventListItemInfoDate"><i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;<%-eDate%></div>
-			<div class="eventListItemInfoNotice">
+	let eDate = (eItem["dd_start_ts"] == eItem["dd_end_ts"] ? [eItem["dd_start_ts"]] : [eItem["dd_start_ts"], eItem["dd_end_ts"]]).join(' &mdash; ');
+	%><div class="notice-item" style="background-image: url('<%=imgSrc%>');">
+			<a  class="notice-item-info" href="<%=[_reqBaseUrl, eItem["e_id"], eItem["e_alias"]].join('/')%>/">
+			<div class="notice-item-info-date"><i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;<%-eDate%></div>
+			<div class="notice-item-info-text">
 				<p><%=eItem["e_title"]%></p>
 				<p><%=eItem["e_notice"]%></p>
 				<p><i class="fa fa-map-marker"></i>&nbsp;<%=eItem["e_address"]%></p>

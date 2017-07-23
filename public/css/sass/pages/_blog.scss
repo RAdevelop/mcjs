@@ -26,249 +26,58 @@
 
 .blogSubjects {
   //@media (min-width: $screen-sm) and (max-width: $screen-md-min)
-  @media (max-width: $screen-xs-max)
-  {
-    right: auto;
-  }
-  @media (min-width: $screen-sm)
+  @media (max-width: $screen-xs-max), (min-width: $screen-sm)
   {
     right: auto;
   }
 }
 
-.blogListContainer
+.blog-container
 {
-  //overflow: hidden;
-  position: relative;
-  display: table;
-  //width: 100%;
-
-  & .blogListItem {
-    float: left;
-    margin:  0px  10px  10px  0px;
-    width: auto;
-    display: table-cell;
+  .blog-item
+  {
     border: 1px solid #e2e2e2;
     @include mix-border-radius(4px);
-
-    & , & > a {
-      color: #333;
-    }
-
-    &:hover {
-      border-color: #333;
-    }
-
-    & .owner_ava {
-      width: 50px;
-    }
-  }
-}
-
-.blogListContainer .blogListItem .blogListItemInfo
-{
-  display: block;
-  clear: both;
-  position: relative;
-  
-  //max-width: 274px;
-  //min-width: 274px;
-  
-  max-height: 234px;
-  min-height: 234px;
-  
-  overflow: hidden;
-
-}
-
-.blogListContainer .blogListItem .blogListItemInfo img
-{
-  @include mix-width-calc(100%);
-  @include mix-opacity(0.2);
-}
-
-.blogListContainer .blogListItem .blogListItemInfo div
-{
-  position: absolute;
-  width: 100%;
-}
-
-.blogListContainer .blogListItem .blogListItemInfo .subject {
-  top: 0;
-  left: 0;
-  background-color: #e2e2e2;
-  padding: 3px;
-  overflow: hidden;
-  max-height: 26px;
-}
-
-.blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoDate
-{
-  top: 26px;
-  left: 0;
-  padding: 3px;
-  //background-color: rgba(0, 0, 0, 0.7);
-  text-align: center;
-  display: inline-block;
-}
-
-.blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoNotice
-{
-  //background-color: rgba(0, 0, 0, 0.7);
-  top: 54px;
-  padding: 0px 3px 3px 3px;
-  bottom: 0;
-  //@include mix-transition(top, 0.5s, ease-out, 0.1s);
-}
-
-.blogListContainer .blogListItem .blogListItemInfo:hover .blogListItemInfoNotice
-{
-  //top: 0px;
-}
-.blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoNotice p:first-child
-{
-  border-top: 1px dotted;
-  text-align: center;
-  font-weight: bold;
-}
-
-.blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoNotice p:last-child
-{
-  border-top: 1px dotted;
-}
-
-
-.blog-info {
-  border: 1px solid #FFF;
-  background-color: #F0F0F0;
-  @include mix-border-radius(5px);
-  &:hover {
-    background-color: #fff;
-    border: 1px solid #F0F0F0;
-  }
-  width: 100%;
-  display: table;
-  border-spacing: 3px;
-
-  @media (max-width: $screen-xs-max)
-  {
-    & {
-      width: 100%;
-    }
-  }
-
-  &_about {
-    display: table-cell;
-    vertical-align: middle;
-
-    @media (max-width: $screen-xs-max)
+    height: 280px;
+    overflow: hidden;
+    @media (min-width: $screen-md )
     {
-      & {
-        display: block;
+      &
+      {
+        height: round(($screen-md-min + 410) / 5);
       }
     }
-
-    &_subj {
-      display: block;
-      padding: 3px;
+    @media (min-width: $screen-sm ) and (max-width: $screen-sm-max )
+    {
+      &
+      {
+        height: 300px;
+      }
     }
-    &_tags {
-      display: block;
-      vertical-align: top;
-      padding: 3px;
-    }
-  }
-}
-
-//@media (min-width: $screen-sm) and (max-width: 1024px) {
-@media (min-width: $screen-sm) 
-{
-  .blogListContainer .blogListItem .blogListItemInfo
-  {
-    width: 50%;
-    //min-width: 356px; TODO
-    //max-width: 356px;
-
-    //max-height: 269px;
-    //min-height: 269px;
-  }
-}
-.blogListContainer .blogListItem {
     
-  @media (min-width: $screen-xxs)
-  {
-    & {
-      width: 100%;
+    &-subject
+    {
+      padding: 5px;
+      &:before
+      {
+        content: 'Тема: ';
+        font-weight: bold;
+      }
     }
-  }
-  @media (max-width: $screen-sm)
-  {
-    & {
-      width: 48%;
+    
+    &-info
+    {
+      height: auto;
     }
-  }
-  @media (max-width: $screen-xs-max)
-  {
-    & {
-      width: 100%;
-    }
-  }
-  
-  @media (min-width: $screen-md)
-  {
-    & {
-      width: 24%;
-    }
-  }
-
-  .blogListItemInfo {
-    width: 100%;
   }
 }
 
-
-//@media (max-width: 640px)
-@media (max-width: $screen-xs-max)
+.home
 {
-  .blogListContainer .blogListItem .blogListItemInfo .blogListItemInfoNotice
-  {
-    top: 52px;
-    //background-color: rgba(0, 0, 0, 0.7);
-  }
-}
-
-.blogListContainer.home {
-  width: 100%;
-
-  .blogListItem {
-    @media (min-width: $screen-sm) {
-      & {
-        width: 48%;
-      }
-    }
-    @media (min-width: $screen-md-max) {
-      & {
-        width: 24%;
-      }
-    }
-
-    & .blogListItemInfo {
-
-      @media (max-width: $screen-sm) {
-        & {
-          width: auto;
-          @include mix-min-width-calc(100%);
-          @include mix-max-width-calc(100%);
-        }
-      }
-
-      @media (min-width: $screen-md-max) {
-        & {
-          width: auto;
-          @include mix-min-width-calc(100%);
-          @include mix-max-width-calc(100%);
-        }
-      }
+  .blog-item {
+    &-info
+    {
+      height: auto;
     }
   }
 }
