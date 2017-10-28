@@ -105,11 +105,7 @@ const VK = require('app/lib/vk/index.js');
 //VK.video.get();
 //VK.video.users();
 
-let val = '';
-val = NaN;
-val = parseInt(' s2')||0;
 
-console.log(val);
-console.log(!!val);
-console.log(isNaN(val));
-console.log(Number.isNaN(val));
+let s = "";
+
+console.log('!!s = ', !!s);
