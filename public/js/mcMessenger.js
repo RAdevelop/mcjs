@@ -398,43 +398,6 @@
 				return EventEmitter.prototype.off.call(this, type, fn, this);
 			};
 			
-			MessengerEmitter.prototype.sendPostMessage = function(data, win)
-			{
-				console.log('call sendPostMessage');
-				
-				if (!_isFrame && !_iFrameReady)
-					this.init();
-				
-				try
-				{
-					win = win || this.win();
-					
-					data = JSON.stringify(data);
-					
-					if (win.contentWindow && this.win().contentWindow.postMessage)//For Chrome, Opera, Safari
-					{
-						win.contentWindow.postMessage(data, window.location.origin);
-					}
-					else if(this.win().postMessage)//For FF, IE
-					{
-						win.postMessage(data, window.location.origin);
-					}
-					else
-					{
-						throw new Error('postMessage не работает');
-					}
-				}
-				catch (err)
-				{
-					console.log(err);
-					console.log('data ', data);
-				}
-				
-				//TODO? очередь сообщений до загрузки фрейма: только если мы в родителськом окне! this._queue.push(data);
-				
-				//
-			};
-			
 			var _tabCache = null;
 			MessengerEmitter.prototype.tabCache = function(tab)
 			{
@@ -640,78 +603,6 @@
 			function _isOriginAllowed(origin)
 			{
 				return (_originAllowed.indexOf(origin)>=0);
-			}
-			
-			/**
-			 * когда фрейм полуачает postMessage
-			 *
-			 * @param {event} event
-			 * @returns {boolean}
-			 */
-			function _onMessageInFrame(event)
-			{
-				console.log('onMessageInFrame');
-				event.stopImmediatePropagation();
-				event.stopPropagation();
-				//event.preventDefault();
-				
-				var eData = event['originalEvent'] || event;
-				
-				//eData.source === this.top - иначе другие, например, yaMapApi шлет сообщения
-				if (!eData || (eData && (!_isOriginAllowed(eData.origin)) || eData.source !== this.top))
-					return false;
-				
-				console.log('from parent window eData ', eData);
-				
-				//TODO обработка события и данных
-				
-				//пример
-				var self = MessengerEmitter.prototype;
-				var data = 'AD';
-				var resp = [data, eData.source];
-				self.sendPostMessage.apply(self, resp);
-				
-				
-				//------------
-				self = null;
-				return false;
-			}
-			
-			/**
-			 * когда родительское окно полуачает postMessage
-			 *
-			 * @param {event} event
-			 * @returns {boolean}
-			 */
-			function _onMessageInParent(event)
-			{
-				/*
-				 this - здесь window страницы ()
-				 */
-				console.log('onMessageInParent');
-				event.stopImmediatePropagation();
-				event.stopPropagation();
-				//event.preventDefault();
-				
-				var eData = event['originalEvent'] || event;
-				
-				//eData.source === this.top - иначе другие, например, yaMapApi шлет сообщения
-				if (!eData || (eData && (!_isOriginAllowed(eData.origin)) || eData.source === this.top))
-					return false;
-				
-				console.log('from Frame eData ', eData);
-				//console.log('from Frame eData ', event);
-				
-				//eData.source.postMessage(JSON.stringify("Work"), eData.origin);
-				
-				//TODO обработка события и данных
-				
-				var self = MessengerEmitter.prototype;
-				//привер вызовов методов класса self.sendPostMessage.apply(self, ['AD', eData.source]);
-				
-				//------------
-				self = null;
-				return false;
 			}
 			
 			//********************* END OF приватные статичные методы и свойства

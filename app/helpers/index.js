@@ -330,7 +330,7 @@ class Helpers
 	 * @param str - строка для проверки
 	 * @param safe - строка символов, которые надо оставить
 	 * @param del - удалять или нет
-	 * @returns {Promise}
+	 * @returns {String}
 	 */
 	static clearSymbol(str, safe = '', del = true)
 	{

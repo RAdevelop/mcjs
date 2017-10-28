@@ -69,21 +69,17 @@
         let blogBaseUri = [_reqBaseUrl,'blog',user["u_id"]].join('/');
     %><div class="blocks">
         <h4><a href="<%=blogBaseUri%>/"><i class="fa fa-fw fa-pencil"></i> Блог</a></h4>
-        <div class="blogListContainer"><%
-            blogList.forEach(function (blog)
+        <div class="notice-container blog-container"><%
+            blogList.forEach(function (bItem)
             {
-                let img = '';
-                if(blog["previews"]["512_384"])
-                    img = '<img src="'+blog["previews"]["512_384"]+'" alt="'+blog["b_title"]+'"/>';
+                let hasImg = (!!bItem["previews"]["512_384"]);
+                let imgSrc = (hasImg ? bItem["previews"]["512_384"] : '/_0.gif');
             %>
-            <div class="blogListItem">
-                <a class="blogListItemInfo" href="<%=[blogBaseUri, blog["b_id"], blog["b_alias"]].join('/')%>/">
-                    <%-img%>
-                    <div class="subject">Тема: <%=blog["bs_name"]%></div>
-                    <div class="blogListItemInfoNotice">
-                        <span class="text-center displayInlineBlock width100"><i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;<%=blog["dt_create_ts"]%></span>
-                        <p><%=blog["b_title"]%></p><p><%=blog["b_notice"]%></p>
-                    </div>
+            <div class="notice-item blog-item" style="background-image: url('<%=imgSrc%>');">
+                <div class="blog-item-subject"><a href="<%=['subj', bItem["bs_id"], bItem["bs_alias"]].join('/')%>/"><%=bItem["bs_name"]%></a></div>
+                <a class="notice-item-info blog-item-info" href="<%=[blogBaseUri, bItem["b_id"], bItem["b_alias"]].join('/')%>/" title="<%=bItem["b_title"]%>">
+                    <div class="notice-item-info-date"><i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;<%=bItem["dt_create_ts"]%></div>
+                    <div class="notice-item-info-text"><p><%=bItem["b_title"]%></p><p><%-bItem["b_notice"]%></p></div>
                 </a>
             </div><%
             })%>

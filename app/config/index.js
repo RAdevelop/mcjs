@@ -10,8 +10,8 @@ let document_root = Path.join(__dirname, '../../public');
  *
  * @type {*}
  */
-var config = {
-	https: false, //FIXME
+let config = {
+	https: true, //FIXME
 	port: 3000,
 	server_closing: 'server_closing', //название переменной для app.set(name, value) при выключении или перезагрузки сервера
 	document_root: document_root,
