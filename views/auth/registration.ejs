@@ -1,4 +1,4 @@
-<%  if(!_isXHR){%><%- layout('layout/default') %><% } -%>
+<% if(!_isXHR){%><%- layout('layout/default') %><% } -%>
 <form class="form-signin" action="<%=menuItem.m_path%>" method="post" id="registrationForm">
 	<h2 class="form-signin-heading">Регистрация</h2>
 	<div class="form-group m_email">
@@ -15,9 +15,9 @@
 		<span class="text-center help-block">не менее 6 символов</span>
 	</div>
 	<div class="form-group checkbox b_user_agreement">
-        <label><input type="checkbox" name="b_user_agreement">принимаю пользовательское соглашение</label>
-        <span class="help-block">регистрируясь на сайте, принимаю <a href="/user_agreement.html" target="_blank">пользовательское соглашение?</a></span>
-    </div>
+		<label><input type="checkbox" name="b_user_agreement">принимаю пользовательское соглашение</label>
+		<span class="help-block">регистрируясь на сайте, я принимаю <a href="/user_agreement.html" target="_blank">пользовательское соглашение</a></span>
+	</div>
 	<button class="btn btn-lg btn-primary btn-block" type="submit" id="btn_reg" name="btn_reg">Зарегистрироваться</button>
 </form>
 <script type="text/javascript" src="/js/jquery/postRes.js"></script>

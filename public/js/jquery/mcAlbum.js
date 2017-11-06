@@ -493,13 +493,16 @@
 
 		function getImg(f_id)
 		{
+			var albumImages = MCJS["albumImages"] || {};
+				albumImages = MCJS["albumImages"]["image"] || [];
+			
 			var img = null;
 			var i;
-			for(i in MCJS["albumImages"])
+			for(i in albumImages)
 			{
-				if (MCJS["albumImages"][i].hasOwnProperty("f_id") && MCJS["albumImages"][i]["f_id"] == f_id)
+				if (albumImages[i].hasOwnProperty("f_id") && albumImages[i]["f_id"] == f_id)
 				{
-					img = MCJS["albumImages"][i];
+					img = albumImages[i];
 					break;
 				}
 			}
@@ -540,9 +543,9 @@
 		{
 			var defaults = {};
 			var options = $.extend({}, defaults, params);
-
-			var img = getImg($img.attr("data-img-id"));
-
+			
+			var img = getImg($img.data("imgId"));
+			
 			if (!img) return;
 
 			options.id = '_album_img_dialog_'+img["f_id"];
@@ -878,12 +881,12 @@
 
 		if(albumPreviews.length)
 		preloadImages(albumPreviews);
-
+		
 		$albumWrapper.on('click', options.albumImages +' img', function (event)
 		{
 			event.preventDefault();
 			event.stopPropagation();
-
+			
 			openImageDialog($(this), options);
 		});
 
