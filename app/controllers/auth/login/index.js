@@ -250,7 +250,7 @@ class Login extends CtrlMain
 				self.model("user/auth").createPassResetConfirmKey(tplData.userData, (err, user)=>
 				{
 					if (err)
-						return reject(error);
+						return reject(err);
 					
 					const Mailer = new Mail(CtrlMain.appConfig.mail.service);
 					
@@ -288,13 +288,13 @@ class Login extends CtrlMain
 			tplData.s_password = '';
 			tplData.formError.error = true;
 			tplData.formError.errorName = err.name;
-
+			
 			self.view.setTplData("auth/login", tplData);
-
+			
 			return Promise.resolve(null);
 		});
 	}
-
+	
 	/**
 	 * авторизация на сайте
 	 *
@@ -305,7 +305,7 @@ class Login extends CtrlMain
 	_formLoginValidation(tplData)
 	{
 		let errors = {};
-
+		
 		tplData.s_password = tplData.s_password.trim();
 		
 		if(tplData.s_password.length < 6)
@@ -320,7 +320,7 @@ class Login extends CtrlMain
 		tplData.b_remember = (tplData.b_remember ? tplData.b_remember : 0);
 		
 		const self = this;
-
+		
 		return Promise.resolve(errors).then((errors)=>
 		{
 			if (self.parseFormErrors(tplData, errors))
@@ -356,7 +356,9 @@ class Login extends CtrlMain
 							
 						}//пароль неверный
 						else
+						{
 							return reject(new Errors.NotFoundError());
+						}
 					});
 				});
 			});
@@ -376,7 +378,6 @@ class Login extends CtrlMain
 			tplData.formError.text = 'Такого пользователя не существует, или пароль указа неверно.';
 			
 			throw err;
-
 		})
 		.then((tplData)=> //если валидация успешна
 		{
@@ -387,20 +388,22 @@ class Login extends CtrlMain
 					if(err)
 					{
 						self.getReq().session.destroy();
-
+						
 						if(self.getReq().signedCookies.rtid)
 							Cookie.clearUserId(self.getReq(), self.getRes());
-
+						
 						return reject(err);
 					}
-
+					
 					//наличие этой куки потом проверять в req.signedCookies.rtid
 					// remember the ID
 					if(tplData.b_remember)
+					{
 						Cookie.setUserId(self.getRes(), tplData.userData.u_id);
-
+					}	
+					
 					self.getReq().session.rtid = tplData.userData.u_id;
-
+					
 					self.view.setTplData("auth/login", tplData);
 					return resolve(null);
 				});
@@ -410,27 +413,27 @@ class Login extends CtrlMain
 		{
 			tplData.formError.error = true;
 			tplData.formError.errorName = err.name;
-
+			
 			self.view.setTplData("auth/login", tplData);
-
+			
 			return Promise.resolve(null);
 		})
 		.catch(Errors.AppRegistrationNotConfirmed, (err)=>
 		{
 			tplData.formError.error = true;
 			tplData.formError.errorName = err.name;
-
+			
 			self.view.setTplData("auth/login", tplData);
-
+			
 			return new Promise((resolve, reject)=>
 			{
 				self.model("user/auth").createReqConfirmKey(tplData.userData, (err, user)=>
 				{
 					if (err)
+					{
 						return reject(err);
-
-					const Mailer = new Mail(CtrlMain.appConfig.mail.service);
-
+					}
+					
 					let sendParams = {
 						to:         tplData.m_email,
 						subject:    'Повторный запрос на подтверждение регистрации на сайте www.MotoCommunity.ru',
@@ -442,7 +445,8 @@ class Login extends CtrlMain
 							key: user.u_req_key
 						}
 					};
-
+					
+					const Mailer = new Mail(CtrlMain.appConfig.mail.service);
 					Mailer.send(sendParams, (err)=>
 					{
 						let error = null;
@@ -451,10 +455,10 @@ class Login extends CtrlMain
 							error = new Errors.AppMailError('Ошибка при отправке письма', err);
 							Logger.error(error);
 						}
-
+						
 						if (error)
 						return reject(error);
-
+						
 						return resolve(null);
 					});
 				});
@@ -462,7 +466,6 @@ class Login extends CtrlMain
 		});
 	}
 }
-
 //************************************************************************* module.exports
 //писать после class Name....{}
 module.exports = Login;

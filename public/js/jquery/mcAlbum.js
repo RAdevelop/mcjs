@@ -590,7 +590,7 @@
 				
 				console.log('MCJS["albumImages"]', MCJS["albumImages"]);
 				
-				MCJS["albumImages"].unshift(image);
+				MCJS["albumImages"]["image"].unshift(image);
 			}
 		}
 		

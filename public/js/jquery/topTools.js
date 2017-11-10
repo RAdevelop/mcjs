@@ -53,9 +53,9 @@
 		{
 			event.preventDefault();
 			event.stopPropagation();
-
+			
 			var $self = $(this);
-
+			
 			var action = $self.data('action');
 			//console.log('action = ', action);
 			switch (action)
@@ -63,7 +63,7 @@
 				case 'feedback':
 					var formId = 'feedBackForm';
 					var btn = 'btn_feedback';
-
+					
 					$('__feedback_dialog__').mcDialog({
 						title: 'Обратная связь'
 						, body: feedBackForm(formId)
