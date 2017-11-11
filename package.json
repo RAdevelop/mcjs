@@ -1,10 +1,10 @@
 {
   "name": "mcjs",
-  "version": "0.6.27",
+  "version": "0.6.28",
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "test": "mocha test/*.test.js"
+    "test": "mocha test/*/*.test.js"
   },
   "main": "app.js",
   "dependencies": {
@@ -47,6 +47,7 @@
     "winston": "^2.4.0"
   },
   "devDependencies": {
-    "mocha": "^4.0.1"
+    "chai": "*",
+    "mocha": "*"
   }
 }

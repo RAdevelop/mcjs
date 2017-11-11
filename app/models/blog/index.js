@@ -172,7 +172,7 @@ class Blog extends BaseModel {
 		return this.constructor.conn().sRow(sql, sqlData)
 			.then((res) =>
 			{
-				return Promise.resolve(res["cnt"] || 0);
+				return Promise.resolve(parseInt(res["cnt"], 10)||0);
 			});
 	}
 
@@ -332,6 +332,7 @@ class Blog extends BaseModel {
 	 * получаем данные для указанной фотографии
 	 *
 	 * @param f_id
+	 * @reurn {Promise}
 	 */
 	getImage(f_id)
 	{
@@ -365,7 +366,7 @@ class Blog extends BaseModel {
 	}
 
 	/**
-	 * кол-вл фоток в статье блога
+	 * кол-во фоток в статье блога
 	 *
 	 * @param b_id
 	 * @returns {Promise}

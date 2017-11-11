@@ -11,40 +11,37 @@ function onReady()
 {
 	//console.log('DB Client connected');
 }
-
 function onError(err)
 {
 	//console.log('DB error %j', err);
+	throw DbErrors(err);
 }
-
 function onEnd()
 {
 	//console.log('DB Clients End');
 }
-
 function onClose()
 {
 	//console.log('DB Clients closed');
 }
-
 class MariaSQL
 {
 	constructor(config = {})
 	{
 		this.config = config;
 	}
-
+	
 	set config(config)
 	{
 		this._config = config;
 		return this;
 	}
-
+	
 	get config()
 	{
 		return this._config;
 	}
-
+	
 	conn()
 	{
 		return Promise.resolve(new Maria(this.config))
@@ -54,7 +51,7 @@ class MariaSQL
 				client.on("error",  onError);
 				client.on("end",    onEnd);
 				client.on("close",  onClose);
-
+				
 				return Promise.promisifyAll(client);
 			})
 			.disposer((client) => 
@@ -62,7 +59,7 @@ class MariaSQL
 				client.end();
 			});
 	}
-
+	
 	/**
 	 *
 	 * выполнение sql запроса типа "select ..."
@@ -79,7 +76,7 @@ class MariaSQL
 			{
 				if (sql.indexOf('SELECT') != 0)
 					throw (DbErrors(new Error("не select запрос")));
-
+				
 				return Promise.using(this.conn(), (conn) =>
 				{
 					return conn.queryAsync(sql, sqlData, { useArray: false });
@@ -87,15 +84,17 @@ class MariaSQL
 			})
 			.then((res) =>
 			{
-				if (cb) return cb(null, res);
-
+				if (cb)
+					return cb(null, res);
+				
 				return Promise.resolve(res);
 			})
 			.catch((err) =>
 			{
 				err.message += `\nsqlQuery: ${sql} \n sqData: [${sqlData}]`;
-				if (cb) return cb(DbErrors(err));
-
+				if (cb)
+					return cb(DbErrors(err));
+				
 				throw DbErrors(err);
 			});
 	}
@@ -115,19 +114,21 @@ class MariaSQL
 			.then((res) => 
 			{
 				res = res[0] || null;
-				if (cb) return cb(null, res);
-
+				if (cb)
+					return cb(null, res);
+				
 				return Promise.resolve(res);
 			})
 			.catch((err) =>
 			{
 				err.message += `\nsqlQuery: ${sql} \n sqData: [${sqlData}]`;
-				if (cb) return cb(DbErrors(err));
-
+				if (cb)
+					return cb(DbErrors(err));
+				
 				throw DbErrors(err);
 			});
 	}
-
+	
 	/**
 	 *
 	 * выполнение sql запроса типа "select ..." (prepared statements)
@@ -144,29 +145,31 @@ class MariaSQL
 			{
 				if (sql.indexOf('SELECT') != 0)
 					throw (DbErrors(new Error("не select запрос")));
-
+				
 				return Promise.using(this.conn(), (conn) => 
 				{
 					let prep = conn.prepare(sql);
-
+					
 					return conn.queryAsync(prep(sqlData), { useArray: true });
 				});
 			})
 			.then((res) => 
 			{
-				if (cb) return cb(null, res);
-
+				if (cb)
+					return cb(null, res);
+				
 				return Promise.resolve(res);
 			})
 			.catch((err) =>
 			{
 				err.message += `\nsqlQuery: ${sql} \n sqData: [${sqlData}]`;
-				if (cb) return cb(DbErrors(err));
-
+				if (cb) 
+					return cb(DbErrors(err));
+				
 				throw DbErrors(err);
 			});
 	}
-
+	
 	psRow(sql, sqlData = [], cb = null)
 	{
 		return Promise.resolve(sql)
@@ -174,11 +177,11 @@ class MariaSQL
 			{
 				if (sql.indexOf('SELECT') != 0)
 					throw (DbErrors(new Error("не select запрос")));
-
+				
 				return Promise.using(this.conn(), (conn) => 
 				{
 					let prep = conn.prepare(sql);
-
+					
 					return conn.queryAsync(prep(sqlData), { useArray: true });
 				});
 			})
@@ -187,18 +190,19 @@ class MariaSQL
 				res = res[0] || null;
 				if (cb)
 					return cb(null, res);
-
+				
 				return Promise.resolve(res);
 			})
 			.catch((err) =>
 			{
 				err.message += `\nsqlQuery: ${sql} \n sqData: [${sqlData}]`;
-				if (cb) return cb(DbErrors(err));
-
+				if (cb)
+					return cb(DbErrors(err));
+				
 				throw DbErrors(err);
 			});
 	}
-
+	
 	/**
 	 *
 	 * выполнение sql запроса типа "UPDATE ..."
@@ -221,7 +225,7 @@ class MariaSQL
 			{
 				if (sql.indexOf('UPDATE') != 0)
 					throw (DbErrors(new Error("не UPDATE запрос")));
-
+				
 				return Promise.using(this.conn(), (conn) => 
 				{
 					return conn.queryAsync(sql, sqlData, { useArray: false })
@@ -233,19 +237,21 @@ class MariaSQL
 			})
 			.then((res) => 
 			{
-				if (cb) return cb(null, res);
-
+				if (cb)
+					return cb(null, res);
+				
 				return Promise.resolve(res);
 			})
 			.catch((err) =>
 			{
 				err.message += `\nsqlQuery: ${sql} \n sqData: [${sqlData}]`;
-				if (cb) return cb(DbErrors(err));
-
+				if (cb)
+					return cb(DbErrors(err));
+				
 				throw DbErrors(err);
 			});
 	}
-
+	
 	/**
 	 *
 	 * выполнение sql запроса типа "DELETE ..."
@@ -262,7 +268,7 @@ class MariaSQL
 			{
 				if (sql.indexOf('DELETE') != 0)
 					throw (DbErrors(new Error("не DELETE запрос")));
-
+				
 				return Promise.using(this.conn(), (conn) => 
 				{
 					return conn.queryAsync(sql, sqlData, { useArray: false })
@@ -274,19 +280,21 @@ class MariaSQL
 			})
 			.then((res) => 
 			{
-				if (cb) return cb(null, res);
-
+				if (cb)
+					return cb(null, res);
+				
 				return Promise.resolve(res);
 			})
 			.catch((err) =>
 			{
 				err.message += `\nsqlQuery: ${sql} \n sqData: [${sqlData}]`;
-				if (cb) return cb(DbErrors(err));
-
+				if (cb)
+					return cb(DbErrors(err));
+				
 				throw DbErrors(err);
 			});
 	}
-
+	
 	/**
 	 *
 	 * выполнение sql запроса типа "INSERT ..."
@@ -310,16 +318,16 @@ class MariaSQL
 			{
 				if (sql.indexOf('INSERT') != 0)
 					throw (DbErrors(new Error("не INSERT запрос")));
-
+				
 				return Promise.using(this.conn(), (conn) =>
 				{
 					return conn.queryAsync(sql, sqlData, { useArray: false })
 						.then((res) => {
 							/*console.log("conn.lastInsertId() = " + conn.lastInsertId());
-
+							
 							 if (conn.lastInsertId() > 0)
 							 return Promise.resolve(conn.lastInsertId());*/
-
+							
 							res["info"]["insertId"] = parseInt(res["info"]["insertId"], 10);
 							return Promise.resolve(res["info"]);
 						});
@@ -327,19 +335,21 @@ class MariaSQL
 			})
 			.then((res) =>
 			{
-				if (cb) return cb(null, res);
-
+				if (cb)
+					return cb(null, res);
+				
 				return Promise.resolve(res);
 			})
 			.catch((err) =>
 			{
 				err.message += `\nsqlQuery: ${sql} \n sqData: [${sqlData}]`;
-				if (cb) return cb(DbErrors(err));
-
+				if (cb)
+					return cb(DbErrors(err));
+				
 				throw DbErrors(err);
 			});
 	}
-
+	
 	/**
 	 *
 	 * выполнение sql запроса типа "CALL ..."
@@ -356,26 +366,28 @@ class MariaSQL
 			{
 				if (sql.indexOf('CALL') != 0)
 					throw (DbErrors(new Error("не CALL запрос")));
-
+				
 				return Promise.using(this.conn(), (conn) => {
 					return conn.queryAsync(sql, sqlData, { useArray: false });
 				});
 			})
 			.then((res) =>
 			{
-				if (cb) return cb(null, res);
-
+				if (cb)
+					return cb(null, res);
+				
 				return Promise.resolve(res);
 			})
 			.catch((err) =>
 			{
 				err.message += `\nsqlQuery: ${sql} \n sqData: [${sqlData}]`;
-				if (cb) return cb(DbErrors(err));
-
+				if (cb)
+					return cb(DbErrors(err));
+				
 				throw DbErrors(err);
 			});
 	}
-
+	
 	/**
 	 *
 	 * выполнение multiple sql запроса типа "SELECT 1; SELECT 2; ..."
@@ -396,19 +408,20 @@ class MariaSQL
 			})
 			.then((res) =>
 			{
-				if (cb) return cb(null, res);
-
+				if (cb)
+					return cb(null, res);
+				
 				return Promise.resolve(res);
 			})
 			.catch((err) =>
 			{
 				err.message += `\nsqlQuery: ${sql} \n sqData: [${sqlData}]`;
-
-				if (cb) return cb(DbErrors(err));
-
+				
+				if (cb)
+					return cb(DbErrors(err));
+				
 				throw DbErrors(err);
 			});
 	}
 }
-
 module.exports = MariaSQL;
