@@ -1,4 +1,17 @@
-<div class="row">
+<%
+let blogBaseUrl = 'blog';
+/*
+ let blogBaseUrl = ['blog'];
+if (user && user['u_id'])
+{
+	blogBaseUrl.push(user['u_id']);
+	if (blogDraft)
+		blogBaseUrl.push('draft');
+}
+blogBaseUrl = blogBaseUrl.join('/');
+ */
+
+%><div class="row">
 	<div class="notice-container blog-container"><%
 blogList.forEach(function (bItem)
 {
@@ -12,7 +25,7 @@ blogList.forEach(function (bItem)
 	
 %><div class="notice-item blog-item" style="background-image: url('<%=imgSrc%>');">
 <% let user_owner = bItem['user']; %><%- include ../user/owner.ejs %>
-	<div class="blog-item-subject"><a href="<%=['subj', bItem["bs_id"], bItem["bs_alias"]].join('/')%>/"><%=bItem["bs_name"]%></a></div>
+	<div class="blog-item-subject"><a href="/<%=[blogBaseUrl,'subj', bItem["bs_id"], bItem["bs_alias"]].join('/')%>/"><%=bItem["bs_name"]%></a></div>
 	<a class="notice-item-info blog-item-info" href="<%=blogHref.join('/')%>/" title="<%=bItem["b_title"]%>">
 		<div class="notice-item-info-date">
 			<i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;<%=bItem["dt_create_ts"]%>
