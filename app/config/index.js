@@ -3,6 +3,7 @@ const FS = require('fs');
 const Path = require('path');
 
 //console.log(Path.join(__dirname, '../../public'));
+//console.log('process.env.NODE_ENV ', process.env.NODE_ENV);
 
 let document_root = Path.join(__dirname, '../../public');
 /**
@@ -58,7 +59,7 @@ let config = {
 			host: 'localhost', //192.168.0.91
 			user: 'mc',
 			password: 'mcjs',
-			db: 'mcjs',
+			db: (!!process.env.NODE_ENV && process.env.NODE_ENV === 'test' ? 'mcjs_test' :  'mcjs'),
 			charset: 'utf8',
 			multiStatements: true,
 			keepQueries: true //true false

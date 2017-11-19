@@ -29,10 +29,10 @@ class Blog extends Base
 	add(i_u_id, s_title, t_notice, t_text, ui_bs_id, b_show = 0)
 	{
 		let s_alias = this.helpers.clearSymbol(this.helpers.translit(s_title), '-');
-
+		
 		return this.model('blog').add(i_u_id, s_title, s_alias, t_notice, t_text, ui_bs_id, b_show);
 	}
-
+	
 	/**
 	 * редактируем контент блога
 	 *
@@ -49,11 +49,11 @@ class Blog extends Base
 	edit(b_id, i_u_id, s_title, t_notice, t_text, ui_bs_id, b_show = 0)
 	{
 		let s_alias = this.helpers.clearSymbol(this.helpers.translit(s_title), '-');
-
+		
 		return this.model('blog')
 			.edit(b_id, i_u_id, s_title, s_alias, t_notice, t_text, ui_bs_id, b_show);
 	}
-
+	
 	/**
 	 * данные контента блога по его id
 	 *
@@ -69,7 +69,7 @@ class Blog extends Base
 			{
 				if (!blog)
 					return Promise.resolve(null);
-
+				
 				return this.getClass('keywords').getObjKeyWords(this, blog, 'b_id')
 					.then((blog)=>
 					{
@@ -77,7 +77,7 @@ class Blog extends Base
 					});
 			});
 	}
-
+	
 	/**
 	 *
 	 * @param Pages
@@ -422,7 +422,7 @@ class Blog extends Base
 				]);
 			});
 	}
-
+	
 	getBlogSubjectList(bs_id = null, i_u_id = null, b_show = 1)
 	{
 		return this.model('blog').getBlogSubjectList(i_u_id, b_show)

@@ -13,23 +13,23 @@ class Helpers
 		maxDepth = maxDepth || 0;
 		mountPath = mountPath || '/';
 		//if (maxDepth > 3) return;
-
+		
 		var file, fileInfo;
 		try
 		{
 			var routers = fs.readdirSync(dir);
-
+			
 			/*console.log('RA-AD');
 			console.log(routers);*/
-
+			
 			if(!routers || !routers.length)
 			return Logger.error('Empty routers (call from helpers.loadRouters) in dir %j', {"dir":dir});
-
+			
 			routers.forEach(function(item)
 			{
 				file = path.join(dir, item);
 				fileInfo = path.parse(file);
-
+				
 				if(fs.statSync(file).isFile() && fileInfo.ext === '.js')
 				{
 					mountPath += fileInfo.name.replace('index', '');

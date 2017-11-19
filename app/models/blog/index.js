@@ -6,7 +6,8 @@ const Promise = require("bluebird");
 
 const BaseModel = require('app/lib/db');
 
-class Blog extends BaseModel {
+class Blog extends BaseModel
+{
 	/**
 	 * добавляем
 	 *
@@ -22,13 +23,13 @@ class Blog extends BaseModel {
 	add(i_u_id, s_title, s_alias, t_notice, t_text, ui_bs_id, b_show)
 	{
 		b_show = (!!b_show && b_show == 1 ? 1 : 0);
-
+		
 		let now_ts = Moment().unix();
 		let sqlData = [i_u_id, s_title, s_alias, t_notice, t_text, now_ts, now_ts, b_show, ui_bs_id];
-
+		
 		let sql = `INSERT INTO blog_list (u_id, b_title, b_alias, b_notice, b_text, b_create_ts, b_update_ts, b_show, bs_id)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-
+		
 		return this.constructor.conn().ins(sql, sqlData)
 			.then((res) =>
 			{
@@ -39,7 +40,7 @@ class Blog extends BaseModel {
 				});
 			});
 	}
-
+	
 	/**
 	 * редактируем
 	 *
@@ -60,21 +61,21 @@ class Blog extends BaseModel {
 			`UPDATE blog_list SET b_update_ts = ?, b_title = ?, b_alias = ?, b_notice = ?, b_text = ?
 			, u_id = ?, b_show = ?, bs_id = ?
 			WHERE b_id = ?`;
-
+		
 		b_show = (!!b_show && b_show == 1 ? 1 : 0);
 		i_b_id = (parseInt(i_b_id, 10)||0);
-
+		
 		let now_ts = Moment().unix();
 		let sqlData = [now_ts, s_title, s_alias, t_notice, t_text, i_u_id, b_show, ui_bs_id,
 			i_b_id];
-
+		
 		return this.constructor.conn().upd(sql, sqlData)
 			.then(() =>
 			{
 				return Promise.resolve(i_b_id);
 			});
 	}
-
+	
 	/**
 	 * данные по его id
 	 *
@@ -94,7 +95,7 @@ class Blog extends BaseModel {
 		
 		b_id = parseInt(b_id, 10)||0;
 		let sqlData = [b_id];
-
+		
 		if (b_show === null)
 		{
 			sql += ` AND b.b_show IN(0,1)`;
@@ -105,17 +106,17 @@ class Blog extends BaseModel {
 			sql += ` AND b.b_show = ?`;
 			sqlData.push(b_show);
 		}
-
+		
 		if (i_u_id !== null)
 		{
 			sql += ` AND b.u_id = ?`;
 			i_u_id = parseInt(i_u_id, 10)||0;
 			sqlData.push(i_u_id);
 		}
-
+		
 		/*console.log(sql);
 		 console.log(sqlData);*/
-
+		
 		return this.constructor.conn().sRow(sql, sqlData);
 	}
 	
@@ -420,7 +421,7 @@ class Blog extends BaseModel {
 				return this.constructor.conn().upd(sql, setData);
 			});
 	}
-
+	
 	/**
 	 * удаляем указанную статью блога
 	 *
@@ -432,11 +433,26 @@ class Blog extends BaseModel {
 		b_id = parseInt(b_id, 10)||0;
 		if (!!b_id === false)
 			return Promise.resolve(0);
-
+		
 		let sql = `DELETE FROM blog_file WHERE b_id = ?;
 		DELETE FROM blog_list WHERE b_id = ?;`;
 		
 		return this.constructor.conn().multis(sql, [b_id, b_id]);
+	}
+	
+	/**
+	 * получаем список тем для блога
+	 * 
+	 * @returns {Promise} - массив с данными тем
+	 */
+	getSubjectList()
+	{
+		let sql = `SELECT bs.bs_id, bs.bs_pid, bs.bs_name, bs.bs_alias, bs.bs_level, bs.bs_lk, bs.bs_rk
+		FROM blog_subject AS bs
+		ORDER BY bs.bs_lk`;
+		
+		//console.log(sql, sqlData);
+		return this.constructor.conn().ps(sql);
 	}
 	
 	getBlogSubjectList(i_u_id = null, b_show = null)
@@ -458,7 +474,7 @@ class Blog extends BaseModel {
 			sqlData.push(i_u_id);
 			joinAnd.push(`b.u_id = ?`);
 		}
-
+		
 		let sql = `SELECT bs.bs_id, bs.bs_pid, bs.bs_name, bs.bs_alias, bs.bs_level, bs.bs_lk, bs.bs_rk
 		, COUNT(b.b_id) AS b_cnt
 		FROM blog_subject AS bs
