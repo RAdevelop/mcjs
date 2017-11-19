@@ -190,15 +190,19 @@ class Blog extends BaseModel
 	 */
 	getBlogList(i_limit = 20, i_offset = 0, b_show = null, i_u_id = null, ui_bs_id = null, s_bs_alias = null)
 	{
+		i_limit		= parseInt(i_limit,10)||20;
+		i_offset	= parseInt(i_offset,10)||0;
+		
 		let where = [];
 		let sqlData = [];
-
-		let sql =
-			[`SELECT b.b_id, b.b_create_ts, b.b_update_ts, b.b_title, b.b_alias, b.b_notice 
+		
+		let sql = [
+			`SELECT b.b_id, b.b_create_ts, b.b_update_ts, b.b_title, b.b_alias, b.b_notice 
 			, FROM_UNIXTIME(b.b_create_ts, "%d-%m-%Y") AS dt_create_ts
 			, b.u_id, bi.f_id, bi.f_dir, bi.f_pos, bi.f_name, bi.f_type
 			, b.bs_id, bs.bs_name, bs.bs_alias
-			FROM blog_list AS b`];
+			FROM blog_list AS b`
+		];
 		
 		if (b_show === null)
 		{
@@ -211,7 +215,7 @@ class Blog extends BaseModel
 			sqlData.push(b_show);
 		}
 		
-		if (ui_bs_id && s_bs_alias)
+		if (ui_bs_id && !!s_bs_alias)
 		{
 			sql.push(`JOIN blog_subject AS bs ON(bs.bs_id = b.bs_id AND bs.bs_alias = ?)`);
 			

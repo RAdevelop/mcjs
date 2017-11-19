@@ -381,9 +381,9 @@ class Blog extends Base
 					});
 			});
 	}
-
+	
 	/**
-	 * сорхранение позиций фотографий после их сортировке на клиенте
+	 * сорхранение позиций фотографий после их сортировки на клиенте
 	 *
 	 * @param b_id
 	 * @param file_pos
@@ -393,7 +393,7 @@ class Blog extends Base
 	{
 		return this.model('blog').updSortImg(b_id, file_pos);
 	}
-
+	
 	/**
 	 * удаляем
 	 *
@@ -406,9 +406,9 @@ class Blog extends Base
 		blog['b_id'] = parseInt(blog['b_id'], 10)||0;
 		if (!blog || !!blog['b_id'] === false)
 			return Promise.resolve(0);
-
+		
 		let dir = Path.join(FileUpload.getDocumentRoot, FileUpload.getUploadConfig(Blog.uploadConfigName)["pathUpload"], FileUpload.getAlbumUri(blog['b_id']));
-
+		
 		return FileUpload.deleteDir(dir, true)
 			.then(() =>
 			{
