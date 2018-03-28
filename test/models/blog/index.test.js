@@ -138,7 +138,7 @@ describe("Model Blog", function _modelBlog()
 	describe("getBlogById", function _getBlogById()
 	{
 		let case_list = [
-			{args: {b_id: null,	u_id: null,	b_show: null},	check: true,	expected: 'null'},
+			{args: {b_id: null,	u_id: null,	b_show: null},	check: false,	expected: 'null'},
 			{args: {b_id: 1,	u_id: null,	b_show: null},	check: true,	expected: 'object'},
 			{args: {b_id: 1,	u_id: 1,	b_show: null},	check: true,	expected: 'object'},
 			{args: {b_id: 1,	u_id: 1,	b_show: 1},		check: true,	expected: 'object'}

@@ -6,8 +6,10 @@
  */
 ;(function($)
 {
-	if (window['MessengerEmitter'])
+	if (window['MessengerSocket'])
+	{
 		return;
+	}
 	
 	(function()
 	{
@@ -231,10 +233,14 @@
 					try
 					{
 						if (_checked)
+						{
 							return true;
+						}
 						
 						if (!this._storage())
+						{
 							throw new Error('Неизвестный тип хранилища');
+						}
 						
 						/*
 						 если включен приватный режим в браузере, то размер хранилища там = 0
@@ -255,6 +261,7 @@
 								//this.clearTable();
 								break;
 						}
+						//FIXME console.log
 						console.log(err);
 						
 						this._setStorage(null);
@@ -264,32 +271,41 @@
 				setItem: function(key, value)
 				{
 					if (!this._storage())
+					{
 						return;
+					}
 					
 					if (value === null)
+					{
 						value = undefined;
+					}
 					
 					key = [this._table, key].join('/');
-					
 					this._storage().setItem.call(this._storage(), key, (value ? JSON.stringify(value) : value));
 				},
 				getItem: function(key)
 				{
 					if (!this._storage())
+					{
 						return;
+					}
 					
 					key = [this._table, key].join('/');
 					var value = this._storage().getItem.call(this._storage(), key);
 					
 					if (value === undefined)
+					{
 						value = null;
+					}
 					
 					return (value ? JSON.parse(value) : value);
 				},
 				removeItem: function(key)
 				{
 					if (!this._storage())
+					{
 						return;
+					}
 					
 					key = [this._table, key].join('/');
 					this._storage().removeItem.call(this._storage(), key);
@@ -297,14 +313,18 @@
 				clear: function()
 				{
 					if (!this._storage())
+					{
 						return;
+					}
 					
 					this._storage().clear.call(this._storage());
 				},
 				clearTable: function()
 				{
 					if (!this._storage())
+					{
 						return;
+					}
 					
 					var k = '', table = this._table +'/';
 					var removedKeys = [];
@@ -402,7 +422,9 @@
 			MessengerEmitter.prototype.tabCache = function(tab)
 			{
 				if (arguments.length == 1)
+				{
 					_tabCache = tab;
+				}
 				
 				return _tabCache;
 			};
@@ -418,7 +440,9 @@
 				var isMe = false;
 				
 				if (!tab)
+				{
 					return {tab: tab, isMe: isMe};
+				}
 				
 				for(var i = 0; i < tabList.length; i++)
 				{
@@ -449,7 +473,9 @@
 				var tabList = this.getTabList();
 				
 				if (tab)
+				{
 					return [tab, tabList];
+				}
 				
 				var mts = (new Date()).getTime();
 				var tabData = {
@@ -480,7 +506,9 @@
 			MessengerEmitter.prototype.delTab = function(tab)
 			{
 				if (!tab)
+				{
 					return tab;
+				}
 				
 				this.tabCache(null);
 				this.ss().removeItem(KEY_TAB);
@@ -498,7 +526,9 @@
 				}
 				
 				if (this.isTabMaster(tab) && tabList.length)
+				{
 					tabList[0]['master'] = true;
+				}
 				
 				this.updTabList(tabList);
 				
@@ -546,12 +576,12 @@
 			};
 			MessengerEmitter.prototype.getLastTsUpd = function()
 			{
-				
 				var tsUpd = parseInt(this.ls().getItem(this.keyLastTsUpd()), 10);
 				
 				if (tsUpd)
+				{
 					return tsUpd;
-					
+				}
 				return (new Date()).getTime()/1000;
 			};
 			
@@ -665,7 +695,9 @@
 				var res = MessengerEmitter.prototype.updTab.call(this, tabList);
 				
 				if (res.isMe && this.isTabMaster(res.tab) && !this.getSocketReady())
+				{
 					this.ioConnect();
+				}
 				
 				return {tab: res.tab, isMe: res.isMe};
 			};
@@ -674,7 +706,9 @@
 			{
 				var tab = this.getTab();
 				if (this.isTabMaster(tab))
+				{
 					this.setSocketReady(0);
+				}
 				
 				tab = MessengerEmitter.prototype.delTab.call(this, tab);
 				
@@ -684,7 +718,9 @@
 			MessengerSocket.prototype.socketIo = function()
 			{
 				if (!_io && this.isTabMaster(this.tabCache()))
+				{
 					_io = _socketIo(_socketOpts, this);
+				}
 				
 				return _io;
 			};
@@ -694,10 +730,11 @@
 				ready = parseInt(ready, 10) || 0;
 				
 				if (!ready)
+				{
 					_io = null;
+				}
 				
 				this.ls().setItem(this.keySocketIo(), ready);
-				
 				return ready;
 			};
 			
@@ -714,15 +751,15 @@
 				.then(function _getSocketReadyEnd(loaded)
 				{
 					if (loaded)
+					{
 						return Promise.resolve(true);
-					
+					}
 					return self.ioLoad();
 				})
 				.then(function _ioLoadEnd()
 				{
 					return self.ioInit();
-				})
-				;
+				});
 			};
 			
 			/**
@@ -734,7 +771,9 @@
 				return new Promise(function(resolve, reject)
 				{
 					if (window['io'])
+					{
 						return resolve(true);
+					}
 					
 					$.cachedScriptLoad(_socketJsFile)
 					.done(function()//<- script, textStatus
@@ -837,14 +876,18 @@
 				
 				var go = ((!onStorageEvent && !BrowserDetector.ie) || onStorageEvent);
 				if (!go) 
+				{
 					return;
+				}
 				
 				this.render().render(msgData);
 				
 				var sendToServer = (this.isTabMaster() && this.socketIo());
 				
 				if (!sendToServer)
+				{
 					return;
+				}
 				
 				this.socketIo().emit('userMessage', msgData, function _roomMessageOk(done)
 				{
@@ -861,7 +904,9 @@
 			MessengerSocket.prototype.appLogout = function(logout)
 			{
 				if (typeof logout === 'undefined')
-				return parseInt(this.ls().getItem(this.keyAppLogout()), 10);
+				{
+					return parseInt(this.ls().getItem(this.keyAppLogout()), 10);
+				}
 				
 				logout = parseInt(logout, 10);
 				this.ls().setItem(this.keyAppLogout(), logout);
@@ -891,7 +936,9 @@
 			function _socketIo(opts, Messenger)
 			{
 				if (!window['io'])
+				{
 					return;
+				}
 				
 				var _io = io('//'+window.location.host+'/', opts);
 				
@@ -965,7 +1012,9 @@
 					Messenger.appLogout(1);
 					
 					if (Messenger.isTabMaster() && !BrowserDetector.ie)
+					{
 						document.location.reload(true);
+					}
 				});
 				_io.on('appShutdown', function _onSocketAppShutdown(data)
 				{
@@ -1110,6 +1159,7 @@
 				
 				return tpl;
 			};
+			
 			MessageRender.prototype.tplMsgUser = function(msgData)
 			{
 				var message = nl2br(msgData["m"]);
@@ -1143,7 +1193,6 @@
 				this.$roomMsgList.append(tpl);
 				
 				this.$roomMsgList.scrollTop( this.$roomMsgList.height() + 1000000);
-				
 				return tpl;
 			};
 			
@@ -1161,14 +1210,19 @@
 					
 					var clickMts = (new Date()).getTime();
 					if (clickMts - mts <= 1000)
+					{
 						return;
+					}
 					else
+					{
 						mts = clickMts;
+					}
 					
 					var msg = $.trim(self.$roomMsgText.val());
-					
 					if (!msg || !self.messenger().user())
+					{
 						return false;
+					}
 					
 					self.$roomMsgText.val('');
 					
@@ -1181,7 +1235,6 @@
 					};
 					
 					self.messenger().msgSend(msgData, false);
-					
 					return false;
 				});
 			};
@@ -1241,7 +1294,9 @@
 			
 			var msgData = data['newValue'] && JSON.parse(data['newValue']);
 			if (!!msgData === false)
+			{
 				return;
+			}
 			/*
 			 TODO отправка сообщения:
 			 if i'm master tab then send to server -> if success -> on storage event handle this message for add to chat
@@ -1267,7 +1322,9 @@
 			
 			var msgData = data['newValue'] && JSON.parse(data['newValue']);
 			if (!!msgData === false)
+			{
 				return;
+			}
 			/*
 			 TODO отправка сообщения:
 			 if i'm master tab then send to server -> if success -> on storage event handle this message for add to chat
@@ -1289,8 +1346,7 @@
 		
 		//FIXME для текстов (потом удалить)
 		Messenger.clearData();
-		
-		return ;
+		return;
 	})
 	.catch(function _catchErr(err)
 	{

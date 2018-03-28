@@ -6,7 +6,7 @@
 const Path = require('path');
 const fs = require('fs');
 
-const Models = (function()
+const Models = (() =>
 {
 	let _instance;
 	//let loadedDb = 0;
@@ -19,7 +19,7 @@ const Models = (function()
 		}
 		return _instance;
 	}
-
+	
 	// Конструктор
 	function SingletonModels()
 	{
@@ -27,7 +27,7 @@ const Models = (function()
 		 console.log("loadedDb = " + loadedDb);*/
 		
 		// Публичные свойства
-
+		
 		load(__dirname, 0, '/');
 	}
 	
@@ -36,43 +36,43 @@ const Models = (function()
 	
 	//храним экземпляры объектов new ModelName()
 	let _models = new WeakMap();
-
+	
 	//храним вызов require(file_path)
 	let _require = new Map();
-
+	
 	function load(dir, depth, mountPath)
 	{
 		let file, fileInfo;
 		try
 		{
 			let routers = fs.readdirSync(dir);
-
 			if(!routers || !routers.length)
 			{
 				return;
-				//return logger.error('Empty routers (call from helpers.loadRouters) in dir %j', {"dir": dir});
 			}
-
-			routers.forEach(function(item)
+			
+			routers.forEach((item)=>
 			{
 				file = Path.join(dir, item);
 				fileInfo = Path.parse(file);
-
+				
 				let isFile = (fs.statSync(file).isFile() && fileInfo.ext === '.js');
-
-				if (depth == 0 && isFile) return;
-
+				
+				if (depth == 0 && isFile)
+				{
+					return;
+				}
+				
 				if(isFile)
 				{
 					mountPath += fileInfo.name.replace('index', '');
-					/*console.log(file);
-					 console.log(mountPath.substring(1));*/
-
 					let model = (mountPath[0] == '/') ? mountPath.substring(1) : mountPath;
 					model = model.toLocaleLowerCase();
-
+					
 					if (model && !_require.has(model))
+					{
 						_require.set(model,  require(file));
+					}
 				}
 				else
 				{
@@ -83,12 +83,9 @@ const Models = (function()
 		}
 		catch (err)
 		{
-			//logger.error('Empty routers (call from helpers.loadRouters) in dir %j', {"dir":dir});
-			//logger.error(err);
 			err.message = 'Empty routers (call from helpers.loadRouters) in dir:\n:  ' + dir;
 			err.status = 500;
-			//console.log(err);
-			throw new Error(err);
+			throw err;
 		}
 	}
 	
@@ -97,13 +94,17 @@ const Models = (function()
 	SingletonModels.prototype.model = function(model)
 	{
 		model = model.toString().toLowerCase();
-
+		
 		if (!_require.has(model))
+		{
 			_require.set(model, require('app/models/'+model) );
-
+		}
+		
 		if (!_models.has(_require.get(model)))
+		{
 			_models.set(_require.get(model), new (_require.get(model))() );
-
+		}
+		
 		return _models.get(_require.get(model));
 
 		/*let cn = {[model]:model};
